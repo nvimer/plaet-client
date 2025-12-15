@@ -53,4 +53,16 @@ export const queryKeys = {
     byCategory: (categoryId: number) => ["menu", { categoryId }] as const,
     available: () => ["menu", { available: true }] as const,
   },
+
+  // Orders
+  orders: {
+    all: ["orders"] as const,
+    // Single order
+    detail: (id: string) => ["orders", id] as const,
+    byStatus: (status: string) => ["orders", { status }] as const,
+    byType: (type: string) => ["orders", { type }] as const,
+    byTable: (tableId: string) => ["orders", { tableId }] as const,
+    // Today's orders
+    today: () => ["orders", { today: true }] as const,
+  },
 };
