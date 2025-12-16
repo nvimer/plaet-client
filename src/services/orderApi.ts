@@ -12,6 +12,7 @@ import {
   type CreateOrderItemInput,
   type CreatePaymentInput,
   type Payment,
+  type UpdateOrderInput,
 } from "@/types";
 import axiosClient from "./axiosClient";
 
@@ -63,6 +64,23 @@ export const getOrderById = async (id: string) => {
 export const createOrder = async (orderData: CreateOrderInput) => {
   const { data } = await axiosClient.post<ApiResponse<Order>>(
     "/orders",
+    orderData,
+  );
+  return data;
+};
+
+/**
+ * PATCH /orders/:id
+ *
+ * Update an existing order
+ *
+ * @param id - Order ID
+ * @param orderData - Data to update
+ * @return Updated order
+ */
+export const updateOrder = async (id: string, orderData: UpdateOrderInput) => {
+  const { data } = await axiosClient.patch<ApiResponse<Order>>(
+    `/orders/${id}`,
     orderData,
   );
   return data;
