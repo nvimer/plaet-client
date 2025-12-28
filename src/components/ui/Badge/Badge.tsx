@@ -2,14 +2,14 @@ import type { HTMLAttributes, ReactNode } from "react";
 
 interface BadgeProps extends HTMLAttributes<HTMLSpanElement> {
     children: ReactNode;
-    variant?: "default" | "success" | "warning" | "error" | "info";
+    variant?: "neutral" | "success" | "warning" | "error" | "info";
     size?: "sm" | "md" | "lg";
     className?: string;
 }
 
 export function Badge({
     children,
-    variant = "default",
+    variant = "neutral",
     size = "md",
     className = "",
     ...props
@@ -20,7 +20,7 @@ export function Badge({
 
     // Variant styles
     const varianStyles = {
-        default: "bg-sage-50 text-carbon-700 border border-sage-border-subtle",
+        neutral: "bg-sage-50 text-carbon-700 border border-sage-border-subtle",
         success:
             "bg-sage-green-50 text-sage-green-700 border border-sage-green-200",
         warning: "bg-amber-50 text-yellow-700 border border-yellow-200",
