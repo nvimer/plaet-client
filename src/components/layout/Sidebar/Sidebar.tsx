@@ -3,6 +3,7 @@ import {
     Home,
     LayoutGrid,
     MenuIcon,
+    ShoppingCart,
     Utensils,
     type LucideIcon,
 } from "lucide-react";
@@ -17,6 +18,7 @@ const navItems: NavItem[] = [
     { name: "Dashboard", path: "/dashboard", icon: Home },
     { name: "Mesas", path: "/tables", icon: LayoutGrid },
     { name: "Menú", path: "/menu", icon: MenuIcon },
+    { name: "Orders", path: "/orders", icon: ShoppingCart },
 ];
 
 export function Sidebar() {
