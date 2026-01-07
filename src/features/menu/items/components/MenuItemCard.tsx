@@ -1,9 +1,7 @@
-import { Button, Card } from "@/components";
-import { Badge } from "@/components/ui/Badge";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
-import type { MenuItem } from "@/types";
-import { DollarSign, Edit2, ImageIcon, Star, Trash2 } from "lucide-react";
 import { useState } from "react";
+import { DollarSign, Edit2, ImageIcon, Star, Trash2 } from "lucide-react";
+import type { MenuItem } from "@/types";
+import { Button, Card, Badge, ConfirmDialog } from "@/components";
 
 // ========== TYPES ========
 interface MenuItemCardProps {
