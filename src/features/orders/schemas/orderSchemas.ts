@@ -31,8 +31,8 @@ export const orderItemSchema = z.object({
  * Create Order Schema
  */
 export const createOrderSchema = z.object({
-    tableId: z.number().int().positive("Mesa inválida").optional().nullable(),
-    costumerId: z.string().optional().nullable(),
+    tableId: z.number().int().positive("Mesa inválida").nullable(),
+    costumerId: z.string().optional(),
     type: z.enum(OrderType, {
         error: (iss) =>
             iss.input === undefined
@@ -53,7 +53,7 @@ export const createOrderSchema = z.object({
  */
 export const updateOrderSchema = z.object({
     table: z.number().int().positive().nullable(),
-    costumerId: z.string().optional().nullable(),
+    costumerId: z.string().optional(),
     status: z.enum(OrderStatus).optional(),
     type: z.enum(OrderType).optional(),
     notes: z
