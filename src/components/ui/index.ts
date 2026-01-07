@@ -5,3 +5,5 @@ export { StatCard } from "./StatCard";
 export { ConfirmDialog } from "./ConfirmDialog";
 export { Skeleton } from "./Skeleton";
 export { EmptyState } from "./EmptyState";
+export { Badge } from "./Badge";
+export { BaseModal } from "./BaseModal";
