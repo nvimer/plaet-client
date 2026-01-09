@@ -22,7 +22,7 @@ export function TopBar() {
 
                     <div className="text-sm">
                         <p className="font-medium text-carbon-900">
-                            {user?.name || "Usuario"}
+                            {user?.firstName.concat(" ", user.lastName) || "Usuario"}
                         </p>
                         <p className="text-carbon-500">{user?.email}</p>
                     </div>
