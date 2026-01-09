@@ -51,7 +51,8 @@ export interface Permission {
  */
 export interface User {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   phone?: string;
   profile?: Profile;
@@ -74,7 +75,8 @@ export interface UserWithRolesAndPermissions extends User {
  * Datos para registro de usuario
  */
 export interface RegisterInput {
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   phone?: string;
@@ -113,7 +115,8 @@ export interface AuthResponse {
  * Usado en PATCH /users/:id
  */
 export interface UpdateUserInput {
-  name?: string;
+  firstName?: string;
+  lastName?: string;
   email?: string;
   phone?: string;
   roleIds?: number[];

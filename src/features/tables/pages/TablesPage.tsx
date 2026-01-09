@@ -163,7 +163,7 @@ export function TablesPage() {
                             className={`px-4 py-2 rounded-xl transition-all font-medium text-sm ${statusFilter === "ALL" ? "bg-carbon-900 text-white shadow-soft-md" : "bg-sage-50 text-carbon-600 hover:bg-sage-100"}`}
                         >
                             Todas{" "}
-                            <Badge size="sm" variant="default" className="ml-2">
+                            <Badge size="sm" variant="neutral" className="ml-2">
                                 {counts.all}
                             </Badge>
                         </button>
@@ -217,7 +217,7 @@ export function TablesPage() {
                 </div>
             ) : (
                 <EmptyState
-                    icon={TableIcon}
+                    icon={<TableIcon />}
                     title={
                         statusFilter === "ALL"
                             ? "No hay mesas"

@@ -227,7 +227,7 @@ export function OrdersPage() {
                 </div>
             ) : (
                 <EmptyState
-                    icon={ShoppingCart}
+                    icon={<ShoppingCart />}
                     title={
                         statusFilter === "ALL" && typeFilter === "ALL"
                             ? "No hay pedidos"
