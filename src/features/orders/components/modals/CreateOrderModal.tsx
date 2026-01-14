@@ -131,20 +131,19 @@ export function CreateOrderModal({ isOpen, onClose }: CreateOrderModalProps) {
                 notes: item.notes,
                 isFreeSubstitution: item.isFreeSubstitution,
             })),
-            ...selectedItems,
         };
 
         createOrder(orderData, {
             onSuccess: () => {
-                (toast.success("Pedido creado"),
-                {
+                toast.success("Pedido creado", {
                     description: `Total: ${totalAmount.toLocaleString("es-CO")}`,
                     icon: "🎉",
                 });
                 // Reset and close
                 setSelectedItems([]);
                 setOrderType(OrderType.DINE_IN);
-                (setSelectedTable(null), onClose());
+                setSelectedTable(null);
+                onClose();
             },
             onError: (error: any) => {
                 toast.error("Error al crear pedido", {

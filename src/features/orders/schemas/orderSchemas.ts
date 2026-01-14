@@ -32,7 +32,7 @@ export const orderItemSchema = z.object({
  */
 export const createOrderSchema = z.object({
     tableId: z.number().int().positive("Mesa inválida").nullable(),
-    costumerId: z.string().optional(),
+    customerId: z.string().optional(),
     type: z.enum(OrderType, {
         error: (iss) =>
             iss.input === undefined
@@ -52,13 +52,13 @@ export const createOrderSchema = z.object({
  * Update Order Schema
  */
 export const updateOrderSchema = z.object({
-    table: z.number().int().positive().nullable(),
-    costumerId: z.string().optional(),
+    tableId: z.number().int().positive().nullable().optional(),
+    customerId: z.string().optional(),
     status: z.enum(OrderStatus).optional(),
     type: z.enum(OrderType).optional(),
     notes: z
         .string()
-        .max(500, "Notas no pueden exceder 200 caracteres")
+        .max(500, "Notas no pueden exceder 500 caracteres")
         .optional(),
 });
 

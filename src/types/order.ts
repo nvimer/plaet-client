@@ -10,14 +10,12 @@ import type { MenuItem } from "./menu";
 
 /**
  * Cliente (Customer)
- * Sincronizado con: model Costumer en Prisma
- *
- * NOTA: En el backend está mal escrito "Costumer" en lugar de "Customer"
- * Pero mantenemos la consistencia con el backend
+ * Sincronizado con: model Customer en Prisma
  */
 export interface Customer {
   id: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   phone: string;
   email?: string;
   createdAt: string;
@@ -66,8 +64,8 @@ export interface Order {
   table?: Table; // Puede venir poblada o no
   waiterId: string;
   waiter?: User; // Usuario (mesero) que tomó el pedido
-  costumerId?: string;
-  costumer?: Customer; // Cliente (si aplica)
+  customerId?: string;
+  customer?: Customer; // Cliente (si aplica)
   status: OrderStatus;
   type: OrderType;
   totalAmount: number; // Decimal → number
@@ -96,7 +94,7 @@ export interface CreateOrderItemInput {
  */
 export interface CreateOrderInput {
   tableId?: number;
-  costumerId?: string;
+  customerId?: string;
   type: OrderType;
   notes?: string;
   items: CreateOrderItemInput[];
@@ -108,7 +106,7 @@ export interface CreateOrderInput {
  */
 export interface UpdateOrderInput {
   tableId?: number;
-  costumerId?: string;
+  customerId?: string;
   status?: OrderStatus;
   type?: OrderType;
   notes?: string;
