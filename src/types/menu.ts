@@ -4,8 +4,6 @@ export interface MenuCategory {
   description?: string;
   order: number;
   items?: MenuItem[];
-  createdAt: string;
-  updatedAt: string;
   deleted: boolean;
   deletedAt?: string;
 }
@@ -31,6 +29,11 @@ export interface MenuItem {
   isExtra: boolean;
   isAvailable: boolean;
   imageUrl?: string;
+  inventoryType: string;
+  stockQuantity?: number;
+  initialStock?: number;
+  lowStockAlert?: number;
+  autoMarkUnavailable: boolean;
   createdAt: string;
   updatedAt: string;
   deleted: boolean;
@@ -45,6 +48,11 @@ export interface CreateMenuItemInput {
   isAvailable?: boolean;
   isExtra?: boolean;
   imageUrl?: string;
+  inventoryType?: string;
+  stockQuantity?: number;
+  initialStock?: number;
+  lowStockAlert?: number;
+  autoMarkUnavailable?: boolean;
 }
 
 export interface UpdateMenuItemInput {
@@ -55,4 +63,9 @@ export interface UpdateMenuItemInput {
   isAvailable?: boolean;
   isExtra?: boolean;
   imageUrl?: string;
+  inventoryType?: string;
+  stockQuantity?: number;
+  initialStock?: number;
+  lowStockAlert?: number;
+  autoMarkUnavailable?: boolean;
 }
