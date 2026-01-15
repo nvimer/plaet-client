@@ -1,16 +1,16 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { DashboardLayout } from "@/layouts/DashboardLayout";
 import { Button, Card, Badge } from "@/components";
 import { FolderOpen, Grid3x3, ListFilter, Plus } from "lucide-react";
-import { type MenuItem, type MenuCategory } from "@/types";
+import { type MenuCategory } from "@/types";
 import {
     useCategories,
     useDeleteCategory,
-    CategoryForm,
     CategoryCard,
 } from "../categories";
-import { MenuItemCard, MenuItemForm, useItems, useDeleteItem } from "../items";
+import { MenuItemCard, useItems, useDeleteItem } from "../items";
+import { ROUTES, getCategoryEditRoute, getMenuItemEditRoute } from "@/app/routes";
 
 type Tab = "categories" | "items";
 
@@ -20,19 +20,10 @@ type Tab = "categories" | "items";
  * Main page for menu magement (categories and items)
  */
 export function MenuPage() {
+    const navigate = useNavigate();
     // ======== STATE =========
     // Tab state
     const [activeTab, setActiveTab] = useState<Tab>("items");
-
-    // Category state
-    const [showCategoryForm, setShowCategoryForm] = useState(false);
-    const [editingCategory, setEditingCategory] = useState<
-        MenuCategory | undefined
-    >();
-
-    // Item State
-    const [showItemForm, setShowItemForm] = useState(false);
-    const [editingItem, setEditingItem] = useState<MenuItem | undefined>();
     const [filterCategory, setFilterCategory] = useState<string>("");
 
     // ======== QUERIES =========
@@ -51,9 +42,12 @@ export function MenuPage() {
         : items;
 
     // ========= EVENT HANDLERS - CATEGORIES ============
-    const handleEditCategory = (category: MenuCategory) => {
-        setEditingCategory(category);
-        setShowCategoryForm(true);
+    const handleCreateCategory = () => {
+        navigate(ROUTES.MENU_CATEGORY_CREATE);
+    };
+
+    const handleEditCategory = (categoryId: number) => {
+        navigate(getCategoryEditRoute(categoryId));
     };
 
     const handleDeleteCategory = (id: number) => {
@@ -73,15 +67,13 @@ export function MenuPage() {
         });
     };
 
-    const handleCategorySuccess = () => {
-        setShowCategoryForm(false);
-        setEditingCategory(undefined);
+    // ======== EVENT HANDLERS - ITEMS =========
+    const handleCreateItem = () => {
+        navigate(ROUTES.MENU_ITEM_CREATE);
     };
 
-    // ======== EVENT HANDLERS - ITEMS =========
-    const handleEditItem = (item: MenuItem) => {
-        setEditingItem(item);
-        setShowItemForm(true);
+    const handleEditItem = (itemId: number) => {
+        navigate(getMenuItemEditRoute(itemId));
     };
 
     const handleDeleteItem = (id: number) => {
@@ -101,14 +93,9 @@ export function MenuPage() {
         });
     };
 
-    const handleItemSuccess = () => {
-        setShowItemForm(false);
-        setEditingItem(undefined);
-    };
-
     // ======= MAIN RENDER ========
     return (
-        <DashboardLayout>
+        <>
             {/* ============= PAGE HEADER =============== */}
             <div className="flex items-center justify-between mb-12">
                 <div>
@@ -125,74 +112,55 @@ export function MenuPage() {
             <Card variant="elevated" padding="md" className="mb-8">
                 <div className="flex items-center gap-4">
                     {/* Items Tab  */}
-                    <button
+                    <Button
+                        variant={activeTab === "items" ? "primary" : "ghost"}
+                        size="lg"
                         onClick={() => setActiveTab("items")}
-                        className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all font-medium ${activeTab === "items"
-                                ? "bg-sage-green-400 text-white shadow-soft-md"
-                                : "bg-sage-50 text-carbon-600 hover:bg-sage-100"
-                            } `}
+                        className={activeTab === "items" ? "bg-sage-green-400 hover:bg-sage-green-500" : ""}
                     >
-                        <Grid3x3 className="w-5 h-5" />
+                        <Grid3x3 className="w-5 h-5 mr-2" />
                         Productos{" "}
                         <Badge
                             size="md"
                             variant={activeTab === "items" ? "neutral" : "success"}
+                            className="ml-2"
                         >
                             {items?.length || 0}
                         </Badge>
-                    </button>
+                    </Button>
 
                     {/* Categories Tab  */}
-                    <button
+                    <Button
+                        variant={activeTab === "categories" ? "primary" : "ghost"}
+                        size="lg"
                         onClick={() => setActiveTab("categories")}
-                        className={`flex items-center gap-2 px-6 py-3 rounded-xl transition-all font-medium ${activeTab === "categories"
-                                ? "bg-sage-green-400 text-white shadow-soft-md"
-                                : "bg-sage-50 text-carbon-600 hover:bg-sage-100"
-                            }`}
+                        className={activeTab === "categories" ? "bg-sage-green-400 hover:bg-sage-green-500" : ""}
                     >
-                        <FolderOpen className="w-5 h-5" /> Categorías{" "}
+                        <FolderOpen className="w-5 h-5 mr-2" /> Categorías{" "}
                         <Badge
                             size="md"
                             variant={activeTab === "categories" ? "neutral" : "success"}
+                            className="ml-2"
                         >
                             {categories?.length || 0}
                         </Badge>
-                    </button>
+                    </Button>
                 </div>
             </Card>
 
             {/* ============== TAB CONTENT: CATEGORIES ============== */}
             {activeTab === "categories" && (
                 <div>
-                    {/* Category Form */}
-                    {showCategoryForm && (
-                        <Card variant="elevated" padding="lg" className="mb-8">
-                            <h2 className="text-2xl font-semibold text-carbon-900 mb-6">
-                                {editingCategory ? "Editar Categoría" : "Nueva Categoría"}
-                            </h2>
-                            <CategoryForm
-                                category={editingCategory}
-                                onSuccess={handleCategorySuccess}
-                                onCancel={() => {
-                                    setShowCategoryForm(false);
-                                    setEditingCategory(undefined);
-                                }}
-                            />
-                        </Card>
-                    )}
-
                     {/* New Category Button */}
-                    {!showCategoryForm && (
-                        <div className="my-8">
-                            <Button
-                                size="lg"
-                                variant="primary"
-                                onClick={() => setShowCategoryForm(true)}
-                            >
-                                <Plus className="w-5 h-5 mr-2" /> Nueva Categoría
-                            </Button>
-                        </div>
-                    )}
+                    <div className="my-8">
+                        <Button
+                            size="lg"
+                            variant="primary"
+                            onClick={handleCreateCategory}
+                        >
+                            <Plus className="w-5 h-5 mr-2" /> Nueva Categoría
+                        </Button>
+                    </div>
 
                     {/* Categories Grid */}
                     {loadingCategories ? (
@@ -214,7 +182,7 @@ export function MenuPage() {
                                 </p>
                                 <Button
                                     variant="primary"
-                                    onClick={() => setShowCategoryForm(true)}
+                                    onClick={handleCreateCategory}
                                 >
                                     <Plus className="w-5 h-5 mr-2" />
                                     Crear Primera Categoría
@@ -227,7 +195,7 @@ export function MenuPage() {
                                 <CategoryCard
                                     key={category.id}
                                     category={category}
-                                    onEdit={handleEditCategory}
+                                    onEdit={(categoryId) => handleEditCategory(categoryId)}
                                     onDelete={handleDeleteCategory}
                                 />
                             ))}
@@ -239,36 +207,17 @@ export function MenuPage() {
             {/* =============== TAB CONTENT: ITEMS ================== */}
             {activeTab === "items" && (
                 <div>
-                    {/* Item Form */}
-                    {showItemForm && (
-                        <Card variant="elevated" padding="lg" className="mb-8">
-                            <h2 className="text-2xl font-semibold text-carbon-900 mb-4">
-                                {editingItem ? "Editar Producto" : "Nuevo Producto"}
-                            </h2>
-                            <MenuItemForm
-                                item={editingItem}
-                                onSuccess={handleItemSuccess}
-                                onCancel={() => {
-                                    setShowItemForm(true);
-                                    setEditingItem(undefined);
-                                }}
-                            />
-                        </Card>
-                    )}
-
                     {/* Controls: New Item + Item Filter */}
                     <div className="flex flex-wrap items-center gap-4 my-8">
                         {/* New Product Button  */}
-                        {!showItemForm && (
-                            <Button
-                                size="lg"
-                                variant="primary"
-                                onClick={() => setShowItemForm(true)}
-                            >
-                                <Plus className="w-5 h-5 mr-2" />
-                                Nuevo Producto
-                            </Button>
-                        )}
+                        <Button
+                            size="lg"
+                            variant="primary"
+                            onClick={handleCreateItem}
+                        >
+                            <Plus className="w-5 h-5 mr-2" />
+                            Nuevo Producto
+                        </Button>
 
                         {/* Category Filter */}
                         <div className="flex items-center gap-3">
@@ -313,7 +262,7 @@ export function MenuPage() {
                                 {!filterCategory && (
                                     <Button
                                         variant="primary"
-                                        onClick={() => setShowItemForm(true)}
+                                        onClick={handleCreateItem}
                                     >
                                         <Plus className="w-5 h-5 mr-2" />
                                         Crear Primer Producto
@@ -327,7 +276,7 @@ export function MenuPage() {
                                 <MenuItemCard
                                     key={item.id}
                                     item={item}
-                                    onEdit={handleEditItem}
+                                    onEdit={() => handleEditItem(item.id)}
                                     onDelete={handleDeleteItem}
                                 />
                             ))}
@@ -335,6 +284,6 @@ export function MenuPage() {
                     )}
                 </div>
             )}
-        </DashboardLayout>
+        </>
     );
 }

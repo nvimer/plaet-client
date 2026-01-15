@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useTables } from "../hooks";
-import { TableStatus, type Table } from "@/types";
+import { TableStatus } from "@/types";
 import { Button, Card } from "@/components";
-import { TableCard, TableForm } from "../components";
-import { DashboardLayout } from "@/layouts/DashboardLayout";
+import { TableCard } from "../components";
 import { Filter, Plus, Table as TableIcon } from "lucide-react";
+import { ROUTES, getTableManageRoute } from "@/app/routes";
 import { Badge } from "@/components/ui/Badge";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -14,10 +15,9 @@ import { EmptyState } from "@/components/ui/EmptyState";
  * Main page for table management (CRUD operations)
  */
 export function TablesPage() {
+    const navigate = useNavigate();
     // ============= STATE ===============
     const { data: tables, isLoading, error } = useTables();
-    const [showForm, setShowForm] = useState(false);
-    const [editingTable, setEditingTable] = useState<Table | undefined>();
     const [statusFilter, setStatusFilter] = useState<TableStatus | "ALL">("ALL");
 
     // ============ COMPUTED VALUES =============
@@ -40,44 +40,40 @@ export function TablesPage() {
     };
 
     // ================= EVENT HANDLERS =====================
-    // Handle edit button click
-    const handleEdit = (table: Table) => {
-        setEditingTable(table);
-        setShowForm(true);
+    const handleCreateTable = () => {
+        navigate(ROUTES.TABLE_CREATE);
     };
 
-    // Handle form close (success or cancel)
-    const handleFormClose = () => {
-        setShowForm(false);
-        setEditingTable(undefined);
+    const handleManageTable = (tableId: number) => {
+        navigate(getTableManageRoute(tableId));
     };
 
     // =============== LOADING STATE =============
     if (isLoading) {
         return (
-            <DashboardLayout>
+            <>
                 {/* =========== PAGE HEADER SKELETON ============== */}
                 <div className="mb-12">
                     {/* Title skeleton  */}
-                    <Skeleton className="w-64 h-10 mb-3 bg-sage-100" />
-                    <Skeleton className="w-96 h-6 bg-sage-100" />
+                    <Skeleton variant="text" width={256} height={40} className="mb-3" />
+                    <Skeleton variant="text" width={384} height={24} />
                 </div>
 
-                <Skeleton className="w-full h-16 mb-8 bg-sage-100" />
+                <Skeleton variant="card" height={64} className="mb-8" />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[...Array(6)].map((_, i) => (
-                        <Skeleton key={i} className="w-full h-48" />
+                        <Skeleton key={i} variant="card" />
                     ))}
                 </div>
-            </DashboardLayout>
+            </>
         );
     }
 
     // ========== ERROR STATE ========
     if (error) {
         return (
-            <DashboardLayout>
+            <>
                 <div className="flex items-center justify-center min-h-[60vh]">
                     <Card variant="elevated" padding="lg" className="max-w-md">
                         <div className=" text-center">
@@ -98,13 +94,13 @@ export function TablesPage() {
                         </div>
                     </Card>
                 </div>
-            </DashboardLayout>
+            </>
         );
     }
 
     // ======== MAIN RENDER ========
     return (
-        <DashboardLayout>
+        <>
             {/* ======== PAGE HEADER ======= */}
             <div className="flex items-center justify-between mb-6">
                 <div>
@@ -119,32 +115,13 @@ export function TablesPage() {
                 {/* New Table Button  */}
                 <Button
                     size="lg"
-                    variant={showForm ? "ghost" : "primary"}
-                    onClick={() => {
-                        setShowForm(!showForm);
-                        if (showForm) setEditingTable(undefined);
-                    }}
+                    variant="primary"
+                    onClick={handleCreateTable}
                 >
-                    {showForm ? (
-                        "Cancelar"
-                    ) : (
-                        <>
-                            <Plus className="w-5 h-5 mr-2" />
-                            Nueva Mesa
-                        </>
-                    )}
+                    <Plus className="w-5 h-5 mr-2" />
+                    Nueva Mesa
                 </Button>
             </div>
-
-            {/* ========== TABLE FORM ==============*/}
-            {/*Conditional form display */}
-            {showForm && (
-                <TableForm
-                    table={editingTable}
-                    onSuccess={handleFormClose}
-                    onCancel={handleFormClose}
-                />
-            )}
 
             {/* ========== STATUS FILTER ============ */}
             <Card variant="elevated" padding="lg" className="mb-8">
@@ -158,20 +135,24 @@ export function TablesPage() {
                     {/* Filter Buttons */}
                     <div className="flex flex-wrap gap-3">
                         {/* All Tables  */}
-                        <button
+                        <Button
+                            variant={statusFilter === "ALL" ? "primary" : "ghost"}
+                            size="sm"
                             onClick={() => setStatusFilter("ALL")}
-                            className={`px-4 py-2 rounded-xl transition-all font-medium text-sm ${statusFilter === "ALL" ? "bg-carbon-900 text-white shadow-soft-md" : "bg-sage-50 text-carbon-600 hover:bg-sage-100"}`}
+                            className={statusFilter === "ALL" ? "bg-carbon-900 hover:bg-carbon-800" : ""}
                         >
                             Todas{" "}
                             <Badge size="sm" variant="neutral" className="ml-2">
                                 {counts.all}
                             </Badge>
-                        </button>
+                        </Button>
 
                         {/* Available Tables */}
-                        <button
+                        <Button
+                            variant={statusFilter === TableStatus.AVAILABLE ? "primary" : "ghost"}
+                            size="sm"
                             onClick={() => setStatusFilter(TableStatus.AVAILABLE)}
-                            className={`px-4 py-2 rounded-xl transition-all font-medium text-sm ${statusFilter === TableStatus.AVAILABLE ? "bg-sage-green-500 text-white shadow-soft-md" : "bg-sage-50 text-carbon-600 hover:bg-sage-100"}`}
+                            className={statusFilter === TableStatus.AVAILABLE ? "bg-sage-green-500 hover:bg-sage-green-600" : ""}
                         >
                             Disponibles{" "}
                             <Badge
@@ -181,29 +162,33 @@ export function TablesPage() {
                             >
                                 {counts.available}
                             </Badge>
-                        </button>
+                        </Button>
 
                         {/* occupied Tables */}
-                        <button
+                        <Button
+                            variant={statusFilter === TableStatus.OCCUPIED ? "primary" : "ghost"}
+                            size="sm"
                             onClick={() => setStatusFilter(TableStatus.OCCUPIED)}
-                            className={`px-4 py-2 rounded-xl transition-all font-medium text-sm ${statusFilter === TableStatus.OCCUPIED ? "bg-red-500 text-white shadow-soft-md" : "bg-sage-50 text-carbon-600 hover:bg-sage-100"}`}
+                            className={statusFilter === TableStatus.OCCUPIED ? "bg-red-500 hover:bg-red-600 text-white" : ""}
                         >
                             Ocupadas{" "}
                             <Badge size="sm" variant="error" className="ml-2">
                                 {counts.occupied}
                             </Badge>
-                        </button>
+                        </Button>
 
                         {/* Cleaning Tables */}
-                        <button
+                        <Button
+                            variant={statusFilter === TableStatus.NEEDS_CLEANING ? "primary" : "ghost"}
+                            size="sm"
                             onClick={() => setStatusFilter(TableStatus.NEEDS_CLEANING)}
-                            className={`px-4 py-2 rounded-xl transition-all font-medium text-sm ${statusFilter === TableStatus.NEEDS_CLEANING ? "bg-yellow-500 text-white shadow-smooth" : "bg-sage-50 text-carbon-600 hover:bg-neutral-100"}`}
+                            className={statusFilter === TableStatus.NEEDS_CLEANING ? "bg-yellow-500 hover:bg-yellow-600 text-white" : ""}
                         >
                             Limpieza{" "}
                             <Badge size="sm" variant="warning" className="ml-2">
                                 {counts.cleaning}
                             </Badge>
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </Card>
@@ -212,7 +197,7 @@ export function TablesPage() {
             {filteredTables && filteredTables.length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {filteredTables.map((table) => (
-                        <TableCard key={table.id} table={table} onEdit={handleEdit} />
+                        <TableCard key={table.id} table={table} onEdit={() => handleManageTable(table.id)} />
                     ))}
                 </div>
             ) : (
@@ -232,10 +217,10 @@ export function TablesPage() {
                         statusFilter === "ALL" ? "Crear Primera Mesa" : undefined
                     }
                     onAction={
-                        statusFilter === "ALL" ? () => setShowForm(true) : undefined
+                        statusFilter === "ALL" ? handleCreateTable : undefined
                     }
                 />
             )}
-        </DashboardLayout>
+        </>
     );
 }
