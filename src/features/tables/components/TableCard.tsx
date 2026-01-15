@@ -11,7 +11,7 @@ import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
 // ==================== TYPES / TIPOS ====================
 interface TableCardProps {
     table: Table;
-    onEdit: (table: Table) => void;
+    onEdit: () => void;
 }
 
 /**
@@ -162,35 +162,41 @@ export function TableCard({ table, onEdit }: TableCardProps) {
                     <div className="grid grid-cols-3 gap-2">
                         {/* Available Button */}
                         {table.status !== TableStatus.AVAILABLE && (
-                            <button
+                            <Button
+                                variant="outline"
+                                size="sm"
                                 onClick={() => handleStatusChange(TableStatus.AVAILABLE)}
                                 disabled={isUpdatingStatus}
-                                className="px-3 py-2 text-sm font-medium text-sage-green-700 bg-sage-green-50 hover:bg-sage-green-100 border border-sage-green-300 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="text-sage-green-700 border-sage-green-300 hover:bg-sage-green-50"
                             >
                                 Disponible
-                            </button>
+                            </Button>
                         )}
 
                         {/* Occupied Button */}
                         {table.status !== TableStatus.OCCUPIED && (
-                            <button
+                            <Button
+                                variant="outline"
+                                size="sm"
                                 onClick={() => handleStatusChange(TableStatus.OCCUPIED)}
                                 disabled={isUpdatingStatus}
-                                className="px-3 py-2 text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 border border-red-300 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="text-red-700 border-red-300 hover:bg-red-50"
                             >
                                 Ocupada
-                            </button>
+                            </Button>
                         )}
 
                         {/* Cleaning Button  */}
                         {table.status !== TableStatus.NEEDS_CLEANING && (
-                            <button
+                            <Button
+                                variant="outline"
+                                size="sm"
                                 onClick={() => handleStatusChange(TableStatus.NEEDS_CLEANING)}
                                 disabled={isUpdatingStatus}
-                                className="px-3 py-2 text-sm font-medium text-yellow-700 bg-yellow-50 hover:bg-yellow-100 border border-yellow-300 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="text-yellow-700 border-yellow-300 hover:bg-yellow-50"
                             >
                                 Limpieza
-                            </button>
+                            </Button>
                         )}
                     </div>
                 </div>
@@ -201,7 +207,7 @@ export function TableCard({ table, onEdit }: TableCardProps) {
                     <Button
                         variant="ghost"
                         size="md"
-                        onClick={() => onEdit(table)}
+                        onClick={onEdit}
                         className="flex-1 group"
                     >
                         <Edit2 className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
