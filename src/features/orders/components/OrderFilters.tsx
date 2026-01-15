@@ -1,4 +1,4 @@
-import { Card, Badge } from "@/components";
+import { Card, Badge, Button } from "@/components";
 import { OrderStatus, OrderType } from "@/types";
 import { Filter, RotateCcw } from "lucide-react";
 
@@ -84,13 +84,12 @@ export function OrderFilters({
                                                 : counts.delivered;
 
                             return (
-                                <button
+                                <Button
                                     key={option.value}
+                                    variant={statusFilter === option.value ? "primary" : "ghost"}
+                                    size="sm"
                                     onClick={() => onStatusChange(option.value)}
-                                    className={`px-4 py-2 rounded-xl transition-all font-medium text-sm ${statusFilter === option.value
-                                            ? `${option.color} text-white shadow-soft-md`
-                                            : "bg-sage-50 text-carbon-600 hover:bg-sage-100"
-                                        }`}
+                                    className={statusFilter === option.value ? `${option.color} hover:opacity-90 text-white` : ""}
                                 >
                                     {option.label}
                                     <Badge
@@ -102,7 +101,7 @@ export function OrderFilters({
                                     >
                                         {count}
                                     </Badge>
-                                </button>
+                                </Button>
                             );
                         })}
                     </div>
@@ -125,13 +124,14 @@ export function OrderFilters({
 
                     {/* Reset Button */}
                     {(statusFilter !== "ALL" || typeFilter !== "ALL") && (
-                        <button
+                        <Button
+                            variant="ghost"
+                            size="sm"
                             onClick={onReset}
-                            className="flex items-center gap-1 px-3 py-2 text-sm text-carbon-600 hover:text-carbon-900 transition-colors"
                         >
-                            <RotateCcw className="w-4 h-4" />
+                            <RotateCcw className="w-4 h-4 mr-1" />
                             Limpiar Filtros
-                        </button>
+                        </Button>
                     )}
                 </div>
             </div>
