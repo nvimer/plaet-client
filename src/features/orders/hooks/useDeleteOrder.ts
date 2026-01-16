@@ -17,9 +17,9 @@ export function useDeleteOrder() {
         },
 
         onSuccess: (deletedId) => {
-            // Invalidate order list
+            // Invalidate all orders queries
             queryClient.invalidateQueries({
-                queryKey: queryKeys.orders.all,
+                queryKey: ["orders"],
             });
             // Remove from cache
             queryClient.invalidateQueries({

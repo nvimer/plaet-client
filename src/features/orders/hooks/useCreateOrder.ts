@@ -18,9 +18,9 @@ export function useCreateOrder() {
         },
 
         onSuccess: () => {
-            // Invalidate orders list to refetch
+            // Invalidate orders list to refetch (all variations)
             queryClient.invalidateQueries({
-                queryKey: queryKeys.orders.all,
+                queryKey: ["orders"],
             });
             // Also invalidate tables if order is DINE-IN
             queryClient.invalidateQueries({
