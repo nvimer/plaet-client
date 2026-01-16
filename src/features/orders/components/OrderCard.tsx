@@ -17,7 +17,7 @@ import { OrderTypeBadge } from "./OrderTypeBadge";
 // ========== TYPES ==========
 interface OrderCardProps {
     order: Order;
-    onViewDetail: (order: Order) => void;
+    onViewDetail: (orderId: string) => void;
 }
 
 /**
@@ -135,7 +135,7 @@ export function OrderCard({ order, onViewDetail }: OrderCardProps) {
                 {order.waiter && (
                     <div className="flex items-center gap-1.5 text-carbon-600">
                         <User className="w-4 h-4" />
-                        <span>{order.waiter.name}</span>
+                        <span>{order.waiter.firstName} {order.waiter.lastName}</span>
                     </div>
                 )}
 
@@ -177,7 +177,7 @@ export function OrderCard({ order, onViewDetail }: OrderCardProps) {
                 <Button
                     variant="ghost"
                     size="md"
-                    onClick={() => onViewDetail(order)}
+                    onClick={() => onViewDetail(order.id)}
                     className="flex-1"
                 >
                     <Eye className="w-4 h-4 mr-2" />
