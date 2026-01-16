@@ -7,3 +7,4 @@ export { Skeleton } from "./Skeleton";
 export { EmptyState } from "./EmptyState";
 export { Badge } from "./Badge";
 export { BaseModal } from "./BaseModal";
+export { TouchableCard } from "./TouchableCard";
