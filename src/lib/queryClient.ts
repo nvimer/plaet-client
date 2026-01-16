@@ -56,7 +56,7 @@ export const queryKeys = {
 
   // Orders
   orders: {
-    all: ["orders"] as const,
+    all: (params?: any) => ["orders", params] as const,
     // Single order
     detail: (id: string) => ["orders", id] as const,
     byStatus: (status: string) => ["orders", { status }] as const,
@@ -64,5 +64,23 @@ export const queryKeys = {
     byTable: (tableId: string) => ["orders", { tableId }] as const,
     // Today's orders
     today: () => ["orders", { today: true }] as const,
+  },
+
+  // Users
+  users: {
+    all: (params?: any) => ["users", params] as const,
+    detail: (id: string) => ["users", id] as const,
+  },
+
+  // Roles
+  roles: {
+    all: (params?: any) => ["roles", params] as const,
+    detail: (id: number) => ["roles", id] as const,
+  },
+
+  // Permissions
+  permissions: {
+    all: (params?: any) => ["permissions", params] as const,
+    detail: (id: number) => ["permissions", id] as const,
   },
 };
