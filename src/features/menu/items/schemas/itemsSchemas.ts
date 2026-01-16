@@ -40,7 +40,7 @@ export const createItemSchema = z.object({
     imageUrl: z.string().optional(),
 });
 
-const updateItemSchema = createItemSchema.partial();
+export const updateItemSchema = createItemSchema.partial();
 
 export type CreateItemInput = z.infer<typeof createItemSchema>;
 export type UpdateItemInput = z.infer<typeof updateItemSchema>;

@@ -6,7 +6,7 @@ import { Button, Card, Badge, ConfirmDialog } from "@/components";
 // ========== TYPES ========
 interface MenuItemCardProps {
     item: MenuItem;
-    onEdit: (item: MenuItem) => void;
+    onEdit: (itemId: number) => void;
     onDelete: (id: number) => void;
 }
 
@@ -99,7 +99,7 @@ export function MenuItemCard({ item, onEdit, onDelete }: MenuItemCardProps) {
                     <Button
                         variant="ghost"
                         size="md"
-                        onClick={() => onEdit(item)}
+                        onClick={() => onEdit(item.id)}
                         className="flex-1 group/btn"
                     >
                         <Edit2 className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-transform" />
