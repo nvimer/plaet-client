@@ -6,7 +6,7 @@ import type { MenuCategory } from "@/types";
 // =========== TYPES ============
 interface CategoryCardProps {
     category: MenuCategory;
-    onEdit: (category: MenuCategory) => void;
+    onEdit: (categoryId: number) => void;
     onDelete: (id: number) => void;
 }
 
@@ -71,7 +71,7 @@ export function CategoryCard({
                     <Button
                         variant="ghost"
                         size="md"
-                        onClick={() => onEdit(category)}
+                        onClick={() => onEdit(category.id)}
                         className="flex-1 group/btn"
                     >
                         <Edit2 className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-transform" />
