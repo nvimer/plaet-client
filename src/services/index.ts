@@ -14,3 +14,6 @@ export * as tablesApi from "./tablesApi";
 export * as menuApi from "./menuApi";
 export * as profileApi from "./profileApi";
 export * as orderApi from "./orderApi";
+export * as usersApi from "./usersApi";
+export * as rolesApi from "./rolesApi";
+export * as permissionsApi from "./permissionsApi";

@@ -4,7 +4,7 @@
  * Services related to the user profile
  * Base endpoints: /profile/*
  */
-import type { ProfileMeResponse } from "@/types";
+import type { ProfileMeResponse, User, ApiResponse, PaginatedResponse, PaginationParams } from "@/types";
 import axiosClient from "./axiosClient";
 
 /**
@@ -16,5 +16,40 @@ import axiosClient from "./axiosClient";
  */
 export const getMyProfile = async () => {
   const { data } = await axiosClient.get<ProfileMeResponse>("profile/me");
+  return data;
+};
+
+/**
+ * GET /profile
+ * 
+ * Get paginated list of profiles
+ */
+export const getProfiles = async (params?: PaginationParams) => {
+  const { data } = await axiosClient.get<PaginatedResponse<User>>("/profile", {
+    params,
+  });
+  return data;
+};
+
+/**
+ * GET /profile/:id
+ * 
+ * Get profile by user ID
+ */
+export const getProfileById = async (id: string) => {
+  const { data } = await axiosClient.get<ApiResponse<User>>(`/profile/${id}`);
+  return data;
+};
+
+/**
+ * PATCH /profile/:id
+ * 
+ * Update profile
+ */
+export const updateProfile = async (id: string, profileData: any) => {
+  const { data } = await axiosClient.patch<ApiResponse<User>>(
+    `/profile/${id}`,
+    profileData
+  );
   return data;
 };
