@@ -28,7 +28,7 @@ export function useUpdateOrderStatus() {
         onSuccess: (updatedOrder) => {
             // Invalidate all order queries
             queryClient.invalidateQueries({
-                queryKey: queryKeys.orders.all,
+                queryKey: ["orders"],
             });
             queryClient.invalidateQueries({
                 queryKey: queryKeys.orders.detail(updatedOrder.id),

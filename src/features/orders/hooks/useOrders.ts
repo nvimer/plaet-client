@@ -13,7 +13,7 @@ import { useQuery } from "@tanstack/react-query";
  */
 export function useOrders(params?: OrdersFilterParams) {
     return useQuery({
-        queryKey: [...queryKeys.orders.all, params],
+        queryKey: queryKeys.orders.all(params),
         queryFn: async () => {
             const response = await orderApi.getOrders(params);
             return response.data;

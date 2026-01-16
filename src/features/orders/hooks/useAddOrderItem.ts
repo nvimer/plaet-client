@@ -28,9 +28,9 @@ export function useAddOrderItem() {
             queryClient.invalidateQueries({
                 queryKey: queryKeys.orders.detail(updatedOrder.id),
             });
-            // Invalidate orders list
+            // Invalidate all orders queries
             queryClient.invalidateQueries({
-                queryKey: queryKeys.orders.all,
+                queryKey: ["orders"],
             });
         },
     });
