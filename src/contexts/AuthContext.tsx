@@ -129,12 +129,34 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // Persistir token en localStorage
       localStorage.setItem("authToken", authToken);
 
+      // Get user profile with roles and permissions
       const profileResponse = await profileApi.getMyProfile();
-
       const userData = profileResponse.data;
 
-      setUser(userData);
-      localStorage.setItem("user", JSON.stringify(userData));
+      // If user has ID, try to get roles and permissions
+      if (userData.id) {
+        try {
+          const { usersApi } = await import("@/services");
+          const rolesResponse = await usersApi.getUserWithRolesAndPermissions(
+            userData.id
+          );
+          // Merge roles into user data
+          const userWithRoles = {
+            ...userData,
+            roles: rolesResponse.data.roles.map((r) => r.role),
+          };
+          setUser(userWithRoles);
+          localStorage.setItem("user", JSON.stringify(userWithRoles));
+        } catch (error) {
+          // If fails, just use user without roles
+          console.warn("Could not fetch user roles:", error);
+          setUser(userData);
+          localStorage.setItem("user", JSON.stringify(userData));
+        }
+      } else {
+        setUser(userData);
+        localStorage.setItem("user", JSON.stringify(userData));
+      }
     } catch (error: any) {
       // Si hay error, limpiar todo
       console.error("❌ Error en login:", error);

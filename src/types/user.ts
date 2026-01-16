@@ -56,6 +56,7 @@ export interface User {
   email: string;
   phone?: string;
   profile?: Profile;
+  roles?: Role[]; // Roles del usuario (opcional, puede no venir en todas las respuestas)
   createdAt: string;
   updatedAt: string;
   deleted: boolean;
@@ -64,11 +65,17 @@ export interface User {
 
 /**
  *  User with roles and permissions
+ * 
+ * Structure matches backend AuthenticatedUser type
  */
 export interface UserWithRolesAndPermissions extends User {
-  roles: (Role & {
-    permissions: Permission[];
-  })[];
+  roles: {
+    role: Role & {
+      permissions: {
+        permission: Permission;
+      }[];
+    };
+  }[];
 }
 
 /**
