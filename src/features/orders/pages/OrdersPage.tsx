@@ -1,8 +1,8 @@
-import { OrderStatus, type Order, type OrderType } from "@/types";
+import { OrderStatus, type OrderType } from "@/types";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useOrders } from "../hooks";
-import { DashboardLayout } from "@/layouts/DashboardLayout";
-import { Button, Card, EmptyState, Skeleton } from "@/components";
+import { Button, Card, EmptyState, Skeleton, StatCard } from "@/components";
 import {
     CheckCircle,
     Clock,
@@ -10,13 +10,8 @@ import {
     ShoppingCart,
     TrendingUp,
 } from "lucide-react";
-import {
-    AddItemModal,
-    CreateOrderModal,
-    OrderCard,
-    OrderDetailModal,
-    OrderFilters,
-} from "../components";
+import { OrderCard, OrderFilters } from "../components";
+import { ROUTES, getOrderDetailRoute } from "@/app/routes";
 
 /**
  * OrdersPage Component
@@ -24,16 +19,12 @@ import {
  * Main page for orders management
  */
 export function OrdersPage() {
+    const navigate = useNavigate();
+    
     // ============ STATE =============
     // Filters
     const [statusFilter, setStatusFilter] = useState<OrderStatus | "ALL">("ALL");
     const [typeFilter, setTypeFilter] = useState<OrderType | "ALL">("ALL");
-
-    // Modals
-    const [showCreateModal, setShowCreateModal] = useState(false);
-    const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-    const [showDetailModal, setShowDetailModal] = useState(false);
-    const [showAddItemModal, setShowAddItemModal] = useState(false);
 
     // ============== QUERIES ===============
     const { data: orders, isLoading, error } = useOrders();
@@ -64,15 +55,13 @@ export function OrdersPage() {
     const avgOrderValue = orders?.length ? todayTotal / orders.length : 0;
 
     // ============= HANDLERS ===============
-    const handleViewDetail = (order: Order) => {
-        setSelectedOrder(order);
-        setShowDetailModal(true);
+    const handleViewDetail = (orderId: string) => {
+        navigate(getOrderDetailRoute(orderId));
     };
 
-    // const handleAddPayment = (order: Order) => {
-    //     // Could open a payment modal
-    //     console.log("Add payment for order: ", order.id);
-    // };
+    const handleCreateOrder = () => {
+        navigate(ROUTES.ORDER_CREATE);
+    };
 
     const handleResetFilters = () => {
         setStatusFilter("ALL");
@@ -82,46 +71,46 @@ export function OrdersPage() {
     // ============ LOADING STATE ===========
     if (isLoading) {
         return (
-            <DashboardLayout>
+            <>
                 {/* Header Skeleton */}
-                <div>
-                    <Skeleton />
-                    <Skeleton />
+                <div className="mb-8">
+                    <Skeleton variant="text" width={256} height={40} className="mb-2" />
+                    <Skeleton variant="text" width={384} height={24} />
                 </div>
 
                 {/* Stats Skeleton  */}
-                <div>
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                     {[...Array(4)].map((_, i) => (
-                        <Skeleton key={i} />
+                        <Skeleton key={i} variant="stat" />
                     ))}
                 </div>
-            </DashboardLayout>
+            </>
         );
     }
 
     // ========== ERROR STATE =============
     if (error) {
         return (
-            <DashboardLayout>
-                <div>
-                    <Card>
-                        <div>
-                            <div>
-                                <span>⚠️</span>
-                            </div>
-                            <h2>Error al cargar los pedidos</h2>
-                            <p>{error.message}</p>
-                            <Button>Reintentar</Button>
-                        </div>
-                    </Card>
-                </div>
-            </DashboardLayout>
+            <div className="flex items-center justify-center min-h-[400px]">
+                <Card>
+                    <div className="text-center p-8">
+                        <div className="text-4xl mb-4">⚠️</div>
+                        <h2 className="text-2xl font-semibold text-carbon-900 mb-2">
+                            Error al cargar los pedidos
+                        </h2>
+                        <p className="text-carbon-600 mb-4">{error.message}</p>
+                        <Button onClick={() => window.location.reload()}>
+                            Reintentar
+                        </Button>
+                    </div>
+                </Card>
+            </div>
         );
     }
 
     // =============== MAIN RENDER =================
     return (
-        <DashboardLayout>
+        <>
             {/* ============ PAGE HEADER =============== */}
             <div className="flex items-center justify-between mb-8">
                 <div>
@@ -137,7 +126,7 @@ export function OrdersPage() {
                 <Button
                     variant="primary"
                     size="lg"
-                    onClick={() => setShowCreateModal(true)}
+                    onClick={handleCreateOrder}
                 >
                     <Plus className="w-5 h-5 mr-2" />
                     Nuevo Pedido
@@ -146,64 +135,40 @@ export function OrdersPage() {
             {/* ================ STATS CARD ================== */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
                 {/* Total Orders */}
-                <Card variant="elevated" padding="md">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-sage-green-100 rounded-xl flex items-center justify-center">
-                            <ShoppingCart className="w-6 h-6 5 text-sage-green-600" />
-                        </div>
-                        <div>
-                            <p className="text-sm text-carbon-600 font-light">
-                                Total Pedidos
-                            </p>
-                            <p className="text-2xl font-bold text-carbon-900">{counts.all}</p>
-                        </div>
-                    </div>
-                </Card>
+                <StatCard
+                    title="Total Pedidos"
+                    value={counts.all}
+                    icon={<ShoppingCart />}
+                    iconBgColor="bg-sage-green-100"
+                    iconColor="text-sage-green-600"
+                />
 
                 {/* Pending */}
-                <Card variant="elevated" padding="md">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                            <Clock />
-                        </div>
-                        <div>
-                            <p className="text-sm text-carbon-600 font-light">Pendientes</p>
-                            <p className="text-2xl font-bold text-carbon-900">
-                                {counts.pending}
-                            </p>
-                        </div>
-                    </div>
-                </Card>
+                <StatCard
+                    title="Pendientes"
+                    value={counts.pending}
+                    icon={<Clock />}
+                    iconBgColor="bg-yellow-100"
+                    iconColor="text-yellow-600"
+                />
 
-                {/* Ready  */}
-                <Card variant="elevated" padding="md">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                            <CheckCircle />
-                        </div>
-                        <div>
-                            <p className="text-sm text-carbon-600 font-light">Listos</p>
-                            <p className="text-2xl font-bold text-carbon-900">
-                                {counts.ready}
-                            </p>
-                        </div>
-                    </div>
-                </Card>
+                {/* Ready */}
+                <StatCard
+                    title="Listos"
+                    value={counts.ready}
+                    icon={<CheckCircle />}
+                    iconBgColor="bg-green-100"
+                    iconColor="text-green-600"
+                />
 
                 {/* Today's sales */}
-                <Card variant="elevated" padding="md">
-                    <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center">
-                            <TrendingUp />
-                        </div>
-                        <div>
-                            <p className="text-sm text-carbon-600 font-light">Ventas hoy</p>
-                            <p className="text-2xl font-bold text-carbon-900">
-                                ${todayTotal.toLocaleString("es-CO")}
-                            </p>
-                        </div>
-                    </div>
-                </Card>
+                <StatCard
+                    title="Ventas hoy"
+                    value={`$${todayTotal.toLocaleString("es-CO")}`}
+                    icon={<TrendingUp />}
+                    iconBgColor="bg-emerald-100"
+                    iconColor="text-emerald-600"
+                />
             </div>
             {/* ================ FILTERS ================= */}
             <OrderFilters
@@ -221,7 +186,7 @@ export function OrdersPage() {
                         <OrderCard
                             key={order.id}
                             order={order}
-                            onViewDetail={handleViewDetail}
+                            onViewDetail={(orderId) => handleViewDetail(orderId)}
                         />
                     ))}
                 </div>
@@ -245,38 +210,12 @@ export function OrdersPage() {
                     }
                     onAction={
                         statusFilter === "ALL" && typeFilter === "ALL"
-                            ? () => setShowCreateModal(true)
+                            ? handleCreateOrder
                             : undefined
                     }
                 />
             )}
 
-            {/* =============== MODALS =============== */}
-            {/* Create Order Modal */}
-            <CreateOrderModal
-                isOpen={showCreateModal}
-                onClose={() => setShowCreateModal(false)}
-            />
-
-            {/* Order Detail Modal  */}
-            <OrderDetailModal
-                isOpen={showDetailModal}
-                onClose={() => {
-                    setShowDetailModal(false);
-                    setSelectedOrder(null);
-                }}
-                order={selectedOrder}
-            />
-
-            {/* Add Item Modal */}
-            <AddItemModal
-                isOpen={showAddItemModal}
-                onClose={() => {
-                    setShowAddItemModal(false);
-                    setSelectedOrder(null);
-                }}
-                order={selectedOrder}
-            />
-        </DashboardLayout>
+        </>
     );
 }
