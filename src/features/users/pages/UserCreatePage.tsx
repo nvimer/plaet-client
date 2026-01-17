@@ -2,24 +2,50 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FullScreenLayout } from "@/layouts/FullScreenLayout";
-import { Button, Input } from "@/components";
+import { Button, Input, Badge } from "@/components";
 import { useCreateUser, useRoles } from "../hooks";
 import { createUserSchema, type CreateUserInput } from "../schemas/userSchemas";
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
-import { Check } from "lucide-react";
+import { Check, UserCheck } from "lucide-react";
 import { useState } from "react";
+import { RoleName } from "@/types";
 
 /**
  * UserCreatePage Component
- * 
+ *
  * Full-screen page for creating a new user (Admin only)
  */
 export function UserCreatePage() {
   const navigate = useNavigate();
   const { mutate: createUser, isPending } = useCreateUser();
-  const { data: roles } = useRoles();
+  const {
+    data: roles,
+    isLoading: isLoadingRoles,
+    error: rolesError,
+  } = useRoles();
   const [selectedRoleIds, setSelectedRoleIds] = useState<number[]>([]);
+
+  // Extract roles array if it's wrapped in PaginatedResponse
+  let rolesArray: any[] = [];
+  if (Array.isArray(roles)) {
+    rolesArray = roles;
+  } else if (roles?.data) {
+    if (Array.isArray(roles.data)) {
+      rolesArray = roles.data;
+    } else if (roles.data.data && Array.isArray(roles.data.data)) {
+      rolesArray = roles.data.data;
+    } else if (roles.data.roles && Array.isArray(roles.data.roles)) {
+      rolesArray = roles.data.roles;
+    }
+  }
+
+  // Debug: Log roles data
+  console.log("🔍 UserCreatePage - roles (raw):", roles);
+  console.log("🔍 UserCreatePage - rolesArray:", rolesArray);
+  console.log("🔍 UserCreatePage - isLoadingRoles:", isLoadingRoles);
+  console.log("🔍 UserCreatePage - rolesError:", rolesError);
+  console.log("🔍 UserCreatePage - rolesArray length:", rolesArray.length);
 
   const {
     register,
@@ -57,7 +83,7 @@ export function UserCreatePage() {
             icon: "❌",
           });
         },
-      }
+      },
     );
   };
 
@@ -65,7 +91,7 @@ export function UserCreatePage() {
     setSelectedRoleIds((prev) =>
       prev.includes(roleId)
         ? prev.filter((id) => id !== roleId)
-        : [...prev, roleId]
+        : [...prev, roleId],
     );
   };
 
@@ -128,36 +154,108 @@ export function UserCreatePage() {
           />
 
           {/* Roles Selection */}
-          {roles && roles.length > 0 && (
-            <div>
-              <label className="block text-sm font-medium text-carbon-700 mb-2">
-                Roles (opcional)
-              </label>
-              <div className="space-y-2">
-                {roles.map((role) => (
-                  <label
-                    key={role.id}
-                    className="flex items-center gap-3 p-3 border-2 border-sage-border-subtle rounded-xl cursor-pointer hover:border-sage-green-300 transition-colors"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selectedRoleIds.includes(role.id)}
-                      onChange={() => handleRoleToggle(role.id)}
-                      className="w-4 h-4 text-sage-green-600 border-sage-border-subtle rounded focus:ring-sage-green-300"
-                    />
-                    <div className="flex-1">
-                      <p className="font-medium text-carbon-900">{role.name}</p>
-                      {role.description && (
-                        <p className="text-sm text-carbon-600">
-                          {role.description}
-                        </p>
-                      )}
-                    </div>
-                  </label>
-                ))}
+          <div>
+            <label className="block text-sm font-medium text-carbon-700 mb-3 flex items-center gap-2">
+              <UserCheck className="w-4 h-4" />
+              Asignar Roles (opcional)
+            </label>
+
+            {isLoadingRoles && (
+              <div className="text-sm text-carbon-600 py-4">
+                Cargando roles...
               </div>
-            </div>
-          )}
+            )}
+
+            {rolesError && (
+              <div className="text-sm text-red-600 py-4">
+                Error al cargar roles: {rolesError.message}
+              </div>
+            )}
+
+            {!isLoadingRoles && !rolesError && rolesArray && rolesArray.length === 0 && (
+              <div className="text-sm text-carbon-600 py-4 border-2 border-dashed border-sage-border-subtle rounded-xl p-4 text-center">
+                No hay roles disponibles. Contacta al administrador del sistema.
+              </div>
+            )}
+
+            {rolesArray && Array.isArray(rolesArray) && rolesArray.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {rolesArray.map((role: any) => {
+                  console.log("🔍 Rendering role:", role);
+                    const isSelected = selectedRoleIds.includes(role.id);
+                    const getRoleVariant = (
+                      roleName: RoleName | string,
+                    ): "neutral" | "success" | "warning" | "error" | "info" => {
+                      if (roleName === RoleName.ADMIN) return "info";
+                      if (roleName === RoleName.WAITER) return "success";
+                      if (roleName === RoleName.KITCHEN_MANAGER)
+                        return "warning";
+                      if (roleName === RoleName.CASHIER) return "info";
+                      return "neutral";
+                    };
+
+                    return (
+                      <label
+                        key={role.id}
+                        className={`
+                        relative flex items-start gap-3 p-4 
+                        border-2 rounded-xl cursor-pointer 
+                        transition-all duration-200
+                        ${isSelected
+                            ? "border-sage-green-500 bg-sage-green-50 shadow-md"
+                            : "border-sage-border-subtle bg-white hover:border-sage-green-300 hover:bg-sage-green-50/50"
+                          }
+                      `}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={() => handleRoleToggle(role.id)}
+                          className="mt-1 w-5 h-5 text-sage-green-600 border-sage-border-subtle rounded focus:ring-2 focus:ring-sage-green-300 focus:ring-offset-2 cursor-pointer"
+                        />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <p className="font-semibold text-carbon-900">
+                              {role.name}
+                            </p>
+                            <Badge
+                              variant={getRoleVariant(role.name)}
+                              size="sm"
+                            >
+                              {role.name}
+                            </Badge>
+                          </div>
+                          {role.description && (
+                            <p className="text-sm text-carbon-600 leading-relaxed">
+                              {role.description}
+                            </p>
+                          )}
+                        </div>
+                        {isSelected && (
+                          <div className="absolute top-2 right-2">
+                            <div className="w-6 h-6 bg-sage-green-500 rounded-full flex items-center justify-center">
+                              <Check className="w-4 h-4 text-white" />
+                            </div>
+                          </div>
+                        )}
+                      </label>
+                    );
+                  })}
+              </div>
+            ) : (
+              !isLoadingRoles && !rolesError && (
+                <div className="text-sm text-carbon-600 py-4">
+                  No se pudieron cargar los roles. Verifica la consola para más detalles.
+                </div>
+              )
+            )}
+
+            {selectedRoleIds.length > 0 && (
+              <p className="mt-2 text-sm text-sage-green-700 font-medium">
+                {selectedRoleIds.length} rol(es) seleccionado(s)
+              </p>
+            )}
+          </div>
 
           {/* Actions */}
           <div className="flex gap-4 pt-6">
