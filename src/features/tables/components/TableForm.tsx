@@ -98,7 +98,6 @@ export function TableForm({ table, onSuccess, onCancel }: TableFormProps) {
                         description: error.response?.data?.message || error.message,
                         icon: "❌",
                     });
-                    alert(`Error: ${error.response?.message || error.message}`);
                 },
             });
         }
