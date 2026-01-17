@@ -27,32 +27,7 @@ export function UserCard({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Get user's primary role (first role or "Sin rol")
-  // Handle different possible structures:
-  // 1. user.roles is an array of Role objects: user.roles[0].name
-  // 2. user.roles is an array with nested structure: user.roles[0].role.name
-  // 3. No roles at all (roles not included in response)
-  let primaryRole = "Sin rol";
-  
-  if (user.roles && Array.isArray(user.roles) && user.roles.length > 0) {
-    const firstRole = user.roles[0];
-    
-    // Check if it's a nested structure (UserWithRolesAndPermissions)
-    // Structure: { role: { name: "ADMIN", ... }, ... }
-    if (firstRole && typeof firstRole === 'object' && 'role' in firstRole) {
-      const nestedRole = (firstRole as any).role;
-      primaryRole = nestedRole?.name || "Sin rol";
-    } 
-    // Direct Role object structure
-    // Structure: { name: "ADMIN", id: 1, ... }
-    else if (firstRole && typeof firstRole === 'object' && 'name' in firstRole) {
-      primaryRole = (firstRole as any).name || "Sin rol";
-    }
-  }
-  
-  // Debug logs (remove in production)
-  if (!user.roles || user.roles.length === 0) {
-    console.log("🔍 UserCard - No roles found for user:", user.email);
-  }
+  const primaryRole = user.roles?.[0]?.name || "Sin rol";
 
   // Map role to badge variant
   const getRoleVariant = (

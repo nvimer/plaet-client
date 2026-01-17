@@ -26,27 +26,6 @@ export function UserCreatePage() {
   } = useRoles();
   const [selectedRoleIds, setSelectedRoleIds] = useState<number[]>([]);
 
-  // Extract roles array if it's wrapped in PaginatedResponse
-  let rolesArray: any[] = [];
-  if (Array.isArray(roles)) {
-    rolesArray = roles;
-  } else if (roles?.data) {
-    if (Array.isArray(roles.data)) {
-      rolesArray = roles.data;
-    } else if (roles.data.data && Array.isArray(roles.data.data)) {
-      rolesArray = roles.data.data;
-    } else if (roles.data.roles && Array.isArray(roles.data.roles)) {
-      rolesArray = roles.data.roles;
-    }
-  }
-
-  // Debug: Log roles data
-  console.log("🔍 UserCreatePage - roles (raw):", roles);
-  console.log("🔍 UserCreatePage - rolesArray:", rolesArray);
-  console.log("🔍 UserCreatePage - isLoadingRoles:", isLoadingRoles);
-  console.log("🔍 UserCreatePage - rolesError:", rolesError);
-  console.log("🔍 UserCreatePage - rolesArray length:", rolesArray.length);
-
   const {
     register,
     handleSubmit,
@@ -172,15 +151,15 @@ export function UserCreatePage() {
               </div>
             )}
 
-            {!isLoadingRoles && !rolesError && rolesArray && rolesArray.length === 0 && (
+            {!isLoadingRoles && !rolesError && roles && roles.length === 0 && (
               <div className="text-sm text-carbon-600 py-4 border-2 border-dashed border-sage-border-subtle rounded-xl p-4 text-center">
                 No hay roles disponibles. Contacta al administrador del sistema.
               </div>
             )}
 
-            {rolesArray && Array.isArray(rolesArray) && rolesArray.length > 0 ? (
+            {roles && roles.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {rolesArray.map((role: any) => {
+                {roles.map((role) => {
                   console.log("🔍 Rendering role:", role);
                     const isSelected = selectedRoleIds.includes(role.id);
                     const getRoleVariant = (

@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUsers } from "../hooks";
 import { Button, Card, EmptyState, Skeleton } from "@/components";
@@ -6,11 +5,10 @@ import { UserCard } from "../components";
 import { Plus, Users as UsersIcon } from "lucide-react";
 import { ROUTES } from "@/app/routes";
 import { usePermissions } from "@/hooks";
-import { RoleName } from "@/types";
 
 /**
  * UsersPage Component
- * 
+ *
  * Main page for user management (Admin only)
  * Displays list of users with ability to create, edit, and delete
  */
@@ -59,9 +57,7 @@ export function UsersPage() {
               Error al cargar usuarios
             </h2>
             <p className="text-carbon-600 mb-4">{error.message}</p>
-            <Button onClick={() => window.location.reload()}>
-              Reintentar
-            </Button>
+            <Button onClick={() => window.location.reload()}>Reintentar</Button>
           </div>
         </Card>
       </div>
@@ -84,11 +80,7 @@ export function UsersPage() {
 
         {/* New User Button */}
         {isAdmin() && (
-          <Button
-            variant="primary"
-            size="lg"
-            onClick={handleCreateUser}
-          >
+          <Button variant="primary" size="lg" onClick={handleCreateUser}>
             <Plus className="w-5 h-5 mr-2" />
             Nuevo Usuario
           </Button>
