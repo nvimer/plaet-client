@@ -30,12 +30,12 @@ export const getUsers = async (params?: PaginationParams) => {
   // Always send page and limit as strings to ensure parseInt() works correctly
   const pageValue = params?.page ?? 1;
   const limitValue = params?.limit ?? 20;
-  
+
   // Ensure we have valid numbers, then convert to strings
   // This ensures parseInt() in backend will work correctly
   const page = isNaN(Number(pageValue)) ? 1 : Number(pageValue);
   const limit = isNaN(Number(limitValue)) ? 20 : Number(limitValue);
-  
+
   const queryParams = {
     page: String(page),
     limit: String(limit),
@@ -85,7 +85,7 @@ export const getUserWithRolesAndPermissions = async (id: string) => {
  */
 export const registerUser = async (userData: RegisterInput) => {
   const { data } = await axiosClient.post<ApiResponse<User>>(
-    "/users/register",
+    "/auth/register",
     userData,
   );
   return data;

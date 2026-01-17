@@ -42,9 +42,26 @@ export interface AssignPermissionsInput {
  * Get paginated list of roles
  */
 export const getRoles = async (params?: PaginationParams) => {
+  // Always send pagination params to ensure backend receives valid values
+  const pageValue = params?.page ?? 1;
+  const limitValue = params?.limit ?? 100; // Get all roles by default
+  
+  const page = isNaN(Number(pageValue)) ? 1 : Number(pageValue);
+  const limit = isNaN(Number(limitValue)) ? 100 : Number(limitValue);
+  
+  const queryParams = {
+    page: String(page),
+    limit: String(limit),
+  };
+
+  console.log("🔍 rolesApi.getRoles - Request params:", queryParams);
+  
   const { data } = await axiosClient.get<PaginatedResponse<Role>>("/roles", {
-    params,
+    params: queryParams,
   });
+  
+  console.log("🔍 rolesApi.getRoles - Response:", data);
+  
   return data;
 };
 
