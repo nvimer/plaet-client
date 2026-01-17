@@ -4,6 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { Button, Card, Input } from "@/components";
 import type { MenuCategory } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
 import { useCreateCategory, useUpdateCategory } from "../hooks";
 import {
     createCategorySchema,
@@ -77,7 +78,7 @@ export function CategoryForm({
                         reset();
                         onSuccess?.();
                     },
-                    onError: (error: any) => {
+                    onError: (error: AxiosErrorWithResponse) => {
                         toast.error("Error al actualizar categoría", {
                             description: error.response?.data?.message || error.message,
                             icon: "❌",
@@ -96,7 +97,7 @@ export function CategoryForm({
                     reset();
                     onSuccess?.();
                 },
-                onError: (error: any) => {
+                onError: (error: AxiosErrorWithResponse) => {
                     toast.error("Error al crear categoría", {
                         description: error.response?.data?.message || error.message,
                         icon: "❌",

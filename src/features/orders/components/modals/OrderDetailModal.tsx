@@ -1,4 +1,5 @@
 import { OrderStatus, type Order } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
 import { useState } from "react";
 import { useDeleteOrder, useUpdateOrderStatus } from "../../hooks";
 import {
@@ -115,7 +116,7 @@ export function OrderDetailModal({
                 onSuccess: () => {
                     toast.success("Estado actualizado", { icon: "✅" });
                 },
-                onError: (error: any) => {
+                onError: (error: AxiosErrorWithResponse) => {
                     toast.error("Error al actualizar", {
                         description: error.response?.data?.message || error.message,
                     });
@@ -131,7 +132,7 @@ export function OrderDetailModal({
                 setShowDeleteConfirm(false);
                 onClose();
             },
-            onError: (error: any) => {
+            onError: (error: AxiosErrorWithResponse) => {
                 toast.error("Error al eliminar", {
                     description: error.response?.data?.message || error.message,
                 });

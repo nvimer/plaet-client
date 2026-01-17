@@ -9,6 +9,7 @@ import { createItemSchema, type CreateItemInput } from "../schemas/itemsSchemas"
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
+import type { AxiosErrorWithResponse } from "@/types/common";
 
 /**
  * MenuItemCreatePage Component
@@ -49,7 +50,7 @@ export function MenuItemCreatePage() {
         });
         navigate(ROUTES.MENU);
       },
-      onError: (error: any) => {
+      onError: (error: AxiosErrorWithResponse) => {
         toast.error("Error al crear producto", {
           description: error.response?.data?.message || error.message,
           icon: "❌",

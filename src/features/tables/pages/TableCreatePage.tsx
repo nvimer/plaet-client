@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TableStatus } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
 import { FullScreenLayout } from "@/layouts/FullScreenLayout";
 import { Button, Input } from "@/components";
 import { useCreateTable } from "../hooks";
@@ -41,7 +42,7 @@ export function TableCreatePage() {
         });
         navigate(ROUTES.TABLES);
       },
-      onError: (error: any) => {
+      onError: (error: AxiosErrorWithResponse) => {
         toast.error("Error al crear mesa", {
           description: error.response?.data?.message || error.message,
           icon: "❌",

@@ -1,4 +1,5 @@
 import { TableStatus, type Table } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
 import { useUpdateTableStatus } from "../hooks";
 import { useDeleteTable } from "../hooks/useDeleteTable";
 import { Button, Card } from "@/components";
@@ -51,7 +52,7 @@ export function TableCard({ table, onEdit }: TableCardProps) {
                         icon: "✅",
                     });
                 },
-                onError: (error: any) => {
+                onError: (error: AxiosErrorWithResponse) => {
                     toast.error("Error al actualizar el estado", {
                         description: error.response?.data?.message || error.message,
                         icon: "❌",
@@ -70,7 +71,7 @@ export function TableCard({ table, onEdit }: TableCardProps) {
                     icon: "🗑️",
                 });
             },
-            onError: (error: any) => {
+            onError: (error: AxiosErrorWithResponse) => {
                 toast.error("Error al eliminar mesa", {
                     description: error.response?.data?.message || error.message,
                     icon: "❌",

@@ -11,6 +11,7 @@ import {
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
 import { Check } from "lucide-react";
+import type { AxiosErrorWithResponse } from "@/types/common";
 
 /**
  * CategoryCreatePage Component
@@ -43,7 +44,7 @@ export function CategoryCreatePage() {
         });
         navigate(ROUTES.MENU);
       },
-      onError: (error: any) => {
+      onError: (error: AxiosErrorWithResponse) => {
         toast.error("Error al crear categoría", {
           description: error.response?.data?.message || error.message,
           icon: "❌",

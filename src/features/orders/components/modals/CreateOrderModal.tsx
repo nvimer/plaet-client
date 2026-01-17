@@ -1,4 +1,5 @@
 import { OrderType, TableStatus, type MenuItem } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
 import { useState } from "react";
 import { useCreateOrder } from "../../hooks";
 import { useTables, useItems } from "@/features";
@@ -145,7 +146,7 @@ export function CreateOrderModal({ isOpen, onClose }: CreateOrderModalProps) {
                 setSelectedTable(null);
                 onClose();
             },
-            onError: (error: any) => {
+            onError: (error: AxiosErrorWithResponse) => {
                 toast.error("Error al crear pedido", {
                     description: error.response?.data?.message || error.message,
                     icon: "❌",

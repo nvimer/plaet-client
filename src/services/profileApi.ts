@@ -4,7 +4,14 @@
  * Services related to the user profile
  * Base endpoints: /profile/*
  */
-import type { ProfileMeResponse, User, ApiResponse, PaginatedResponse, PaginationParams } from "@/types";
+import type {
+  ProfileMeResponse,
+  User,
+  ApiResponse,
+  PaginatedResponse,
+  PaginationParams,
+} from "@/types";
+import type { UpdateProfileInput } from "@/features/users/schemas/userSchemas";
 import axiosClient from "./axiosClient";
 
 /**
@@ -46,7 +53,10 @@ export const getProfileById = async (id: string) => {
  * 
  * Update profile
  */
-export const updateProfile = async (id: string, profileData: any) => {
+export const updateProfile = async (
+  id: string,
+  profileData: UpdateProfileInput
+) => {
   const { data } = await axiosClient.patch<ApiResponse<User>>(
     `/profile/${id}`,
     profileData

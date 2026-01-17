@@ -1,4 +1,5 @@
 import { TableStatus, type Table } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
 import { useCreateTable, useUpdateTable } from "../hooks";
 import { useForm } from "react-hook-form";
 import {
@@ -74,7 +75,7 @@ export function TableForm({ table, onSuccess, onCancel }: TableFormProps) {
                         });
                         onSuccess?.();
                     },
-                    onError: (error: any) => {
+                    onError: (error: AxiosErrorWithResponse) => {
                         toast.error("Error al actualizar mesa", {
                             description: error.response?.data?.message || error.message,
                             icon: "❌",
@@ -92,7 +93,7 @@ export function TableForm({ table, onSuccess, onCancel }: TableFormProps) {
                     });
                     onSuccess?.();
                 },
-                onError: (error: any) => {
+                onError: (error: AxiosErrorWithResponse) => {
                     toast.error("Error al crear mesa", {
                         description: error.response?.data?.message || error.message,
                         icon: "❌",

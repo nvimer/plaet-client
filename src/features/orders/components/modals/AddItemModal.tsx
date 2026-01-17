@@ -1,5 +1,6 @@
 import { useItems } from "@/features/menu";
 import { type MenuItem, type Order } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
 import { useState } from "react";
 import { useAddOrderItem } from "../../hooks";
 import { toast } from "sonner";
@@ -76,7 +77,7 @@ export function AddItemModal({ isOpen, onClose, order }: AddItemModalProps) {
                     });
                     handleClose();
                 },
-                onError: (error: any) => {
+                onError: (error: AxiosErrorWithResponse) => {
                     toast.error("Error al agregar producto", {
                         description: error.response?.data?.message || error.message,
                     });

@@ -1,4 +1,5 @@
 import { OrderStatus, type Order } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
 import { useUpdateOrderStatus } from "../hooks";
 import {
     CheckCircle,
@@ -88,7 +89,7 @@ export function OrderCard({ order, onViewDetail }: OrderCardProps) {
                         icon: "✅",
                     });
                 },
-                onError: (error: any) => {
+                onError: (error: AxiosErrorWithResponse) => {
                     toast.error("Error al actualizar estado", {
                         description: error.response?.data?.message || error.message,
                         icon: "❌",

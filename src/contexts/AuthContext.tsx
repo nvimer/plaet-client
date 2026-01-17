@@ -8,6 +8,7 @@
 import { createContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import type { User, LoginInput, AuthResponse } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
 import { authApi, profileApi } from "@/services";
 
 /**
@@ -157,7 +158,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setUser(userData);
         localStorage.setItem("user", JSON.stringify(userData));
       }
-    } catch (error: any) {
+    } catch (error) {
       // Si hay error, limpiar todo
       console.error("❌ Error en login:", error);
 

@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { OrderType, TableStatus } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
 import { FullScreenLayout } from "@/layouts/FullScreenLayout";
 import { ProductGrid } from "../components/ProductGrid";
 import { TableGrid } from "@/features/tables/components/TableGrid";
@@ -159,7 +160,7 @@ export function OrderCreatePage() {
           });
           navigate(getOrderDetailRoute(order.id));
         },
-        onError: (error: any) => {
+        onError: (error: AxiosErrorWithResponse) => {
           toast.error("Error al crear pedido", {
             description: error.response?.data?.message || error.message,
             icon: "❌",

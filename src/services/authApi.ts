@@ -11,6 +11,7 @@ import type {
   RegisterInput,
   AuthResponse,
   ApiResponse,
+  User,
 } from "@/types";
 
 /**
@@ -38,7 +39,7 @@ export const login = async (credentials: LoginInput) => {
  * @returns Usuario creado
  */
 export const register = async (userData: RegisterInput) => {
-  const { data } = await axiosClient.post<ApiResponse<any>>(
+  const { data } = await axiosClient.post<ApiResponse<User>>(
     "/auth/register",
     userData,
   );
@@ -73,7 +74,7 @@ export const refreshToken = async () => {
  * @param email - Email del usuario
  */
 export const forgotPassword = async (email: string) => {
-  const { data } = await axiosClient.post<ApiResponse<any>>(
+  const { data } = await axiosClient.post<ApiResponse<{ message: string }>>(
     "/auth/forgot-password",
     { email },
   );
@@ -89,7 +90,7 @@ export const forgotPassword = async (email: string) => {
  * @param newPassword - Nueva contraseña
  */
 export const resetPassword = async (token: string, newPassword: string) => {
-  const { data } = await axiosClient.post<ApiResponse<any>>(
+  const { data } = await axiosClient.post<ApiResponse<{ message: string }>>(
     "/auth/reset-password",
     { token, password: newPassword },
   );

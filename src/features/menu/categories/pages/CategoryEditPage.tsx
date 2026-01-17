@@ -12,6 +12,7 @@ import { ROUTES, getCategoryEditRoute } from "@/app/routes";
 import { toast } from "sonner";
 import { Check, Trash2, XCircle } from "lucide-react";
 import { useState } from "react";
+import type { AxiosErrorWithResponse } from "@/types/common";
 
 /**
  * CategoryEditPage Component
@@ -79,7 +80,7 @@ export function CategoryEditPage() {
           });
           navigate(ROUTES.MENU);
         },
-        onError: (error: any) => {
+        onError: (error: AxiosErrorWithResponse) => {
           toast.error("Error al actualizar categoría", {
             description: error.response?.data?.message || error.message,
             icon: "❌",
@@ -95,7 +96,7 @@ export function CategoryEditPage() {
         toast.success("Categoría eliminada", { icon: "🗑️" });
         navigate(ROUTES.MENU);
       },
-      onError: (error: any) => {
+      onError: (error: AxiosErrorWithResponse) => {
         toast.error("Error al eliminar categoría", {
           description: error.response?.data?.message || error.message,
         });

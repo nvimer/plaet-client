@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TableStatus } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
 import { FullScreenLayout } from "@/layouts/FullScreenLayout";
 import {
   Button,
@@ -96,7 +97,7 @@ export function TableManagePage() {
           });
           setIsEditing(false);
         },
-        onError: (error: any) => {
+        onError: (error: AxiosErrorWithResponse) => {
           toast.error("Error al actualizar mesa", {
             description: error.response?.data?.message || error.message,
             icon: "❌",
@@ -113,7 +114,7 @@ export function TableManagePage() {
         onSuccess: () => {
           toast.success("Estado actualizado", { icon: "✅" });
         },
-        onError: (error: any) => {
+        onError: (error: AxiosErrorWithResponse) => {
           toast.error("Error al actualizar estado", {
             description: error.response?.data?.message || error.message,
           });
@@ -128,7 +129,7 @@ export function TableManagePage() {
         toast.success("Mesa eliminada", { icon: "🗑️" });
         navigate(ROUTES.TABLES);
       },
-      onError: (error: any) => {
+      onError: (error: AxiosErrorWithResponse) => {
         toast.error("Error al eliminar mesa", {
           description: error.response?.data?.message || error.message,
         });

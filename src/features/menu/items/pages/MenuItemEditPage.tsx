@@ -10,6 +10,7 @@ import { ROUTES, getMenuItemEditRoute } from "@/app/routes";
 import { toast } from "sonner";
 import { Check, Trash2, XCircle } from "lucide-react";
 import { useState } from "react";
+import type { AxiosErrorWithResponse } from "@/types/common";
 
 /**
  * MenuItemEditPage Component
@@ -82,7 +83,7 @@ export function MenuItemEditPage() {
           });
           navigate(ROUTES.MENU);
         },
-        onError: (error: any) => {
+        onError: (error: AxiosErrorWithResponse) => {
           toast.error("Error al actualizar producto", {
             description: error.response?.data?.message || error.message,
             icon: "❌",
@@ -98,7 +99,7 @@ export function MenuItemEditPage() {
         toast.success("Producto eliminado", { icon: "🗑️" });
         navigate(ROUTES.MENU);
       },
-      onError: (error: any) => {
+      onError: (error: AxiosErrorWithResponse) => {
         toast.error("Error al eliminar producto", {
           description: error.response?.data?.message || error.message,
         });

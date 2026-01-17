@@ -1,4 +1,5 @@
 import type { CreateMenuItemInput, MenuItem } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
 import { useCreateItem } from "../hooks/useCreateItem";
 import { useUpdateItem } from "../hooks/useUpdateItem";
 import { useForm } from "react-hook-form";
@@ -77,7 +78,7 @@ export function MenuItemForm({ item, onSuccess, onCancel }: MenuItemFormProps) {
                         });
                         onSuccess?.();
                     },
-                    onError: (error: any) => {
+                    onError: (error: AxiosErrorWithResponse) => {
                         toast.error("Error al actualizar producto", {
                             description: error.response?.data?.message || error.message,
                             icon: "❌",
@@ -95,7 +96,7 @@ export function MenuItemForm({ item, onSuccess, onCancel }: MenuItemFormProps) {
                     });
                     onSuccess?.();
                 },
-                onError: (error: any) => {
+                    onError: (error: AxiosErrorWithResponse) => {
                     toast.error("Error al crear producto", {
                         description: error.response?.data?.message || error.message,
                         icon: "❌",

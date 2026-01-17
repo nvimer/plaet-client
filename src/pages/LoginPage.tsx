@@ -45,7 +45,7 @@ export default function LoginPage() {
 
       // Navigate to dashboard on success
       navigate("/dashboard", { replace: true });
-    } catch (error: any) {
+    } catch (error) {
       // Log error for debbuging
       const errorMessage =
         error.response?.data?.message ||

@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { OrderStatus } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
 import { useOrder, useDeleteOrder, useUpdateOrderStatus } from "../hooks";
 import {
   Calendar,
@@ -130,7 +131,7 @@ export function OrderDetailPage() {
         onSuccess: () => {
           toast.success("Estado actualizado", { icon: "✅" });
         },
-        onError: (error: any) => {
+        onError: (error: AxiosErrorWithResponse) => {
           toast.error("Error al actualizar", {
             description: error.response?.data?.message || error.message,
           });
@@ -145,7 +146,7 @@ export function OrderDetailPage() {
         toast.success("Pedido eliminado", { icon: "🗑️" });
         navigate(ROUTES.ORDERS);
       },
-      onError: (error: any) => {
+      onError: (error: AxiosErrorWithResponse) => {
         toast.error("Error al eliminar", {
           description: error.response?.data?.message || error.message,
         });

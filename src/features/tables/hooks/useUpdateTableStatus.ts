@@ -1,6 +1,6 @@
 import { tablesApi } from "@/services";
 import { queryKeys } from "@/lib";
-import { TableStatus } from "@/types";
+import { TableStatus, type Table } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function useUpdateTableStatus() {
@@ -21,10 +21,10 @@ export function useUpdateTableStatus() {
       const previousTables = queryClient.getQueryData(queryKeys.tables.all);
 
       // Optimistically update cache
-      queryClient.setQueryData(queryKeys.tables.all, (old: any) => {
+      queryClient.setQueryData(queryKeys.tables.all, (old: Table[] | undefined) => {
         if (!old) return old;
 
-        return old.map((table: any) =>
+        return old.map((table: Table) =>
           table.id === id ? { ...table, status } : table,
         );
       });
