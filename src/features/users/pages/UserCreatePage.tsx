@@ -160,73 +160,67 @@ export function UserCreatePage() {
             {roles && roles.length > 0 && (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 {roles.map((role) => {
-                  console.log("🔍 Rendering role:", role);
-                    const isSelected = selectedRoleIds.includes(role.id);
-                    const getRoleVariant = (
-                      roleName: RoleName | string,
-                    ): "neutral" | "success" | "warning" | "error" | "info" => {
-                      if (roleName === RoleName.ADMIN) return "info";
-                      if (roleName === RoleName.WAITER) return "success";
-                      if (roleName === RoleName.KITCHEN_MANAGER)
-                        return "warning";
-                      if (roleName === RoleName.CASHIER) return "info";
-                      return "neutral";
-                    };
+                  const isSelected = selectedRoleIds.includes(role.id);
+                  const getRoleVariant = (
+                    roleName: RoleName | string,
+                  ): "neutral" | "success" | "warning" | "error" | "info" => {
+                    if (roleName === RoleName.ADMIN) return "info";
+                    if (roleName === RoleName.WAITER) return "success";
+                    if (roleName === RoleName.KITCHEN_MANAGER)
+                      return "warning";
+                    if (roleName === RoleName.CASHIER) return "info";
+                    return "neutral";
+                  };
 
-                    return (
-                      <label
-                        key={role.id}
-                        className={`
+                  return (
+                    <label
+                      key={role.id}
+                      className={`
                         relative flex items-start gap-3 p-4 
                         border-2 rounded-xl cursor-pointer 
                         transition-all duration-200
-                        ${isSelected
+                        ${
+                          isSelected
                             ? "border-sage-green-500 bg-sage-green-50 shadow-md"
                             : "border-sage-border-subtle bg-white hover:border-sage-green-300 hover:bg-sage-green-50/50"
-                          }
+                        }
                       `}
-                      >
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={() => handleRoleToggle(role.id)}
-                          className="mt-1 w-5 h-5 text-sage-green-600 border-sage-border-subtle rounded focus:ring-2 focus:ring-sage-green-300 focus:ring-offset-2 cursor-pointer"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="font-semibold text-carbon-900">
-                              {role.name}
-                            </p>
-                            <Badge
-                              variant={getRoleVariant(role.name)}
-                              size="sm"
-                            >
-                              {role.name}
-                            </Badge>
-                          </div>
-                          {role.description && (
-                            <p className="text-sm text-carbon-600 leading-relaxed">
-                              {role.description}
-                            </p>
-                          )}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleRoleToggle(role.id)}
+                        className="mt-1 w-5 h-5 text-sage-green-600 border-sage-border-subtle rounded focus:ring-2 focus:ring-sage-green-300 focus:ring-offset-2 cursor-pointer"
+                      />
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <p className="font-semibold text-carbon-900">
+                            {role.name}
+                          </p>
+                          <Badge
+                            variant={getRoleVariant(role.name)}
+                            size="sm"
+                          >
+                            {role.name}
+                          </Badge>
                         </div>
-                        {isSelected && (
-                          <div className="absolute top-2 right-2">
-                            <div className="w-6 h-6 bg-sage-green-500 rounded-full flex items-center justify-center">
-                              <Check className="w-4 h-4 text-white" />
-                            </div>
-                          </div>
+                        {role.description && (
+                          <p className="text-sm text-carbon-600 leading-relaxed">
+                            {role.description}
+                          </p>
                         )}
-                      </label>
-                    );
-                  })}
+                      </div>
+                      {isSelected && (
+                        <div className="absolute top-2 right-2">
+                          <div className="w-6 h-6 bg-sage-green-500 rounded-full flex items-center justify-center">
+                            <Check className="w-4 h-4 text-white" />
+                          </div>
+                        </div>
+                      )}
+                    </label>
+                  );
+                })}
               </div>
-            ) : (
-              !isLoadingRoles && !rolesError && (
-                <div className="text-sm text-carbon-600 py-4">
-                  No se pudieron cargar los roles. Verifica la consola para más detalles.
-                </div>
-              )
             )}
 
             {selectedRoleIds.length > 0 && (
