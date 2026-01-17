@@ -10,6 +10,7 @@ import { toast } from "sonner";
 import { Check, UserCheck } from "lucide-react";
 import { useState } from "react";
 import { RoleName } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
 
 /**
  * UserCreatePage Component
@@ -56,7 +57,7 @@ export function UserCreatePage() {
           });
           navigate(ROUTES.USERS);
         },
-        onError: (error: any) => {
+        onError: (error: AxiosErrorWithResponse) => {
           toast.error("Error al crear usuario", {
             description: error.response?.data?.message || error.message,
             icon: "❌",

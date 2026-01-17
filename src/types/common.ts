@@ -60,3 +60,37 @@ export interface LoadingState {
   isLoading: boolean;
   error: string | null;
 }
+
+/**
+ * Error structure from API responses
+ */
+export interface ApiErrorResponse {
+  success: false;
+  message: string;
+  error?: string;
+  errorCode?: string;
+  statusCode?: number;
+}
+
+/**
+ * Type guard to check if error is an API error response
+ */
+export function isApiErrorResponse(error: unknown): error is ApiErrorResponse {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "success" in error &&
+    (error as ApiErrorResponse).success === false &&
+    "message" in error
+  );
+}
+
+/**
+ * Axios error with response data
+ */
+export interface AxiosErrorWithResponse {
+  response?: {
+    data?: ApiErrorResponse | { message?: string };
+  };
+  message: string;
+}

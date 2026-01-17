@@ -9,6 +9,8 @@ import { ROUTES, getUserEditRoute } from "@/app/routes";
 import { toast } from "sonner";
 import { Check, XCircle } from "lucide-react";
 import { useState, useEffect } from "react";
+import type { UserRole, Role } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
 
 /**
  * UserEditPage Component
@@ -41,9 +43,19 @@ export function UserEditPage() {
   });
 
   // Update selected roles when user data loads
+  // Backend returns UserRole relation: { roleId, userId, role: { id, name, ... } }
   useEffect(() => {
     if (user?.roles) {
-      setSelectedRoleIds(user.roles.map((role) => role.id));
+      const roleIds = user.roles.map((userRoleOrRole) => {
+        // Handle nested role structure (UserRole) or direct Role
+        if ("role" in userRoleOrRole) {
+          const userRole = userRoleOrRole as UserRole;
+          return userRole.role.id;
+        }
+        const role = userRoleOrRole as Role;
+        return role.id;
+      });
+      setSelectedRoleIds(roleIds);
     }
   }, [user]);
 
@@ -90,7 +102,7 @@ export function UserEditPage() {
           });
           navigate(ROUTES.USERS);
         },
-        onError: (error: any) => {
+        onError: (error: AxiosErrorWithResponse) => {
           toast.error("Error al actualizar usuario", {
             description: error.response?.data?.message || error.message,
             icon: "❌",

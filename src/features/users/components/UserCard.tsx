@@ -1,5 +1,10 @@
 import { Card, Button, Badge } from "@/components";
-import { type User, RoleName } from "@/types";
+import {
+  type User,
+  RoleName,
+  type UserRole,
+  type Role,
+} from "@/types";
 import { Edit2, Trash2, Mail, Phone } from "lucide-react";
 import { useState } from "react";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
@@ -27,7 +32,24 @@ export function UserCard({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Get user's primary role (first role or "Sin rol")
-  const primaryRole = user.roles?.[0]?.name || "Sin rol";
+  // Backend returns UserRole relation with nested role object: { roleId, userId, role: { name, ... } }
+  const getPrimaryRole = (): string => {
+    if (!user.roles || user.roles.length === 0) return "Sin rol";
+    
+    const firstRole = user.roles[0];
+    
+    // Check if it's UserRole structure (has role property)
+    if ("role" in firstRole) {
+      const userRole = firstRole as UserRole;
+      return userRole.role?.name || "Sin rol";
+    }
+    
+    // Direct Role structure
+    const role = firstRole as Role;
+    return role?.name || "Sin rol";
+  };
+  
+  const primaryRole = getPrimaryRole();
 
   // Map role to badge variant
   const getRoleVariant = (

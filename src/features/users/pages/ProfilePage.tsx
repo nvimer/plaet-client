@@ -10,6 +10,8 @@ import { toast } from "sonner";
 import { Check } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import type { UserRole, Role } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
 
 /**
  * ProfilePage Component
@@ -54,7 +56,7 @@ export function ProfilePage() {
       });
       setIsUpdating(false);
     },
-    onError: (error: any) => {
+    onError: (error: AxiosErrorWithResponse) => {
       toast.error("Error al actualizar perfil", {
         description: error.response?.data?.message || error.message,
         icon: "❌",
@@ -134,19 +136,34 @@ export function ProfilePage() {
                 Roles (no se pueden modificar)
               </label>
               <div className="space-y-2">
-                {user.roles.map((role) => (
-                  <div
-                    key={role.id}
-                    className="p-3 border-2 border-sage-border-subtle rounded-xl bg-sage-50"
-                  >
-                    <p className="font-medium text-carbon-900">{role.name}</p>
-                    {role.description && (
-                      <p className="text-sm text-carbon-600">
-                        {role.description}
-                      </p>
-                    )}
-                  </div>
-                ))}
+                {user.roles.map((userRoleOrRole, index) => {
+                  // Handle nested role structure (UserRole) or direct Role
+                  let role: Role;
+                  let roleId: number | string;
+                  
+                  if ("role" in userRoleOrRole) {
+                    const userRole = userRoleOrRole as UserRole;
+                    role = userRole.role;
+                    roleId = role.id;
+                  } else {
+                    role = userRoleOrRole as Role;
+                    roleId = role.id;
+                  }
+                  
+                  return (
+                    <div
+                      key={roleId}
+                      className="p-3 border-2 border-sage-border-subtle rounded-xl bg-sage-50"
+                    >
+                      <p className="font-medium text-carbon-900">{role.name}</p>
+                      {role.description && (
+                        <p className="text-sm text-carbon-600">
+                          {role.description}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
               </div>
               <p className="text-xs text-carbon-500 mt-2">
                 Contacta a un administrador para cambiar tus roles

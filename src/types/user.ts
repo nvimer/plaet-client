@@ -34,6 +34,20 @@ export interface Role {
 }
 
 /**
+ * UserRole relation structure
+ * Represents the many-to-many relationship between User and Role
+ * This is what the backend returns when including roles in user queries
+ */
+export interface UserRole {
+  roleId: number;
+  userId: string;
+  assignedAt: string;
+  createdAt: string;
+  updatedAt: string;
+  role: Role;
+}
+
+/**
  * Permissions
  */
 export interface Permission {
@@ -56,7 +70,8 @@ export interface User {
   email: string;
   phone?: string;
   profile?: Profile;
-  roles?: Role[]; // Roles del usuario (opcional, puede no venir en todas las respuestas)
+  // Roles can be either UserRole[] (from backend with relation) or Role[] (direct)
+  roles?: (UserRole | Role)[];
   createdAt: string;
   updatedAt: string;
   deleted: boolean;
