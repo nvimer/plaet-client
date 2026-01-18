@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { OrderStatus } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
@@ -15,6 +15,7 @@ import {
   CheckCircle,
   ArrowRight,
   UtensilsCrossed,
+  RefreshCw,
 } from "lucide-react";
 import type { Order } from "@/types";
 
@@ -34,8 +35,17 @@ import type { Order } from "@/types";
  */
 export function KitchenOrdersPage() {
   const navigate = useNavigate();
-  const { data: orders, isLoading, error } = useOrders();
+  const { data: orders, isLoading, error, refetch } = useOrders();
   const { mutate: updateStatus, isPending: isUpdating } = useUpdateOrderStatus();
+
+  // Auto-refresh every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetch();
+    }, 30000); // 30 seconds
+
+    return () => clearInterval(interval);
+  }, [refetch]);
 
   // Filter state - only show orders relevant to kitchen
   const [statusFilter, setStatusFilter] = useState<
@@ -179,14 +189,43 @@ export function KitchenOrdersPage() {
               Órdenes ordenadas por tiempo de llegada (más antiguas primero)
             </p>
           </div>
+          
+          {/* Refresh indicator */}
+          <div className="flex items-center gap-2 text-sm text-carbon-500">
+            <RefreshCw className="w-4 h-4" />
+            <span>Auto-refresh cada 30s</span>
+          </div>
         </div>
 
+        {/* ============ PENDING ORDERS ALERT =============== */}
+        {counts.pending > 0 && (
+          <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-4">
+            <div className="flex items-center gap-3">
+              <div className="bg-orange-500 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold">
+                {counts.pending}
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-orange-900">
+                  Pedidos Pendientes
+                </h3>
+                <p className="text-orange-700">
+                  {counts.pending === 1 
+                    ? "Hay 1 pedido esperando ser atendido" 
+                    : `Hay ${counts.pending} pedidos esperando ser atendidos`
+                  }
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* ============ STATUS FILTERS =============== */}
-        <div className="flex gap-3 flex-wrap">
+        <div className="flex gap-4 flex-wrap">
           <Button
             variant={statusFilter === "ALL" ? "primary" : "ghost"}
-            size="md"
+            size="lg" // Larger buttons for tablet/kiosk
             onClick={() => setStatusFilter("ALL")}
+            className="min-h-[60px] min-w-[140px]"
           >
             Todas ({counts.total})
           </Button>
@@ -194,56 +233,60 @@ export function KitchenOrdersPage() {
             variant={
               statusFilter === OrderStatus.PENDING ? "primary" : "ghost"
             }
-            size="md"
+            size="lg" // Larger buttons for tablet/kiosk
             onClick={() => setStatusFilter(OrderStatus.PENDING)}
+            className="min-h-[60px] min-w-[160px]"
           >
-            <Clock className="w-4 h-4 mr-2" />
+            <Clock className="w-6 h-6 mr-3" />
             Pendientes ({counts.pending})
           </Button>
           <Button
             variant={
               statusFilter === OrderStatus.IN_KITCHEN ? "primary" : "ghost"
             }
-            size="md"
+            size="lg" // Larger buttons for tablet/kiosk
             onClick={() => setStatusFilter(OrderStatus.IN_KITCHEN)}
+            className="min-h-[60px] min-w-[160px]"
           >
-            <ChefHat className="w-4 h-4 mr-2" />
+            <ChefHat className="w-6 h-6 mr-3" />
             En Cocina ({counts.inKitchen})
           </Button>
           <Button
             variant={statusFilter === OrderStatus.READY ? "primary" : "ghost"}
-            size="md"
+            size="lg" // Larger buttons for tablet/kiosk
             onClick={() => setStatusFilter(OrderStatus.READY)}
+            className="min-h-[60px] min-w-[140px]"
           >
-            <CheckCircle className="w-4 h-4 mr-2" />
+            <CheckCircle className="w-6 h-6 mr-3" />
             Listos ({counts.ready})
           </Button>
         </div>
 
-        {/* ============ ORDERS GRID ============= */}
-        {kitchenOrders.length > 0 ? (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {kitchenOrders.map((order) => (
-              <KitchenOrderCard
-                key={order.id}
-                order={order}
-                onStatusChange={handleStatusChange}
-                onViewDetail={handleViewDetail}
-                isUpdating={isUpdating}
-              />
-            ))}
-          </div>
-        ) : (
-          <EmptyState
-            icon={<ChefHat />}
-            title="No hay pedidos en cocina"
-            description={
-              statusFilter === "ALL"
-                ? "No hay pedidos pendientes, en cocina o listos"
-                : "No hay pedidos con este estado"
-            }
-          />
-        )}
+         {/* ============ ORDERS GRID ============= */}
+         {kitchenOrders.length > 0 ? (
+           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+             {kitchenOrders.map((order) => (
+               <KitchenOrderCard
+                 key={order.id}
+                 order={order}
+                 onStatusChange={handleStatusChange}
+                 onViewDetail={handleViewDetail}
+                 isUpdating={isUpdating}
+               />
+             ))}
+           </div>
+         ) : (
+           <EmptyState
+             icon={<ChefHat />}
+             title="No hay pedidos en cocina"
+             description={
+               statusFilter === "ALL"
+                 ? "No hay pedidos pendientes, en cocina o listos"
+                 : "No hay pedidos con este estado"
+             }
+             size="lg"
+           />
+         )}
       </div>
     </FullScreenLayout>
   );
@@ -311,23 +354,23 @@ function KitchenOrderCard({
   return (
     <Card variant="elevated" padding="lg" className="hover:shadow-lg transition-all">
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
+      <div className="flex items-start justify-between mb-6">
         <div className="flex-1">
-          <div className="flex items-center gap-3 mb-2">
-            <h3 className="text-2xl font-bold text-carbon-900">
+          <div className="flex items-center gap-4 mb-3">
+            <h3 className="text-3xl font-bold text-carbon-900">
               Pedido #{order.id.slice(-6).toUpperCase()}
             </h3>
             <OrderStatusBadge status={order.status} />
           </div>
-          <div className="flex items-center gap-4 text-sm text-carbon-600">
-            <div className="flex items-center gap-1">
-              <Clock className="w-4 h-4" />
-              <span>{timeSinceCreation}</span>
+          <div className="flex items-center gap-6 text-lg text-carbon-600">
+            <div className="flex items-center gap-2">
+              <Clock className="w-5 h-5" />
+              <span className="font-medium">{timeSinceCreation}</span>
             </div>
             {order.table && (
-              <div className="flex items-center gap-1">
-                <UtensilsCrossed className="w-4 h-4" />
-                <span>Mesa {order.table.number}</span>
+              <div className="flex items-center gap-2">
+                <UtensilsCrossed className="w-5 h-5" />
+                <span className="font-medium">Mesa {order.table.number}</span>
               </div>
             )}
           </div>
@@ -336,21 +379,21 @@ function KitchenOrderCard({
 
       {/* Items */}
       {order.items && order.items.length > 0 && (
-        <div className="mb-4 space-y-2">
-          <h4 className="font-semibold text-carbon-900 mb-2">Items:</h4>
-          <div className="space-y-1">
+        <div className="mb-6 space-y-3">
+          <h4 className="text-xl font-semibold text-carbon-900 mb-3">Items:</h4>
+          <div className="space-y-3">
             {order.items.map((item) => (
               <div
                 key={item.id}
-                className="flex items-center justify-between text-sm"
+                className="flex items-center justify-between p-3 bg-sage-50 rounded-lg"
               >
-                <span className="text-carbon-700">
+                <span className="text-lg font-medium text-carbon-700">
                   {item.quantity}x{" "}
                   {item.menuItem?.name || `Item #${item.menuItemId}`}
                 </span>
                 {item.notes && (
-                  <span className="text-carbon-500 italic text-xs">
-                    ({item.notes})
+                  <span className="text-carbon-500 italic text-sm bg-yellow-100 px-2 py-1 rounded">
+                    {item.notes}
                   </span>
                 )}
               </div>
@@ -361,38 +404,39 @@ function KitchenOrderCard({
 
       {/* Notes */}
       {order.notes && (
-        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <p className="text-sm text-yellow-800 font-medium">Notas:</p>
-          <p className="text-sm text-yellow-700">{order.notes}</p>
+        <div className="mb-6 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-xl">
+          <p className="text-lg text-yellow-800 font-semibold mb-2">📝 Notas:</p>
+          <p className="text-lg text-yellow-700">{order.notes}</p>
         </div>
       )}
 
-      {/* Actions */}
-      <div className="flex gap-3 pt-4 border-t border-sage-border-subtle">
+      {/* Actions - Optimized for tablet/kiosk */}
+      <div className="flex gap-4 pt-6 border-t-2 border-sage-border-subtle">
         {nextStatus && (
           <Button
             variant="primary"
-            size="md"
+            size="lg" // Larger button for tablet/kiosk
             onClick={() => onStatusChange(order.id, nextStatus)}
             disabled={isUpdating}
-            className="flex-1"
+            className="flex-1 min-h-[70px] text-lg font-semibold"
           >
             {nextStatus === OrderStatus.IN_KITCHEN && (
-              <ChefHat className="w-4 h-4 mr-2" />
+              <ChefHat className="w-6 h-6 mr-3" />
             )}
             {nextStatus === OrderStatus.READY && (
-              <CheckCircle className="w-4 h-4 mr-2" />
+              <CheckCircle className="w-6 h-6 mr-3" />
             )}
             {nextStatus === OrderStatus.DELIVERED && (
-              <ArrowRight className="w-4 h-4 mr-2" />
+              <ArrowRight className="w-6 h-6 mr-3" />
             )}
             Marcar como {nextStatusLabel[nextStatus]}
           </Button>
         )}
         <Button
           variant="ghost"
-          size="md"
+          size="lg" // Larger button for tablet/kiosk
           onClick={() => onViewDetail(order.id)}
+          className="min-h-[70px] min-w-[140px] text-lg"
         >
           Ver Detalle
         </Button>
