@@ -24,6 +24,7 @@ export const ROUTES = {
   ORDER_CREATE: "/orders/new",
   ORDER_DETAIL: "/orders/:id",
   ORDER_EDIT: "/orders/:id/edit",
+  KITCHEN: "/kitchen",
 
   // Menu
   MENU: "/menu",

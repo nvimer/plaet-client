@@ -20,7 +20,7 @@ import { ROUTES, getOrderDetailRoute } from "@/app/routes";
  */
 export function OrdersPage() {
     const navigate = useNavigate();
-    
+
     // ============ STATE =============
     // Filters
     const [statusFilter, setStatusFilter] = useState<OrderStatus | "ALL">("ALL");
@@ -34,7 +34,6 @@ export function OrdersPage() {
     const filteredOrders = orders?.filter((order) => {
         const matchesStatus =
             statusFilter === "ALL" || order.status === statusFilter;
-        const matchesType = typeFilter === "ALL" || order.type === typeFilter;
         return matchesStatus && matchesStatus;
     });
 
@@ -52,7 +51,6 @@ export function OrdersPage() {
 
     // Calculate stats
     const todayTotal = orders?.reduce((sum, o) => sum + o.totalAmount, 0) || 0;
-    const avgOrderValue = orders?.length ? todayTotal / orders.length : 0;
 
     // ============= HANDLERS ===============
     const handleViewDetail = (orderId: string) => {
@@ -99,9 +97,7 @@ export function OrdersPage() {
                             Error al cargar los pedidos
                         </h2>
                         <p className="text-carbon-600 mb-4">{error.message}</p>
-                        <Button onClick={() => window.location.reload()}>
-                            Reintentar
-                        </Button>
+                        <Button onClick={() => window.location.reload()}>Reintentar</Button>
                     </div>
                 </Card>
             </div>
@@ -123,11 +119,7 @@ export function OrdersPage() {
                 </div>
 
                 {/* New Order Button */}
-                <Button
-                    variant="primary"
-                    size="lg"
-                    onClick={handleCreateOrder}
-                >
+                <Button variant="primary" size="lg" onClick={handleCreateOrder}>
                     <Plus className="w-5 h-5 mr-2" />
                     Nuevo Pedido
                 </Button>
@@ -215,7 +207,6 @@ export function OrdersPage() {
                     }
                 />
             )}
-
         </>
     );
 }

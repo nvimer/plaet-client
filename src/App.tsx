@@ -11,6 +11,7 @@ import { MenuPage } from "./features/menu";
 import { OrdersPage } from "./features/orders";
 import { OrderCreatePage } from "./features/orders/pages/OrderCreatePage";
 import { OrderDetailPage } from "./features/orders/pages/OrderDetailPage";
+import { KitchenOrdersPage } from "./features/orders/pages/KitchenOrdersPage";
 import { TableCreatePage } from "./features/tables/pages/TableCreatePage";
 import { TableManagePage } from "./features/tables/pages/TableManagePage";
 import { CategoryCreatePage } from "./features/menu/categories/pages/CategoryCreatePage";
@@ -122,6 +123,22 @@ const App = () => {
               <FullScreenLayout>
                 <OrderDetailPage />
               </FullScreenLayout>
+            </PrivateRoute>
+          }
+        />
+
+        {/* Kitchen - Orders View (Full Screen, Kitchen Manager & Admin only) */}
+        <Route
+          path={ROUTES.KITCHEN}
+          element={
+            <PrivateRoute>
+              <RoleProtectedRoute
+                allowedRoles={[RoleName.KITCHEN_MANAGER, RoleName.ADMIN]}
+              >
+                <FullScreenLayout>
+                  <KitchenOrdersPage />
+                </FullScreenLayout>
+              </RoleProtectedRoute>
             </PrivateRoute>
           }
         />
