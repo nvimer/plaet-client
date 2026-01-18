@@ -8,10 +8,11 @@ import { useCategories } from "../../categories/hooks";
 import { updateItemSchema, type UpdateItemInput } from "../schemas/itemsSchemas";
 import { ROUTES, getMenuItemEditRoute } from "@/app/routes";
 import { toast } from "sonner";
-import { Check, Trash2, XCircle } from "lucide-react";
+import { Check, Trash2, XCircle, Package } from "lucide-react";
 import { useState } from "react";
 import type { AxiosErrorWithResponse } from "@/types/common";
 import { StockManagementSection } from "../components/StockManagementSection";
+import { InventoryType } from "@/types";
 
 /**
  * MenuItemEditPage Component
@@ -31,6 +32,7 @@ export function MenuItemEditPage() {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<UpdateItemInput>({
     resolver: zodResolver(updateItemSchema),
     values: item
@@ -42,9 +44,16 @@ export function MenuItemEditPage() {
           isExtra: item.isExtra,
           isAvailable: item.isAvailable,
           imageUrl: item.imageUrl || "",
+          inventoryType: (item.inventoryType as InventoryType) || InventoryType.NONE,
+          initialStock: item.initialStock,
+          lowStockAlert: item.lowStockAlert,
+          autoMarkUnavailable: item.autoMarkUnavailable,
         }
       : undefined,
   });
+
+  const inventoryType = watch("inventoryType");
+  const isTracked = inventoryType === InventoryType.TRACKED;
 
   // Loading state
   if (isLoading) {
@@ -189,6 +198,94 @@ export function MenuItemEditPage() {
               error={errors.imageUrl?.message}
               fullWidth
             />
+
+            {/* Inventory Type */}
+            <div>
+              <label className="block text-sm font-medium text-carbon-700 mb-2">
+                Tipo de Inventario
+              </label>
+              <select
+                {...register("inventoryType")}
+                className="w-full px-4 py-3 border border-sage-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-green-300 focus:border-transparent"
+              >
+                <option value={InventoryType.NONE}>Sin Inventario</option>
+                <option value={InventoryType.TRACKED}>Rastreado (TRACKED)</option>
+                <option value={InventoryType.UNLIMITED}>Ilimitado</option>
+              </select>
+              {errors.inventoryType && (
+                <p className="text-sm text-red-600 mt-1">
+                  {errors.inventoryType.message}
+                </p>
+              )}
+              <p className="text-xs text-carbon-500 mt-1">
+                Selecciona cómo se gestionará el stock de este producto
+              </p>
+            </div>
+
+            {/* Stock Configuration (only if TRACKED) */}
+            {isTracked && (
+              <div className="p-4 bg-sage-50 border-2 border-sage-border-subtle rounded-xl space-y-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Package className="w-5 h-5 text-sage-green-600" />
+                  <h4 className="font-semibold text-carbon-900">
+                    Configuración de Stock
+                  </h4>
+                </div>
+
+                {/* Initial Stock */}
+                <div>
+                  <label className="block text-sm font-medium text-carbon-700 mb-2">
+                    Stock Inicial
+                  </label>
+                  <Input
+                    type="number"
+                    placeholder="Ej: 100"
+                    {...register("initialStock", { valueAsNumber: true })}
+                    error={errors.initialStock?.message}
+                    min="0"
+                    fullWidth
+                  />
+                  <p className="text-xs text-carbon-500 mt-1">
+                    Cantidad inicial de stock (usado en reset diario)
+                  </p>
+                </div>
+
+                {/* Low Stock Alert */}
+                <div>
+                  <label className="block text-sm font-medium text-carbon-700 mb-2">
+                    Alerta de Stock Bajo (opcional)
+                  </label>
+                  <Input
+                    type="number"
+                    placeholder="Ej: 10"
+                    {...register("lowStockAlert", { valueAsNumber: true })}
+                    error={errors.lowStockAlert?.message}
+                    min="0"
+                    fullWidth
+                  />
+                  <p className="text-xs text-carbon-500 mt-1">
+                    Se mostrará una alerta cuando el stock llegue a este nivel
+                  </p>
+                </div>
+
+                {/* Auto Mark Unavailable */}
+                <label className="flex items-center gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    {...register("autoMarkUnavailable")}
+                    className="w-5 h-5 rounded border-sage-border-subtle text-sage-green-600 focus:ring-sage-green-300"
+                  />
+                  <div>
+                    <span className="text-carbon-700 font-medium">
+                      Marcar como no disponible automáticamente
+                    </span>
+                    <p className="text-xs text-carbon-500">
+                      El producto se marcará como no disponible cuando el stock llegue a 0
+                    </p>
+                  </div>
+                </label>
+              </div>
+            )}
 
             {/* Toggles */}
             <div className="space-y-4">
