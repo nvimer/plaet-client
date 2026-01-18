@@ -20,7 +20,15 @@ export function usePermissions() {
    */
   const hasRole = (role: RoleName): boolean => {
     if (!user || !user.roles) return false;
-    return user.roles.some((r) => r.name === role);
+    // Handle both UserRole structure (with nested role) and direct Role structure
+    return user.roles.some((userRoleOrRole) => {
+      // Check if it's UserRole structure (has role property)
+      if ("role" in userRoleOrRole) {
+        return userRoleOrRole.role?.name === role;
+      }
+      // Direct Role structure
+      return userRoleOrRole.name === role;
+    });
   };
 
   /**
