@@ -1,8 +1,9 @@
 import { Button, Card, StatCard } from "@/components";
 import { Badge } from "@/components/ui/Badge";
 import { useTables } from "@/features/tables";
+import { useOrders } from "@/features/orders";
 import { DashboardLayout } from "@/layouts/DashboardLayout";
-import { TableStatus } from "@/types";
+import { TableStatus, OrderStatus } from "@/types";
 import {
   Table2,
   ClipboardList,
@@ -11,15 +12,78 @@ import {
   MenuIcon,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useMemo } from "react";
 
 export function DashboardPage() {
   const { data: tables } = useTables();
+  // Helper function to get today's date filter
+  const getTodayFilter = () => {
+    const today = new Date();
+    const todayString = today.toISOString().split('T')[0]; // YYYY-MM-DD
+    return {
+      fromDate: todayString,
+      toDate: todayString,
+      pageSize: 1000, // Get all orders for today
+    };
+  };
+
+  const { data: todayOrders } = useOrders(getTodayFilter());
   const navigate = useNavigate();
 
   const activeTables =
     tables?.filter((t) => t.status === "OCCUPIED").length || 0;
 
   const totalTables = tables?.length || 0;
+
+  // Calculate today's metrics
+  const todayMetrics = useMemo(() => {
+    if (!todayOrders) {
+      return {
+        totalOrders: 0,
+        paidOrders: 0,
+        pendingOrders: 0,
+        totalRevenue: 0,
+        popularItems: [],
+      };
+    }
+
+    const orders = todayOrders;
+    const paidOrders = orders.filter((order: any) => order.status === OrderStatus.PAID);
+    const pendingOrders = orders.filter((order: any) => 
+      [OrderStatus.PENDING, OrderStatus.IN_KITCHEN, OrderStatus.READY].includes(order.status)
+    );
+
+    // Calculate total revenue from paid orders
+    const totalRevenue = paidOrders.reduce((sum: number, order: any) => {
+      return sum + (order.total || 0);
+    }, 0);
+
+    // Find popular items
+    const itemCounts: Record<string, { name: string; count: number }> = {};
+    orders.forEach((order: any) => {
+      order.items?.forEach((item: any) => {
+        const itemName = item.menuItem?.name || `Item #${item.menuItemId}`;
+        if (!itemCounts[itemName]) {
+          itemCounts[itemName] = { name: itemName, count: 0 };
+        }
+        itemCounts[itemName].count += item.quantity;
+      });
+    });
+
+    const popularItems = Object.values(itemCounts)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 3);
+
+    return {
+      totalOrders: orders.length,
+      paidOrders: paidOrders.length,
+      pendingOrders: pendingOrders.length,
+      totalRevenue,
+      popularItems,
+    };
+  }, [todayOrders]);
+
+
 
   return (
     <DashboardLayout>
@@ -37,29 +101,34 @@ export function DashboardPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
         <StatCard
           title="Mesas Activas"
-          value={activeTables}
-          change="+3 hoy"
-          trend="up"
-          description="vs ayer"
+          value={activeTables.toString()}
+          change={{ value: `${totalTables - activeTables} disponibles`, type: "increase" as const }}
+          description="de un total de mesas"
           icon={<Table2 className="w-6 h-6 text-primary-600" />}
         />
 
         <StatCard
           title="Órdenes de hoy"
-          value="48"
-          change="+12%"
-          trend="up"
-          description="vs mes anterior"
+          value={todayMetrics.totalOrders.toString()}
+          change={{ value: `${todayMetrics.pendingOrders} pendientes`, type: "increase" as const }}
+          description={`de las cuales ${todayMetrics.paidOrders} pagadas`}
           icon={<ClipboardList className="w-6 h-6 text-blue-600" />}
         />
 
         <StatCard
           title="Ingresos Hoy"
-          value="$2.450"
-          change="+18%"
-          trend="up"
-          description="vs ayer"
+          value={`$${todayMetrics.totalRevenue.toLocaleString()}`}
+          change={{ value: `${todayMetrics.paidOrders} pedidos`, type: "increase" as const }}
+          description="pedidos pagados hoy"
           icon={<DollarSign className="w-6 h-6 text-green-600" />}
+        />
+
+        <StatCard
+          title="Pedidos Pendientes"
+          value={todayMetrics.pendingOrders.toString()}
+          change={{ value: "En proceso", type: "increase" as const }}
+          description="esperando atención"
+          icon={<ClipboardList className="w-6 h-6 text-orange-600" />}
         />
       </div>
 
@@ -127,9 +196,63 @@ export function DashboardPage() {
           )}
         </Card>
 
+        {/* Popular Items */}
+        <Card variant="elevated" padding="lg">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="text-xl font-semibold text-neutral-900 mb-2">
+                Productos Populares
+              </h3>
+              <p className="text-sm text-neutral-600 font-light">
+                Los más vendidos hoy
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => navigate("/menu")}
+            >
+              Ver menú
+            </Button>
+          </div>
+
+          <div className="space-y-4">
+            {todayMetrics.popularItems.length > 0 ? (
+              todayMetrics.popularItems.map((item, index) => (
+                <div
+                  key={item.name}
+                  className="flex items-center justify-between p-4 bg-neutral-50 rounded-xl"
+                >
+                  <div className="flex items-center gap-4">
+                    <div className="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center font-semibold text-primary-600">
+                      {index + 1}
+                    </div>
+                    <div>
+                      <div className="font-medium text-neutral-900">
+                        {item.name}
+                      </div>
+                      <div className="text-sm text-neutral-500">
+                        {item.count} {item.count === 1 ? 'unidad' : 'unidades'} vendidas
+                      </div>
+                    </div>
+                  </div>
+                  <div className="text-lg font-semibold text-neutral-700">
+                    #{item.count}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="text-center py-8">
+                <MenuIcon className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
+                <p className="text-neutral-500">No hay ventas hoy</p>
+              </div>
+            )}
+          </div>
+        </Card>
+
         {/* Quick Actions */}
-        <Card>
-          <h3>Acciones Rápidas</h3>
+        <Card variant="elevated" padding="lg">
+          <h3 className="text-xl font-semibold text-neutral-900 mb-4">Acciones Rápidas</h3>
 
           <div>
             <button
