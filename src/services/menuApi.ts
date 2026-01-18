@@ -315,7 +315,7 @@ export const getStockHistory = async (
 export const dailyStockReset = async (resetData: {
   items: Array<{ menuItemId: number; quantity: number }>;
 }) => {
-  const { data } = await axiosClient.post<ApiResponse<{ resetCount: number }>>(
+  const { data } = await axiosClient.post<ApiResponse<{ resetCount?: number }>>(
     "/menu/items/stock/daily-reset",
     resetData,
   );

@@ -7,6 +7,7 @@ import {
     Utensils,
     ChefHat,
     Users,
+    Package,
     type LucideIcon,
 } from "lucide-react";
 import { usePermissions } from "@/hooks/usePermissions";
@@ -39,6 +40,12 @@ const allNavItems: NavItem[] = [
         path: ROUTES.USERS,
         icon: Users,
         allowedRoles: [RoleName.ADMIN],
+    },
+    {
+        name: "Stock",
+        path: ROUTES.STOCK_MANAGEMENT,
+        icon: Package,
+        allowedRoles: [RoleName.ADMIN, RoleName.KITCHEN_MANAGER],
     },
 ];
 

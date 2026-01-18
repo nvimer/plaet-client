@@ -181,7 +181,7 @@ export function useDailyStockReset() {
       items: Array<{ menuItemId: number; quantity: number }>;
     }) => {
       const response = await menuApi.dailyStockReset(resetData);
-      return response.data;
+      return response;
     },
     onSuccess: () => {
       // Invalidate all menu item queries

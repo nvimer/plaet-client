@@ -8,6 +8,7 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { TablesPage } from "./features/tables";
 import { LandingPage } from "./pages";
 import { MenuPage } from "./features/menu";
+import { StockManagementPage } from "./features/menu/items/pages/StockManagementPage";
 import { OrdersPage } from "./features/orders";
 import { OrderCreatePage } from "./features/orders/pages/OrderCreatePage";
 import { OrderDetailPage } from "./features/orders/pages/OrderDetailPage";
@@ -210,6 +211,18 @@ const App = () => {
             <PrivateRoute>
               <FullScreenLayout>
                 <MenuItemEditPage />
+              </FullScreenLayout>
+            </PrivateRoute>
+          }
+        />
+
+        {/* Menu - Stock Management (Full Screen) */}
+        <Route
+          path={ROUTES.STOCK_MANAGEMENT}
+          element={
+            <PrivateRoute>
+              <FullScreenLayout>
+                <StockManagementPage />
               </FullScreenLayout>
             </PrivateRoute>
           }
