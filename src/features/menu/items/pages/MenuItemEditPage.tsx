@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { Check, Trash2, XCircle } from "lucide-react";
 import { useState } from "react";
 import type { AxiosErrorWithResponse } from "@/types/common";
+import { StockManagementSection } from "../components/StockManagementSection";
 
 /**
  * MenuItemEditPage Component
@@ -237,6 +238,9 @@ export function MenuItemEditPage() {
               </Button>
             </div>
           </form>
+
+          {/* Stock Management Section */}
+          <StockManagementSection item={item} />
         </div>
       </FullScreenLayout>
 

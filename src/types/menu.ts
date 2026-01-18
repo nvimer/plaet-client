@@ -69,3 +69,55 @@ export interface UpdateMenuItemInput {
   lowStockAlert?: number;
   autoMarkUnavailable?: boolean;
 }
+
+/**
+ * Stock Management Types
+ */
+
+/**
+ * Add stock input
+ */
+export interface AddStockInput {
+  quantity: number;
+  reason?: string;
+}
+
+/**
+ * Remove stock input
+ */
+export interface RemoveStockInput {
+  quantity: number;
+  reason?: string;
+}
+
+/**
+ * Stock history entry
+ */
+export interface StockHistoryEntry {
+  id: number;
+  menuItemId: number;
+  quantity: number;
+  type: "ADD" | "REMOVE" | "RESET" | "ORDER" | "ADJUSTMENT";
+  reason?: string;
+  createdAt: string;
+  createdBy?: string;
+}
+
+/**
+ * Daily stock reset input
+ */
+export interface DailyStockResetInput {
+  items: Array<{
+    menuItemId: number;
+    quantity: number;
+  }>;
+}
+
+/**
+ * Inventory type enum
+ */
+export enum InventoryType {
+  NONE = "NONE",
+  TRACKED = "TRACKED",
+  UNLIMITED = "UNLIMITED",
+}

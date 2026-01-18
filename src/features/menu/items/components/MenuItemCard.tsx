@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DollarSign, Edit2, ImageIcon, Star, Trash2 } from "lucide-react";
+import { DollarSign, Edit2, ImageIcon, Star, Trash2, AlertTriangle, Package } from "lucide-react";
 import type { MenuItem } from "@/types";
 import { Button, Card, Badge, ConfirmDialog } from "@/components";
 
@@ -62,6 +62,28 @@ export function MenuItemCard({ item, onEdit, onDelete }: MenuItemCardProps) {
                             <Badge variant={item.isAvailable ? "success" : "error"} size="sm">
                                 {item.isAvailable ? "Disponible" : "No Disponible"}
                             </Badge>
+
+                            {/* Stock Badges */}
+                            {item.inventoryType === "TRACKED" && item.stockQuantity !== undefined && (
+                                <>
+                                    {item.stockQuantity === 0 ? (
+                                        <Badge variant="error" size="sm">
+                                            <AlertTriangle className="w-3 h-3 mr-1" />
+                                            Sin Stock
+                                        </Badge>
+                                    ) : item.lowStockAlert !== undefined && item.stockQuantity <= item.lowStockAlert ? (
+                                        <Badge variant="warning" size="sm">
+                                            <AlertTriangle className="w-3 h-3 mr-1" />
+                                            Stock Bajo ({item.stockQuantity})
+                                        </Badge>
+                                    ) : (
+                                        <Badge variant="info" size="sm">
+                                            <Package className="w-3 h-3 mr-1" />
+                                            Stock: {item.stockQuantity}
+                                        </Badge>
+                                    )}
+                                </>
+                            )}
 
                             {/* Extras Badge*/}
                             {item.isExtra && (

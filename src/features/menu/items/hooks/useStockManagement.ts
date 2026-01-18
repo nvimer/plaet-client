@@ -1,0 +1,199 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { menuApi } from "@/services";
+import { queryKeys } from "@/lib";
+import type { AddStockInput, RemoveStockInput } from "@/types";
+import type { AxiosErrorWithResponse } from "@/types/common";
+
+/**
+ * useAddStock Hook
+ *
+ * Mutation to add stock to a menu item
+ */
+export function useAddStock() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      stockData,
+    }: {
+      id: number;
+      stockData: AddStockInput;
+    }) => {
+      const response = await menuApi.addStock(id, stockData);
+      return response.data;
+    },
+    onSuccess: (updatedItem, variables) => {
+      // Invalidate item queries
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.menu.detail(variables.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.menu.all(),
+      });
+      // Invalidate stock-related queries
+      queryClient.invalidateQueries({
+        queryKey: ["menu", "items", "low-stock"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["menu", "items", "out-of-stock"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["menu", "items", variables.id, "stock", "history"],
+      });
+    },
+  });
+}
+
+/**
+ * useRemoveStock Hook
+ *
+ * Mutation to remove stock from a menu item
+ */
+export function useRemoveStock() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      stockData,
+    }: {
+      id: number;
+      stockData: RemoveStockInput;
+    }) => {
+      const response = await menuApi.removeStock(id, stockData);
+      return response.data;
+    },
+    onSuccess: (updatedItem, variables) => {
+      // Invalidate item queries
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.menu.detail(variables.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.menu.all(),
+      });
+      // Invalidate stock-related queries
+      queryClient.invalidateQueries({
+        queryKey: ["menu", "items", "low-stock"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["menu", "items", "out-of-stock"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["menu", "items", variables.id, "stock", "history"],
+      });
+    },
+  });
+}
+
+/**
+ * useStockHistory Hook
+ *
+ * Query to get stock history for a menu item
+ */
+export function useStockHistory(itemId: number, params?: { page?: number; limit?: number }) {
+  return useQuery({
+    queryKey: ["menu", "items", itemId, "stock", "history", params],
+    queryFn: async () => {
+      const response = await menuApi.getStockHistory(itemId, params);
+      return response.data || [];
+    },
+    enabled: !!itemId,
+    staleTime: 30000, // 30 seconds
+  });
+}
+
+/**
+ * useLowStockItems Hook
+ *
+ * Query to get items with low stock
+ */
+export function useLowStockItems() {
+  return useQuery({
+    queryKey: ["menu", "items", "low-stock"],
+    queryFn: async () => {
+      const response = await menuApi.getLowStockItems();
+      return response.data || [];
+    },
+    staleTime: 60000, // 1 minute
+    refetchInterval: 300000, // Refetch every 5 minutes
+  });
+}
+
+/**
+ * useOutOfStockItems Hook
+ *
+ * Query to get items out of stock
+ */
+export function useOutOfStockItems() {
+  return useQuery({
+    queryKey: ["menu", "items", "out-of-stock"],
+    queryFn: async () => {
+      const response = await menuApi.getOutOfStockItems();
+      return response.data || [];
+    },
+    staleTime: 60000, // 1 minute
+    refetchInterval: 300000, // Refetch every 5 minutes
+  });
+}
+
+/**
+ * useSetInventoryType Hook
+ *
+ * Mutation to set inventory type for a menu item
+ */
+export function useSetInventoryType() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async ({
+      id,
+      inventoryType,
+    }: {
+      id: number;
+      inventoryType: string;
+    }) => {
+      const response = await menuApi.setInventoryType(id, inventoryType);
+      return response.data;
+    },
+    onSuccess: (updatedItem, variables) => {
+      // Invalidate item queries
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.menu.detail(variables.id),
+      });
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.menu.all(),
+      });
+    },
+  });
+}
+
+/**
+ * useDailyStockReset Hook
+ *
+ * Mutation to reset daily stock for multiple items
+ */
+export function useDailyStockReset() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (resetData: {
+      items: Array<{ menuItemId: number; quantity: number }>;
+    }) => {
+      const response = await menuApi.dailyStockReset(resetData);
+      return response.data;
+    },
+    onSuccess: () => {
+      // Invalidate all menu item queries
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.menu.all(),
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["menu", "items", "low-stock"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["menu", "items", "out-of-stock"],
+      });
+    },
+  });
+}

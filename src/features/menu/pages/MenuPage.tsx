@@ -10,8 +10,9 @@ import {
     useDeleteCategory,
     CategoryCard,
 } from "../categories";
-import { MenuItemCard, useItems, useDeleteItem } from "../items";
+import { MenuItemCard, useItems, useDeleteItem, useLowStockItems, useOutOfStockItems } from "../items";
 import { ROUTES, getCategoryEditRoute, getMenuItemEditRoute } from "@/app/routes";
+import { AlertTriangle, Package } from "lucide-react";
 
 type Tab = "categories" | "items";
 
@@ -35,6 +36,10 @@ export function MenuPage() {
     // Fetch Items
     const { data: items, isLoading: loadingItems } = useItems();
     const { mutate: deleteItem } = useDeleteItem();
+    
+    // Stock alerts
+    const { data: lowStockItems } = useLowStockItems();
+    const { data: outOfStockItems } = useOutOfStockItems();
 
     // ========== COMPUTED VALUES ==========
     // Filter Items by Category
@@ -98,15 +103,67 @@ export function MenuPage() {
     return (
         <>
             {/* ============= PAGE HEADER =============== */}
-            <div className="flex items-center justify-between mb-12">
-                <div>
-                    <h1 className="text-4xl font-semibold text-carbon-600 tracking-tight">
-                        Gestión de Menú
-                    </h1>
-                    <p className="text-[15px] text-carbon-600 font-light">
-                        Administra categorías e items del menú
-                    </p>
+            <div className="mb-8">
+                <div className="flex items-center justify-between mb-4">
+                    <div>
+                        <h1 className="text-4xl font-semibold text-carbon-600 tracking-tight">
+                            Gestión de Menú
+                        </h1>
+                        <p className="text-[15px] text-carbon-600 font-light">
+                            Administra categorías e items del menú
+                        </p>
+                    </div>
                 </div>
+
+                {/* Stock Alerts */}
+                {(outOfStockItems && outOfStockItems.length > 0) ||
+                (lowStockItems && lowStockItems.length > 0) ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        {outOfStockItems && outOfStockItems.length > 0 && (
+                            <Card
+                                variant="elevated"
+                                padding="md"
+                                className="bg-red-50 border-2 border-red-200"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-red-100 rounded-lg">
+                                        <AlertTriangle className="w-5 h-5 text-red-600" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-semibold text-red-900">
+                                            Sin Stock
+                                        </p>
+                                        <p className="text-sm text-red-700">
+                                            {outOfStockItems.length} producto(s) sin stock
+                                        </p>
+                                    </div>
+                                </div>
+                            </Card>
+                        )}
+
+                        {lowStockItems && lowStockItems.length > 0 && (
+                            <Card
+                                variant="elevated"
+                                padding="md"
+                                className="bg-yellow-50 border-2 border-yellow-200"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-yellow-100 rounded-lg">
+                                        <Package className="w-5 h-5 text-yellow-600" />
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-semibold text-yellow-900">
+                                            Stock Bajo
+                                        </p>
+                                        <p className="text-sm text-yellow-700">
+                                            {lowStockItems.length} producto(s) con stock bajo
+                                        </p>
+                                    </div>
+                                </div>
+                            </Card>
+                        )}
+                    </div>
+                ) : null}
             </div>
 
             {/* ================ TAB NAVIGATION ==================== */}

@@ -16,6 +16,7 @@ import type {
   ApiResponse,
   PaginatedResponse,
   PaginationParams,
+  StockHistoryEntry,
 } from "@/types";
 
 // ==================== CATEGORIES ====================
@@ -209,6 +210,134 @@ export const updateMenuItem = async (
 export const deleteMenuItem = async (id: number) => {
   const { data } = await axiosClient.delete<ApiResponse<null>>(
     `/menu/items/${id}`,
+  );
+  return data;
+};
+
+// ==================== STOCK MANAGEMENT ====================
+
+/**
+ * GET /menu/items/low-stock
+ *
+ * Get items with low stock
+ *
+ * @returns List of items with low stock
+ */
+export const getLowStockItems = async () => {
+  const { data } = await axiosClient.get<ApiResponse<MenuItem[]>>(
+    "/menu/items/low-stock",
+  );
+  return data;
+};
+
+/**
+ * GET /menu/items/out-of-stock
+ *
+ * Get items without stock
+ *
+ * @returns List of items out of stock
+ */
+export const getOutOfStockItems = async () => {
+  const { data } = await axiosClient.get<ApiResponse<MenuItem[]>>(
+    "/menu/items/out-of-stock",
+  );
+  return data;
+};
+
+/**
+ * POST /menu/items/:id/stock/add
+ *
+ * Add stock to a menu item
+ *
+ * @param id - Menu Item ID
+ * @param stockData - Stock data (quantity, reason)
+ * @returns Updated Menu Item
+ */
+export const addStock = async (
+  id: number,
+  stockData: { quantity: number; reason?: string },
+) => {
+  const { data } = await axiosClient.post<ApiResponse<MenuItem>>(
+    `/menu/items/${id}/stock/add`,
+    stockData,
+  );
+  return data;
+};
+
+/**
+ * POST /menu/items/:id/stock/remove
+ *
+ * Remove stock from a menu item
+ *
+ * @param id - Menu Item ID
+ * @param stockData - Stock data (quantity, reason)
+ * @returns Updated Menu Item
+ */
+export const removeStock = async (
+  id: number,
+  stockData: { quantity: number; reason?: string },
+) => {
+  const { data } = await axiosClient.post<ApiResponse<MenuItem>>(
+    `/menu/items/${id}/stock/remove`,
+    stockData,
+  );
+  return data;
+};
+
+/**
+ * GET /menu/items/:id/stock/history
+ *
+ * Get stock history for a menu item
+ *
+ * @param id - Menu Item ID
+ * @param params - Pagination params
+ * @returns Paginated stock history
+ */
+export const getStockHistory = async (
+  id: number,
+  params?: PaginationParams,
+) => {
+  const { data } = await axiosClient.get<PaginatedResponse<StockHistoryEntry>>(
+    `/menu/items/${id}/stock/history`,
+    { params },
+  );
+  return data;
+};
+
+/**
+ * POST /menu/items/stock/daily-reset
+ *
+ * Reset daily stock for multiple items
+ *
+ * @param resetData - Daily stock reset data
+ * @returns Response with reset results
+ */
+export const dailyStockReset = async (resetData: {
+  items: Array<{ menuItemId: number; quantity: number }>;
+}) => {
+  const { data } = await axiosClient.post<ApiResponse<{ resetCount: number }>>(
+    "/menu/items/stock/daily-reset",
+    resetData,
+  );
+  return data;
+};
+
+/**
+ * PATCH /menu/items/:id/inventory-type
+ *
+ * Set inventory type for a menu item
+ *
+ * @param id - Menu Item ID
+ * @param inventoryType - Inventory type (NONE, TRACKED, UNLIMITED)
+ * @returns Updated Menu Item
+ */
+export const setInventoryType = async (
+  id: number,
+  inventoryType: string,
+) => {
+  const { data } = await axiosClient.patch<ApiResponse<MenuItem>>(
+    `/menu/items/${id}/inventory-type`,
+    { inventoryType },
   );
   return data;
 };
