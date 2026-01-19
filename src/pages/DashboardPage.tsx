@@ -1,8 +1,8 @@
-import { Button, Card, StatCard } from "@/components";
+import { Button, Card, StatCard, Skeleton } from "@/components";
 import { Badge } from "@/components/ui/Badge";
 import { useTables } from "@/features/tables";
 import { useOrders } from "@/features/orders";
-import { TableStatus, OrderStatus } from "@/types";
+import { TableStatus, OrderStatus, type Order } from "@/types";
 import {
   Table2,
   ClipboardList,
@@ -14,7 +14,7 @@ import { useNavigate } from "react-router-dom";
 import { useMemo } from "react";
 
 export function DashboardPage() {
-  const { data: tables } = useTables();
+  const { data: tables, isLoading: isLoadingTables } = useTables();
   // Helper function to get today's date filter
   const getTodayFilter = () => {
     const today = new Date();
@@ -26,7 +26,7 @@ export function DashboardPage() {
     };
   };
 
-  const { data: todayOrders } = useOrders(getTodayFilter());
+  const { data: todayOrders, isLoading: isLoadingOrders } = useOrders(getTodayFilter());
   const navigate = useNavigate();
 
   const activeTables =
@@ -48,22 +48,22 @@ export function DashboardPage() {
 
     const orders = todayOrders;
     const paidOrders = orders.filter(
-      (order: any) => order.status === OrderStatus.PAID,
+      (order: Order) => order.status === OrderStatus.PAID,
     );
-    const pendingOrders = orders.filter((order: any) =>
+    const pendingOrders = orders.filter((order: Order) =>
       [OrderStatus.PENDING, OrderStatus.IN_KITCHEN, OrderStatus.READY].includes(
         order.status,
       ),
     );
 
     // Calculate total revenue from paid orders
-    const totalRevenue = paidOrders.reduce((sum: number, order: any) => {
-      return sum + (order.total || 0);
+    const totalRevenue = paidOrders.reduce((sum: number, order: Order) => {
+      return sum + (order.totalAmount || 0);
     }, 0);
 
     // Find popular items
     const itemCounts: Record<string, { name: string; count: number }> = {};
-    orders.forEach((order: any) => {
+    orders.forEach((order: Order) => {
       order.items?.forEach((item: any) => {
         const itemName = item.menuItem?.name || `Item #${item.menuItemId}`;
         if (!itemCounts[itemName]) {
@@ -86,8 +86,25 @@ export function DashboardPage() {
     };
   }, [todayOrders]);
 
+  // Loading state
+  if (isLoadingTables || isLoadingOrders) {
+    return (
+      <div className="min-h-screen bg-neutral-50 p-10">
+        <div className="mb-12">
+          <Skeleton variant="text" width={256} height={40} className="mb-2" />
+          <Skeleton variant="text" width={384} height={24} />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} variant="card" height={120} />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div>
+    <>
       {/* Page Header */}
       <div className="mb-12">
         <h1 className="text-4xl font-semibold text-neutral-900 tracking-tight mb-3">
@@ -298,6 +315,6 @@ export function DashboardPage() {
           </div>
         </Card>
       </div>
-    </div>
+    </>
   );
 }

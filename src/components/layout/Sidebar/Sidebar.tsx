@@ -71,7 +71,7 @@ export function Sidebar() {
                     <div className="w-10 h-10 bg-sage-green-100 rounded-xl flex items-center justify-center">
                         <Utensils className="w-6 h-6 text-sage-green-600" />
                     </div>
-                    <span className="text-xl font-bold text-carbon-900">Plates</span>
+                    <span className="text-xl font-bold text-carbon-900">SazonArte</span>
                 </Link>
             </div>
 

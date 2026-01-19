@@ -8,6 +8,7 @@ import { createUserSchema, type CreateUserInput } from "../schemas/userSchemas";
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
 import { Check, UserCheck } from "lucide-react";
+import ToastMessages from "@/utils/toastMessages";
 import { useState } from "react";
 import { RoleName } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
@@ -51,14 +52,14 @@ export function UserCreatePage() {
       },
       {
         onSuccess: () => {
-          toast.success("Usuario creado", {
+          toast.success(ToastMessages.SUCCESS.USER_CREATED, {
             description: `${data.firstName} ${data.lastName} ha sido creado exitosamente`,
             icon: "🎉",
           });
           navigate(ROUTES.USERS);
         },
         onError: (error: AxiosErrorWithResponse) => {
-          toast.error("Error al crear usuario", {
+          toast.error(ToastMessages.ERROR.USER_CREATE_FAILED, {
             description: error.response?.data?.message || error.message,
             icon: "❌",
           });
