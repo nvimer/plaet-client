@@ -19,4 +19,22 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  build: {
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          // Vendor chunks
+          vendor: ['react', 'react-dom', 'react-router-dom'],
+          query: ['@tanstack/react-query'],
+          ui: ['lucide-react', 'sonner'],
+          // Feature chunks
+          users: ['@/features/users'],
+          orders: ['@/features/orders'],
+          menu: ['@/features/menu'],
+          tables: ['@/features/tables'],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 800, // Increase warning limit
+  },
 });

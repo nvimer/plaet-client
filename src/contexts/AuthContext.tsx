@@ -8,8 +8,7 @@
 import { createContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import type { User, LoginInput, AuthResponse } from "@/types";
-import type { AxiosErrorWithResponse } from "@/types/common";
-import { authApi, profileApi } from "@/services";
+import { authApi, profileApi, usersApi } from "@/services";
 
 /**
  * Defines what data and functions the context will share
@@ -137,7 +136,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
       // If user has ID, try to get roles and permissions
       if (userData.id) {
         try {
-          const { usersApi } = await import("@/services");
+
           const rolesResponse = await usersApi.getUserWithRolesAndPermissions(
             userData.id
           );
