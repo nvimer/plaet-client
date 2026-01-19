@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components";
+import { useNavigationDetection } from "@/hooks/useNavigationDetection";
 
 /**
  * FullScreenLayout Props
@@ -11,14 +12,16 @@ export interface FullScreenLayoutProps {
   title?: string;
   subtitle?: string;
   actions?: React.ReactNode;
+  hideBackButton?: boolean; // Override automatic detection
 }
 
 /**
  * FullScreenLayout Component
  * 
  * Layout optimized for full-screen actions and workflows.
- * Provides a clear navigation header with back button and
- * full-screen content area.
+ * Provides a clear navigation header with optional back button and
+ * full-screen content area. Automatically detects contextual navigation buttons
+ * to avoid duplicate navigation elements.
  * 
  * Use this layout for:
  * - Creating new resources (orders, items, etc.)
@@ -28,7 +31,7 @@ export interface FullScreenLayoutProps {
  * @example
  * ```tsx
  * <FullScreenLayout
- *   title="Nuevo Pedido"
+ *   title="Create Order"
  *   backRoute="/orders"
  * >
  *   <OrderCreateForm />
@@ -41,8 +44,10 @@ export function FullScreenLayout({
   title,
   subtitle,
   actions,
+  hideBackButton,
 }: FullScreenLayoutProps) {
   const navigate = useNavigate();
+  const { shouldShowBackButton } = useNavigationDetection();
 
   /**
    * Handles back navigation
@@ -55,21 +60,28 @@ export function FullScreenLayout({
     }
   };
 
+  /**
+   * Determine if back button should be shown based on detection
+   */
+  const showBackButton = hideBackButton !== true && shouldShowBackButton;
+
   return (
     <div className="min-h-screen bg-neutral-50 flex flex-col">
-      {/* Header with back button */}
+      {/* Header with conditional back button */}
       <header className="bg-white border-b border-sage-border-subtle px-6 py-4 sticky top-0 z-10">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="lg"
-              onClick={handleBack}
-              className="p-3 -ml-3"
-              aria-label="Volver"
-            >
-              <ArrowLeft className="w-6 h-6" />
-            </Button>
+            {showBackButton && (
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={handleBack}
+                className="p-3 -ml-3"
+                aria-label="Go back"
+              >
+                <ArrowLeft className="w-6 h-6" />
+              </Button>
+            )}
             <div>
               {title && (
                 <h1 className="text-2xl font-semibold text-carbon-900">
