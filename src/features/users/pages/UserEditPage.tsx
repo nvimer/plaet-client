@@ -5,7 +5,7 @@ import { FullScreenLayout } from "@/layouts/FullScreenLayout";
 import { Button, Input, Skeleton, EmptyState } from "@/components";
 import { useUser, useUpdateUser, useRoles } from "../hooks";
 import { updateUserSchema, type UpdateUserInput } from "../schemas/userSchemas";
-import { ROUTES, getUserEditRoute } from "@/app/routes";
+import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
 import { Check, XCircle } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -29,7 +29,6 @@ export function UserEditPage() {
     register,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm<UpdateUserInput>({
     resolver: zodResolver(updateUserSchema),
     values: user

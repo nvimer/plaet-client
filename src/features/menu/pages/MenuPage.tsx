@@ -3,7 +3,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { Button, Card, Badge } from "@/components";
 import { FolderOpen, Grid3x3, ListFilter, Plus } from "lucide-react";
-import { type MenuCategory } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
 import {
     useCategories,

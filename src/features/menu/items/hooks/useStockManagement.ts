@@ -1,8 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { menuApi } from "@/services";
-import { queryKeys } from "@/lib";
+import { queryKeys } from "@/lib/queryClient";
 import type { AddStockInput, RemoveStockInput } from "@/types";
-import type { AxiosErrorWithResponse } from "@/types/common";
 
 /**
  * useAddStock Hook
@@ -23,13 +22,13 @@ export function useAddStock() {
       const response = await menuApi.addStock(id, stockData);
       return response.data;
     },
-    onSuccess: (updatedItem, variables) => {
+    onSuccess: (_, variables) => {
       // Invalidate item queries
       queryClient.invalidateQueries({
         queryKey: queryKeys.menu.detail(variables.id),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.menu.all(),
+        queryKey: queryKeys.menu.all,
       });
       // Invalidate stock-related queries
       queryClient.invalidateQueries({
@@ -64,13 +63,13 @@ export function useRemoveStock() {
       const response = await menuApi.removeStock(id, stockData);
       return response.data;
     },
-    onSuccess: (updatedItem, variables) => {
+    onSuccess: (_, variables) => {
       // Invalidate item queries
       queryClient.invalidateQueries({
         queryKey: queryKeys.menu.detail(variables.id),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.menu.all(),
+        queryKey: queryKeys.menu.all,
       });
       // Invalidate stock-related queries
       queryClient.invalidateQueries({
@@ -115,15 +114,14 @@ export function useLowStockItems() {
       const response = await menuApi.getLowStockItems();
       return response.data || [];
     },
-    staleTime: 60000, // 1 minute
-    refetchInterval: 300000, // Refetch every 5 minutes
+    staleTime: 30000, // 30 seconds
   });
 }
 
 /**
  * useOutOfStockItems Hook
  *
- * Query to get items out of stock
+ * Query to get items that are out of stock
  */
 export function useOutOfStockItems() {
   return useQuery({
@@ -132,67 +130,40 @@ export function useOutOfStockItems() {
       const response = await menuApi.getOutOfStockItems();
       return response.data || [];
     },
-    staleTime: 60000, // 1 minute
-    refetchInterval: 300000, // Refetch every 5 minutes
+    staleTime: 30000, // 30 seconds
   });
 }
 
 /**
- * useSetInventoryType Hook
+ * useResetStock Hook
  *
- * Mutation to set inventory type for a menu item
+ * Mutation to reset stock count to zero (daily reset)
  */
-export function useSetInventoryType() {
+export function useResetStock() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      inventoryType,
-    }: {
-      id: number;
-      inventoryType: string;
-    }) => {
-      const response = await menuApi.setInventoryType(id, inventoryType);
+    mutationFn: async ({ id }: { id: number }) => {
+      const response = await menuApi.resetStock(id);
       return response.data;
     },
-    onSuccess: (updatedItem, variables) => {
+    onSuccess: (_, variables) => {
       // Invalidate item queries
       queryClient.invalidateQueries({
         queryKey: queryKeys.menu.detail(variables.id),
       });
       queryClient.invalidateQueries({
-        queryKey: queryKeys.menu.all(),
+        queryKey: queryKeys.menu.all,
       });
-    },
-  });
-}
-
-/**
- * useDailyStockReset Hook
- *
- * Mutation to reset daily stock for multiple items
- */
-export function useDailyStockReset() {
-  const queryClient = useQueryClient();
-
-  return useMutation({
-    mutationFn: async (resetData: {
-      items: Array<{ menuItemId: number; quantity: number }>;
-    }) => {
-      const response = await menuApi.dailyStockReset(resetData);
-      return response;
-    },
-    onSuccess: () => {
-      // Invalidate all menu item queries
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.menu.all(),
-      });
+      // Invalidate stock-related queries
       queryClient.invalidateQueries({
         queryKey: ["menu", "items", "low-stock"],
       });
       queryClient.invalidateQueries({
         queryKey: ["menu", "items", "out-of-stock"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["menu", "items", variables.id, "stock", "history"],
       });
     },
   });

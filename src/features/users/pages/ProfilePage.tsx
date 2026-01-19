@@ -136,7 +136,7 @@ export function ProfilePage() {
                 Roles (no se pueden modificar)
               </label>
               <div className="space-y-2">
-                {user.roles.map((userRoleOrRole, index) => {
+                {user.roles.map((userRoleOrRole) => {
                   // Handle nested role structure (UserRole) or direct Role
                   let role: Role;
                   let roleId: number | string;

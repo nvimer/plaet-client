@@ -12,6 +12,7 @@ import { StockManagementPage } from "./features/menu/items/pages/StockManagement
 import { OrdersPage } from "./features/orders";
 import { OrderCreatePage } from "./features/orders/pages/OrderCreatePage";
 import { OrderDetailPage } from "./features/orders/pages/OrderDetailPage";
+import { OrderEditPage } from "./features/orders/pages/OrderEditPage";
 import { KitchenOrdersPage } from "./features/orders/pages/KitchenOrdersPage";
 import { TableCreatePage } from "./features/tables/pages/TableCreatePage";
 import { TableManagePage } from "./features/tables/pages/TableManagePage";
@@ -123,6 +124,18 @@ const App = () => {
             <PrivateRoute>
               <FullScreenLayout>
                 <OrderDetailPage />
+              </FullScreenLayout>
+            </PrivateRoute>
+          }
+        />
+
+        {/* Orders - Edit (Full Screen) */}
+        <Route
+          path={ROUTES.ORDER_EDIT}
+          element={
+            <PrivateRoute>
+              <FullScreenLayout>
+                <OrderEditPage />
               </FullScreenLayout>
             </PrivateRoute>
           }
