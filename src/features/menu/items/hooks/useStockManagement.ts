@@ -135,35 +135,30 @@ export function useOutOfStockItems() {
 }
 
 /**
- * useResetStock Hook
+ * useDailyStockReset Hook
  *
- * Mutation to reset stock count to zero (daily reset)
+ * Mutation to reset daily stock for multiple items
  */
-export function useResetStock() {
+export function useDailyStockReset() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id }: { id: number }) => {
-      const response = await menuApi.resetStock(id);
+    mutationFn: async (resetData: {
+      items: Array<{ menuItemId: number; quantity: number }>;
+    }) => {
+      const response = await menuApi.dailyStockReset(resetData);
       return response.data;
     },
-    onSuccess: (_, variables) => {
-      // Invalidate item queries
-      queryClient.invalidateQueries({
-        queryKey: queryKeys.menu.detail(variables.id),
-      });
+    onSuccess: () => {
+      // Invalidate all stock-related queries
       queryClient.invalidateQueries({
         queryKey: queryKeys.menu.all,
       });
-      // Invalidate stock-related queries
       queryClient.invalidateQueries({
         queryKey: ["menu", "items", "low-stock"],
       });
       queryClient.invalidateQueries({
         queryKey: ["menu", "items", "out-of-stock"],
-      });
-      queryClient.invalidateQueries({
-        queryKey: ["menu", "items", variables.id, "stock", "history"],
       });
     },
   });

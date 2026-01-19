@@ -2,7 +2,6 @@ import { Button, Card, StatCard } from "@/components";
 import { Badge } from "@/components/ui/Badge";
 import { useTables } from "@/features/tables";
 import { useOrders } from "@/features/orders";
-import { DashboardLayout } from "@/layouts/DashboardLayout";
 import { TableStatus, OrderStatus } from "@/types";
 import {
   Table2,
@@ -19,7 +18,7 @@ export function DashboardPage() {
   // Helper function to get today's date filter
   const getTodayFilter = () => {
     const today = new Date();
-    const todayString = today.toISOString().split('T')[0]; // YYYY-MM-DD
+    const todayString = today.toISOString().split("T")[0]; // YYYY-MM-DD
     return {
       fromDate: todayString,
       toDate: todayString,
@@ -48,9 +47,13 @@ export function DashboardPage() {
     }
 
     const orders = todayOrders;
-    const paidOrders = orders.filter((order: any) => order.status === OrderStatus.PAID);
-    const pendingOrders = orders.filter((order: any) => 
-      [OrderStatus.PENDING, OrderStatus.IN_KITCHEN, OrderStatus.READY].includes(order.status)
+    const paidOrders = orders.filter(
+      (order: any) => order.status === OrderStatus.PAID,
+    );
+    const pendingOrders = orders.filter((order: any) =>
+      [OrderStatus.PENDING, OrderStatus.IN_KITCHEN, OrderStatus.READY].includes(
+        order.status,
+      ),
     );
 
     // Calculate total revenue from paid orders
@@ -83,10 +86,8 @@ export function DashboardPage() {
     };
   }, [todayOrders]);
 
-
-
   return (
-    <DashboardLayout>
+    <div>
       {/* Page Header */}
       <div className="mb-12">
         <h1 className="text-4xl font-semibold text-neutral-900 tracking-tight mb-3">
@@ -102,7 +103,10 @@ export function DashboardPage() {
         <StatCard
           title="Mesas Activas"
           value={activeTables.toString()}
-          change={{ value: `${totalTables - activeTables} disponibles`, type: "increase" as const }}
+          change={{
+            value: `${totalTables - activeTables} disponibles`,
+            type: "increase" as const,
+          }}
           description="de un total de mesas"
           icon={<Table2 className="w-6 h-6 text-primary-600" />}
         />
@@ -110,7 +114,10 @@ export function DashboardPage() {
         <StatCard
           title="Órdenes de hoy"
           value={todayMetrics.totalOrders.toString()}
-          change={{ value: `${todayMetrics.pendingOrders} pendientes`, type: "increase" as const }}
+          change={{
+            value: `${todayMetrics.pendingOrders} pendientes`,
+            type: "increase" as const,
+          }}
           description={`de las cuales ${todayMetrics.paidOrders} pagadas`}
           icon={<ClipboardList className="w-6 h-6 text-blue-600" />}
         />
@@ -118,7 +125,10 @@ export function DashboardPage() {
         <StatCard
           title="Ingresos Hoy"
           value={`$${todayMetrics.totalRevenue.toLocaleString()}`}
-          change={{ value: `${todayMetrics.paidOrders} pedidos`, type: "increase" as const }}
+          change={{
+            value: `${todayMetrics.paidOrders} pedidos`,
+            type: "increase" as const,
+          }}
           description="pedidos pagados hoy"
           icon={<DollarSign className="w-6 h-6 text-green-600" />}
         />
@@ -207,11 +217,7 @@ export function DashboardPage() {
                 Los más vendidos hoy
               </p>
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => navigate("/menu")}
-            >
+            <Button variant="ghost" size="sm" onClick={() => navigate("/menu")}>
               Ver menú
             </Button>
           </div>
@@ -232,7 +238,8 @@ export function DashboardPage() {
                         {item.name}
                       </div>
                       <div className="text-sm text-neutral-500">
-                        {item.count} {item.count === 1 ? 'unidad' : 'unidades'} vendidas
+                        {item.count} {item.count === 1 ? "unidad" : "unidades"}{" "}
+                        vendidas
                       </div>
                     </div>
                   </div>
@@ -252,7 +259,9 @@ export function DashboardPage() {
 
         {/* Quick Actions */}
         <Card variant="elevated" padding="lg">
-          <h3 className="text-xl font-semibold text-neutral-900 mb-4">Acciones Rápidas</h3>
+          <h3 className="text-xl font-semibold text-neutral-900 mb-4">
+            Acciones Rápidas
+          </h3>
 
           <div>
             <button
@@ -289,6 +298,6 @@ export function DashboardPage() {
           </div>
         </Card>
       </div>
-    </DashboardLayout>
+    </div>
   );
 }
