@@ -12,6 +12,7 @@ import {
   ShoppingCart,
   Users,
   ChefHat,
+  Package,
   type LucideIcon,
 } from "lucide-react";
 import { RoleName } from "@/types";
@@ -100,6 +101,13 @@ export const navigationItems: NavigationItem[] = [
     icon: ChefHat,
     allowedRoles: [RoleName.KITCHEN_MANAGER, RoleName.ADMIN],
     description: "Vista de cocina - órdenes por llegada",
+  },
+  {
+    name: "Stock",
+    path: ROUTES.STOCK_MANAGEMENT,
+    icon: Package,
+    allowedRoles: [RoleName.ADMIN, RoleName.KITCHEN_MANAGER],
+    description: "Gestión de inventario y stock",
   },
   {
     name: "Usuarios",

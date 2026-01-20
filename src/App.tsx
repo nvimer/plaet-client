@@ -229,14 +229,18 @@ const App = () => {
           }
         />
 
-        {/* Menu - Stock Management (Full Screen) */}
+        {/* Menu - Stock Management (Full Screen, Admin & Kitchen Manager only) */}
         <Route
           path={ROUTES.STOCK_MANAGEMENT}
           element={
             <PrivateRoute>
-              <FullScreenLayout>
-                <StockManagementPage />
-              </FullScreenLayout>
+              <RoleProtectedRoute
+                allowedRoles={[RoleName.ADMIN, RoleName.KITCHEN_MANAGER]}
+              >
+                <FullScreenLayout>
+                  <StockManagementPage />
+                </FullScreenLayout>
+              </RoleProtectedRoute>
             </PrivateRoute>
           }
         />
