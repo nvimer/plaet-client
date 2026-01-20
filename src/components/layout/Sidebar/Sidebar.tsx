@@ -1,67 +1,32 @@
 import { Link, useLocation } from "react-router-dom";
-import {
-    Home,
-    LayoutGrid,
-    MenuIcon,
-    ShoppingCart,
-    Utensils,
-    ChefHat,
-    Users,
-    Package,
-    type LucideIcon,
-} from "lucide-react";
+import { Utensils } from "lucide-react";
 import { usePermissions } from "@/hooks/usePermissions";
-import { RoleName } from "@/types";
+import { getFilteredNavigationItems } from "@/config/navigation";
+import { useMemo } from "react";
+
+/**
+ * Sidebar Component
+ *
+ * Dynamic sidebar that shows navigation items based on user roles.
+ * Uses centralized navigation configuration for maintainability.
+ */
 import { ROUTES } from "@/app/routes";
 
-interface NavItem {
-    name: string;
-    path: string;
-    icon: LucideIcon;
-    /**
-     * Roles that can see this item. If undefined, all authenticated users can see it.
-     */
-    allowedRoles?: RoleName[];
-}
-
-const allNavItems: NavItem[] = [
-    { name: "Dashboard", path: ROUTES.DASHBOARD, icon: Home },
-    { name: "Mesas", path: ROUTES.TABLES, icon: LayoutGrid },
-    { name: "Menú", path: ROUTES.MENU, icon: MenuIcon },
-    { name: "Pedidos", path: ROUTES.ORDERS, icon: ShoppingCart },
-    {
-        name: "Cocina",
-        path: ROUTES.KITCHEN,
-        icon: ChefHat,
-        allowedRoles: [RoleName.KITCHEN_MANAGER, RoleName.ADMIN],
-    },
-    {
-        name: "Usuarios",
-        path: ROUTES.USERS,
-        icon: Users,
-        allowedRoles: [RoleName.ADMIN],
-    },
-    {
-        name: "Stock",
-        path: ROUTES.STOCK_MANAGEMENT,
-        icon: Package,
-        allowedRoles: [RoleName.ADMIN, RoleName.KITCHEN_MANAGER],
-    },
-];
-
+/**
+ * Sidebar Component
+ *
+ * Dynamic sidebar that shows navigation items based on user roles.
+ * Uses centralized navigation configuration for maintainability.
+ */
 export function Sidebar() {
     const location = useLocation();
-    const { hasAnyRole } = usePermissions();
+    const { getUserRoleNames, user } = usePermissions();
 
-    // Filter navigation items based on user roles
-    const navItems = allNavItems.filter((item) => {
-        // If no allowedRoles specified, show to all authenticated users
-        if (!item.allowedRoles || item.allowedRoles.length === 0) {
-            return true;
-        }
-        // Check if user has at least one of the allowed roles
-        return hasAnyRole(item.allowedRoles);
-    });
+    // Get user roles and filter navigation items
+    const visibleNavItems = useMemo(() => {
+        const userRoles = getUserRoleNames();
+        return getFilteredNavigationItems(userRoles);
+    }, [user, getUserRoleNames]);
 
     return (
         <aside className="fixed left-0 top-0 h-screen w-64 bg-white border-r border-sage-border-subtle">
@@ -77,27 +42,39 @@ export function Sidebar() {
 
             {/* Navigation */}
             <nav className="p-4 space-y-2">
-                {navItems.map((item) => {
-                    const Icon = item.icon;
-                    // Check if current path matches the item path
-                    // Handle dynamic routes like /orders/:id
-                    const isActive =
-                        location.pathname === item.path ||
-                        (item.path.includes(":") &&
-                            location.pathname.startsWith(
-                                item.path.split(":")[0]
-                            ));
-                    return (
-                        <Link
-                            key={item.path}
-                            to={item.path}
-                            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium ${isActive ? "bg-sage-green-50 text-sage-green-700 shadow-soft-sm" : "text-sage-green-700 hover:bg-sage-50"}`}
-                        >
-                            <Icon className="w-5 h-5" />
-                            <span>{item.name}</span>
-                        </Link>
-                    );
-                })}
+                {visibleNavItems.length === 0 ? (
+                    <div className="px-4 py-3 text-sm text-carbon-500">
+                        No hay opciones disponibles
+                    </div>
+                ) : (
+                    visibleNavItems.map((item) => {
+                        const Icon = item.icon;
+                        // Check if current path matches the item path
+                        // Handle dynamic routes like /orders/:id
+                        const isActive =
+                            location.pathname === item.path ||
+                            (item.path.includes(":") &&
+                                location.pathname.startsWith(
+                                    item.path.split(":")[0]
+                                ));
+
+                        return (
+                            <Link
+                                key={item.path}
+                                to={item.path}
+                                title={item.description}
+                                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 font-medium ${
+                                    isActive
+                                        ? "bg-sage-green-50 text-sage-green-700 shadow-soft-sm"
+                                        : "text-sage-green-700 hover:bg-sage-50"
+                                }`}
+                            >
+                                <Icon className="w-5 h-5" />
+                                <span>{item.name}</span>
+                            </Link>
+                        );
+                    })
+                )}
             </nav>
         </aside>
     );

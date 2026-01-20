@@ -1,5 +1,5 @@
 import { useAuth } from "./useAuth";
-import { RoleName } from "@/types";
+import { RoleName, type UserRole, type Role } from "@/types";
 
 /**
  * usePermissions Hook
@@ -13,22 +13,33 @@ export function usePermissions() {
   const { user } = useAuth();
 
   /**
+   * Extract role names from user roles
+   * Handles both UserRole structure (with nested role) and direct Role structure
+   */
+  const getUserRoleNames = (): RoleName[] => {
+    if (!user || !user.roles) return [];
+
+    return user.roles.map((userRoleOrRole) => {
+      // Check if it's UserRole structure (has role property)
+      if ("role" in userRoleOrRole) {
+        const userRole = userRoleOrRole as UserRole;
+        return userRole.role.name;
+      }
+      // Direct Role structure
+      const role = userRoleOrRole as Role;
+      return role.name;
+    });
+  };
+
+  /**
    * Checks if the user has a specific role
    * 
    * @param role - Role name to check
    * @returns true if user has the role
    */
   const hasRole = (role: RoleName): boolean => {
-    if (!user || !user.roles) return false;
-    // Handle both UserRole structure (with nested role) and direct Role structure
-    return user.roles.some((userRoleOrRole) => {
-      // Check if it's UserRole structure (has role property)
-      if ("role" in userRoleOrRole) {
-        return userRoleOrRole.role?.name === role;
-      }
-      // Direct Role structure
-      return userRoleOrRole.name === role;
-    });
+    const userRoles = getUserRoleNames();
+    return userRoles.includes(role);
   };
 
   /**
@@ -89,6 +100,7 @@ export function usePermissions() {
     isAdmin,
     isSuperAdmin,
     isEmployee,
+    getUserRoleNames,
     user,
   };
 }
