@@ -11,6 +11,7 @@ import {
   MenuIcon,
   ShoppingCart,
   Users,
+  ChefHat,
   type LucideIcon,
 } from "lucide-react";
 import { RoleName } from "@/types";
@@ -93,14 +94,13 @@ export const navigationItems: NavigationItem[] = [
     ],
     description: "Gestión de pedidos y órdenes",
   },
-  // TODO: Uncomment when KitchenOrdersPage is created
-  // {
-  //   name: "Cocina",
-  //   path: "/kitchen",
-  //   icon: ChefHat,
-  //   allowedRoles: [RoleName.KITCHEN_MANAGER, RoleName.ADMIN],
-  //   description: "Vista de cocina - órdenes por llegada",
-  // },
+  {
+    name: "Cocina",
+    path: ROUTES.KITCHEN,
+    icon: ChefHat,
+    allowedRoles: [RoleName.KITCHEN_MANAGER, RoleName.ADMIN],
+    description: "Vista de cocina - órdenes por llegada",
+  },
   {
     name: "Usuarios",
     path: ROUTES.USERS,
