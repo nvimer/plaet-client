@@ -1,5 +1,5 @@
 import { Button, Card, StatCard } from "@/components";
-import { Badge } from "@/components/ui/Badge";
+import { Badge } from "@/components/ui/Badge/Badge";
 import { useTables } from "@/features/tables";
 import { useOrders } from "@/features/orders";
 

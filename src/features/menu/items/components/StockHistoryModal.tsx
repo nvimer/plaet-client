@@ -1,4 +1,4 @@
-import { BaseModal } from "@/components/ui/BaseModal";
+import { BaseModal } from "@/components/ui/BaseModal/BaseModal";
 import { useStockHistory } from "../hooks";
 import { Skeleton } from "@/components";
 import { History, Package } from "lucide-react";

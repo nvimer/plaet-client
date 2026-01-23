@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Card } from "../Card";
+import { Card } from "../Card/Card";
 import { cn } from "@/utils";
 
 interface StatCardProps {

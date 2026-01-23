@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { BarChart3, Clock, LayoutGrid, Shield, Users, Zap } from "lucide-react";
-import { Badge } from "@/components/ui/Badge";
+import { Badge } from "@/components/ui/Badge/Badge";
 import { Button, Card } from "@/components";
 
 /**

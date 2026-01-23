@@ -1,5 +1,5 @@
 import { X } from "lucide-react";
-import { Button } from "../Button";
+import { Button } from "../Button/Button";
 
 interface ConfirmDialogProps {
     isOpen: boolean;

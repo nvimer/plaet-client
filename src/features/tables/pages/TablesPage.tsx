@@ -6,9 +6,9 @@ import { Button, Card } from "@/components";
 import { TableCard } from "../components";
 import { Filter, Plus, Table as TableIcon } from "lucide-react";
 import { ROUTES, getTableManageRoute } from "@/app/routes";
-import { Badge } from "@/components/ui/Badge";
-import { Skeleton } from "@/components/ui/Skeleton";
-import { EmptyState } from "@/components/ui/EmptyState";
+import { Badge } from "@/components/ui/Badge/Badge";
+import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
+import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 
 /**
  * TablesPage Component

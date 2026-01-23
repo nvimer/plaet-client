@@ -4,10 +4,10 @@ import { useUpdateTableStatus } from "../hooks";
 import { useDeleteTable } from "../hooks/useDeleteTable";
 import { Button, Card } from "@/components";
 import { MapPin, Edit2, Trash2 } from "lucide-react";
-import { Badge } from "@/components/ui/Badge";
+import { Badge } from "@/components/ui/Badge/Badge";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog";
+import { ConfirmDialog } from "@/components/ui/ConfirmDialog/ConfirmDialog";
 
 // ==================== TYPES / TIPOS ====================
 interface TableCardProps {
