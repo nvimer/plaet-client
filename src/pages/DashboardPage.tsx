@@ -2,7 +2,7 @@ import { Button, Card, StatCard } from "@/components";
 import { Badge } from "@/components/ui/Badge";
 import { useTables } from "@/features/tables";
 import { useOrders } from "@/features/orders";
-import { DashboardLayout } from "@/layouts/DashboardLayout";
+
 import { TableStatus, OrderStatus } from "@/types";
 import {
   Table2,
@@ -86,7 +86,7 @@ export function DashboardPage() {
 
 
   return (
-    <DashboardLayout>
+    <>
       {/* Page Header */}
       <div className="mb-12">
         <h1 className="text-4xl font-semibold text-neutral-900 tracking-tight mb-3">
@@ -289,6 +289,6 @@ export function DashboardPage() {
           </div>
         </Card>
       </div>
-    </DashboardLayout>
+    </>
   );
 }
