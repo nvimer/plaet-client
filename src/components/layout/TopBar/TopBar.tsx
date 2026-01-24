@@ -31,7 +31,7 @@ export function TopBar() {
                               sidebar.classList.contains('w-16') && sidebar.classList.contains('lg:w-16');
           setIsSidebarCollapsed(isCollapsed);
           
-          // Also adjust main content margin dynamically
+          // Also adjust main content margin immediately
           const mainContent = document.getElementById('main-content');
           if (mainContent) {
             if (isCollapsed) {
@@ -45,12 +45,15 @@ export function TopBar() {
         }
       };
 
-      // Initial check
-      setTimeout(checkSidebarState, 200); // Slightly longer delay
+      // Initial check without delay
+      checkSidebarState();
 
-      // Watch for changes
-      const observer = new MutationObserver(() => {
-        setTimeout(checkSidebarState, 200);
+      // Watch for changes with immediate response
+      const observer = new MutationObserver((mutations) => {
+        // Respond immediately to class changes
+        mutations.forEach(() => {
+          checkSidebarState();
+        });
       });
 
       const sidebar = document.querySelector('[data-sidebar]');
