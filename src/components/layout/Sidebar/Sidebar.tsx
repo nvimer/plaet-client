@@ -216,7 +216,7 @@ export function Sidebar() {
             </div>
             {(!isCollapsed || isMobile) && (
               <span className="text-xl font-bold bg-gradient-to-r from-sage-600 to-sage-700 bg-clip-text text-transparent truncate">
-                SazonArte
+                Plaet
               </span>
             )}
           </Link>
@@ -374,7 +374,7 @@ export function Sidebar() {
           {(!isCollapsed || isMobile) && (
             <div className="text-xs text-sage-text-secondary text-center">
               <div>v2.0.0</div>
-              <div className="text-sage-text-muted mt-0.5">© 2024 SazonArte</div>
+              <div className="text-sage-text-muted mt-0.5">© 2024 Plaet</div>
             </div>
           )}
           {isCollapsed && !isMobile && (
