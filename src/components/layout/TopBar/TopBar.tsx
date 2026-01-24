@@ -25,17 +25,20 @@ export function TopBar() {
       const checkSidebarState = () => {
         const sidebar = document.querySelector('[data-sidebar]');
         if (sidebar) {
-          const isCollapsed = sidebar.classList.contains('w-16') || sidebar.classList.contains('w-16 lg:w-16');
+          // More precise check for collapsed state
+          const isCollapsed = sidebar.classList.contains('w-16') || 
+                              sidebar.classList.contains('lg:w-16') ||
+                              sidebar.classList.contains('w-16') && sidebar.classList.contains('lg:w-16');
           setIsSidebarCollapsed(isCollapsed);
         }
       };
 
       // Initial check
-      setTimeout(checkSidebarState, 100); // Small delay to ensure sidebar is rendered
+      setTimeout(checkSidebarState, 200); // Slightly longer delay
 
       // Watch for changes
       const observer = new MutationObserver(() => {
-        setTimeout(checkSidebarState, 100);
+        setTimeout(checkSidebarState, 200);
       });
 
       const sidebar = document.querySelector('[data-sidebar]');

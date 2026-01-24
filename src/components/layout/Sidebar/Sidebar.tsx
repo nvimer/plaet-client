@@ -194,7 +194,7 @@ export function Sidebar() {
           data-sidebar
           className={cn(
             // Base styles - clean without shadow/backdrop
-            "fixed left-0 top-0 z-50 h-screen bg-white border-r border-sage-border-subtle",
+            "fixed left-0 top-0 z-30 h-screen bg-white border-r border-sage-border-subtle",
             // Transitions
             "transition-all duration-300 ease-out",
             // Desktop collapsed state
