@@ -30,6 +30,18 @@ export function TopBar() {
                               sidebar.classList.contains('lg:w-16') ||
                               sidebar.classList.contains('w-16') && sidebar.classList.contains('lg:w-16');
           setIsSidebarCollapsed(isCollapsed);
+          
+          // Also adjust main content margin dynamically
+          const mainContent = document.getElementById('main-content');
+          if (mainContent) {
+            if (isCollapsed) {
+              mainContent.classList.remove('lg:ml-72');
+              mainContent.classList.add('lg:ml-16');
+            } else {
+              mainContent.classList.remove('lg:ml-16');
+              mainContent.classList.add('lg:ml-72');
+            }
+          }
         }
       };
 

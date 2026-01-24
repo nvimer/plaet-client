@@ -10,8 +10,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-neutral-50">
       <Sidebar />
-      <TopBar />
       <div className="transition-all duration-300 ease-out lg:ml-72" style={{ transition: 'margin-left 0.3s ease-out' }} id="main-content">
+        <TopBar />
         <main className="p-6 lg:p-10">{children}</main>
       </div>
     </div>
