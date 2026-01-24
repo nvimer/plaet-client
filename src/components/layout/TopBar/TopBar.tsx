@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks";
 import { 
   LogOut, 
@@ -18,6 +18,36 @@ export function TopBar() {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+
+    // Monitor sidebar state
+    useEffect(() => {
+      const checkSidebarState = () => {
+        const sidebar = document.querySelector('[data-sidebar]');
+        if (sidebar) {
+          const isCollapsed = sidebar.classList.contains('w-16') || sidebar.classList.contains('w-16 lg:w-16');
+          setIsSidebarCollapsed(isCollapsed);
+        }
+      };
+
+      // Initial check
+      setTimeout(checkSidebarState, 100); // Small delay to ensure sidebar is rendered
+
+      // Watch for changes
+      const observer = new MutationObserver(() => {
+        setTimeout(checkSidebarState, 100);
+      });
+
+      const sidebar = document.querySelector('[data-sidebar]');
+      if (sidebar) {
+        observer.observe(sidebar, {
+          attributes: true,
+          attributeFilter: ['class']
+        });
+      }
+
+      return () => observer.disconnect();
+    }, []);
     // Toggle functions
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
     const toggleUserMenu = () => setIsUserMenuOpen(!isUserMenuOpen);
@@ -25,13 +55,21 @@ export function TopBar() {
     return (
         <>
             {/* Main TopBar */}
-            <header className="
-                sticky top-0 z-40 
-                bg-white/80 backdrop-blur-xl 
-                border-b border-sage-100/50 
-                shadow-sm
-                transition-all duration-300 ease-out
-            ">
+            <header 
+                className={cn(
+                    "sticky top-0 z-40 w-full",
+                    "bg-white/80 backdrop-blur-xl",
+                    "border-b border-sage-100/50", 
+                    "shadow-sm",
+                    "transition-all duration-300 ease-out",
+                    // Dynamic margin based on sidebar state - occupy full available width
+                    isSidebarCollapsed ? "lg:left-16 lg:right-0" : "lg:left-72 lg:right-0",
+                    "left-0 right-0"
+                )}
+                style={{
+                    transition: 'left 0.3s ease-out, background-color 0.3s ease-out'
+                }}
+            >
                 <div className="h-16 px-4 lg:px-8 flex items-center justify-between">
                     
                     {/* Left Section - Logo & Mobile Menu */}

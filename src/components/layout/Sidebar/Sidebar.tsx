@@ -14,6 +14,7 @@ import {
 import { cn } from "@/utils/cn";
 import { ROUTES } from "@/app/routes";
 
+
 // Modern navigation configuration - cleaner and more intuitive
 const navigationItems = [
   {
@@ -190,19 +191,20 @@ export function Sidebar() {
 
       {/* Sidebar Container */}
       <aside
-        className={cn(
-          // Base styles - clean without shadow/backdrop
-          "fixed left-0 top-0 z-50 h-screen bg-white border-r border-sage-border-subtle",
-          // Transitions
-          "transition-all duration-300 ease-out",
-          // Desktop collapsed state
-          isCollapsed && !isMobile && "w-16",
-          !isCollapsed && !isMobile && "w-72",
-          // Mobile states
-          isMobile && "w-72 -translate-x-full",
-          isMobile && isMobileOpen && "translate-x-0"
-        )}
-      >
+          data-sidebar
+          className={cn(
+            // Base styles - clean without shadow/backdrop
+            "fixed left-0 top-0 z-50 h-screen bg-white border-r border-sage-border-subtle",
+            // Transitions
+            "transition-all duration-300 ease-out",
+            // Desktop collapsed state
+            isCollapsed && !isMobile && "w-16",
+            !isCollapsed && !isMobile && "w-72",
+            // Mobile states
+            isMobile && "w-72 -translate-x-full",
+            isMobile && isMobileOpen && "translate-x-0"
+          )}
+        >
         {/* Header */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-sage-border-subtle bg-white">
           {/* Logo */}
@@ -396,7 +398,7 @@ export function Sidebar() {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-      )}
+        )}
     </>
   );
 }
