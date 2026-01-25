@@ -107,10 +107,10 @@ export function TopBar() {
 
                         {/* Logo/Brand */}
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 bg-gradient-to-br from-sage-500 to-sage-600 rounded-lg flex items-center justify-center">
+                            <div className="w-8 h-8 bg-gradient-to-br from-primary-400 to-primary-500 rounded-lg flex items-center justify-center">
                                 <div className="w-4 h-4 bg-white rounded-sm"></div>
                             </div>
-                            <span className="text-xl font-bold bg-gradient-to-r from-sage-600 to-sage-700 bg-clip-text text-transparent">
+                            <span className="text-xl font-bold bg-gradient-to-r from-primary-600 to-primary-700 bg-clip-text text-transparent">
                                 Plaet
                             </span>
                         </div>
@@ -181,7 +181,7 @@ export function TopBar() {
                                 "
                                 aria-label="Help"
                             >
-                                <HelpCircle className="w-4 h-4 text-sage-600 group-hover:text-sage-800" />
+                                <HelpCircle className="w-4 h-4 text-secondary group-hover:text-primary" />
                                 <span className="absolute -bottom-8 right-0 text-xs bg-sage-900 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                                     Help
                                 </span>
@@ -196,7 +196,7 @@ export function TopBar() {
                                 "
                                 aria-label="Notifications"
                             >
-                                <Bell className="w-4 h-4 text-sage-600 group-hover:text-sage-800" />
+                                <Bell className="w-4 h-4 text-secondary group-hover:text-primary" />
                                 <span className="absolute -top-1 -right-1 w-2 h-2 bg-red-400 rounded-full"></span>
                                 <span className="absolute -bottom-8 right-0 text-xs bg-sage-900 text-white px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
                                     Notifications
