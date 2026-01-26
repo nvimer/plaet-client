@@ -113,19 +113,15 @@ export function TablesPage() {
                 </div>
 
                 {/* New Table Button  */}
-                <Button
-                    size="lg"
-                    variant="primary"
-                    onClick={handleCreateTable}
-                >
+                <Button size="lg" variant="primary" onClick={handleCreateTable}>
                     <Plus className="w-5 h-5 mr-2" />
                     Nueva Mesa
                 </Button>
             </div>
 
             {/* ========== STATUS FILTER ============ */}
-            <Card variant="elevated" padding="lg" className="mb-8">
-                <div className="flex items-center gap-6">
+            <Card variant="elevated" padding="lg">
+                <div className="flex items-center gap-6 mb-12">
                     {/* Filter Icon and Label */}
                     <div className="flex items-center gap-2 text-carbon-700 font-medium">
                         <Filter className="w-5 h-5" />
@@ -139,7 +135,11 @@ export function TablesPage() {
                             variant={statusFilter === "ALL" ? "primary" : "ghost"}
                             size="sm"
                             onClick={() => setStatusFilter("ALL")}
-                            className={statusFilter === "ALL" ? "bg-carbon-900 hover:bg-carbon-800" : ""}
+                            className={
+                                statusFilter === "ALL"
+                                    ? "bg-carbon-900 hover:bg-carbon-800"
+                                    : ""
+                            }
                         >
                             Todas{" "}
                             <Badge size="sm" variant="neutral" className="ml-2">
@@ -149,10 +149,16 @@ export function TablesPage() {
 
                         {/* Available Tables */}
                         <Button
-                            variant={statusFilter === TableStatus.AVAILABLE ? "primary" : "ghost"}
+                            variant={
+                                statusFilter === TableStatus.AVAILABLE ? "primary" : "ghost"
+                            }
                             size="sm"
                             onClick={() => setStatusFilter(TableStatus.AVAILABLE)}
-                            className={statusFilter === TableStatus.AVAILABLE ? "bg-sage-green-500 hover:bg-sage-green-600" : ""}
+                            className={
+                                statusFilter === TableStatus.AVAILABLE
+                                    ? "bg-sage-green-500 hover:bg-sage-green-600"
+                                    : ""
+                            }
                         >
                             Disponibles{" "}
                             <Badge
@@ -166,10 +172,16 @@ export function TablesPage() {
 
                         {/* occupied Tables */}
                         <Button
-                            variant={statusFilter === TableStatus.OCCUPIED ? "primary" : "ghost"}
+                            variant={
+                                statusFilter === TableStatus.OCCUPIED ? "primary" : "ghost"
+                            }
                             size="sm"
                             onClick={() => setStatusFilter(TableStatus.OCCUPIED)}
-                            className={statusFilter === TableStatus.OCCUPIED ? "bg-red-500 hover:bg-red-600 text-white" : ""}
+                            className={
+                                statusFilter === TableStatus.OCCUPIED
+                                    ? "bg-red-500 hover:bg-red-600 text-white"
+                                    : ""
+                            }
                         >
                             Ocupadas{" "}
                             <Badge size="sm" variant="error" className="ml-2">
@@ -179,10 +191,18 @@ export function TablesPage() {
 
                         {/* Cleaning Tables */}
                         <Button
-                            variant={statusFilter === TableStatus.NEEDS_CLEANING ? "primary" : "ghost"}
+                            variant={
+                                statusFilter === TableStatus.NEEDS_CLEANING
+                                    ? "primary"
+                                    : "ghost"
+                            }
                             size="sm"
                             onClick={() => setStatusFilter(TableStatus.NEEDS_CLEANING)}
-                            className={statusFilter === TableStatus.NEEDS_CLEANING ? "bg-yellow-500 hover:bg-yellow-600 text-white" : ""}
+                            className={
+                                statusFilter === TableStatus.NEEDS_CLEANING
+                                    ? "bg-yellow-500 hover:bg-yellow-600 text-white"
+                                    : ""
+                            }
                         >
                             Limpieza{" "}
                             <Badge size="sm" variant="warning" className="ml-2">
@@ -195,9 +215,13 @@ export function TablesPage() {
 
             {/* ============ TABLES GRID ========= */}
             {filteredTables && filteredTables.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
                     {filteredTables.map((table) => (
-                        <TableCard key={table.id} table={table} onEdit={() => handleManageTable(table.id)} />
+                        <TableCard
+                            key={table.id}
+                            table={table}
+                            onEdit={() => handleManageTable(table.id)}
+                        />
                     ))}
                 </div>
             ) : (
@@ -216,9 +240,7 @@ export function TablesPage() {
                     actionLabel={
                         statusFilter === "ALL" ? "Crear Primera Mesa" : undefined
                     }
-                    onAction={
-                        statusFilter === "ALL" ? handleCreateTable : undefined
-                    }
+                    onAction={statusFilter === "ALL" ? handleCreateTable : undefined}
                 />
             )}
         </>
