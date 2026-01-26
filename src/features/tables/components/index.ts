@@ -1,3 +1,6 @@
 export { TableStatusBadge } from "./TableStatusBadge";
 export { TableCard } from "./TableCard";
 export { TableGrid } from "./TableGrid";
+export { FilterPanel } from "./FilterPanel";
+export { FilterChips } from "./FilterChips";
+export { FilterSection } from "./FilterSection";
