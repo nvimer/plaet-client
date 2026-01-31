@@ -5,6 +5,5 @@ export { FilterPanel } from "./FilterPanel";
 export { FilterChips } from "./FilterChips";
 export { FilterSection } from "./FilterSection";
 export { CompactFilterPanel } from "./CompactFilterPanel";
-export { FilterContainer } from "./FilterContainer";
 export { UltraCompactFilter } from "./UltraCompactFilter";
 export { AdaptiveFilterPanel } from "./AdaptiveFilterPanel";
