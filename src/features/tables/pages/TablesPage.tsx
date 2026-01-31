@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useTables } from "../hooks";
 import { useTableFilters } from "../hooks/useTableFilters";
 import { Button, Card } from "@/components";
-import { TableCard, FilterPanel, FilterChips } from "../components";
+import { TableCard, AdaptiveFilterPanel, FilterChips } from "../components";
 import { Plus, Table as TableIcon } from "lucide-react";
 import { ROUTES, getTableManageRoute } from "@/app/routes";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
@@ -111,7 +111,7 @@ export function TablesPage() {
             </div>
 
             {/* ========== FILTER PANEL ============ */}
-            <FilterPanel
+            <AdaptiveFilterPanel
                 filters={filters}
                 onFilterChange={updateFilter}
                 counts={counts}
