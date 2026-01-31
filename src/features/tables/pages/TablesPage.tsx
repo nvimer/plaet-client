@@ -116,7 +116,7 @@ export function TablesPage() {
                 onFilterChange={updateFilter}
                 counts={counts}
                 availableLocations={availableLocations.filter((loc): loc is string => Boolean(loc))}
-                className="mb-12"
+                className="mb-6"
             />
 
             {/* ========== ACTIVE FILTER CHIPS ============ */}
