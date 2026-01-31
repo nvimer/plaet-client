@@ -1,8 +1,8 @@
-import { SearchInput } from '@/components/ui/SearchInput';
-import { RadioGroup } from '@/components/ui/RadioGroup';
-import { FilterSection } from './FilterSection';
-import { TableStatus } from '@/types';
-import type { TableFilters } from '@/types';
+import { SearchInput } from "@/components/ui/SearchInput";
+import { RadioGroup } from "@/components/ui/RadioGroup";
+import { FilterSection } from "./FilterSection";
+import { TableStatus } from "@/types";
+import type { TableFilters } from "@/types";
 
 interface FilterPanelProps {
   filters: TableFilters;
@@ -26,42 +26,44 @@ export const FilterPanel = ({
   onFilterChange,
   counts,
   availableLocations,
-  className = '',
+  className = "",
 }: FilterPanelProps) => {
   const statusOptions = [
-    { 
-      label: 'Todas las Mesas', 
-      value: 'ALL', 
-      count: counts.all 
+    {
+      label: "Todas las Mesas",
+      value: "ALL",
+      count: counts.all,
     },
-    { 
-      label: 'Disponibles', 
-      value: TableStatus.AVAILABLE, 
-      count: counts.available 
+    {
+      label: "Disponibles",
+      value: TableStatus.AVAILABLE,
+      count: counts.available,
     },
-    { 
-      label: 'Ocupadas', 
-      value: TableStatus.OCCUPIED, 
-      count: counts.occupied 
+    {
+      label: "Ocupadas",
+      value: TableStatus.OCCUPIED,
+      count: counts.occupied,
     },
-    { 
-      label: 'Necesitan Limpieza', 
-      value: TableStatus.NEEDS_CLEANING, 
-      count: counts.cleaning 
+    {
+      label: "Necesitan Limpieza",
+      value: TableStatus.NEEDS_CLEANING,
+      count: counts.cleaning,
     },
   ];
 
   const locationOptions = [
-    { label: 'Todas las Ubicaciones', value: '' },
-    ...availableLocations.map(location => ({ 
-      label: location, 
-      value: location 
+    { label: "Todas las Ubicaciones", value: "" },
+    ...availableLocations.map((location) => ({
+      label: location,
+      value: location,
     })),
   ];
 
   return (
-    <div className={`bg-white rounded-xl border border-sage-border-subtle shadow-sm ${className}`}>
-      <div className="p-6 space-y-1">
+    <div
+      className={`bg-white rounded-xl border border-sage-border-subtle shadow-sm ${className}`}
+    >
+      <div className="px-6 py-2 space-y-1">
         {/* Search Section */}
         <FilterSection
           title="Búsqueda"
@@ -70,8 +72,8 @@ export const FilterPanel = ({
           <SearchInput
             placeholder="Buscar por número de mesa o ubicación..."
             value={filters.search}
-            onChange={(e) => onFilterChange('search', e.target.value)}
-            onClear={() => onFilterChange('search', '')}
+            onChange={(e) => onFilterChange("search", e.target.value)}
+            onClear={() => onFilterChange("search", "")}
             fullWidth
           />
         </FilterSection>
@@ -85,7 +87,7 @@ export const FilterPanel = ({
           <RadioGroup
             options={statusOptions}
             value={filters.status}
-            onChange={(value) => onFilterChange('status', value)}
+            onChange={(value) => onFilterChange("status", value)}
             orientation="horizontal"
             size="sm"
           />
@@ -101,7 +103,7 @@ export const FilterPanel = ({
             <RadioGroup
               options={locationOptions}
               value={filters.location}
-              onChange={(value) => onFilterChange('location', value)}
+              onChange={(value) => onFilterChange("location", value)}
               orientation="horizontal"
               size="sm"
             />
