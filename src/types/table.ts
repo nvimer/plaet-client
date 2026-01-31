@@ -38,3 +38,32 @@ export interface UpdateTableInput {
 export interface UpdateTableStatusInput {
   status: TableStatus;
 }
+
+/**
+ * Table filters interface for advanced filtering
+ */
+export interface TableFilters {
+  search: string;
+  status: TableStatus | 'ALL';
+  location?: string;
+}
+
+/**
+ * Active filter chip configuration
+ */
+export interface ActiveFilterChip {
+  key: keyof TableFilters;
+  label: string;
+  value: string;
+  onRemove: () => void;
+}
+
+/**
+ * Filter configuration for dynamic filter generation
+ */
+export interface FilterConfig {
+  key: keyof TableFilters;
+  label: string;
+  type: 'text' | 'select' | 'multiselect';
+  options?: Array<{ label: string; value: any }>;
+}
