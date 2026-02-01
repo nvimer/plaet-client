@@ -16,7 +16,9 @@ export function TablesPage() {
     const navigate = useNavigate();
     
     // ============= DATA HOOKS ===============
-    const { data: tables, isLoading, error } = useTables();
+    const { data, isLoading, error } = useTables();
+    const tables = data?.tables;
+    const meta = data?.meta;
     
     // ============= FILTER HOOK ===============
     const {

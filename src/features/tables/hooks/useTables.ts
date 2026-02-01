@@ -1,25 +1,32 @@
 import { tablesApi } from "@/services";
 import { queryKeys } from "@/lib";
 import { useQuery } from "@tanstack/react-query";
+import type { PaginationParams } from "@/types/common";
 
 /**
  * useTables Hook
  *
- * Fetches all tables from the API
+ * Fetches tables with pagination support
  *
- * @example
- * const { data: tables, isLoading, error } = useTables():
+ * @param params - Pagination params (page, limit)
+ * @returns Tables data with pagination meta
  */
-export function useTables() {
+export function useTables(params?: PaginationParams) {
+  // Default to high limit to get all tables (restaurants typically have <100 tables)
+  const paginationParams: PaginationParams = {
+    page: params?.page || 1,
+    limit: params?.limit || 100,
+  };
+
   return useQuery({
-    queryKey: queryKeys.tables.all,
+    queryKey: ["tables", paginationParams],
     queryFn: async () => {
-      const response = await tablesApi.getTables();
-      // Return array of tables
-      return response.data;
+      const response = await tablesApi.getTables(paginationParams);
+      return {
+        tables: response.data,
+        meta: response.meta,
+      };
     },
-    // Optional: Add error handling
-    // Retry failed request twice
     retry: 2,
   });
 }
