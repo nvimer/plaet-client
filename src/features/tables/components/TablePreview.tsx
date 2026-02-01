@@ -6,50 +6,43 @@ interface TablePreviewProps {
   tableData: {
     number: string;
     location?: string;
-    status: TableStatus;
+    status?: TableStatus;
   };
   className?: string;
 }
+
+// Status configurations
+const STATUS_CONFIG = {
+  [TableStatus.AVAILABLE]: {
+    label: "Disponible",
+    color: "bg-sage-green-100 text-sage-green-700 border-sage-green-300",
+    tableColor: "bg-sage-green-50 border-sage-green-200",
+    dot: "bg-sage-green-500",
+  },
+  [TableStatus.OCCUPIED]: {
+    label: "Ocupada",
+    color: "bg-red-50 text-red-700 border-red-200",
+    tableColor: "bg-red-50 border-red-200",
+    dot: "bg-red-500",
+  },
+  [TableStatus.NEEDS_CLEANING]: {
+    label: "Limpieza",
+    color: "bg-amber-50 text-amber-700 border-amber-200",
+    tableColor: "bg-amber-50 border-amber-200",
+    dot: "bg-amber-500",
+  },
+};
 
 /**
  * TablePreview Component
  *
  * Real-time preview of table creation.
- *
- * Design: Sage Japanese (Wabi-Sabi)
- * - Ma (間): Generous whitespace
- * - Kanso (簡素): Minimal elements
- * - Shizen (自然): Natural, soft colors
  */
 export function TablePreview({ tableData, className }: TablePreviewProps) {
-  const getStatusConfig = (status: TableStatus) => {
-    switch (status) {
-      case TableStatus.AVAILABLE:
-        return {
-          label: "Disponible",
-          color: "bg-sage-green-100 text-sage-green-700 border-sage-green-300",
-          tableColor: "bg-sage-green-50 border-sage-green-200",
-          dot: "bg-sage-green-500",
-        };
-      case TableStatus.OCCUPIED:
-        return {
-          label: "Ocupada",
-          color: "bg-red-50 text-red-700 border-red-200",
-          tableColor: "bg-red-50 border-red-200",
-          dot: "bg-red-500",
-        };
-      case TableStatus.NEEDS_CLEANING:
-        return {
-          label: "Limpieza",
-          color: "bg-amber-50 text-amber-700 border-amber-200",
-          tableColor: "bg-amber-50 border-amber-200",
-          dot: "bg-amber-500",
-        };
-    }
-  };
-
-  const status = getStatusConfig(tableData.status);
-  const hasNumber = tableData.number.trim() !== "";
+  // Get status config with fallback to AVAILABLE
+  const currentStatus = tableData.status || TableStatus.AVAILABLE;
+  const status = STATUS_CONFIG[currentStatus] || STATUS_CONFIG[TableStatus.AVAILABLE];
+  const hasNumber = tableData.number?.trim() !== "";
 
   return (
     <div className={cn("space-y-4", className)}>

@@ -3,30 +3,17 @@ import { z } from "zod";
 
 export const createTableSchema = z.object({
     number: z
-        .string({
-            error: (iss) =>
-                iss.input === undefined ? "Field is required." : "Invalid input.",
-        })
-        .regex(/^\d+$/, "Debe contener solo números")
-        .refine(
-            (val) => {
-                const num = parseInt(val, 10);
-                return num >= 1 && num <= 999;
-            },
-            { message: "El número de la mesa debe estar entre 1 y 999" },
-        ),
+        .string()
+        .min(1, "El número es requerido")
+        .regex(/^[a-zA-Z0-9]+$/, "Solo letras y números"),
 
     location: z
-        .string({
-            error: (iss) =>
-                iss.input === undefined ? "Field is required." : "Invalid input.",
-        })
-        .min(2, "Minimum 2 characters long")
-        .max(100, "Maximum 100 characters long")
+        .string()
+        .max(100, "Máximo 100 caracteres")
         .optional()
         .or(z.literal("")),
 
-    status: z.enum(TableStatus),
+    status: z.nativeEnum(TableStatus).default(TableStatus.AVAILABLE),
 });
 
 /**
@@ -40,10 +27,7 @@ export const updateTableSchema = createTableSchema.partial();
  * Update Table Status Schema
  */
 export const updateTableStatusSchema = z.object({
-    status: z.enum(TableStatus, {
-        error: (iss) =>
-            iss.input === undefined ? "Status is required" : "Invalid status",
-    }),
+    status: z.nativeEnum(TableStatus),
 });
 
 /**

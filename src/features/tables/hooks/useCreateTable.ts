@@ -6,11 +6,7 @@ import { queryKeys } from "@/lib";
 /**
  * useCreateTable Hook
  *
- * Create a new table
- *
- * @example
- * const { mutation: createTable } = useCreateTable();
- * createTable({ id: 1, number: 3, location: 'Entrada Principal', status: 'AVAILABLE'})
+ * Create a new table and refresh the tables list
  */
 export function useCreateTable() {
   const queryClient = useQueryClient();
@@ -21,9 +17,13 @@ export function useCreateTable() {
       return response.data;
     },
 
-    // On success: invalidate cache to refresh tables
+    // On success: invalidate ALL tables queries to force refresh
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.tables.all });
+      // Invalidate all queries that start with "tables"
+      queryClient.invalidateQueries({ 
+        queryKey: ["tables"],
+        refetchType: "all",
+      });
     },
   });
 }
