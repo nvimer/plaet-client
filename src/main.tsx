@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import "./index.css";
 import App from "./App.tsx";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { SidebarProvider } from "@/contexts/SidebarContext";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient.ts";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
@@ -13,7 +14,8 @@ createRoot(document.getElementById("root")!).render(
     {/* TanStank Query Provider */}
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <App />
+        <SidebarProvider>
+          <App />
         {/* TOASTER COMPONENT */}
         {/* Displays toast notifications throughtout the app */}
         <Toaster
@@ -32,8 +34,9 @@ createRoot(document.getElementById("root")!).render(
             className: "font-light",
           }}
         />
-        {/* DevTools (only in development) */}
-        <ReactQueryDevtools initialIsOpen={false} />
+          {/* DevTools (only in development) */}
+          <ReactQueryDevtools initialIsOpen={false} />
+        </SidebarProvider>
       </AuthProvider>
     </QueryClientProvider>
   </StrictMode>,
