@@ -83,14 +83,14 @@ export function TopBar({
     <header
       className={cn(
         "sticky top-0 z-20",
-        "min-h-[72px] py-4 px-4 sm:px-6 lg:px-8",
+        "min-h-[64px] py-3 px-4 sm:px-6",
         "bg-white/90 backdrop-blur-xl",
         "border-b border-sage-200/50",
-        "flex items-center justify-between gap-6"
+        "flex items-center justify-between gap-4"
       )}
     >
       {/* Left: Back + Title + Breadcrumbs */}
-      <div className="flex items-center gap-4 min-w-0 flex-1">
+      <div className="flex items-center gap-3 min-w-0 flex-1">
         {backRoute && (
           <button
             type="button"
@@ -108,15 +108,13 @@ export function TopBar({
         )}
 
         <div className="min-w-0 flex-1">
-          <div className="flex flex-col gap-1.5">
-            <h1 className="text-lg sm:text-xl font-semibold text-carbon-900 truncate">
+          <div className="flex flex-col gap-1">
+            <h1 className="text-base sm:text-lg font-semibold text-carbon-900 truncate">
               {title}
             </h1>
-            {breadcrumbs.length > 1 && (
-              <Breadcrumbs items={breadcrumbs} />
-            )}
+            {breadcrumbs.length > 1 && <Breadcrumbs items={breadcrumbs} />}
             {subtitle && (
-              <p className="text-sm text-carbon-400 truncate hidden sm:block">
+              <p className="text-xs sm:text-sm text-carbon-400 truncate hidden sm:block">
                 {subtitle}
               </p>
             )}
@@ -125,7 +123,7 @@ export function TopBar({
       </div>
 
       {/* Right: Actions + User Profile */}
-      <div className="flex items-center gap-3 sm:gap-4 flex-shrink-0">
+      <div className="flex items-center gap-2 sm:gap-3 flex-shrink-0">
         {actions}
 
         <div className="relative" ref={menuRef}>
