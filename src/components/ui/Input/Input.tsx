@@ -1,4 +1,5 @@
 import { forwardRef, type InputHTMLAttributes } from "react";
+import { cn } from "@/utils/cn";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   label?: string;
@@ -10,7 +11,8 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 /**
  * Input Component
  *
- * Reusable input with label, error state, helper text and fullWidth
+ * Modern, visible input with clear boundaries.
+ * Designed for easy recognition of editable fields.
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
@@ -25,40 +27,52 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     },
     ref,
   ) => {
-    // Width Styles
-    const widthClass = fullWidth ? "w-full" : "";
-
-    // Base input styles
-    const inputStyles = `
-w-full px-4 py-2.5 text-carbon-900 text-base bg-white border-2 rounded-xl transition-all duration-200 ${error ? "border-red-300 focus:border-red-500 focus:ring-200 focus:ring-red-200" : "border-sage-border-subtle focus:border-sage-green-300 focus:ring-2 focus:ring-sage-green-100"} placeholder:text-carbon-300 disabled:bg-sage-50 disabled:text-carbon-500 disabled:cursor-not-allowed ${className}`
-      .trim()
-      .replace(/\s+/g, "");
-
     return (
-      <div className={widthClass}>
-        {/* Label*/}
+      <div className={fullWidth ? "w-full" : ""}>
+        {/* Label */}
         {label && (
           <label
             htmlFor={id}
-            className="block text-sm font-medium text-carbon-700 mb-2 tracking-wide"
+            className="block text-sm font-medium text-carbon-700 mb-2"
           >
             {label}
           </label>
         )}
 
-        {/*Input field*/}
-        <input ref={ref} id={id} className={inputStyles} {...props} />
+        {/* Input field - More visible */}
+        <input
+          ref={ref}
+          id={id}
+          className={cn(
+            // Base
+            "w-full px-4 py-3 text-base",
+            // Visible background and border
+            "bg-sage-50/80 border-2 border-sage-300",
+            // Rounded
+            "rounded-xl",
+            // Placeholder
+            "placeholder:text-carbon-400",
+            // Focus state - very visible
+            "focus:outline-none focus:bg-white focus:border-sage-500 focus:ring-4 focus:ring-sage-500/10",
+            // Transition
+            "transition-all duration-200",
+            // Disabled
+            "disabled:bg-sage-100 disabled:text-carbon-400 disabled:cursor-not-allowed",
+            // Error state
+            error && "border-red-400 bg-red-50/50 focus:border-red-500 focus:ring-red-500/10",
+            className
+          )}
+          {...props}
+        />
 
-        {/* Error message*/}
+        {/* Error message */}
         {error && (
-          <p className="mt-1.5 text-sm text-red-600 font-light">{error}</p>
+          <p className="mt-2 text-sm text-red-600">{error}</p>
         )}
 
-        {/* Helper text*/}
+        {/* Helper text */}
         {!error && helperText && (
-          <p className="mt-1.5 text-xs text-carbon-500 font-light">
-            {helperText}
-          </p>
+          <p className="mt-2 text-sm text-carbon-500">{helperText}</p>
         )}
       </div>
     );
