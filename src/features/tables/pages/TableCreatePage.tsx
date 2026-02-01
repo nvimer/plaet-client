@@ -1,52 +1,46 @@
-import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TableStatus } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
-import { FullScreenLayout } from "@/layouts/FullScreenLayout";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { Button, Input, Card } from "@/components";
 import { useCreateTable } from "../hooks";
+import { TablePreview } from "../components/TablePreview";
 import {
   createTableSchema,
   type CreateTableInput,
 } from "../schemas/tableSchemas";
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
-import {
-  Check,
-  MapPin,
-  Hash,
-  Sparkles,
-  Eye,
-  CircleCheck,
-  CircleAlert,
-  Loader2,
-} from "lucide-react";
+import { Check, Loader2 } from "lucide-react";
 import { cn } from "@/utils/cn";
 
 /**
  * TableCreatePage Component
  *
- * Modern table creation page following 2025 UX best practices:
+ * Sage Japanese Style (Wabi-Sabi):
+ * - Ma (間): Generous whitespace, breathing room
+ * - Kanso (簡素): Simplicity, only essential elements
+ * - Shizen (自然): Natural colors, organic feel
+ * - Shibui (渋い): Subtle elegance
+ *
+ * UX Best Practices 2025:
+ * - Touch-friendly targets (min 48px)
  * - Real-time preview
  * - Immediate validation feedback
- * - Micro-interactions and animations
- * - Touch-friendly targets (44px minimum)
- * - Clear visual hierarchy
- * - Accessibility compliant (WCAG 2.2)
+ * - Sidebar always accessible
  *
  * @see claude.md for design system rules
  */
 export function TableCreatePage() {
   const navigate = useNavigate();
   const { mutate: createTable, isPending } = useCreateTable();
-  const [isFormTouched, setIsFormTouched] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid, dirtyFields },
+    formState: { errors, isValid },
     watch,
   } = useForm<CreateTableInput>({
     resolver: zodResolver(createTableSchema),
@@ -55,416 +49,216 @@ export function TableCreatePage() {
       location: "",
       status: TableStatus.AVAILABLE,
     },
-    mode: "onChange", // Real-time validation (claude.md: Form Patterns)
+    mode: "onChange",
   });
 
-  // Watch form values for real-time preview
+  // Watch for real-time preview
   const formValues = watch();
-
-  // Track if form has been interacted with
-  useEffect(() => {
-    if (Object.keys(dirtyFields).length > 0) {
-      setIsFormTouched(true);
-    }
-  }, [dirtyFields]);
 
   const onSubmit = (data: CreateTableInput) => {
     createTable(data, {
       onSuccess: () => {
-        // Success toast (claude.md: Toast Notifications)
-        toast.success("¡Mesa creada exitosamente!", {
-          description: `La mesa #${data.number} está lista para usar`,
-          icon: "🎉",
-          duration: 4000,
+        toast.success("Mesa creada", {
+          description: `Mesa #${data.number} lista para usar`,
         });
         navigate(ROUTES.TABLES);
       },
       onError: (error: AxiosErrorWithResponse) => {
-        // Error toast with detailed message
-        toast.error("Error al crear la mesa", {
+        toast.error("Error al crear mesa", {
           description: error.response?.data?.message || error.message,
-          icon: "❌",
-          duration: 5000,
         });
       },
     });
   };
 
-  // Status options with semantic colors
+  // Status options - Touch-friendly cards
   const statusOptions = [
     {
       value: TableStatus.AVAILABLE,
       label: "Disponible",
-      description: "Lista para recibir clientes",
-      icon: "✅",
-      color: "bg-success-50 border-success-300 text-success-700",
-      activeRing: "ring-success-200",
+      description: "Lista para clientes",
+      emoji: "🟢",
     },
     {
       value: TableStatus.OCCUPIED,
       label: "Ocupada",
-      description: "Actualmente en uso",
-      icon: "🍽️",
-      color: "bg-error-50 border-error-300 text-error-700",
-      activeRing: "ring-error-200",
+      description: "En uso",
+      emoji: "🔴",
     },
     {
       value: TableStatus.NEEDS_CLEANING,
-      label: "Necesita Limpieza",
-      description: "Requiere limpieza antes de uso",
-      icon: "🧹",
-      color: "bg-warning-50 border-warning-300 text-warning-700",
-      activeRing: "ring-warning-200",
+      label: "Limpieza",
+      description: "Requiere limpieza",
+      emoji: "🟡",
     },
   ];
 
-  // Determine preview status styling
-  const getStatusConfig = (status: TableStatus) => {
-    return statusOptions.find((opt) => opt.value === status) || statusOptions[0];
-  };
-
-  const currentStatus = getStatusConfig(formValues.status);
-
   return (
-    <FullScreenLayout
+    <SidebarLayout
       title="Nueva Mesa"
-      subtitle="Configura los detalles de la nueva mesa"
+      subtitle="Agrega una nueva mesa al restaurante"
       backRoute={ROUTES.TABLES}
     >
-      {/* Main Grid Layout - Form + Preview (claude.md: Responsive Design) */}
-      <div className="max-w-5xl mx-auto">
-        <div className="grid lg:grid-cols-5 gap-8">
-          {/* Form Section - 3 columns on large screens */}
-          <div className="lg:col-span-3 order-2 lg:order-1">
-            <Card variant="elevated" padding="lg">
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-                {/* Section: Basic Information */}
-                <section>
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-xl bg-sage-green-100 flex items-center justify-center">
-                      <Hash className="w-5 h-5 text-sage-green-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-carbon-900">
-                        Información Básica
-                      </h3>
-                      <p className="text-sm text-carbon-500 font-light">
-                        Número identificador y ubicación
-                      </p>
-                    </div>
-                  </div>
+      {/* Main Grid - Form + Preview */}
+      <div className="grid lg:grid-cols-2 gap-8 lg:gap-12">
+        {/* Form Section */}
+        <div className="order-2 lg:order-1">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+            {/* Section: Basic Info */}
+            <Card variant="default" padding="lg" className="space-y-6">
+              {/* Section Header - Minimal */}
+              <div className="pb-4 border-b border-sage-200/50">
+                <h2 className="text-lg font-medium text-carbon-800">
+                  Información
+                </h2>
+              </div>
 
-                  <div className="space-y-6">
-                    {/* Table Number Input - Primary field */}
-                    <div className="relative">
-                      <Input
-                        label="Número de Mesa"
-                        type="text"
-                        placeholder="Ej: 1, 2, 3, A1, B2..."
-                        {...register("number")}
-                        error={errors.number?.message}
-                        helperText="Identificador único de la mesa"
-                        fullWidth
-                        autoFocus
-                        aria-describedby="number-validation"
-                      />
-                      {/* Validation indicator (claude.md: Micro-interactions) */}
-                      {dirtyFields.number && (
-                        <div
-                          id="number-validation"
-                          className={cn(
-                            "absolute right-3 top-9 transition-all duration-200",
-                            errors.number
-                              ? "text-error-500"
-                              : "text-success-500"
-                          )}
-                        >
-                          {errors.number ? (
-                            <CircleAlert className="w-5 h-5 animate-bounce-in" />
-                          ) : (
-                            <CircleCheck className="w-5 h-5 animate-scale-in" />
-                          )}
-                        </div>
-                      )}
-                    </div>
+              {/* Table Number - Primary field */}
+              <div>
+                <Input
+                  label="Número de Mesa"
+                  type="text"
+                  placeholder="Ej: 1, 2, A1..."
+                  {...register("number")}
+                  error={errors.number?.message}
+                  fullWidth
+                  autoFocus
+                  className="text-lg"
+                />
+              </div>
 
-                    {/* Location Input - Optional field */}
-                    <div className="relative">
-                      <Input
-                        label="Ubicación"
-                        type="text"
-                        placeholder="Ej: Entrada, Terraza, Ventana, VIP..."
-                        {...register("location")}
-                        error={errors.location?.message}
-                        helperText="Opcional: Ayuda a identificar la mesa"
-                        fullWidth
-                        aria-describedby="location-help"
-                      />
-                      {/* Location icon indicator */}
-                      {formValues.location && (
-                        <div className="absolute right-3 top-9 text-sage-green-500 transition-all duration-200">
-                          <MapPin className="w-5 h-5 animate-fade-in" />
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </section>
-
-                {/* Divider */}
-                <hr className="border-sage-border-subtle" />
-
-                {/* Section: Initial Status */}
-                <section>
-                  <div className="flex items-center gap-3 mb-6">
-                    <div className="w-10 h-10 rounded-xl bg-sage-green-100 flex items-center justify-center">
-                      <Sparkles className="w-5 h-5 text-sage-green-600" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-carbon-900">
-                        Estado Inicial
-                      </h3>
-                      <p className="text-sm text-carbon-500 font-light">
-                        Disponibilidad al crear la mesa
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Status Options - Touch-friendly (claude.md: min 44px) */}
-                  <div className="grid gap-3">
-                    {statusOptions.map((option) => {
-                      const isSelected = formValues.status === option.value;
-                      return (
-                        <label
-                          key={option.value}
-                          className={cn(
-                            // Base styles (claude.md: Component Guidelines)
-                            "flex items-center gap-4 p-4 border-2 rounded-xl cursor-pointer",
-                            "transition-all duration-200 min-h-[56px]", // 56px > 44px minimum
-                            // Selected state
-                            isSelected
-                              ? `${option.color} ring-2 ${option.activeRing} scale-[1.02]`
-                              : "bg-white border-carbon-200 hover:border-sage-green-300 hover:bg-sage-50",
-                            // Focus visible (claude.md: Accessibility)
-                            "focus-within:ring-2 focus-within:ring-sage-green-300 focus-within:ring-offset-2"
-                          )}
-                        >
-                          <input
-                            type="radio"
-                            value={option.value}
-                            {...register("status")}
-                            className="sr-only" // Hidden but accessible
-                          />
-                          {/* Icon */}
-                          <span className="text-2xl" role="img" aria-hidden="true">
-                            {option.icon}
-                          </span>
-                          {/* Content */}
-                          <div className="flex-1">
-                            <div className="font-semibold text-carbon-900">
-                              {option.label}
-                            </div>
-                            <div className="text-sm text-carbon-500 font-light">
-                              {option.description}
-                            </div>
-                          </div>
-                          {/* Selected indicator */}
-                          {isSelected && (
-                            <Check className="w-5 h-5 text-current animate-scale-in" />
-                          )}
-                        </label>
-                      );
-                    })}
-                  </div>
-                </section>
-
-                {/* Divider */}
-                <hr className="border-sage-border-subtle" />
-
-                {/* Action Buttons (claude.md: Button Guidelines) */}
-                <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                  {/* Primary CTA - Only one per view */}
-                  <Button
-                    type="submit"
-                    variant="primary"
-                    size="lg"
-                    isLoading={isPending}
-                    disabled={isPending || !isValid}
-                    fullWidth
-                    className="order-1"
-                    aria-label="Crear nueva mesa"
-                  >
-                    {isPending ? (
-                      <>
-                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                        Creando...
-                      </>
-                    ) : (
-                      <>
-                        <Check className="w-5 h-5 mr-2" />
-                        Crear Mesa
-                      </>
-                    )}
-                  </Button>
-
-                  {/* Secondary action */}
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="lg"
-                    onClick={() => navigate(ROUTES.TABLES)}
-                    disabled={isPending}
-                    fullWidth
-                    className="order-2 sm:order-1"
-                  >
-                    Cancelar
-                  </Button>
-                </div>
-              </form>
+              {/* Location - Optional */}
+              <div>
+                <Input
+                  label="Ubicación"
+                  type="text"
+                  placeholder="Ej: Terraza, Ventana, Interior..."
+                  {...register("location")}
+                  error={errors.location?.message}
+                  helperText="Opcional"
+                  fullWidth
+                />
+              </div>
             </Card>
-          </div>
 
-          {/* Preview Section - 2 columns on large screens */}
-          <div className="lg:col-span-2 order-1 lg:order-2">
-            <div className="lg:sticky lg:top-24">
-              {/* Preview Card */}
-              <Card variant="bordered" padding="none" className="overflow-hidden">
-                {/* Preview Header */}
-                <div className="bg-sage-50 px-6 py-4 border-b border-sage-border-subtle">
-                  <div className="flex items-center gap-2 text-carbon-600">
-                    <Eye className="w-4 h-4" />
-                    <span className="text-sm font-medium">Vista Previa</span>
-                  </div>
-                </div>
+            {/* Section: Status */}
+            <Card variant="default" padding="lg" className="space-y-6">
+              {/* Section Header */}
+              <div className="pb-4 border-b border-sage-200/50">
+                <h2 className="text-lg font-medium text-carbon-800">
+                  Estado Inicial
+                </h2>
+              </div>
 
-                {/* Preview Content */}
-                <div className="p-6">
-                  {/* Table Visual Representation */}
-                  <div
-                    className={cn(
-                      "aspect-square max-w-[200px] mx-auto rounded-2xl",
-                      "border-4 flex flex-col items-center justify-center",
-                      "transition-all duration-300",
-                      // Dynamic styling based on status
-                      formValues.status === TableStatus.AVAILABLE &&
-                        "bg-success-50 border-success-300",
-                      formValues.status === TableStatus.OCCUPIED &&
-                        "bg-error-50 border-error-300",
-                      formValues.status === TableStatus.NEEDS_CLEANING &&
-                        "bg-warning-50 border-warning-300"
-                    )}
-                  >
-                    {/* Table Number */}
-                    <span
+              {/* Status Options - Touch-friendly (min 56px height) */}
+              <div className="grid gap-3">
+                {statusOptions.map((option) => {
+                  const isSelected = formValues.status === option.value;
+                  return (
+                    <label
+                      key={option.value}
                       className={cn(
-                        "text-5xl font-bold transition-all duration-300",
-                        formValues.number ? "opacity-100" : "opacity-30"
+                        // Base - Touch-friendly
+                        "flex items-center gap-4 p-4 rounded-xl cursor-pointer",
+                        "min-h-[60px]", // Touch target > 48px
+                        "border-2 transition-all duration-200",
+                        // States
+                        isSelected
+                          ? "border-sage-green-400 bg-sage-green-50/50"
+                          : "border-sage-200 bg-white hover:border-sage-300 hover:bg-sage-50/30",
+                        // Focus
+                        "focus-within:ring-2 focus-within:ring-sage-green-300 focus-within:ring-offset-2"
                       )}
                     >
-                      {formValues.number || "#"}
-                    </span>
-
-                    {/* Status Badge */}
-                    <div
-                      className={cn(
-                        "mt-3 px-3 py-1 rounded-full text-xs font-semibold",
-                        "transition-all duration-300",
-                        currentStatus.color
-                      )}
-                    >
-                      {currentStatus.icon} {currentStatus.label}
-                    </div>
-                  </div>
-
-                  {/* Preview Details */}
-                  <div className="mt-6 space-y-3">
-                    {/* Number */}
-                    <div className="flex items-center justify-between py-2 border-b border-sage-border-subtle">
-                      <span className="text-sm text-carbon-500">Número</span>
-                      <span
-                        className={cn(
-                          "font-semibold transition-all duration-200",
-                          formValues.number
-                            ? "text-carbon-900"
-                            : "text-carbon-300"
-                        )}
-                      >
-                        {formValues.number || "Sin asignar"}
+                      <input
+                        type="radio"
+                        value={option.value}
+                        {...register("status")}
+                        className="sr-only"
+                      />
+                      
+                      {/* Emoji indicator */}
+                      <span className="text-2xl" aria-hidden="true">
+                        {option.emoji}
                       </span>
-                    </div>
-
-                    {/* Location */}
-                    <div className="flex items-center justify-between py-2 border-b border-sage-border-subtle">
-                      <span className="text-sm text-carbon-500">Ubicación</span>
-                      <span
-                        className={cn(
-                          "font-semibold transition-all duration-200",
-                          formValues.location
-                            ? "text-carbon-900"
-                            : "text-carbon-300"
-                        )}
-                      >
-                        {formValues.location || "Sin especificar"}
-                      </span>
-                    </div>
-
-                    {/* Status */}
-                    <div className="flex items-center justify-between py-2">
-                      <span className="text-sm text-carbon-500">Estado</span>
-                      <span
-                        className={cn(
-                          "px-2 py-0.5 rounded-lg text-sm font-semibold",
-                          currentStatus.color
-                        )}
-                      >
-                        {currentStatus.label}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Validation Summary */}
-                  {isFormTouched && (
-                    <div
-                      className={cn(
-                        "mt-6 p-4 rounded-xl transition-all duration-300",
-                        isValid
-                          ? "bg-success-50 border border-success-200"
-                          : "bg-warning-50 border border-warning-200"
-                      )}
-                    >
-                      <div className="flex items-center gap-2">
-                        {isValid ? (
-                          <>
-                            <CircleCheck className="w-5 h-5 text-success-600" />
-                            <span className="text-sm font-medium text-success-700">
-                              ¡Listo para crear!
-                            </span>
-                          </>
-                        ) : (
-                          <>
-                            <CircleAlert className="w-5 h-5 text-warning-600" />
-                            <span className="text-sm font-medium text-warning-700">
-                              Completa los campos requeridos
-                            </span>
-                          </>
-                        )}
+                      
+                      {/* Label */}
+                      <div className="flex-1">
+                        <div className="font-medium text-carbon-800">
+                          {option.label}
+                        </div>
+                        <div className="text-sm text-carbon-500">
+                          {option.description}
+                        </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              </Card>
+                      
+                      {/* Selected indicator */}
+                      {isSelected && (
+                        <div className="w-6 h-6 rounded-full bg-sage-green-500 flex items-center justify-center">
+                          <Check className="w-4 h-4 text-white" />
+                        </div>
+                      )}
+                    </label>
+                  );
+                })}
+              </div>
+            </Card>
 
-              {/* Quick Tips */}
-              <div className="mt-4 p-4 bg-info-50 rounded-xl border border-info-200">
-                <p className="text-sm text-info-700">
-                  <span className="font-semibold">💡 Consejo:</span> Usa números
-                  simples (1, 2, 3) o códigos de zona (A1, B2) para facilitar la
-                  identificación.
-                </p>
+            {/* Actions - Sticky on mobile */}
+            <div className="sticky bottom-6 pt-4">
+              <div className="flex flex-col sm:flex-row gap-3">
+                {/* Primary CTA - Touch-friendly */}
+                <Button
+                  type="submit"
+                  variant="primary"
+                  size="lg"
+                  isLoading={isPending}
+                  disabled={isPending || !isValid}
+                  fullWidth
+                  className="min-h-[52px] text-base"
+                >
+                  {isPending ? (
+                    <>
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      Creando...
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-5 h-5 mr-2" />
+                      Crear Mesa
+                    </>
+                  )}
+                </Button>
+
+                {/* Cancel */}
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="lg"
+                  onClick={() => navigate(ROUTES.TABLES)}
+                  disabled={isPending}
+                  className="min-h-[52px] sm:w-auto"
+                >
+                  Cancelar
+                </Button>
               </div>
             </div>
+          </form>
+        </div>
+
+        {/* Preview Section - Sticky */}
+        <div className="order-1 lg:order-2">
+          <div className="lg:sticky lg:top-24">
+            <TablePreview
+              tableData={{
+                number: formValues.number,
+                location: formValues.location,
+                status: formValues.status,
+              }}
+            />
           </div>
         </div>
       </div>
-    </FullScreenLayout>
+    </SidebarLayout>
   );
 }

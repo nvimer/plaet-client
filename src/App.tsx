@@ -157,14 +157,12 @@ const App = () => {
           }
         />
 
-        {/* Tables - Create (Full Screen) */}
+        {/* Tables - Create (Sidebar Layout) */}
         <Route
           path={ROUTES.TABLE_CREATE}
           element={
             <PrivateRoute>
-              <FullScreenLayout>
-                <TableCreatePage />
-              </FullScreenLayout>
+              <TableCreatePage />
             </PrivateRoute>
           }
         />
