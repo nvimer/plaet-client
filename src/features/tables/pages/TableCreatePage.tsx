@@ -6,7 +6,6 @@ import type { AxiosErrorWithResponse } from "@/types/common";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { Button, Input } from "@/components";
 import { useCreateTable } from "../hooks";
-import { TablePreview } from "../components/TablePreview";
 import {
   createTableSchema,
   type CreateTableInput,
@@ -19,7 +18,8 @@ import { cn } from "@/utils/cn";
 /**
  * TableCreatePage Component
  *
- * Clean, centered layout with form and preview side by side.
+ * Full-width, clean form for creating tables.
+ * Modern 2025 UX: Simple, spacious, touch-friendly.
  */
 export function TableCreatePage() {
   const navigate = useNavigate();
@@ -30,7 +30,6 @@ export function TableCreatePage() {
     handleSubmit,
     control,
     formState: { errors, isValid },
-    watch,
   } = useForm<CreateTableInput>({
     resolver: zodResolver(createTableSchema),
     defaultValues: {
@@ -41,13 +40,11 @@ export function TableCreatePage() {
     mode: "onChange",
   });
 
-  const formValues = watch();
-
   const onSubmit = (data: CreateTableInput) => {
     createTable(data, {
       onSuccess: () => {
         toast.success("Mesa creada exitosamente", {
-          description: `Mesa #${data.number} lista para usar`,
+          description: `Mesa "${data.number}" lista para usar`,
         });
         navigate(ROUTES.TABLES);
       },
@@ -63,59 +60,94 @@ export function TableCreatePage() {
     {
       value: TableStatus.AVAILABLE,
       label: "Disponible",
+      description: "Lista para recibir clientes",
       icon: CircleCheck,
-      color: "emerald",
+      selectedClass: "border-emerald-500 bg-emerald-50 ring-2 ring-emerald-500/20",
+      iconClass: "text-emerald-500",
     },
     {
       value: TableStatus.OCCUPIED,
       label: "Ocupada",
+      description: "En uso actualmente",
       icon: CircleDot,
-      color: "rose",
+      selectedClass: "border-rose-500 bg-rose-50 ring-2 ring-rose-500/20",
+      iconClass: "text-rose-500",
     },
     {
       value: TableStatus.NEEDS_CLEANING,
       label: "Limpieza",
+      description: "Requiere atención",
       icon: Clock,
-      color: "amber",
+      selectedClass: "border-amber-500 bg-amber-50 ring-2 ring-amber-500/20",
+      iconClass: "text-amber-500",
     },
   ];
 
   return (
     <SidebarLayout
       title="Nueva Mesa"
-      subtitle="Crear mesa para el restaurante"
       backRoute={ROUTES.TABLES}
+      fullWidth
+      contentClassName="p-6 lg:p-10"
     >
-      {/* Centered Content Card */}
-      <div className="bg-white rounded-2xl border border-sage-200/60 shadow-sm overflow-hidden">
-        <div className="grid lg:grid-cols-[1fr,280px]">
-          {/* Form Section */}
-          <div className="p-6 lg:p-8">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+      <div className="max-w-2xl mx-auto">
+        {/* Header */}
+        <div className="mb-10">
+          <h2 className="text-2xl lg:text-3xl font-semibold text-carbon-900 mb-2">
+            Crear Nueva Mesa
+          </h2>
+          <p className="text-carbon-500">
+            Configura los detalles de la nueva mesa para tu restaurante
+          </p>
+        </div>
+
+        {/* Form Card */}
+        <div className="bg-white rounded-2xl border border-sage-200 shadow-sm">
+          <form onSubmit={handleSubmit(onSubmit)}>
+            {/* Form Fields */}
+            <div className="p-6 lg:p-8 space-y-8">
               {/* Table Number */}
-              <Input
-                label="Número de Mesa"
-                type="text"
-                placeholder="Ej: 1, 2, A1, VIP-1..."
-                {...register("number")}
-                error={errors.number?.message}
-                fullWidth
-                autoFocus
-              />
+              <div>
+                <label className="block text-sm font-semibold text-carbon-800 mb-3">
+                  Número o Nombre de la Mesa
+                </label>
+                <Input
+                  type="text"
+                  placeholder="Ej: 1, 2, A1, VIP-1, Terraza-3..."
+                  {...register("number")}
+                  error={errors.number?.message}
+                  fullWidth
+                  autoFocus
+                  className="text-lg"
+                />
+                <p className="mt-2 text-sm text-carbon-400">
+                  Identificador único para esta mesa
+                </p>
+              </div>
 
               {/* Location */}
-              <Input
-                label="Ubicación (opcional)"
-                type="text"
-                placeholder="Ej: Terraza, Interior, Ventana..."
-                {...register("location")}
-                error={errors.location?.message}
-                fullWidth
-              />
+              <div>
+                <label className="block text-sm font-semibold text-carbon-800 mb-3">
+                  Ubicación
+                  <span className="font-normal text-carbon-400 ml-2">
+                    (opcional)
+                  </span>
+                </label>
+                <Input
+                  type="text"
+                  placeholder="Ej: Terraza, Salón principal, Junto a la ventana..."
+                  {...register("location")}
+                  error={errors.location?.message}
+                  fullWidth
+                />
+                <p className="mt-2 text-sm text-carbon-400">
+                  Ayuda al personal a ubicar la mesa rápidamente
+                </p>
+              </div>
 
               {/* Status Selection */}
-              <div className="space-y-2">
-                <label className="text-sm font-medium text-carbon-700">
+              <div>
+                <label className="block text-sm font-semibold text-carbon-800 mb-3">
                   Estado Inicial
                 </label>
 
@@ -123,7 +155,7 @@ export function TableCreatePage() {
                   name="status"
                   control={control}
                   render={({ field }) => (
-                    <div className="flex gap-2">
+                    <div className="grid sm:grid-cols-3 gap-3">
                       {statusOptions.map((option) => {
                         const isSelected = field.value === option.value;
                         const Icon = option.icon;
@@ -134,20 +166,43 @@ export function TableCreatePage() {
                             type="button"
                             onClick={() => field.onChange(option.value)}
                             className={cn(
-                              "flex-1 flex items-center justify-center gap-2 py-3 px-4 rounded-xl",
-                              "border-2 transition-all duration-200",
-                              "text-sm font-medium",
+                              "relative p-4 rounded-xl text-left transition-all duration-200",
+                              "border-2",
                               isSelected
-                                ? option.color === "emerald"
-                                  ? "border-emerald-400 bg-emerald-50 text-emerald-700"
-                                  : option.color === "rose"
-                                    ? "border-rose-400 bg-rose-50 text-rose-700"
-                                    : "border-amber-400 bg-amber-50 text-amber-700"
-                                : "border-sage-200 bg-white text-carbon-600 hover:border-sage-300 hover:bg-sage-50"
+                                ? option.selectedClass
+                                : "border-sage-200 bg-white hover:border-sage-300 hover:bg-sage-50/50"
                             )}
                           >
-                            <Icon className="w-4 h-4" />
-                            {option.label}
+                            <div className="flex items-center gap-3 mb-2">
+                              <Icon
+                                className={cn(
+                                  "w-5 h-5",
+                                  isSelected
+                                    ? option.iconClass
+                                    : "text-carbon-400"
+                                )}
+                              />
+                              <span
+                                className={cn(
+                                  "font-medium",
+                                  isSelected
+                                    ? "text-carbon-900"
+                                    : "text-carbon-700"
+                                )}
+                              >
+                                {option.label}
+                              </span>
+                            </div>
+                            <p className="text-xs text-carbon-400 pl-8">
+                              {option.description}
+                            </p>
+
+                            {/* Check indicator */}
+                            {isSelected && (
+                              <div className="absolute top-3 right-3">
+                                <Check className={cn("w-4 h-4", option.iconClass)} />
+                              </div>
+                            )}
                           </button>
                         );
                       })}
@@ -155,14 +210,18 @@ export function TableCreatePage() {
                   )}
                 />
               </div>
+            </div>
 
-              {/* Action Buttons */}
-              <div className="flex gap-3 pt-4">
+            {/* Action Buttons */}
+            <div className="px-6 lg:px-8 py-5 bg-sage-50/50 border-t border-sage-200 rounded-b-2xl">
+              <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
                 <Button
                   type="button"
                   variant="ghost"
+                  size="lg"
                   onClick={() => navigate(ROUTES.TABLES)}
                   disabled={isPending}
+                  className="sm:min-w-[120px]"
                 >
                   Cancelar
                 </Button>
@@ -170,37 +229,26 @@ export function TableCreatePage() {
                 <Button
                   type="submit"
                   variant="primary"
+                  size="lg"
                   isLoading={isPending}
                   disabled={isPending || !isValid}
-                  className="flex-1"
+                  className="sm:min-w-[180px]"
                 >
                   {isPending ? (
                     <>
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                       Creando...
                     </>
                   ) : (
                     <>
-                      <Check className="w-4 h-4 mr-2" />
+                      <Check className="w-5 h-5 mr-2" />
                       Crear Mesa
                     </>
                   )}
                 </Button>
               </div>
-            </form>
-          </div>
-
-          {/* Preview Section - Right side */}
-          <div className="bg-sage-50/50 border-t lg:border-t-0 lg:border-l border-sage-200/50 p-6">
-            <TablePreview
-              tableData={{
-                number: formValues.number || "",
-                location: formValues.location || "",
-                status: formValues.status,
-              }}
-              compact
-            />
-          </div>
+            </div>
+          </form>
         </div>
       </div>
     </SidebarLayout>
