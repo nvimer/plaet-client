@@ -15,7 +15,8 @@ import { useNavigate } from "react-router-dom";
 import { useMemo } from "react";
 
 export function DashboardPage() {
-  const { data: tables } = useTables();
+  const { data } = useTables();
+  const tables = data?.tables;
   // Helper function to get today's date filter
   const getTodayFilter = () => {
     const today = new Date();

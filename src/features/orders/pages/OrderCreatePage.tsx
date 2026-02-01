@@ -38,7 +38,8 @@ import type { MenuItem } from "@/types";
 export function OrderCreatePage() {
   const navigate = useNavigate();
   const { data: menuItems } = useItems();
-  const { data: tables } = useTables();
+  const { data: tablesData } = useTables();
+  const tables = tablesData?.tables;
   const { mutate: createOrder, isPending } = useCreateOrder();
 
   // State

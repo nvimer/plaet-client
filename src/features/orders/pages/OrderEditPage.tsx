@@ -28,7 +28,8 @@ import {
 export function OrderEditPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data: tables } = useTables();
+  const { data: tablesData } = useTables();
+  const tables = tablesData?.tables;
   const { data: order, isLoading, error } = useOrder(id);
   const { mutate: updateOrder, isPending } = useUpdateOrder();
 
