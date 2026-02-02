@@ -3,7 +3,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TableStatus } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
-import { FullScreenLayout } from "@/layouts/FullScreenLayout";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
 import {
   Button,
   Input,
@@ -23,14 +23,56 @@ import {
 } from "../schemas/tableSchemas";
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
-import { Check, Trash2, XCircle } from "lucide-react";
+import {
+  Check,
+  Loader2,
+  Trash2,
+  XCircle,
+  MapPin,
+  Hash,
+  CircleCheck,
+  CircleDot,
+  Clock,
+  Edit2,
+} from "lucide-react";
 import { useState } from "react";
-import { TableStatusBadge } from "../components/TableStatusBadge";
+import { cn } from "@/utils/cn";
+
+const STATUS_CONFIG = {
+  [TableStatus.AVAILABLE]: {
+    label: "Disponible",
+    icon: CircleCheck,
+    bg: "bg-emerald-50",
+    border: "border-emerald-200",
+    text: "text-emerald-700",
+    pill: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    button: "border-emerald-400 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-100",
+  },
+  [TableStatus.OCCUPIED]: {
+    label: "Ocupada",
+    icon: CircleDot,
+    bg: "bg-rose-50",
+    border: "border-rose-200",
+    text: "text-rose-700",
+    pill: "bg-rose-100 text-rose-700 border-rose-200",
+    button: "border-rose-400 bg-rose-50 text-rose-700 ring-2 ring-rose-100",
+  },
+  [TableStatus.NEEDS_CLEANING]: {
+    label: "Limpieza",
+    icon: Clock,
+    bg: "bg-amber-50",
+    border: "border-amber-200",
+    text: "text-amber-700",
+    pill: "bg-amber-100 text-amber-700 border-amber-200",
+    button: "border-amber-400 bg-amber-50 text-amber-700 ring-2 ring-amber-100",
+  },
+} as const;
 
 /**
  * TableManagePage Component
  *
- * Full-screen page for managing a table (view, edit, delete, change status).
+ * Manage a single table: view/edit details, change status, delete.
+ * Uses SidebarLayout and new design system (sage, carbon, semantic colors).
  */
 export function TableManagePage() {
   const { id } = useParams<{ id: string }>();
@@ -52,39 +94,46 @@ export function TableManagePage() {
     resolver: zodResolver(updateTableSchema),
     values: table
       ? {
-        number: table.number,
-        location: table.location || "",
-        status: table.status,
-      }
+          number: table.number,
+          location: table.location || "",
+          status: table.status,
+        }
       : undefined,
   });
 
-  // Loading state
   if (isLoading) {
     return (
-      <FullScreenLayout title="Cargando..." backRoute={ROUTES.TABLES}>
+      <SidebarLayout
+        title="Cargando..."
+        backRoute={ROUTES.TABLES}
+        contentClassName="p-6 lg:p-8"
+      >
         <div className="max-w-2xl mx-auto space-y-6">
-          <Skeleton className="h-32" />
-          <Skeleton className="h-64" />
+          <Skeleton className="h-24 rounded-2xl" />
+          <Skeleton className="h-64 rounded-2xl" />
         </div>
-      </FullScreenLayout>
+      </SidebarLayout>
     );
   }
 
-  // Error state
   if (error || !table) {
     return (
-      <FullScreenLayout title="Error" backRoute={ROUTES.TABLES}>
-        <EmptyState
-          icon={<XCircle />}
-          title="Mesa no encontrada"
-          description="La mesa que buscas no existe o fue eliminada"
-          actionLabel="Volver a Mesas"
-          onAction={() => navigate(ROUTES.TABLES)}
-        />
-      </FullScreenLayout>
+      <SidebarLayout title="Error" backRoute={ROUTES.TABLES}>
+        <div className="max-w-md mx-auto py-12">
+          <EmptyState
+            icon={<XCircle />}
+            title="Mesa no encontrada"
+            description="La mesa que buscas no existe o fue eliminada"
+            actionLabel="Volver a Mesas"
+            onAction={() => navigate(ROUTES.TABLES)}
+          />
+        </div>
+      </SidebarLayout>
     );
   }
+
+  const config = STATUS_CONFIG[table.status];
+  const StatusIcon = config.icon;
 
   const onSubmit = (data: UpdateTableInput) => {
     updateTable(
@@ -92,18 +141,16 @@ export function TableManagePage() {
       {
         onSuccess: () => {
           toast.success("Mesa actualizada", {
-            description: `La mesa #${data.number || table.number} ha sido actualizada`,
-            icon: "✅",
+            description: `Mesa "${data.number || table.number}" actualizada`,
           });
           setIsEditing(false);
         },
         onError: (error: AxiosErrorWithResponse) => {
-          toast.error("Error al actualizar mesa", {
+          toast.error("Error al actualizar", {
             description: error.response?.data?.message || error.message,
-            icon: "❌",
           });
         },
-      },
+      }
     );
   };
 
@@ -112,176 +159,226 @@ export function TableManagePage() {
       { id: table.id, status: newStatus },
       {
         onSuccess: () => {
-          toast.success("Estado actualizado", { icon: "✅" });
+          const labels: Record<TableStatus, string> = {
+            [TableStatus.AVAILABLE]: "disponible",
+            [TableStatus.OCCUPIED]: "ocupada",
+            [TableStatus.NEEDS_CLEANING]: "en limpieza",
+          };
+          toast.success("Estado actualizado", {
+            description: `Mesa ahora está ${labels[newStatus]}`,
+          });
         },
         onError: (error: AxiosErrorWithResponse) => {
           toast.error("Error al actualizar estado", {
             description: error.response?.data?.message || error.message,
           });
         },
-      },
+      }
     );
   };
 
   const handleDelete = () => {
     deleteTable(table.id, {
       onSuccess: () => {
-        toast.success("Mesa eliminada", { icon: "🗑️" });
+        toast.success("Mesa eliminada", { description: `Mesa ${table.number} eliminada` });
         navigate(ROUTES.TABLES);
       },
       onError: (error: AxiosErrorWithResponse) => {
-        toast.error("Error al eliminar mesa", {
+        toast.error("Error al eliminar", {
           description: error.response?.data?.message || error.message,
         });
       },
     });
   };
 
+  const statusOptions = [
+    { value: TableStatus.AVAILABLE, label: "Disponible", icon: CircleCheck },
+    { value: TableStatus.OCCUPIED, label: "Ocupada", icon: CircleDot },
+    { value: TableStatus.NEEDS_CLEANING, label: "Limpieza", icon: Clock },
+  ] as const;
+
   return (
     <>
-      <FullScreenLayout
-        title={`Mesa #${table.number}`}
+      <SidebarLayout
+        title={`Mesa ${table.number}`}
         subtitle={table.location || "Sin ubicación"}
         backRoute={ROUTES.TABLES}
+        contentClassName="p-6 lg:p-8"
       >
-        <div className="max-w-2xl mx-auto space-y-6">
-          {/* Status Badge */}
-          <div className="flex items-center gap-4">
-            <TableStatusBadge status={table.status} />
+        <div className="max-w-2xl mx-auto">
+          {/* Status pill */}
+          <div className="mb-8">
+            <span
+              className={cn(
+                "inline-flex items-center gap-2 px-3 py-1.5 rounded-full",
+                "text-sm font-medium border",
+                config.pill
+              )}
+            >
+              <StatusIcon className="w-4 h-4" />
+              {config.label}
+            </span>
           </div>
 
-          {isEditing ? (
-            /* Edit Form */
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-              <Input
-                label="Número de mesa"
-                type="text"
-                {...register("number")}
-                error={errors.number?.message}
-                fullWidth
-              />
-
-              <Input
-                label="Ubicación"
-                type="text"
-                {...register("location")}
-                error={errors.location?.message}
-                fullWidth
-              />
-
-              <div className="flex gap-4 pt-4">
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="lg"
-                  isLoading={isUpdating}
-                  disabled={isUpdating}
-                  fullWidth
-                >
-                  {!isUpdating && <Check className="w-5 h-5 mr-2" />}
-                  Guardar Cambios
-                </Button>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="lg"
-                  onClick={() => {
-                    setIsEditing(false);
-                    reset();
-                  }}
-                  disabled={isUpdating}
-                  fullWidth
-                >
-                  Cancelar
-                </Button>
-              </div>
-            </form>
-          ) : (
-            /* View Mode */
-            <>
-              <div className="space-y-4">
-                <div>
-                  <label className="text-sm font-medium text-carbon-600">
-                    Número de mesa
-                  </label>
-                  <p className="text-2xl font-bold text-carbon-900 mt-1">
-                    {table.number}
-                  </p>
-                </div>
-
-                {table.location && (
+          <div className="bg-white rounded-2xl border border-sage-200 shadow-sm overflow-hidden">
+            {isEditing ? (
+              /* Edit form */
+              <form onSubmit={handleSubmit(onSubmit)}>
+                <div className="p-6 lg:p-8 space-y-6">
                   <div>
-                    <label className="text-sm font-medium text-carbon-600">
-                      Ubicación
+                    <label className="flex items-center gap-2 text-sm font-semibold text-carbon-800 mb-2">
+                      <Hash className="w-4 h-4 text-sage-500" />
+                      Número de mesa
                     </label>
-                    <p className="text-lg text-carbon-900 mt-1">
-                      {table.location}
+                    <Input
+                      type="text"
+                      placeholder="Ej: 1, A1, VIP-1..."
+                      {...register("number")}
+                      error={errors.number?.message}
+                      fullWidth
+                    />
+                  </div>
+
+                  <div>
+                    <label className="flex items-center gap-2 text-sm font-semibold text-carbon-800 mb-2">
+                      <MapPin className="w-4 h-4 text-blue-500" />
+                      Ubicación (opcional)
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder="Ej: Terraza, Salón principal..."
+                      {...register("location")}
+                      error={errors.location?.message}
+                      fullWidth
+                    />
+                  </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="lg"
+                      onClick={() => {
+                        setIsEditing(false);
+                        reset();
+                      }}
+                      disabled={isUpdating}
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      size="lg"
+                      isLoading={isUpdating}
+                      disabled={isUpdating}
+                      className="flex-1"
+                    >
+                      {isUpdating ? (
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                      ) : (
+                        <Check className="w-5 h-5 mr-2" />
+                      )}
+                      Guardar cambios
+                    </Button>
+                  </div>
+                </div>
+              </form>
+            ) : (
+              /* View mode */
+              <div className="p-6 lg:p-8 space-y-8">
+                <div className="space-y-6">
+                  <div>
+                    <label className="text-sm font-medium text-carbon-500">
+                      Número de mesa
+                    </label>
+                    <p className="text-2xl font-bold text-carbon-900 mt-1">
+                      {table.number}
                     </p>
                   </div>
-                )}
-              </div>
+                  {table.location && (
+                    <div>
+                      <label className="text-sm font-medium text-carbon-500">
+                        Ubicación
+                      </label>
+                      <p className="text-lg text-carbon-800 mt-1 flex items-center gap-2">
+                        <MapPin className="w-4 h-4 text-carbon-400" />
+                        {table.location}
+                      </p>
+                    </div>
+                  )}
+                </div>
 
-              {/* Quick Status Change */}
-              <div>
-                <label className="text-sm font-medium text-carbon-600 mb-3 block">
-                  Cambiar Estado
-                </label>
-                <div className="grid grid-cols-3 gap-3">
-                  {Object.values(TableStatus).map((status) => (
-                    <Button
-                      key={status}
-                      onClick={() => handleStatusChange(status)}
-                      disabled={isUpdatingStatus || table.status === status}
-                      variant={table.status === status ? "primary" : "outline"}
-                      size="lg"
-                      className={
-                        table.status === status
-                          ? "border-sage-green-400 bg-sage-green-50 text-sage-green-700"
-                          : ""
-                      }
-                      isLoading={isUpdatingStatus}
-                    >
-                      {status === TableStatus.AVAILABLE && "Disponible"}
-                      {status === TableStatus.OCCUPIED && "Ocupada"}
-                      {status === TableStatus.NEEDS_CLEANING && "Limpieza"}
-                    </Button>
-                  ))}
+                {/* Quick status change */}
+                <div>
+                  <label className="text-sm font-semibold text-carbon-800 mb-3 block">
+                    Cambiar estado
+                  </label>
+                  <div className="flex flex-wrap gap-3">
+                    {statusOptions.map((option) => {
+                      const isActive = table.status === option.value;
+                      const Icon = option.value === TableStatus.AVAILABLE
+                        ? CircleCheck
+                        : option.value === TableStatus.OCCUPIED
+                          ? CircleDot
+                          : Clock;
+                      const optConfig = STATUS_CONFIG[option.value];
+                      return (
+                        <button
+                          key={option.value}
+                          type="button"
+                          onClick={() => handleStatusChange(option.value)}
+                          disabled={isUpdatingStatus || isActive}
+                          className={cn(
+                            "flex items-center gap-2 px-4 py-3 rounded-xl",
+                            "border-2 text-sm font-medium transition-all",
+                            isActive
+                              ? optConfig.button
+                              : "border-sage-200 bg-white text-carbon-600 hover:border-sage-300 hover:bg-sage-50"
+                          )}
+                        >
+                          <Icon className="w-5 h-5" />
+                          {option.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-3 pt-6 border-t border-sage-100">
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    onClick={() => setIsEditing(true)}
+                    className="flex-1 min-h-[44px]"
+                  >
+                    <Edit2 className="w-5 h-5 mr-2" />
+                    Editar mesa
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="lg"
+                    onClick={() => setShowDeleteConfirm(true)}
+                    disabled={isDeleting}
+                    className="flex-1 min-h-[44px] text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+                  >
+                    <Trash2 className="w-5 h-5 mr-2" />
+                    Eliminar
+                  </Button>
                 </div>
               </div>
-
-              {/* Actions */}
-              <div className="flex gap-4 pt-4 border-t border-sage-border-subtle">
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={() => setIsEditing(true)}
-                  fullWidth
-                >
-                  Editar Mesa
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="lg"
-                  onClick={() => setShowDeleteConfirm(true)}
-                  className="text-red-600 hover:bg-red-50"
-                  fullWidth
-                >
-                  <Trash2 className="w-5 h-5 mr-2" />
-                  Eliminar
-                </Button>
-              </div>
-            </>
-          )}
+            )}
+          </div>
         </div>
-      </FullScreenLayout>
+      </SidebarLayout>
 
-      {/* Delete Confirmation */}
       <ConfirmDialog
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}
         onConfirm={handleDelete}
-        title="Eliminar Mesa"
-        message={`¿Estás seguro de eliminar la mesa #${table.number}? Esta acción no se puede deshacer.`}
+        title="Eliminar mesa"
+        message={`¿Eliminar la mesa ${table.number}? Esta acción no se puede deshacer.`}
         confirmText="Eliminar"
         cancelText="Cancelar"
         variant="danger"
