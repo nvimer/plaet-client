@@ -41,20 +41,16 @@ export function TablesPage() {
         navigate(getTableManageRoute(tableId));
     };
 
-    // =============== LOADING STATE =============
+    // Loading state
     if (isLoading) {
         return (
             <>
-                {/* =========== PAGE HEADER SKELETON ============== */}
-                <div className="mb-12">
-                    {/* Title skeleton  */}
-                    <Skeleton variant="text" width={256} height={40} className="mb-3" />
-                    <Skeleton variant="text" width={384} height={24} />
+                <div className="mb-8">
+                    <Skeleton variant="text" width={240} height={32} className="mb-2" />
+                    <Skeleton variant="text" width={320} height={20} />
                 </div>
-
-                <Skeleton variant="card" height={64} className="mb-8" />
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <Skeleton variant="card" height={56} className="mb-6" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                     {[...Array(6)].map((_, i) => (
                         <Skeleton key={i} variant="card" />
                     ))}
@@ -94,25 +90,28 @@ export function TablesPage() {
     // ======== MAIN RENDER ========
     return (
         <>
-            {/* ======== PAGE HEADER ======= */}
-            <div className="flex items-center justify-between mb-6">
+            {/* Page Header */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
                 <div>
-                    <h1 className="text-3xl font-semibold text-carbon-900 tracking-tight">
+                    <h1 className="text-2xl sm:text-3xl font-semibold text-carbon-900 tracking-tight">
                         Gestión de Mesas
                     </h1>
-                    <p className="text-sm text-neutral-600 font-light">
-                        Administra las mesas del restaurante eficientemente
+                    <p className="text-sm text-carbon-500 mt-1">
+                        Administra las mesas del restaurante
                     </p>
                 </div>
-
-                {/* New Table Button  */}
-                <Button size="lg" variant="primary" onClick={handleCreateTable}>
+                <Button
+                    size="lg"
+                    variant="primary"
+                    onClick={handleCreateTable}
+                    className="w-full sm:w-auto min-h-[44px]"
+                >
                     <Plus className="w-5 h-5 mr-2" />
                     Nueva Mesa
                 </Button>
             </div>
 
-            {/* ========== FILTER PANEL ============ */}
+            {/* Filter Panel */}
             <AdaptiveFilterPanel
                 filters={filters}
                 onFilterChange={updateFilter}
@@ -121,33 +120,34 @@ export function TablesPage() {
                 className="mb-6"
             />
 
-            {/* ========== ACTIVE FILTER CHIPS ============ */}
+            {/* Active Filter Chips */}
             {hasActiveFilters && (
-                <div className="mb-8">
+                <div className="mb-6">
                     <FilterChips
                         filters={activeFilterChips}
                         resultCount={filteredTables.length}
                         onClearFilter={(key) => {
-                            if (key === 'search') updateFilter('search', '');
-                            else if (key === 'status') updateFilter('status', 'ALL');
-                            else if (key === 'location') updateFilter('location', '');
+                            if (key === "search") updateFilter("search", "");
+                            else if (key === "status") updateFilter("status", "ALL");
+                            else if (key === "location") updateFilter("location", "");
                         }}
                         onClearAll={clearFilters}
                     />
                 </div>
             )}
 
-            {/* ============ RESULTS HEADER ========= */}
-            <div className="mb-8">
-                <h2 className="text-lg font-semibold text-carbon-900">
-                    {filteredTables.length} {filteredTables.length === 1 ? 'Mesa' : 'Mesas'}
-                    {hasActiveFilters && ' Encontradas'}
-                </h2>
+            {/* Results */}
+            <div className="mb-4">
+                <p className="text-sm font-medium text-carbon-600">
+                    {filteredTables.length}{" "}
+                    {filteredTables.length === 1 ? "mesa" : "mesas"}
+                    {hasActiveFilters && " encontradas"}
+                </p>
             </div>
 
-            {/* ============ TABLES GRID ========= */}
+            {/* Tables Grid */}
             {filteredTables && filteredTables.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                     {filteredTables.map((table) => (
                         <TableCard
                             key={table.id}

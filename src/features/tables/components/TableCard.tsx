@@ -2,247 +2,248 @@ import { TableStatus, type Table } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
 import { useUpdateTableStatus } from "../hooks";
 import { useDeleteTable } from "../hooks/useDeleteTable";
-import { Button, Card } from "@/components";
-import { MapPin, Edit2, Trash2 } from "lucide-react";
-import { Badge } from "@/components/ui/Badge/Badge";
+import { Button } from "@/components";
+import { MapPin, Edit2, Trash2, CircleCheck, CircleDot, Clock } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog/ConfirmDialog";
+import { cn } from "@/utils/cn";
 
-// ==================== TYPES / TIPOS ====================
 interface TableCardProps {
-    table: Table;
-    onEdit: () => void;
+  table: Table;
+  onEdit: () => void;
 }
+
+const STATUS_CONFIG = {
+  [TableStatus.AVAILABLE]: {
+    label: "Disponible",
+    icon: CircleCheck,
+    bg: "bg-emerald-50",
+    border: "border-emerald-200",
+    text: "text-emerald-700",
+    badge: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    accent: "bg-emerald-500",
+  },
+  [TableStatus.OCCUPIED]: {
+    label: "Ocupada",
+    icon: CircleDot,
+    bg: "bg-rose-50",
+    border: "border-rose-200",
+    text: "text-rose-700",
+    badge: "bg-rose-100 text-rose-700 border-rose-200",
+    accent: "bg-rose-500",
+  },
+  [TableStatus.NEEDS_CLEANING]: {
+    label: "Limpieza",
+    icon: Clock,
+    bg: "bg-amber-50",
+    border: "border-amber-200",
+    text: "text-amber-700",
+    badge: "bg-amber-100 text-amber-700 border-amber-200",
+    accent: "bg-amber-500",
+  },
+} as const;
 
 /**
  * TableCard Component
  *
- * Displays a single table with status and actions
- *
- * Features / Caracter?sticas:
- * - Visual table representation
- * - Status badge with colors
- * - Quick status change buttons
- * - Edit and delete actions
+ * Modern card for a single table: clear hierarchy, status accent, quick actions.
  */
 export function TableCard({ table, onEdit }: TableCardProps) {
-    // ================ STATE ===============
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const { mutate: updateStatus, isPending: isUpdatingStatus } = useUpdateTableStatus();
+  const { mutate: deleteTable, isPending: isDeleting } = useDeleteTable();
 
-    // ==================== HOOKS ====================
-    const { mutate: updateStatus, isPending: isUpdatingStatus } =
-        useUpdateTableStatus();
-    const { mutate: deleteTable, isPending: isDeleting } = useDeleteTable();
+  const config = STATUS_CONFIG[table.status];
+  const StatusIcon = config.icon;
 
-    // ==================== EVENT HANDLERS ====================
-    // Handle status change
-    const handleStatusChange = (newStatus: TableStatus) => {
-        updateStatus(
-            { id: table.id, status: newStatus },
-            {
-                onSuccess: () => {
-                    toast.success("Estado actualizado", {
-                        description: `La mesa #${table.number} ahora está ${newStatus === TableStatus.AVAILABLE
-                                ? "disponible"
-                                : newStatus === TableStatus.OCCUPIED
-                                    ? "ocupada"
-                                    : "en limpieza"
-                            }`,
-                        icon: "✅",
-                    });
-                },
-                onError: (error: AxiosErrorWithResponse) => {
-                    toast.error("Error al actualizar el estado", {
-                        description: error.response?.data?.message || error.message,
-                        icon: "❌",
-                    });
-                },
-            },
-        );
-    };
-
-    // Handle delete with confirmation
-    const handleDelete = () => {
-        deleteTable(table.id, {
-            onSuccess: () => {
-                toast.success("Mesa eliminada", {
-                    description: `La mesa #${table.number} ha sido eliminada`,
-                    icon: "🗑️",
-                });
-            },
-            onError: (error: AxiosErrorWithResponse) => {
-                toast.error("Error al eliminar mesa", {
-                    description: error.response?.data?.message || error.message,
-                    icon: "❌",
-                });
-            },
-        });
-    };
-
-    // ==================== STATUS VARIANTS  ====================
-    // Map table status to badge variant
-    const statusConfig = {
-        [TableStatus.AVAILABLE]: {
-            variant: "success" as const,
-            label: "Disponible",
-            borderColor: "border-sage-green-300",
-            bgColor: "bg-sage-green-50",
-            iconBg: "bg-sage-green-100",
-            iconText: "text-sage-green-700",
+  const handleStatusChange = (newStatus: TableStatus) => {
+    updateStatus(
+      { id: table.id, status: newStatus },
+      {
+        onSuccess: () => {
+          const labels: Record<TableStatus, string> = {
+            [TableStatus.AVAILABLE]: "disponible",
+            [TableStatus.OCCUPIED]: "ocupada",
+            [TableStatus.NEEDS_CLEANING]: "en limpieza",
+          };
+          toast.success("Estado actualizado", {
+            description: `Mesa ${table.number} ahora está ${labels[newStatus]}`,
+          });
         },
-        [TableStatus.OCCUPIED]: {
-            variant: "error" as const,
-            label: "Ocupada",
-            borderColor: "border-red-300",
-            bgColor: "bg-red-50",
-            iconBg: "bg-red-100",
-            iconText: "text-red-700",
+        onError: (error: AxiosErrorWithResponse) => {
+          toast.error("Error al actualizar", {
+            description: error.response?.data?.message || error.message,
+          });
         },
-        [TableStatus.NEEDS_CLEANING]: {
-            variant: "warning" as const,
-            label: "Limpieza",
-            borderColor: "border-yellow-300",
-            bgColor: "bg-yellow-50",
-            iconBg: "bg-yellow-100",
-            iconText: "text-yellow-700",
-        },
-    };
-
-    const currentStatus = statusConfig[table.status];
-
-    // ==================== RENDER ====================
-    return (
-        <>
-            <Card
-                variant="elevated"
-                padding="lg"
-                className={`transition-all duration-300 hover:shadow-soft-xl border-2 ${currentStatus.borderColor} hover:-translate-y-1`}
-            >
-                {/* ==================== HEADER ==================== */}
-                <div className="flex items-start justify-between mb-6">
-                    {/* Table Number Display */}
-                    <div className="flex items-center gap-4">
-                        {/* Large table number icon */}
-                        <div
-                            className={`w-16 h-16 ${currentStatus.iconBg} rounded-2xl flex items-center justify-center border-2 ${currentStatus.borderColor}`}
-                        >
-                            <span className={`text-2xl font-bold ${currentStatus.iconText}"`}>
-                                {table.number}
-                            </span>
-                        </div>
-
-                        {/* Table info */}
-                        <div>
-                            <h3 className="text-xl font-semibold text-carbon-900 mb-1">
-                                Mesa {table.number}
-                            </h3>
-                            {/* Location with icon  */}
-                            {table.location && (
-                                <div className="flex items-center gap-1.5 text-carbon-600">
-                                    <MapPin className="w-4 h-4" />
-                                    <span className="text-sm font-light">{table.location}</span>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-
-                    {/* Status Badge */}
-                    <Badge variant={currentStatus.variant} size="md">
-                        {currentStatus.label}
-                    </Badge>
-                </div>
-
-                {/* ==================== QUICK STATUS ACTIONS  ==================== */}
-                <div className="mb-6">
-                    <p className="text-sm font-medium text-carbon-700 mb-3">
-                        Cambiar estado:
-                    </p>
-
-                    {/* Status change buttons grid */}
-                    <div className="grid grid-cols-3 gap-2">
-                        {/* Available Button */}
-                        {table.status !== TableStatus.AVAILABLE && (
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleStatusChange(TableStatus.AVAILABLE)}
-                                disabled={isUpdatingStatus}
-                                className="text-sage-green-700 border-sage-green-300 hover:bg-sage-green-50"
-                            >
-                                Disponible
-                            </Button>
-                        )}
-
-                        {/* Occupied Button */}
-                        {table.status !== TableStatus.OCCUPIED && (
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleStatusChange(TableStatus.OCCUPIED)}
-                                disabled={isUpdatingStatus}
-                                className="text-red-700 border-red-300 hover:bg-red-50"
-                            >
-                                Ocupada
-                            </Button>
-                        )}
-
-                        {/* Cleaning Button  */}
-                        {table.status !== TableStatus.NEEDS_CLEANING && (
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => handleStatusChange(TableStatus.NEEDS_CLEANING)}
-                                disabled={isUpdatingStatus}
-                                className="text-yellow-700 border-yellow-300 hover:bg-yellow-50"
-                            >
-                                Limpieza
-                            </Button>
-                        )}
-                    </div>
-                </div>
-
-                {/* ==================== MAIN ACTIONS ==================== */}
-                <div className="flex gap-3 pt-6 border-t border-sage-border-subtle">
-                    {/* Edit Button */}
-                    <Button
-                        variant="ghost"
-                        size="md"
-                        onClick={onEdit}
-                        className="flex-1 group"
-                    >
-                        <Edit2 className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                        Editar
-                    </Button>
-
-                    {/* Delete Button */}
-                    <Button
-                        variant="ghost"
-                        size="md"
-                        onClick={() => setIsDeleteDialogOpen(true)}
-                        disabled={isDeleting}
-                        isLoading={isDeleting}
-                        className="flex-1 text-red-600 hover:bg-red-50 hover:text-red-700 group"
-                    >
-                        {!isDeleting && (
-                            <Trash2 className="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" />
-                        )}
-                        Eliminar
-                    </Button>
-                </div>
-            </Card>
-            {/* // =============== CONFIRM DIALOG ================== */}
-            <ConfirmDialog
-                isOpen={isDeleteDialogOpen}
-                onClose={() => setIsDeleteDialogOpen(false)}
-                onConfirm={handleDelete}
-                title="Eliminar Mesa"
-                message={`¿Estás seguro de que deseas eliminar la mesa #${table.number}? Esta acción no se puede deshacer.`}
-                confirmText="Eliminar"
-                cancelText="Cancelar"
-                variant="danger"
-                isLoading={isDeleting}
-            />
-        </>
+      }
     );
+  };
+
+  const handleDelete = () => {
+    deleteTable(table.id, {
+      onSuccess: () => {
+        toast.success("Mesa eliminada", { description: `Mesa ${table.number} eliminada` });
+      },
+      onError: (error: AxiosErrorWithResponse) => {
+        toast.error("Error al eliminar", {
+          description: error.response?.data?.message || error.message,
+        });
+      },
+    });
+  };
+
+  return (
+    <>
+      <article
+        className={cn(
+          "group relative overflow-hidden",
+          "bg-white rounded-2xl border-2 shadow-sm",
+          "transition-all duration-200",
+          "hover:shadow-md hover:border-sage-200",
+          config.border
+        )}
+      >
+        {/* Status accent bar */}
+        <div className={cn("h-1 w-full", config.accent)} aria-hidden />
+
+        <div className="p-5 sm:p-6">
+          {/* Header: number + location + status */}
+          <div className="flex items-start justify-between gap-4 mb-5">
+            <div className="min-w-0 flex-1">
+              <div
+                className={cn(
+                  "w-14 h-14 rounded-xl flex items-center justify-center mb-3",
+                  config.bg,
+                  "border border-current/10"
+                )}
+              >
+                <span
+                  className={cn(
+                    "text-2xl font-bold tracking-tight",
+                    config.text
+                  )}
+                >
+                  {table.number}
+                </span>
+              </div>
+              <h3 className="text-lg font-semibold text-carbon-900 truncate">
+                Mesa {table.number}
+              </h3>
+              {table.location && (
+                <div className="flex items-center gap-1.5 mt-1 text-carbon-500">
+                  <MapPin className="w-4 h-4 flex-shrink-0 text-carbon-400" />
+                  <span className="text-sm truncate">{table.location}</span>
+                </div>
+              )}
+            </div>
+            <div className="flex-shrink-0">
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full",
+                  "text-xs font-medium border",
+                  config.badge
+                )}
+              >
+                <StatusIcon className="w-3.5 h-3.5" />
+                {config.label}
+              </span>
+            </div>
+          </div>
+
+          {/* Quick status change */}
+          <div className="mb-5">
+            <p className="text-xs font-medium text-carbon-500 mb-2">
+              Cambiar estado
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {table.status !== TableStatus.AVAILABLE && (
+                <button
+                  type="button"
+                  onClick={() => handleStatusChange(TableStatus.AVAILABLE)}
+                  disabled={isUpdatingStatus}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg",
+                    "text-xs font-medium border transition-colors",
+                    "bg-emerald-50 border-emerald-200 text-emerald-700",
+                    "hover:bg-emerald-100 disabled:opacity-50"
+                  )}
+                >
+                  <CircleCheck className="w-3.5 h-3.5" />
+                  Disponible
+                </button>
+              )}
+              {table.status !== TableStatus.OCCUPIED && (
+                <button
+                  type="button"
+                  onClick={() => handleStatusChange(TableStatus.OCCUPIED)}
+                  disabled={isUpdatingStatus}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg",
+                    "text-xs font-medium border transition-colors",
+                    "bg-rose-50 border-rose-200 text-rose-700",
+                    "hover:bg-rose-100 disabled:opacity-50"
+                  )}
+                >
+                  <CircleDot className="w-3.5 h-3.5" />
+                  Ocupada
+                </button>
+              )}
+              {table.status !== TableStatus.NEEDS_CLEANING && (
+                <button
+                  type="button"
+                  onClick={() => handleStatusChange(TableStatus.NEEDS_CLEANING)}
+                  disabled={isUpdatingStatus}
+                  className={cn(
+                    "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg",
+                    "text-xs font-medium border transition-colors",
+                    "bg-amber-50 border-amber-200 text-amber-700",
+                    "hover:bg-amber-100 disabled:opacity-50"
+                  )}
+                >
+                  <Clock className="w-3.5 h-3.5" />
+                  Limpieza
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-2 pt-4 border-t border-sage-100">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={onEdit}
+              className="flex-1 min-h-[40px]"
+            >
+              <Edit2 className="w-4 h-4 mr-2" />
+              Gestionar
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsDeleteDialogOpen(true)}
+              disabled={isDeleting}
+              className="flex-1 min-h-[40px] text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Eliminar
+            </Button>
+          </div>
+        </div>
+      </article>
+
+      <ConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={handleDelete}
+        title="Eliminar mesa"
+        message={`¿Eliminar la mesa ${table.number}? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="danger"
+        isLoading={isDeleting}
+      />
+    </>
+  );
 }
