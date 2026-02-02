@@ -64,7 +64,7 @@ const BREADCRUMB_MAP: Array<{ path: string; items: BreadcrumbItem[] }> = [
     items: [
       { label: "Inicio", path: "/dashboard" },
       { label: "Menú", path: "/menu" },
-      { label: "Nuevo plato" },
+      { label: "Nuevo producto" },
     ],
   },
   {
@@ -120,7 +120,7 @@ export function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
   // /tables/123/edit -> not used (we don't have edit for tables)
   // /orders/123 -> Pedidos > Pedido #123
   // /orders/123/edit -> Pedidos > Pedido #123 > Editar
-  // /menu/items/123/edit -> Menú > Platos > Editar
+  // /menu/items/123/edit -> Menú > Productos > Editar
   // /menu/categories/123/edit -> Menú > Categorías > Editar
   // /users/123/edit -> Usuarios > Editar usuario
 
@@ -147,9 +147,9 @@ export function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
   if (segments[0] === "menu") {
     const base = [{ label: "Inicio", path: "/dashboard" }, { label: "Menú", path: "/menu" }];
     if (segments[1] === "items") {
-      if (segments[2] === "new") return [...base, { label: "Nuevo plato" }];
-      if (segments[3] === "edit") return [...base, { label: "Editar plato" }];
-      return [...base, { label: "Platos" }];
+      if (segments[2] === "new") return [...base, { label: "Nuevo producto" }];
+      if (segments[3] === "edit") return [...base, { label: "Editar producto" }];
+      return [...base, { label: "Productos" }];
     }
     if (segments[1] === "categories") {
       if (segments[2] === "new") return [...base, { label: "Nueva categoría" }];

@@ -1,12 +1,12 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FullScreenLayout } from "@/layouts/FullScreenLayout";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { Button, Input, Skeleton, EmptyState, ConfirmDialog } from "@/components";
 import { useMenuItem, useUpdateItem, useDeleteItem } from "../hooks";
 import { useCategories } from "../../categories/hooks";
 import { updateItemSchema, type UpdateItemInput } from "../schemas/itemsSchemas";
-import { ROUTES, getMenuItemEditRoute } from "@/app/routes";
+import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
 import { Check, Trash2, XCircle, Package } from "lucide-react";
 import { useState } from "react";
@@ -14,10 +14,14 @@ import type { AxiosErrorWithResponse } from "@/types/common";
 import { StockManagementSection } from "../components/StockManagementSection";
 import { InventoryType } from "@/types";
 
+const inputClass =
+  "w-full px-4 py-3 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 placeholder:text-carbon-400 focus:outline-none focus:ring-2 focus:ring-sage-green-400 focus:border-sage-green-400";
+
 /**
  * MenuItemEditPage Component
- * 
- * Full-screen page for editing a menu item.
+ *
+ * Edit a menu item. Uses SidebarLayout and card form
+ * aligned with the app design system.
  */
 export function MenuItemEditPage() {
   const { id } = useParams<{ id: string }>();
@@ -31,7 +35,7 @@ export function MenuItemEditPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
     watch,
   } = useForm<UpdateItemInput>({
     resolver: zodResolver(updateItemSchema),
@@ -50,35 +54,37 @@ export function MenuItemEditPage() {
           autoMarkUnavailable: item.autoMarkUnavailable,
         }
       : undefined,
+    mode: "onChange",
   });
 
   const inventoryType = watch("inventoryType");
   const isTracked = inventoryType === InventoryType.TRACKED;
 
-  // Loading state
   if (isLoading) {
     return (
-      <FullScreenLayout title="Cargando..." backRoute={ROUTES.MENU}>
+      <SidebarLayout title="Cargando..." backRoute={ROUTES.MENU} fullWidth contentClassName="p-6 lg:p-10">
         <div className="max-w-2xl mx-auto space-y-6">
+          <Skeleton className="h-10 w-64" />
           <Skeleton className="h-32" />
           <Skeleton className="h-64" />
         </div>
-      </FullScreenLayout>
+      </SidebarLayout>
     );
   }
 
-  // Error state
   if (error || !item) {
     return (
-      <FullScreenLayout title="Error" backRoute={ROUTES.MENU}>
-        <EmptyState
-          icon={<XCircle />}
-          title="Producto no encontrado"
-          description="El producto que buscas no existe o fue eliminado"
-          actionLabel="Volver al Menú"
-          onAction={() => navigate(ROUTES.MENU)}
-        />
-      </FullScreenLayout>
+      <SidebarLayout title="Error" backRoute={ROUTES.MENU} fullWidth contentClassName="p-6 lg:p-10">
+        <div className="max-w-2xl mx-auto">
+          <EmptyState
+            icon={<XCircle />}
+            title="Producto no encontrado"
+            description="El producto que buscas no existe o fue eliminado"
+            actionLabel="Volver al Menú"
+            onAction={() => navigate(ROUTES.MENU)}
+          />
+        </div>
+      </SidebarLayout>
     );
   }
 
@@ -89,14 +95,12 @@ export function MenuItemEditPage() {
         onSuccess: () => {
           toast.success("Producto actualizado", {
             description: `"${data.name || item.name}" ha sido actualizado`,
-            icon: "✅",
           });
           navigate(ROUTES.MENU);
         },
         onError: (error: AxiosErrorWithResponse) => {
           toast.error("Error al actualizar producto", {
             description: error.response?.data?.message || error.message,
-            icon: "❌",
           });
         },
       }
@@ -106,7 +110,7 @@ export function MenuItemEditPage() {
   const handleDelete = () => {
     deleteItem(item.id, {
       onSuccess: () => {
-        toast.success("Producto eliminado", { icon: "🗑️" });
+        toast.success("Producto eliminado");
         navigate(ROUTES.MENU);
       },
       onError: (error: AxiosErrorWithResponse) => {
@@ -119,229 +123,252 @@ export function MenuItemEditPage() {
 
   return (
     <>
-      <FullScreenLayout
+      <SidebarLayout
         title={`Editar: ${item.name}`}
-        subtitle="Modifica los datos del producto"
         backRoute={ROUTES.MENU}
+        fullWidth
+        contentClassName="p-6 lg:p-10"
       >
-        <div className="max-w-2xl mx-auto">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Name */}
-            <Input
-              label="Nombre del producto"
-              type="text"
-              {...register("name")}
-              error={errors.name?.message}
-              fullWidth
-            />
+        <div className="max-w-2xl mx-auto space-y-8">
+          <div className="mb-10">
+            <h2 className="text-2xl lg:text-3xl font-semibold text-carbon-900 mb-2">
+              Editar Producto
+            </h2>
+            <p className="text-carbon-500">
+              Modifica los datos del producto
+            </p>
+          </div>
 
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-medium text-carbon-700 mb-2">
-                Descripción (opcional)
-              </label>
-              <textarea
-                {...register("description")}
-                placeholder="Describe el producto..."
-                rows={3}
-                className="w-full px-4 py-3 border border-sage-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-green-300 focus:border-transparent"
-              />
-              {errors.description && (
-                <p className="text-sm text-red-600 mt-1">
-                  {errors.description.message}
-                </p>
-              )}
-            </div>
-
-            {/* Category */}
-            <div>
-              <label className="block text-sm font-medium text-carbon-700 mb-2">
-                Categoría
-              </label>
-              <select
-                {...register("categoryId", { valueAsNumber: true })}
-                className="w-full px-4 py-3 border border-sage-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-green-300 focus:border-transparent"
-                disabled={loadingCategories}
-              >
-                <option value="">Selecciona una categoría</option>
-                {categories?.map((category) => (
-                  <option
-                    key={category.id}
-                    value={category.id}
-                    selected={category.id === item.categoryId}
-                  >
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-              {errors.categoryId && (
-                <p className="text-sm text-red-600 mt-1">
-                  {errors.categoryId.message}
-                </p>
-              )}
-            </div>
-
-            {/* Price */}
-            <Input
-              label="Precio"
-              type="text"
-              {...register("price")}
-              error={errors.price?.message}
-              fullWidth
-            />
-
-            {/* Image URL */}
-            <Input
-              label="URL de imagen (opcional)"
-              type="url"
-              {...register("imageUrl")}
-              error={errors.imageUrl?.message}
-              fullWidth
-            />
-
-            {/* Inventory Type */}
-            <div>
-              <label className="block text-sm font-medium text-carbon-700 mb-2">
-                Tipo de Inventario
-              </label>
-              <select
-                {...register("inventoryType")}
-                className="w-full px-4 py-3 border border-sage-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-green-300 focus:border-transparent"
-              >
-                <option value={InventoryType.NONE}>Sin Inventario</option>
-                <option value={InventoryType.TRACKED}>Rastreado (TRACKED)</option>
-                <option value={InventoryType.UNLIMITED}>Ilimitado</option>
-              </select>
-              {errors.inventoryType && (
-                <p className="text-sm text-red-600 mt-1">
-                  {errors.inventoryType.message}
-                </p>
-              )}
-              <p className="text-xs text-carbon-500 mt-1">
-                Selecciona cómo se gestionará el stock de este producto
-              </p>
-            </div>
-
-            {/* Stock Configuration (only if TRACKED) */}
-            {isTracked && (
-              <div className="p-4 bg-sage-50 border-2 border-sage-border-subtle rounded-xl space-y-4">
-                <div className="flex items-center gap-2 mb-2">
-                  <Package className="w-5 h-5 text-sage-green-600" />
-                  <h4 className="font-semibold text-carbon-900">
-                    Configuración de Stock
-                  </h4>
-                </div>
-
-                {/* Initial Stock */}
-                <div>
-                  <label className="block text-sm font-medium text-carbon-700 mb-2">
-                    Stock Inicial
-                  </label>
-                  <Input
-                    type="number"
-                    placeholder="Ej: 100"
-                    {...register("initialStock", { valueAsNumber: true })}
-                    error={errors.initialStock?.message}
-                    min="0"
-                    fullWidth
-                  />
-                  <p className="text-xs text-carbon-500 mt-1">
-                    Cantidad inicial de stock (usado en reset diario)
-                  </p>
-                </div>
-
-                {/* Low Stock Alert */}
-                <div>
-                  <label className="block text-sm font-medium text-carbon-700 mb-2">
-                    Alerta de Stock Bajo (opcional)
-                  </label>
-                  <Input
-                    type="number"
-                    placeholder="Ej: 10"
-                    {...register("lowStockAlert", { valueAsNumber: true })}
-                    error={errors.lowStockAlert?.message}
-                    min="0"
-                    fullWidth
-                  />
-                  <p className="text-xs text-carbon-500 mt-1">
-                    Se mostrará una alerta cuando el stock llegue a este nivel
-                  </p>
-                </div>
-
-                {/* Auto Mark Unavailable */}
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    {...register("autoMarkUnavailable")}
-                    className="w-5 h-5 rounded border-sage-border-subtle text-sage-green-600 focus:ring-sage-green-300"
-                  />
-                  <div>
-                    <span className="text-carbon-700 font-medium">
-                      Marcar como no disponible automáticamente
-                    </span>
-                    <p className="text-xs text-carbon-500">
-                      El producto se marcará como no disponible cuando el stock llegue a 0
-                    </p>
+          <div className="bg-white rounded-2xl border border-sage-200 shadow-sm">
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="p-6 lg:p-8 space-y-8">
+                <section>
+                  <h3 className="text-lg font-semibold text-carbon-800 mb-4">
+                    Datos básicos
+                  </h3>
+                  <div className="space-y-6">
+                    <Input
+                      label="Nombre del producto"
+                      type="text"
+                      placeholder="Ej: Hamburguesa Clásica..."
+                      {...register("name")}
+                      error={errors.name?.message}
+                      fullWidth
+                      className="text-lg"
+                    />
+                    <div>
+                      <label className="block text-sm font-semibold text-carbon-800 mb-3">
+                        Descripción
+                        <span className="font-normal text-carbon-400 ml-2">
+                          (opcional)
+                        </span>
+                      </label>
+                      <textarea
+                        {...register("description")}
+                        placeholder="Describe el producto..."
+                        rows={3}
+                        className={inputClass}
+                      />
+                      {errors.description && (
+                        <p className="text-sm text-red-600 mt-1">
+                          {errors.description.message}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-semibold text-carbon-800 mb-3">
+                        Categoría
+                      </label>
+                      <select
+                        {...register("categoryId", { valueAsNumber: true })}
+                        className={inputClass}
+                        disabled={loadingCategories}
+                      >
+                        <option value="">Selecciona una categoría</option>
+                        {categories?.map((category) => (
+                          <option key={category.id} value={category.id}>
+                            {category.name}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.categoryId && (
+                        <p className="text-sm text-red-600 mt-1">
+                          {errors.categoryId.message}
+                        </p>
+                      )}
+                    </div>
                   </div>
-                </label>
+                </section>
+
+                <section className="pt-6 border-t border-sage-200">
+                  <h3 className="text-lg font-semibold text-carbon-800 mb-4">
+                    Precio e imagen
+                  </h3>
+                  <div className="space-y-6">
+                    <Input
+                      label="Precio"
+                      type="text"
+                      placeholder="Ej: 12.50"
+                      {...register("price")}
+                      error={errors.price?.message}
+                      fullWidth
+                    />
+                    <Input
+                      label="URL de imagen"
+                      type="url"
+                      placeholder="https://..."
+                      {...register("imageUrl")}
+                      error={errors.imageUrl?.message}
+                      fullWidth
+                    />
+                  </div>
+                </section>
+
+                <section className="pt-6 border-t border-sage-200">
+                  <h3 className="text-lg font-semibold text-carbon-800 mb-4">
+                    Inventario
+                  </h3>
+                  <div>
+                    <label className="block text-sm font-semibold text-carbon-800 mb-3">
+                      Tipo de inventario
+                    </label>
+                    <select {...register("inventoryType")} className={inputClass}>
+                      <option value={InventoryType.NONE}>Sin inventario</option>
+                      <option value={InventoryType.TRACKED}>Rastreado</option>
+                      <option value={InventoryType.UNLIMITED}>Ilimitado</option>
+                    </select>
+                    {errors.inventoryType && (
+                      <p className="text-sm text-red-600 mt-1">
+                        {errors.inventoryType.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {isTracked && (
+                    <div className="mt-6 p-5 bg-sage-50/80 border-2 border-sage-200 rounded-xl space-y-6">
+                      <div className="flex items-center gap-2">
+                        <Package className="w-5 h-5 text-sage-green-600" />
+                        <h4 className="font-semibold text-carbon-900">
+                          Configuración de stock
+                        </h4>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-carbon-800 mb-3">
+                          Stock inicial
+                        </label>
+                        <Input
+                          type="number"
+                          placeholder="Ej: 100"
+                          {...register("initialStock", { valueAsNumber: true })}
+                          error={errors.initialStock?.message}
+                          min={0}
+                          fullWidth
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-semibold text-carbon-800 mb-3">
+                          Alerta de stock bajo
+                          <span className="font-normal text-carbon-400 ml-2">
+                            (opcional)
+                          </span>
+                        </label>
+                        <Input
+                          type="number"
+                          placeholder="Ej: 10"
+                          {...register("lowStockAlert", { valueAsNumber: true })}
+                          error={errors.lowStockAlert?.message}
+                          min={0}
+                          fullWidth
+                        />
+                      </div>
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          {...register("autoMarkUnavailable")}
+                          className="w-5 h-5 rounded border-sage-300 text-sage-green-600 focus:ring-sage-green-400"
+                        />
+                        <div>
+                          <span className="text-carbon-800 font-medium">
+                            Marcar no disponible al llegar a 0
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                  )}
+                </section>
+
+                <section className="pt-6 border-t border-sage-200">
+                  <h3 className="text-lg font-semibold text-carbon-800 mb-4">
+                    Opciones
+                  </h3>
+                  <div className="space-y-4">
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        {...register("isExtra")}
+                        className="w-5 h-5 rounded border-sage-300 text-sage-green-600 focus:ring-sage-green-400"
+                      />
+                      <span className="text-carbon-800">
+                        Es un extra o complemento
+                      </span>
+                    </label>
+                    <label className="flex items-center gap-3 cursor-pointer">
+                      <input
+                        type="checkbox"
+                        {...register("isAvailable")}
+                        className="w-5 h-5 rounded border-sage-300 text-sage-green-600 focus:ring-sage-green-400"
+                      />
+                      <span className="text-carbon-800">
+                        Disponible en el menú
+                      </span>
+                    </label>
+                  </div>
+                </section>
               </div>
-            )}
 
-            {/* Toggles */}
-            <div className="space-y-4">
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  {...register("isExtra")}
-                  className="w-5 h-5 rounded border-sage-border-subtle text-sage-green-600 focus:ring-sage-green-300"
-                />
-                <span className="text-carbon-700">Es un extra/complemento</span>
-              </label>
+              <div className="px-6 lg:px-8 py-5 bg-sage-50/50 border-t border-sage-200 rounded-b-2xl space-y-4">
+                <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="lg"
+                    onClick={() => navigate(ROUTES.MENU)}
+                    disabled={isUpdating}
+                    className="sm:min-w-[120px]"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    isLoading={isUpdating}
+                    disabled={isUpdating || !isValid}
+                    className="sm:min-w-[180px]"
+                  >
+                    {!isUpdating && <Check className="w-5 h-5 mr-2" />}
+                    Guardar Cambios
+                  </Button>
+                </div>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="lg"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                  disabled={isUpdating}
+                >
+                  <Trash2 className="w-5 h-5 mr-2" />
+                  Eliminar producto
+                </Button>
+              </div>
+            </form>
+          </div>
 
-              <label className="flex items-center gap-3 cursor-pointer">
-                <input
-                  type="checkbox"
-                  {...register("isAvailable")}
-                  className="w-5 h-5 rounded border-sage-border-subtle text-sage-green-600 focus:ring-sage-green-300"
-                />
-                <span className="text-carbon-700">Disponible</span>
-              </label>
-            </div>
-
-            {/* Actions */}
-            <div className="flex gap-4 pt-6 border-t border-sage-border-subtle">
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                isLoading={isUpdating}
-                disabled={isUpdating}
-                fullWidth
-              >
-                {!isUpdating && <Check className="w-5 h-5 mr-2" />}
-                Guardar Cambios
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="lg"
-                onClick={() => setShowDeleteConfirm(true)}
-                className="text-red-600 hover:bg-red-50"
-                disabled={isUpdating}
-                fullWidth
-              >
-                <Trash2 className="w-5 h-5 mr-2" />
-                Eliminar
-              </Button>
-            </div>
-          </form>
-
-          {/* Stock Management Section */}
           <StockManagementSection item={item} />
         </div>
-      </FullScreenLayout>
+      </SidebarLayout>
 
-      {/* Delete Confirmation */}
       <ConfirmDialog
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}

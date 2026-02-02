@@ -16,7 +16,9 @@ export const createItemSchema = z.object({
         .or(z.literal(""))
         .optional(),
 
-    categoryId: z.number(),
+    categoryId: z.number({
+        invalid_type_error: "Selecciona una categoría",
+    }),
 
     price: z
         .string({

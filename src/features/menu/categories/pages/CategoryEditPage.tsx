@@ -1,23 +1,24 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FullScreenLayout } from "@/layouts/FullScreenLayout";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { Button, Input, Skeleton, EmptyState, ConfirmDialog } from "@/components";
 import { useCategory, useUpdateCategory, useDeleteCategory } from "../hooks";
 import {
   updateCategorySchema,
   type UpdateCategoryInput,
 } from "../schemas/categorySchemas";
-import { ROUTES, getCategoryEditRoute } from "@/app/routes";
+import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
-import { Check, Trash2, XCircle } from "lucide-react";
+import { Check, Loader2, Trash2, XCircle } from "lucide-react";
 import { useState } from "react";
 import type { AxiosErrorWithResponse } from "@/types/common";
 
 /**
  * CategoryEditPage Component
- * 
- * Full-screen page for editing a menu category.
+ *
+ * Edit a menu category. Uses SidebarLayout and card form
+ * aligned with the app design system.
  */
 export function CategoryEditPage() {
   const { id } = useParams<{ id: string }>();
@@ -30,7 +31,7 @@ export function CategoryEditPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isValid },
   } = useForm<UpdateCategoryInput>({
     resolver: zodResolver(updateCategorySchema),
     values: category
@@ -40,50 +41,23 @@ export function CategoryEditPage() {
           order: category.order,
         }
       : undefined,
+    mode: "onChange",
   });
 
-  // Loading state
-  if (isLoading) {
-    return (
-      <FullScreenLayout title="Cargando..." backRoute={ROUTES.MENU}>
-        <div className="max-w-2xl mx-auto space-y-6">
-          <Skeleton className="h-32" />
-          <Skeleton className="h-64" />
-        </div>
-      </FullScreenLayout>
-    );
-  }
-
-  // Error state
-  if (error || !category) {
-    return (
-      <FullScreenLayout title="Error" backRoute={ROUTES.MENU}>
-        <EmptyState
-          icon={<XCircle />}
-          title="Categoría no encontrada"
-          description="La categoría que buscas no existe o fue eliminada"
-          actionLabel="Volver al Menú"
-          onAction={() => navigate(ROUTES.MENU)}
-        />
-      </FullScreenLayout>
-    );
-  }
-
   const onSubmit = (data: UpdateCategoryInput) => {
+    if (!category) return;
     updateCategory(
       { id: category.id, ...data },
       {
         onSuccess: () => {
           toast.success("Categoría actualizada", {
             description: `"${data.name || category.name}" ha sido actualizada`,
-            icon: "✅",
           });
           navigate(ROUTES.MENU);
         },
         onError: (error: AxiosErrorWithResponse) => {
           toast.error("Error al actualizar categoría", {
             description: error.response?.data?.message || error.message,
-            icon: "❌",
           });
         },
       }
@@ -91,9 +65,10 @@ export function CategoryEditPage() {
   };
 
   const handleDelete = () => {
+    if (!category) return;
     deleteCategory(category.id, {
       onSuccess: () => {
-        toast.success("Categoría eliminada", { icon: "🗑️" });
+        toast.success("Categoría eliminada");
         navigate(ROUTES.MENU);
       },
       onError: (error: AxiosErrorWithResponse) => {
@@ -104,82 +79,145 @@ export function CategoryEditPage() {
     });
   };
 
+  if (isLoading) {
+    return (
+      <SidebarLayout title="Cargando..." backRoute={ROUTES.MENU} fullWidth contentClassName="p-6 lg:p-10">
+        <div className="max-w-2xl mx-auto space-y-6">
+          <Skeleton className="h-10 w-64" />
+          <Skeleton className="h-32" />
+          <Skeleton className="h-64" />
+        </div>
+      </SidebarLayout>
+    );
+  }
+
+  if (error || !category) {
+    return (
+      <SidebarLayout title="Error" backRoute={ROUTES.MENU} fullWidth contentClassName="p-6 lg:p-10">
+        <div className="max-w-2xl mx-auto">
+          <EmptyState
+            icon={<XCircle />}
+            title="Categoría no encontrada"
+            description="La categoría que buscas no existe o fue eliminada"
+            actionLabel="Volver al Menú"
+            onAction={() => navigate(ROUTES.MENU)}
+          />
+        </div>
+      </SidebarLayout>
+    );
+  }
+
   return (
     <>
-      <FullScreenLayout
+      <SidebarLayout
         title={`Editar: ${category.name}`}
-        subtitle="Modifica los datos de la categoría"
         backRoute={ROUTES.MENU}
+        fullWidth
+        contentClassName="p-6 lg:p-10"
       >
         <div className="max-w-2xl mx-auto">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Name */}
-            <Input
-              label="Nombre de la categoría"
-              type="text"
-              {...register("name")}
-              error={errors.name?.message}
-              fullWidth
-            />
+          <div className="mb-10">
+            <h2 className="text-2xl lg:text-3xl font-semibold text-carbon-900 mb-2">
+              Editar Categoría
+            </h2>
+            <p className="text-carbon-500">
+              Modifica los datos de la categoría
+            </p>
+          </div>
 
-            {/* Description */}
-            <div>
-              <label className="block text-sm font-medium text-carbon-700 mb-2">
-                Descripción (opcional)
-              </label>
-              <textarea
-                {...register("description")}
-                placeholder="Describe la categoría..."
-                rows={4}
-                className="w-full px-4 py-3 border border-sage-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-green-300 focus:border-transparent"
-              />
-              {errors.description && (
-                <p className="text-sm text-red-600 mt-1">
-                  {errors.description.message}
-                </p>
-              )}
-            </div>
+          <div className="bg-white rounded-2xl border border-sage-200 shadow-sm">
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="p-6 lg:p-8 space-y-8">
+                <Input
+                  label="Nombre de la categoría"
+                  type="text"
+                  placeholder="Ej: Bebidas, Platos Principales..."
+                  {...register("name")}
+                  error={errors.name?.message}
+                  fullWidth
+                  className="text-lg"
+                />
 
-            {/* Order */}
-            <Input
-              label="Orden de visualización"
-              type="number"
-              {...register("order", { valueAsNumber: true })}
-              error={errors.order?.message}
-              fullWidth
-            />
+                <div>
+                  <label className="block text-sm font-semibold text-carbon-800 mb-3">
+                    Descripción
+                    <span className="font-normal text-carbon-400 ml-2">
+                      (opcional)
+                    </span>
+                  </label>
+                  <textarea
+                    {...register("description")}
+                    placeholder="Describe la categoría..."
+                    rows={4}
+                    className="w-full px-4 py-3 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 placeholder:text-carbon-400 focus:outline-none focus:ring-2 focus:ring-sage-green-400 focus:border-sage-green-400"
+                  />
+                  {errors.description && (
+                    <p className="text-sm text-red-600 mt-1">
+                      {errors.description.message}
+                    </p>
+                  )}
+                </div>
 
-            {/* Actions */}
-            <div className="flex gap-4 pt-6 border-t border-sage-border-subtle">
-              <Button
-                type="submit"
-                variant="primary"
-                size="lg"
-                isLoading={isUpdating}
-                disabled={isUpdating}
-                fullWidth
-              >
-                {!isUpdating && <Check className="w-5 h-5 mr-2" />}
-                Guardar Cambios
-              </Button>
-              <Button
-                type="button"
-                variant="ghost"
-                size="lg"
-                onClick={() => setShowDeleteConfirm(true)}
-                className="text-red-600 hover:bg-red-50"
-                disabled={isUpdating}
-                fullWidth
-              >
-                <Trash2 className="w-5 h-5 mr-2" />
-                Eliminar
-              </Button>
-            </div>
-          </form>
+                <div>
+                  <label className="block text-sm font-semibold text-carbon-800 mb-3">
+                    Orden de visualización
+                  </label>
+                  <Input
+                    type="number"
+                    placeholder="0"
+                    {...register("order", { valueAsNumber: true })}
+                    error={errors.order?.message}
+                    fullWidth
+                  />
+                  <p className="mt-2 text-sm text-carbon-400">
+                    Número menor = aparece primero en el menú
+                  </p>
+                </div>
+              </div>
+
+              <div className="px-6 lg:px-8 py-5 bg-sage-50/50 border-t border-sage-200 rounded-b-2xl space-y-4">
+                <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="lg"
+                    onClick={() => navigate(ROUTES.MENU)}
+                    disabled={isUpdating}
+                    className="sm:min-w-[120px]"
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="primary"
+                    size="lg"
+                    isLoading={isUpdating}
+                    disabled={isUpdating || !isValid}
+                    className="sm:min-w-[180px]"
+                  >
+                    {!isUpdating && <Check className="w-5 h-5 mr-2" />}
+                    Guardar Cambios
+                  </Button>
+                </div>
+                <div className="pt-4 border-t border-sage-200">
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="lg"
+                    onClick={() => setShowDeleteConfirm(true)}
+                    className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                    disabled={isUpdating}
+                  >
+                    <Trash2 className="w-5 h-5 mr-2" />
+                    Eliminar categoría
+                  </Button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
-      </FullScreenLayout>
+      </SidebarLayout>
 
-      {/* Delete Confirmation */}
       <ConfirmDialog
         isOpen={showDeleteConfirm}
         onClose={() => setShowDeleteConfirm(false)}

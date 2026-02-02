@@ -177,50 +177,42 @@ const App = () => {
           }
         />
 
-        {/* Menu - Category Create (Full Screen) */}
+        {/* Menu - Category Create (Sidebar Layout) */}
         <Route
           path={ROUTES.MENU_CATEGORY_CREATE}
           element={
             <PrivateRoute>
-              <FullScreenLayout>
-                <CategoryCreatePage />
-              </FullScreenLayout>
+              <CategoryCreatePage />
             </PrivateRoute>
           }
         />
 
-        {/* Menu - Category Edit (Full Screen) */}
+        {/* Menu - Category Edit (Sidebar Layout) */}
         <Route
           path={ROUTES.MENU_CATEGORY_EDIT}
           element={
             <PrivateRoute>
-              <FullScreenLayout>
-                <CategoryEditPage />
-              </FullScreenLayout>
+              <CategoryEditPage />
             </PrivateRoute>
           }
         />
 
-        {/* Menu - Item Create (Full Screen) */}
+        {/* Menu - Item Create (Sidebar Layout) */}
         <Route
           path={ROUTES.MENU_ITEM_CREATE}
           element={
             <PrivateRoute>
-              <FullScreenLayout>
-                <MenuItemCreatePage />
-              </FullScreenLayout>
+              <MenuItemCreatePage />
             </PrivateRoute>
           }
         />
 
-        {/* Menu - Item Edit (Full Screen) */}
+        {/* Menu - Item Edit (Sidebar Layout) */}
         <Route
           path={ROUTES.MENU_ITEM_EDIT}
           element={
             <PrivateRoute>
-              <FullScreenLayout>
-                <MenuItemEditPage />
-              </FullScreenLayout>
+              <MenuItemEditPage />
             </PrivateRoute>
           }
         />

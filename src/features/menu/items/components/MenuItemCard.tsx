@@ -1,157 +1,196 @@
 import { useState } from "react";
-import { DollarSign, Edit2, ImageIcon, Star, Trash2, AlertTriangle, Package } from "lucide-react";
+import { DollarSign, Edit2, ImageIcon, Trash2, AlertTriangle, Package, Star } from "lucide-react";
 import type { MenuItem } from "@/types";
-import { Button, Card, Badge, ConfirmDialog } from "@/components";
+import { Button, ConfirmDialog } from "@/components";
+import { cn } from "@/utils/cn";
 
-// ========== TYPES ========
 interface MenuItemCardProps {
-    item: MenuItem;
-    onEdit: (itemId: number) => void;
-    onDelete: (id: number) => void;
+  item: MenuItem;
+  categoryName?: string;
+  onEdit: (itemId: number) => void;
+  onDelete: (id: number) => void;
 }
 
 /**
  * MenuItemCard Component
  *
- * Displays a single menu item with details and actions
+ * Modern card for a menu item: clear hierarchy, status accent (available/unavailable/stock),
+ * price, category name. Aligned with TableCard design (claude.md).
  */
-export function MenuItemCard({ item, onEdit, onDelete }: MenuItemCardProps) {
-    // ================== STATE ==================
-    const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemCardProps) {
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-    // ======== RENDER ========
-    return (
-        <>
-            <Card
-                variant="elevated"
-                padding="lg"
-                className="transition-all duration-300 hover:shadow-soft-xl hover:-translate-y-1 group"
-            >
-                {/* ========== HEADER WITH IMAGE ============ */}
-                <div className="mb-4">
-                    {/* Image preview or placeholder */}
-                    {item.imageUrl ? (
-                        <div className="w-full h-40 rounded-xl overflow-hidden mb-4 border-2 bg-sage-border-subtle">
-                            <img
-                                src={item.imageUrl}
-                                alt={item.name}
-                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                            />
-                        </div>
-                    ) : (
-                        <div className="w-full h-40 bg-sage-100 rounded-xl flex items-center justify-center mb-4 border-2 border-sage-border-subtle">
-                            <ImageIcon className="w-12 h-12 text-sage-green-300" />
-                        </div>
-                    )}
+  // Accent by status: available = emerald, unavailable = rose, low/out stock = amber/rose
+  const isOutOfStock = item.inventoryType === "TRACKED" && (item.stockQuantity ?? 0) === 0;
+  const isLowStock =
+    item.inventoryType === "TRACKED" &&
+    item.lowStockAlert != null &&
+    (item.stockQuantity ?? 0) <= item.lowStockAlert &&
+    (item.stockQuantity ?? 0) > 0;
 
-                    {/* Name and Badges row */}
-                    <div className="flex justify-between items-start mb-3 gap-3">
-                        <div className="flex-1 min-w-0">
-                            <h3 className="text-lg font-semibold text-carbon-900 mb-1 truncate">
-                                {item.name}
-                            </h3>
-                            {/* Category ID indicator */}
-                            <p className="text-sm text-carbon-500 font-light">
-                                Categoría: {item.categoryId}
-                            </p>
-                        </div>
+  const getAccentConfig = () => {
+    if (!item.isAvailable || isOutOfStock) {
+      return {
+        border: "border-rose-200",
+        accent: "bg-rose-500",
+        badge: "bg-rose-100 text-rose-700 border-rose-200",
+      };
+    }
+    if (isLowStock) {
+      return {
+        border: "border-amber-200",
+        accent: "bg-amber-500",
+        badge: "bg-amber-100 text-amber-700 border-amber-200",
+      };
+    }
+    return {
+      border: "border-emerald-200",
+      accent: "bg-emerald-500",
+      badge: "bg-emerald-100 text-emerald-700 border-emerald-200",
+    };
+  };
 
-                        {/* Badges container */}
-                        <div className="flex flex-col gap-2 items-end">
-                            {/* Availability Badge */}
-                            <Badge variant={item.isAvailable ? "success" : "error"} size="sm">
-                                {item.isAvailable ? "Disponible" : "No Disponible"}
-                            </Badge>
+  const config = getAccentConfig();
 
-                            {/* Stock Badges */}
-                            {item.inventoryType === "TRACKED" && item.stockQuantity !== undefined && (
-                                <>
-                                    {item.stockQuantity === 0 ? (
-                                        <Badge variant="error" size="sm">
-                                            <AlertTriangle className="w-3 h-3 mr-1" />
-                                            Sin Stock
-                                        </Badge>
-                                    ) : item.lowStockAlert !== undefined && item.stockQuantity <= item.lowStockAlert ? (
-                                        <Badge variant="warning" size="sm">
-                                            <AlertTriangle className="w-3 h-3 mr-1" />
-                                            Stock Bajo ({item.stockQuantity})
-                                        </Badge>
-                                    ) : (
-                                        <Badge variant="info" size="sm">
-                                            <Package className="w-3 h-3 mr-1" />
-                                            Stock: {item.stockQuantity}
-                                        </Badge>
-                                    )}
-                                </>
-                            )}
+  return (
+    <>
+      <article
+        className={cn(
+          "group relative overflow-hidden",
+          "bg-white rounded-2xl border-2 shadow-sm",
+          "transition-all duration-200",
+          "hover:shadow-md hover:border-sage-200",
+          config.border
+        )}
+      >
+        <div className={cn("h-1 w-full", config.accent)} aria-hidden />
 
-                            {/* Extras Badge*/}
-                            {item.isExtra && (
-                                <Badge variant="warning" size="sm">
-                                    <Star className="w-3 h-3 mr-1" />
-                                    Extra
-                                </Badge>
-                            )}
-                        </div>
-                    </div>
-                </div>
+        <div className="p-5 sm:p-6">
+          {/* Image */}
+          <div className="mb-4">
+            {item.imageUrl ? (
+              <div className="w-full h-36 rounded-xl overflow-hidden border border-sage-200">
+                <img
+                  src={item.imageUrl}
+                  alt={item.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+            ) : (
+              <div className="w-full h-36 bg-sage-100 rounded-xl flex items-center justify-center border border-sage-200">
+                <ImageIcon className="w-10 h-10 text-sage-400" />
+              </div>
+            )}
+          </div>
 
-                {/* =========== DESCRIPTION =========== */}
-                {item.description && (
-                    <div className="mb-4 p-3 bg-sage-50 rounded-lg border border-sage-border-subtle">
-                        <p className="text-sm text-carbon-700 font-light leading-relaxed">
-                            {item.description}
-                        </p>
-                    </div>
+          {/* Name + category + badges */}
+          <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
+            <div className="min-w-0 flex-1">
+              <h3 className="text-lg font-semibold text-carbon-900 truncate">
+                {item.name}
+              </h3>
+              {categoryName && (
+                <p className="text-sm text-carbon-500 mt-0.5 truncate">
+                  {categoryName}
+                </p>
+              )}
+              {!categoryName && (
+                <p className="text-sm text-carbon-400 mt-0.5">
+                  Categoría #{item.categoryId}
+                </p>
+              )}
+            </div>
+            <div className="flex flex-wrap gap-1.5 justify-end">
+              <span
+                className={cn(
+                  "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border",
+                  config.badge
                 )}
+              >
+                {item.isAvailable && !isOutOfStock
+                  ? "Disponible"
+                  : "No disponible"}
+              </span>
+              {item.inventoryType === "TRACKED" && item.stockQuantity !== undefined && (
+                <>
+                  {item.stockQuantity === 0 ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border bg-rose-100 text-rose-700 border-rose-200">
+                      <AlertTriangle className="w-3 h-3" />
+                      Sin stock
+                    </span>
+                  ) : isLowStock ? (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border bg-amber-100 text-amber-700 border-amber-200">
+                      <Package className="w-3 h-3" />
+                      {item.stockQuantity}
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border bg-sage-100 text-sage-700 border-sage-200">
+                      <Package className="w-3 h-3" />
+                      {item.stockQuantity}
+                    </span>
+                  )}
+                </>
+              )}
+              {item.isExtra && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border bg-amber-100 text-amber-700 border-amber-200">
+                  <Star className="w-3 h-3" />
+                  Extra
+                </span>
+              )}
+            </div>
+          </div>
 
-                {/* ========== PRICE =========== */}
-                <div className="mb-6 p-4 bg-gradient-sage rounded-xl border-2 border-sage-green-200">
-                    <div className="flex items-center justify-center gap-2">
-                        <DollarSign className="w-6 h-6 text-sage-green-700" />
-                        <span className="text-3xl font-bold text-primary-700">
-                            {item.price}
-                        </span>
-                    </div>
-                </div>
+          {item.description && (
+            <p className="text-sm text-carbon-600 font-light leading-relaxed line-clamp-2 mb-4">
+              {item.description}
+            </p>
+          )}
 
-                {/* ======= ACTIONS ======= */}
-                <div className="flex gap-3 pt-4 border-t border-neutral-100">
-                    {/* Edit Button */}
-                    <Button
-                        variant="ghost"
-                        size="md"
-                        onClick={() => onEdit(item.id)}
-                        className="flex-1 group/btn"
-                    >
-                        <Edit2 className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-transform" />
-                        Editar
-                    </Button>
-                    {/* Delete Button  */}
-                    <Button
-                        variant="ghost"
-                        size="md"
-                        onClick={() => setIsDeleteDialogOpen(true)}
-                        className="flex-1 text-red-600 hover:bg-red-50 hover:text-red-700 group/btn"
-                    >
-                        <Trash2 className="w-4 h-4 mr-2 group-hover/btn:scale-110 transition-transform" />
-                        Eliminar
-                    </Button>
-                </div>
-            </Card>
-            <ConfirmDialog
-                isOpen={isDeleteDialogOpen}
-                onClose={() => setIsDeleteDialogOpen(false)}
-                onConfirm={() => {
-                    onDelete(item.id);
-                    setIsDeleteDialogOpen(false); // Close modal after delete
-                }}
-                title="Eliminar Producto"
-                message={`¿Estás seguro que deseas eliminar el producto "${item.name}"? Esta acción no se puede deshacer.`}
-                confirmText="Eliminar"
-                cancelText="Cancelar"
-                variant="danger"
-            />
-        </>
-    );
+          {/* Price */}
+          <div className="flex items-center justify-center gap-2 py-3 px-4 bg-sage-50 rounded-xl border border-sage-200 mb-5">
+            <DollarSign className="w-5 h-5 text-sage-600" />
+            <span className="text-2xl font-bold text-carbon-900">
+              {item.price}
+            </span>
+          </div>
+
+          {/* Actions */}
+          <div className="flex gap-2 pt-4 border-t border-sage-100">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => onEdit(item.id)}
+              className="flex-1 min-h-[40px]"
+            >
+              <Edit2 className="w-4 h-4 mr-2" />
+              Editar
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsDeleteDialogOpen(true)}
+              className="flex-1 min-h-[40px] text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Eliminar
+            </Button>
+          </div>
+        </div>
+      </article>
+
+      <ConfirmDialog
+        isOpen={isDeleteDialogOpen}
+        onClose={() => setIsDeleteDialogOpen(false)}
+        onConfirm={() => {
+          onDelete(item.id);
+          setIsDeleteDialogOpen(false);
+        }}
+        title="Eliminar producto"
+        message={`¿Eliminar "${item.name}"? Esta acción no se puede deshacer.`}
+        confirmText="Eliminar"
+        cancelText="Cancelar"
+        variant="danger"
+      />
+    </>
+  );
 }
