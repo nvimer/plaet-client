@@ -1,3 +1,4 @@
+import { useState, useRef, useEffect, useMemo } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   Home,
@@ -12,13 +13,60 @@ import {
   PanelLeftClose,
   PanelLeft,
   X,
+  FolderOpen,
+  Grid3x3,
+  Plus,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { ROUTES } from "@/app/routes";
 import { useSidebar } from "@/contexts/SidebarContext";
+import { useCategories } from "@/features/menu/categories/hooks";
+import type { LucideIcon } from "lucide-react";
 
-// Modern navigation configuration - cleaner and more intuitive
-const navigationItems = [
+/** Simple link for nested lists (e.g. inside expandable) */
+interface NavSubLink {
+  path: string;
+  name: string;
+  icon: LucideIcon;
+}
+
+interface NavChildLink {
+  type: "link";
+  path: string;
+  name: string;
+  icon: LucideIcon;
+  badge?: string;
+}
+
+interface NavChildDivider {
+  type: "divider";
+  path: string;
+  name: string;
+  icon: LucideIcon;
+}
+
+interface NavChildExpandable {
+  type: "expandable";
+  key: string;
+  name: string;
+  icon: LucideIcon;
+  children: NavSubLink[];
+}
+
+type NavChild = NavChildLink | NavChildDivider | NavChildExpandable;
+
+interface NavItem {
+  path: string;
+  name: string;
+  icon: LucideIcon;
+  description?: string;
+  badge?: string;
+  children?: NavChild[];
+}
+
+// Base navigation items (static)
+const baseNavigationItems: NavItem[] = [
   {
     path: ROUTES.DASHBOARD,
     name: "Dashboard",
@@ -32,41 +80,14 @@ const navigationItems = [
     description: "Gestionar mesas",
   },
   {
-    path: ROUTES.MENU,
-    name: "Menú",
-    icon: Menu,
-    description: "Catálogo de productos",
-    children: [
-      {
-        path: ROUTES.MENU_ITEM_CREATE,
-        name: "Nuevo Plato",
-        icon: Utensils,
-      },
-      {
-        path: ROUTES.MENU_CATEGORY_CREATE,
-        name: "Nueva Categoría",
-        icon: Package,
-      },
-      {
-        path: ROUTES.STOCK_MANAGEMENT,
-        name: "Inventario",
-        icon: Package2,
-        badge: "⚡",
-      },
-    ],
-  },
-  {
     path: ROUTES.ORDERS,
     name: "Pedidos",
     icon: ShoppingCart,
     description: "Gestionar pedidos",
     children: [
+      { type: "link", path: ROUTES.KITCHEN, name: "Cocina", icon: ChefHat },
       {
-        path: ROUTES.KITCHEN,
-        name: "Cocina",
-        icon: ChefHat,
-      },
-      {
+        type: "link",
         path: ROUTES.ORDER_CREATE,
         name: "Nuevo Pedido",
         icon: ShoppingCart,
@@ -84,12 +105,10 @@ const navigationItems = [
 /**
  * Sidebar Component
  *
- * Mobile-first, minimalist, modern sidebar with best practices:
+ * Mobile-first, minimalist, modern sidebar with:
+ * - Dynamic menu categories from API (max 5)
+ * - Flyout submenu when collapsed
  * - Smooth animations and micro-interactions
- * - Collapsible for desktop
- * - Drawer for mobile
- * - Clean, accessible design
- * - Progressive disclosure for nested items
  * - Uses global SidebarContext for state
  */
 export function Sidebar() {
@@ -107,17 +126,152 @@ export function Sidebar() {
   const location = useLocation();
   const navigate = useNavigate();
 
+  // Fetch categories for dynamic menu
+  const { data: categories } = useCategories();
+
+  // Flyout state for collapsed sidebar
+  const [flyoutItem, setFlyoutItem] = useState<string | null>(null);
+  const flyoutRef = useRef<HTMLDivElement>(null);
+  const flyoutTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Expanded state for nested items (e.g. "Categorías" inside Menú)
+  const [expandedNested, setExpandedNested] = useState<Set<string>>(new Set());
+
+  const toggleExpandedNested = (key: string) => {
+    setExpandedNested((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  };
+
+  // Build navigation items with dynamic categories
+  const navigationItems = useMemo(() => {
+    // Get first 5 categories sorted by order
+    const topCategories = (categories || [])
+      .slice()
+      .sort((a, b) => a.order - b.order)
+      .slice(0, 5);
+
+    // Build Menu children: Categorías is expandable with categories inside
+    const menuChildren: NavChild[] = [
+      {
+        type: "link",
+        path: ROUTES.MENU,
+        name: "Todos los productos",
+        icon: Grid3x3,
+      },
+      {
+        type: "expandable",
+        key: "menu-categories",
+        name: "Categorías",
+        icon: FolderOpen,
+        children: topCategories.map((cat) => ({
+          path: `${ROUTES.MENU}?category=${cat.id}`,
+          name: cat.name,
+          icon: Package,
+        })),
+      },
+      {
+        type: "link",
+        path: ROUTES.STOCK_MANAGEMENT,
+        name: "Inventario",
+        icon: Package2,
+        badge: "⚡",
+      },
+      {
+        type: "divider",
+        path: "",
+        name: "divider",
+        icon: Package,
+      },
+      {
+        type: "link",
+        path: ROUTES.MENU_ITEM_CREATE,
+        name: "Nuevo producto",
+        icon: Plus,
+      },
+    ];
+
+    // Insert Menu item at position 2 (after Mesas)
+    const items: NavItem[] = [
+      baseNavigationItems[0], // Dashboard
+      baseNavigationItems[1], // Mesas
+      {
+        path: ROUTES.MENU,
+        name: "Menú",
+        icon: Menu,
+        description: "Catálogo de productos",
+        children: menuChildren,
+      },
+      baseNavigationItems[2], // Pedidos
+      baseNavigationItems[3], // Usuarios
+    ];
+
+    return items;
+  }, [categories]);
+
   const handleNavClick = () => {
     if (isMobile) {
       closeMobile();
     }
+    setFlyoutItem(null);
   };
 
   const isActive = (path: string) => {
+    // Handle query params - match base path
+    const basePath = path.split("?")[0];
     return (
-      location.pathname === path ||
-      (path.includes(":") && location.pathname.startsWith(path.split(":")[0]))
+      location.pathname === basePath ||
+      (basePath.includes(":") &&
+        location.pathname.startsWith(basePath.split(":")[0]))
     );
+  };
+
+  // Close flyout when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        flyoutRef.current &&
+        !flyoutRef.current.contains(event.target as Node)
+      ) {
+        setFlyoutItem(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Flyout handlers
+  const handleMouseEnterCollapsed = (itemPath: string, hasChildren: boolean) => {
+    if (isCollapsed && !isMobile && hasChildren) {
+      if (flyoutTimeoutRef.current) {
+        clearTimeout(flyoutTimeoutRef.current);
+      }
+      setFlyoutItem(itemPath);
+    }
+  };
+
+  const handleMouseLeaveCollapsed = () => {
+    if (isCollapsed && !isMobile) {
+      flyoutTimeoutRef.current = setTimeout(() => {
+        setFlyoutItem(null);
+      }, 150);
+    }
+  };
+
+  const handleFlyoutMouseEnter = () => {
+    if (flyoutTimeoutRef.current) {
+      clearTimeout(flyoutTimeoutRef.current);
+    }
+  };
+
+  const handleFlyoutMouseLeave = () => {
+    flyoutTimeoutRef.current = setTimeout(() => {
+      setFlyoutItem(null);
+    }, 150);
   };
 
   return (
@@ -135,16 +289,12 @@ export function Sidebar() {
       <aside
         data-sidebar
         className={cn(
-          // Base styles - modern glass effect
           "fixed left-0 top-0 z-50 h-screen",
           "bg-white/95 backdrop-blur-xl",
           "border-r border-sage-200/60",
-          // Transitions
           "transition-all duration-300 ease-out",
-          // Desktop collapsed state
           isCollapsed && !isMobile && "w-16",
           !isCollapsed && !isMobile && "w-72",
-          // Mobile states
           isMobile && "w-72 -translate-x-full shadow-2xl",
           isMobile && isMobileOpen && "translate-x-0"
         )}
@@ -153,10 +303,11 @@ export function Sidebar() {
         <div
           className={cn(
             "h-16 flex items-center border-b border-sage-200/60",
-            isCollapsed && !isMobile ? "justify-center px-2" : "justify-between px-4"
+            isCollapsed && !isMobile
+              ? "justify-center px-2"
+              : "justify-between px-4"
           )}
         >
-          {/* Logo */}
           <Link
             to={ROUTES.DASHBOARD}
             className="flex items-center gap-3 overflow-hidden group"
@@ -185,10 +336,8 @@ export function Sidebar() {
             )}
           </Link>
 
-          {/* Toggle Buttons */}
           {(!isCollapsed || isMobile) && (
             <div className="flex items-center">
-              {/* Desktop collapse toggle */}
               {!isMobile && (
                 <button
                   onClick={toggleCollapsed}
@@ -201,8 +350,6 @@ export function Sidebar() {
                   <PanelLeftClose className="w-5 h-5" />
                 </button>
               )}
-
-              {/* Mobile close toggle */}
               {isMobile && (
                 <button
                   onClick={closeMobile}
@@ -245,14 +392,26 @@ export function Sidebar() {
             const isItemActive = isActive(navItem.path);
             const isExpanded = expandedItems.has(navItem.path);
             const hasBadge = "badge" in navItem && navItem.badge;
+            const hasChildren = navItem.children && navItem.children.length > 0;
+            const isFlyoutOpen = flyoutItem === navItem.path;
 
             return (
-              <div key={navItem.path}>
+              <div
+                key={navItem.path}
+                className="relative"
+                onMouseEnter={() =>
+                  handleMouseEnterCollapsed(navItem.path, !!hasChildren)
+                }
+                onMouseLeave={handleMouseLeaveCollapsed}
+              >
                 {/* Main item */}
                 <button
                   onClick={() => {
-                    if (navItem.children) {
+                    if (hasChildren && !isCollapsed) {
                       toggleExpanded(navItem.path);
+                    } else if (hasChildren && isCollapsed) {
+                      // Toggle flyout on click when collapsed
+                      setFlyoutItem(isFlyoutOpen ? null : navItem.path);
                     } else {
                       navigate(navItem.path);
                       handleNavClick();
@@ -260,72 +419,237 @@ export function Sidebar() {
                   }}
                   title={isCollapsed && !isMobile ? navItem.name : undefined}
                   className={cn(
-                    // Base styles
                     "w-full flex items-center rounded-xl transition-all duration-200",
                     "text-sm font-medium",
-                    // Padding based on collapsed state
                     isCollapsed && !isMobile
                       ? "justify-center p-3"
                       : "gap-3 px-3 py-2.5",
-                    // Active state
                     isItemActive
                       ? "bg-sage-100 text-sage-700 shadow-sm"
                       : "text-carbon-600 hover:bg-sage-50 hover:text-carbon-800"
                   )}
                 >
-                  {/* Icon */}
-                  <Icon
-                    className={cn(
-                      "flex-shrink-0 transition-colors",
-                      isItemActive ? "text-sage-600" : "text-carbon-400",
-                      isCollapsed && !isMobile ? "w-5 h-5" : "w-[18px] h-[18px]"
+                  <div className="relative">
+                    <Icon
+                      className={cn(
+                        "flex-shrink-0 transition-colors",
+                        isItemActive ? "text-sage-600" : "text-carbon-400",
+                        isCollapsed && !isMobile ? "w-5 h-5" : "w-[18px] h-[18px]"
+                      )}
+                    />
+                    {/* Submenu indicator dot when collapsed */}
+                    {hasChildren && isCollapsed && !isMobile && (
+                      <span className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-sage-400 rounded-full" />
                     )}
-                  />
+                  </div>
 
-                  {/* Text - hide when collapsed */}
                   {(!isCollapsed || isMobile) && (
                     <span className="truncate flex-1 text-left">
                       {navItem.name}
                     </span>
                   )}
 
-                  {/* Badge */}
                   {hasBadge && (!isCollapsed || isMobile) && (
                     <span className="text-xs px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-medium">
                       {navItem.badge as string}
                     </span>
                   )}
 
-                  {/* Expand indicator for items with children */}
-                  {navItem.children && (!isCollapsed || isMobile) && (
-                    <svg
+                  {hasChildren && (!isCollapsed || isMobile) && (
+                    <ChevronRight
                       className={cn(
                         "w-4 h-4 transition-transform duration-200 text-carbon-400",
                         isExpanded && "rotate-90"
                       )}
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 5l7 7-7 7"
-                      />
-                    </svg>
+                    />
                   )}
                 </button>
 
-                {/* Children - shown when expanded */}
-                {navItem.children &&
-                  isExpanded &&
-                  (!isCollapsed || isMobile) && (
-                    <div className="mt-1 ml-3 pl-3 border-l-2 border-sage-200/60 space-y-1">
-                      {navItem.children.map((child) => {
+                {/* Children - shown when expanded (not collapsed) */}
+                {hasChildren && isExpanded && (!isCollapsed || isMobile) && (
+                  <div className="mt-1 ml-3 pl-3 border-l-2 border-sage-200/60 space-y-1">
+                    {navItem.children!.map((child, idx) => {
+                      if (child.type === "divider") {
+                        return (
+                          <div
+                            key={`divider-${idx}`}
+                            className="my-2 border-t border-sage-200/60"
+                          />
+                        );
+                      }
+
+                      if (child.type === "expandable") {
+                        const isNestedExpanded = expandedNested.has(child.key);
+                        const ExpandIcon = child.icon;
+                        return (
+                          <div key={child.key}>
+                            <button
+                              type="button"
+                              onClick={() => toggleExpandedNested(child.key)}
+                              className={cn(
+                                "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 text-left text-sm",
+                                "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700"
+                              )}
+                            >
+                              <ExpandIcon className="w-4 h-4 flex-shrink-0 text-carbon-400" />
+                              <span className="truncate flex-1">{child.name}</span>
+                              <ChevronRight
+                                className={cn(
+                                  "w-4 h-4 text-carbon-400 transition-transform duration-200",
+                                  isNestedExpanded && "rotate-90"
+                                )}
+                              />
+                            </button>
+                            {isNestedExpanded && child.children.length > 0 && (
+                              <div className="ml-4 pl-2 border-l border-sage-200/60 space-y-0.5 mt-0.5">
+                                {child.children.map((sub) => {
+                                  const SubIcon = sub.icon;
+                                  const isSubActive = isActive(sub.path);
+                                  return (
+                                    <Link
+                                      key={sub.path}
+                                      to={sub.path}
+                                      onClick={handleNavClick}
+                                      className={cn(
+                                        "flex items-center gap-2 px-2 py-1.5 rounded-lg transition-all duration-200 text-sm",
+                                        isSubActive
+                                          ? "bg-sage-100/80 text-sage-700 font-medium"
+                                          : "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700"
+                                      )}
+                                    >
+                                      <SubIcon className="w-3.5 h-3.5 flex-shrink-0 text-carbon-400" />
+                                      <span className="truncate">{sub.name}</span>
+                                    </Link>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        );
+                      }
+
+                      const ChildIcon = child.icon;
+                      const isChildActive = isActive(child.path);
+                      const childHasBadge = child.badge;
+
+                      return (
+                        <Link
+                          key={child.path}
+                          to={child.path}
+                          onClick={handleNavClick}
+                          className={cn(
+                            "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200",
+                            "text-sm",
+                            isChildActive
+                              ? "bg-sage-100/80 text-sage-700 font-medium"
+                              : "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700"
+                          )}
+                        >
+                          <ChildIcon
+                            className={cn(
+                              "w-4 h-4 flex-shrink-0 transition-colors",
+                              isChildActive ? "text-sage-500" : "text-carbon-400"
+                            )}
+                          />
+                          <span className="truncate flex-1">{child.name}</span>
+                          {childHasBadge && (
+                            <span className="text-xs px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-medium">
+                              {child.badge}
+                            </span>
+                          )}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                )}
+
+                {/* Flyout for collapsed sidebar */}
+                {hasChildren && isFlyoutOpen && isCollapsed && !isMobile && (
+                  <div
+                    ref={flyoutRef}
+                    onMouseEnter={handleFlyoutMouseEnter}
+                    onMouseLeave={handleFlyoutMouseLeave}
+                    className={cn(
+                      "absolute left-full top-0 ml-2 z-50",
+                      "min-w-[200px] py-2 px-2",
+                      "bg-white rounded-xl shadow-lg border border-sage-200",
+                      "animate-in fade-in slide-in-from-left-2 duration-200"
+                    )}
+                  >
+                    <div className="text-xs font-semibold text-carbon-400 uppercase tracking-wide px-3 py-2">
+                      {navItem.name}
+                    </div>
+                    <div className="space-y-1">
+                      {navItem.children!.map((child, idx) => {
+                        if (child.type === "divider") {
+                          return (
+                            <div
+                              key={`flyout-divider-${idx}`}
+                              className="my-2 border-t border-sage-200/60 mx-2"
+                            />
+                          );
+                        }
+
+                        if (child.type === "expandable") {
+                          const isNestedExpanded = expandedNested.has(child.key);
+                          const ExpandIcon = child.icon;
+                          return (
+                            <div key={child.key}>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  toggleExpandedNested(child.key)
+                                }
+                                className={cn(
+                                  "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 text-left text-sm",
+                                  "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700"
+                                )}
+                              >
+                                <ExpandIcon className="w-4 h-4 flex-shrink-0 text-carbon-400" />
+                                <span className="truncate flex-1">
+                                  {child.name}
+                                </span>
+                                <ChevronRight
+                                  className={cn(
+                                    "w-4 h-4 text-carbon-400 transition-transform duration-200",
+                                    isNestedExpanded && "rotate-90"
+                                  )}
+                                />
+                              </button>
+                              {isNestedExpanded &&
+                                child.children.length > 0 && (
+                                  <div className="ml-2 pl-2 border-l border-sage-200/60 space-y-0.5">
+                                    {child.children.map((sub) => {
+                                      const SubIcon = sub.icon;
+                                      const isSubActive = isActive(sub.path);
+                                      return (
+                                        <Link
+                                          key={sub.path}
+                                          to={sub.path}
+                                          onClick={handleNavClick}
+                                          className={cn(
+                                            "flex items-center gap-2 px-2 py-1.5 rounded-lg transition-all duration-200 text-sm",
+                                            isSubActive
+                                              ? "bg-sage-100/80 text-sage-700 font-medium"
+                                              : "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700"
+                                          )}
+                                        >
+                                          <SubIcon className="w-3.5 h-3.5 flex-shrink-0 text-carbon-400" />
+                                          <span className="truncate">
+                                            {sub.name}
+                                          </span>
+                                        </Link>
+                                      );
+                                    })}
+                                  </div>
+                                )}
+                            </div>
+                          );
+                        }
+
                         const ChildIcon = child.icon;
                         const isChildActive = isActive(child.path);
-                        const childHasBadge = "badge" in child && child.badge;
+                        const childHasBadge = child.badge;
 
                         return (
                           <Link
@@ -333,10 +657,8 @@ export function Sidebar() {
                             to={child.path}
                             onClick={handleNavClick}
                             className={cn(
-                              // Base styles
                               "flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200",
                               "text-sm",
-                              // Active state
                               isChildActive
                                 ? "bg-sage-100/80 text-sage-700 font-medium"
                                 : "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700"
@@ -344,15 +666,15 @@ export function Sidebar() {
                           >
                             <ChildIcon
                               className={cn(
-                                "w-4 h-4 flex-shrink-0 transition-colors",
+                                "w-4 h-4 flex-shrink-0",
                                 isChildActive
                                   ? "text-sage-500"
                                   : "text-carbon-400"
                               )}
                             />
-
-                            <span className="truncate flex-1">{child.name}</span>
-
+                            <span className="truncate flex-1">
+                              {child.name}
+                            </span>
                             {childHasBadge && (
                               <span className="text-xs px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded-full font-medium">
                                 {child.badge}
@@ -362,7 +684,8 @@ export function Sidebar() {
                         );
                       })}
                     </div>
-                  )}
+                  </div>
+                )}
               </div>
             );
           })}
@@ -389,7 +712,7 @@ export function Sidebar() {
         </div>
       </aside>
 
-      {/* Mobile Menu Button (visible when sidebar is closed) */}
+      {/* Mobile Menu Button */}
       {isMobile && !isMobileOpen && (
         <button
           onClick={toggleMobile}

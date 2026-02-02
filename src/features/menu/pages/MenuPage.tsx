@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMemo, useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 import { Button, Card, Badge } from "@/components";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
@@ -27,12 +27,47 @@ type Tab = "categories" | "items";
  * MenuPage Component
  *
  * Main page for menu management (categories and items).
+ * Reads query params: ?category=id (filter), ?tab=categories (switch tab).
  * Aligned with app design system (claude.md) and TablesPage layout.
  */
 export function MenuPage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<Tab>("items");
   const [filterCategory, setFilterCategory] = useState<string>("");
+
+  // Read query params on mount and when they change
+  useEffect(() => {
+    const tabParam = searchParams.get("tab");
+    const categoryParam = searchParams.get("category");
+
+    if (tabParam === "categories") {
+      setActiveTab("categories");
+    } else if (categoryParam) {
+      setActiveTab("items");
+      setFilterCategory(categoryParam);
+    }
+  }, [searchParams]);
+
+  // Update URL when filter changes (optional - keeps URL in sync)
+  const handleFilterChange = (value: string) => {
+    setFilterCategory(value);
+    if (value) {
+      setSearchParams({ category: value });
+    } else {
+      setSearchParams({});
+    }
+  };
+
+  // Update URL when tab changes
+  const handleTabChange = (tab: Tab) => {
+    setActiveTab(tab);
+    if (tab === "categories") {
+      setSearchParams({ tab: "categories" });
+    } else {
+      setSearchParams({});
+    }
+  };
 
   const { data: categories, isLoading: loadingCategories } = useCategories();
   const { mutate: deleteCategory } = useDeleteCategory();
@@ -170,7 +205,7 @@ export function MenuPage() {
           <Button
             variant={activeTab === "items" ? "primary" : "ghost"}
             size="lg"
-            onClick={() => setActiveTab("items")}
+            onClick={() => handleTabChange("items")}
             className={
               activeTab === "items"
                 ? "bg-sage-green-500 hover:bg-sage-green-600"
@@ -190,7 +225,7 @@ export function MenuPage() {
           <Button
             variant={activeTab === "categories" ? "primary" : "ghost"}
             size="lg"
-            onClick={() => setActiveTab("categories")}
+            onClick={() => handleTabChange("categories")}
             className={
               activeTab === "categories"
                 ? "bg-sage-green-500 hover:bg-sage-green-600"
@@ -277,7 +312,7 @@ export function MenuPage() {
                 <ListFilter className="w-5 h-5 text-carbon-500" />
                 <select
                   value={filterCategory}
-                  onChange={(e) => setFilterCategory(e.target.value)}
+                  onChange={(e) => handleFilterChange(e.target.value)}
                   className="px-4 py-2.5 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sage-green-400 focus:border-sage-green-400"
                 >
                   <option value="">Todas las categorías</option>
