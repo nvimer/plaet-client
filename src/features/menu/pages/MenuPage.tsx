@@ -1,15 +1,16 @@
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import { Button, Card, Badge } from "@/components";
+import { Button, Card, FilterBar, FilterSelect, ActiveFilterChips } from "@/components";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
-import { FolderOpen, Grid3x3, ListFilter, Plus } from "lucide-react";
+import { FolderOpen, Grid3x3, Plus, UtensilsCrossed, AlertTriangle, Package } from "lucide-react";
 import type { AxiosErrorWithResponse } from "@/types/common";
 import { MenuSectionToolbar, CardGrid } from "../components";
 import {
   useCategories,
   useDeleteCategory,
+  useUpdateCategory,
   CategoryCard,
 } from "../categories";
 import {
@@ -20,16 +21,15 @@ import {
   useOutOfStockItems,
 } from "../items";
 import { ROUTES, getCategoryEditRoute, getMenuItemEditRoute } from "@/app/routes";
-import { AlertTriangle, Package } from "lucide-react";
+import { cn } from "@/utils/cn";
 
 type Tab = "categories" | "items";
 
 /**
  * MenuPage Component
  *
- * Main page for menu management (categories and items).
- * Reads query params: ?category=id (filter), ?tab=categories (switch tab).
- * Aligned with app design system (claude.md) and TablesPage layout.
+ * Gestión de menú con diseño actual: header con estadísticas,
+ * pestañas tipo segmented control, alertas compactas y panel de contenido.
  */
 export function MenuPage() {
   const navigate = useNavigate();
@@ -37,41 +37,34 @@ export function MenuPage() {
   const [activeTab, setActiveTab] = useState<Tab>("items");
   const [filterCategory, setFilterCategory] = useState<string>("");
 
-  // Read query params on mount and when they change
   useEffect(() => {
     const tabParam = searchParams.get("tab");
     const categoryParam = searchParams.get("category");
-
-    if (tabParam === "categories") {
-      setActiveTab("categories");
-    } else if (categoryParam) {
+    if (tabParam === "categories") setActiveTab("categories");
+    else if (categoryParam) {
       setActiveTab("items");
       setFilterCategory(categoryParam);
     }
   }, [searchParams]);
 
-  // Update URL when filter changes (optional - keeps URL in sync)
   const handleFilterChange = (value: string) => {
     setFilterCategory(value);
-    if (value) {
-      setSearchParams({ category: value });
-    } else {
-      setSearchParams({});
-    }
+    setSearchParams(value ? { category: value } : {});
   };
 
-  // Update URL when tab changes
   const handleTabChange = (tab: Tab) => {
     setActiveTab(tab);
-    if (tab === "categories") {
-      setSearchParams({ tab: "categories" });
-    } else {
-      setSearchParams({});
-    }
+    setSearchParams(tab === "categories" ? { tab: "categories" } : {});
   };
 
   const { data: categories, isLoading: loadingCategories } = useCategories();
   const { mutate: deleteCategory } = useDeleteCategory();
+  const { mutate: updateCategory } = useUpdateCategory();
+
+  const sortedCategories = useMemo(
+    () => [...(categories ?? [])].sort((a, b) => a.order - b.order),
+    [categories]
+  );
 
   const { data: items, isLoading: loadingItems } = useItems();
   const { mutate: deleteItem } = useDeleteItem();
@@ -81,17 +74,13 @@ export function MenuPage() {
 
   const categoryNameById = useMemo(() => {
     const map: Record<number, string> = {};
-    categories?.forEach((c) => {
-      map[c.id] = c.name;
-    });
+    categories?.forEach((c) => { map[c.id] = c.name; });
     return map;
   }, [categories]);
 
   const countByCategory = useMemo(() => {
     const map: Record<number, number> = {};
-    items?.forEach((i) => {
-      map[i.categoryId] = (map[i.categoryId] ?? 0) + 1;
-    });
+    items?.forEach((i) => { map[i.categoryId] = (map[i.categoryId] ?? 0) + 1; });
     return map;
   }, [items]);
 
@@ -99,238 +88,255 @@ export function MenuPage() {
     ? items?.filter((item) => String(item.categoryId) === filterCategory)
     : items;
 
-  const handleCreateCategory = () => {
-    navigate(ROUTES.MENU_CATEGORY_CREATE);
-  };
+  const hasStockAlerts =
+    (outOfStockItems?.length ?? 0) > 0 || (lowStockItems?.length ?? 0) > 0;
 
-  const handleEditCategory = (categoryId: number) => {
-    navigate(getCategoryEditRoute(categoryId));
-  };
-
+  const handleCreateCategory = () => navigate(ROUTES.MENU_CATEGORY_CREATE);
+  const handleEditCategory = (id: number) => navigate(getCategoryEditRoute(id));
   const handleDeleteCategory = (id: number) => {
     deleteCategory(id, {
-      onSuccess: () => {
-        toast.success("Categoría eliminada", {
-          description: "La categoría ha sido eliminada exitosamente",
-        });
-      },
-      onError: (error: AxiosErrorWithResponse) => {
-        toast.error("Error al eliminar categoría", {
-          description: error.response?.data?.message || error.message,
-        });
-      },
+      onSuccess: () => toast.success("Categoría eliminada"),
+      onError: (e: AxiosErrorWithResponse) =>
+        toast.error("Error al eliminar", { description: e.response?.data?.message ?? e.message }),
     });
   };
 
-  const handleCreateItem = () => {
-    navigate(ROUTES.MENU_ITEM_CREATE);
+  const handleMoveCategoryUp = (index: number) => {
+    if (index <= 0) return;
+    const current = sortedCategories[index];
+    const prev = sortedCategories[index - 1];
+    updateCategory(
+      { id: current.id, order: prev.order },
+      {
+        onSuccess: () => {
+          updateCategory(
+            { id: prev.id, order: current.order },
+            {
+              onSuccess: () => toast.success("Orden actualizado"),
+              onError: (e: AxiosErrorWithResponse) =>
+                toast.error("Error al reordenar", { description: e.response?.data?.message ?? e.message }),
+            }
+          );
+        },
+        onError: (e: AxiosErrorWithResponse) =>
+          toast.error("Error al reordenar", { description: e.response?.data?.message ?? e.message }),
+      }
+    );
   };
 
-  const handleEditItem = (itemId: number) => {
-    navigate(getMenuItemEditRoute(itemId));
+  const handleMoveCategoryDown = (index: number) => {
+    if (index < 0 || index >= sortedCategories.length - 1) return;
+    const current = sortedCategories[index];
+    const next = sortedCategories[index + 1];
+    updateCategory(
+      { id: current.id, order: next.order },
+      {
+        onSuccess: () => {
+          updateCategory(
+            { id: next.id, order: current.order },
+            {
+              onSuccess: () => toast.success("Orden actualizado"),
+              onError: (e: AxiosErrorWithResponse) =>
+                toast.error("Error al reordenar", { description: e.response?.data?.message ?? e.message }),
+            }
+          );
+        },
+        onError: (e: AxiosErrorWithResponse) =>
+          toast.error("Error al reordenar", { description: e.response?.data?.message ?? e.message }),
+      }
+    );
   };
 
+  const handleCreateItem = () => navigate(ROUTES.MENU_ITEM_CREATE);
+  const handleEditItem = (id: number) => navigate(getMenuItemEditRoute(id));
   const handleDeleteItem = (id: number) => {
     deleteItem(id, {
-      onSuccess: () => {
-        toast.success("Producto eliminado", {
-          description: "El producto ha sido eliminado exitosamente",
-        });
-      },
-      onError: (error: AxiosErrorWithResponse) => {
-        toast.error("Error al eliminar producto", {
-          description: error.response?.data?.message || error.message,
-        });
-      },
+      onSuccess: () => toast.success("Producto eliminado"),
+      onError: (e: AxiosErrorWithResponse) =>
+        toast.error("Error al eliminar", { description: e.response?.data?.message ?? e.message }),
     });
   };
 
   return (
-    <>
-      {/* Page Header - aligned with TablesPage */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+    <div className="space-y-6">
+      {/* Header con estadísticas */}
+      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-carbon-900 tracking-tight">
-            Gestión de Menú
+          <h1 className="text-2xl sm:text-3xl font-bold text-carbon-900 tracking-tight">
+            Menú
           </h1>
           <p className="text-sm text-carbon-500 mt-1">
-            Administra categorías y productos del menú
+            Productos y categorías del restaurante
           </p>
         </div>
-      </div>
-
-      {/* Stock Alerts */}
-      {(outOfStockItems && outOfStockItems.length > 0) ||
-      (lowStockItems && lowStockItems.length > 0) ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {outOfStockItems && outOfStockItems.length > 0 && (
-            <Card
-              variant="elevated"
-              padding="md"
-              className="bg-rose-50 border-2 border-rose-200 rounded-xl"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-rose-100 rounded-xl">
-                  <AlertTriangle className="w-5 h-5 text-rose-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-rose-900">Sin stock</p>
-                  <p className="text-sm text-rose-700">
-                    {outOfStockItems.length} producto(s) sin stock
-                  </p>
-                </div>
-              </div>
-            </Card>
-          )}
-          {lowStockItems && lowStockItems.length > 0 && (
-            <Card
-              variant="elevated"
-              padding="md"
-              className="bg-amber-50 border-2 border-amber-200 rounded-xl"
-            >
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-amber-100 rounded-xl">
-                  <Package className="w-5 h-5 text-amber-600" />
-                </div>
-                <div className="flex-1">
-                  <p className="font-semibold text-amber-900">Stock bajo</p>
-                  <p className="text-sm text-amber-700">
-                    {lowStockItems.length} producto(s) con stock bajo
-                  </p>
-                </div>
-              </div>
-            </Card>
-          )}
-        </div>
-      ) : null}
-
-      {/* Tab Navigation */}
-      <Card
-        variant="elevated"
-        padding="md"
-        className="mb-8 rounded-2xl border border-sage-200 shadow-sm"
-      >
-        <div className="flex items-center gap-3 flex-wrap">
-          <Button
-            variant={activeTab === "items" ? "primary" : "ghost"}
-            size="lg"
-            onClick={() => handleTabChange("items")}
-            className={
-              activeTab === "items"
-                ? "bg-sage-green-500 hover:bg-sage-green-600"
-                : ""
-            }
+        <div className="flex items-center gap-3">
+          <div
+            className={cn(
+              "flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 min-h-[44px] touch-manipulation",
+              "bg-white border-sage-200 text-carbon-700"
+            )}
           >
-            <Grid3x3 className="w-5 h-5 mr-2" />
-            Productos
-            <Badge
-              size="md"
-              variant={activeTab === "items" ? "neutral" : "success"}
-              className="ml-2"
-            >
-              {items?.length ?? 0}
-            </Badge>
-          </Button>
-          <Button
-            variant={activeTab === "categories" ? "primary" : "ghost"}
-            size="lg"
-            onClick={() => handleTabChange("categories")}
-            className={
-              activeTab === "categories"
-                ? "bg-sage-green-500 hover:bg-sage-green-600"
-                : ""
-            }
+            <Grid3x3 className="w-5 h-5 text-sage-600 flex-shrink-0" />
+            <span className="text-sm font-medium">
+              {items?.length ?? 0} productos
+            </span>
+          </div>
+          <div
+            className={cn(
+              "flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 min-h-[44px] touch-manipulation",
+              "bg-white border-sage-200 text-carbon-700"
+            )}
           >
-            <FolderOpen className="w-5 h-5 mr-2" />
-            Categorías
-            <Badge
-              size="md"
-              variant={activeTab === "categories" ? "neutral" : "success"}
-              className="ml-2"
-            >
-              {categories?.length ?? 0}
-            </Badge>
-          </Button>
+            <FolderOpen className="w-5 h-5 text-sage-600 flex-shrink-0" />
+            <span className="text-sm font-medium">
+              {categories?.length ?? 0} categorías
+            </span>
+          </div>
         </div>
-      </Card>
+      </header>
 
-      {/* TAB: Categories */}
-      {activeTab === "categories" && (
-        <div>
-          <MenuSectionToolbar
-            countLabel={`${categories?.length ?? 0} ${(categories?.length ?? 0) === 1 ? "categoría" : "categorías"}`}
-            primaryLabel="Nueva Categoría"
-            onPrimaryAction={handleCreateCategory}
-            primaryIcon={<Plus className="w-5 h-5" />}
-          />
-
-          {loadingCategories ? (
-            <>
-              <div className="mb-6">
-                <Skeleton variant="text" width={160} height={24} />
-              </div>
-              <CardGrid>
-                {[...Array(6)].map((_, i) => (
-                  <Skeleton key={i} variant="card" />
-                ))}
-              </CardGrid>
-            </>
-          ) : !categories?.length ? (
-            <EmptyState
-              icon={<FolderOpen />}
-              title="No hay categorías"
-              description="Crea tu primera categoría para organizar el menú"
-              actionLabel="Crear Primera Categoría"
-              onAction={handleCreateCategory}
-            />
-          ) : (
-            <CardGrid>
-              {categories.map((category) => (
-                <CategoryCard
-                  key={category.id}
-                  category={category}
-                  onEdit={handleEditCategory}
-                  onDelete={handleDeleteCategory}
-                  productCount={countByCategory[category.id]}
-                />
-              ))}
-            </CardGrid>
+      {/* Alertas de stock (compactas) */}
+      {hasStockAlerts && (
+        <div
+          className={cn(
+            "flex flex-wrap items-center justify-between gap-3 px-4 py-3 rounded-xl border-2 min-h-[44px]",
+            "bg-amber-50/80 border-amber-200 text-amber-900"
           )}
+        >
+          <div className="flex flex-wrap items-center gap-4">
+            {(outOfStockItems?.length ?? 0) > 0 && (
+              <span className="flex items-center gap-2 text-sm font-medium">
+                <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0" />
+                {outOfStockItems!.length} sin stock
+              </span>
+            )}
+            {(lowStockItems?.length ?? 0) > 0 && (
+              <span className="flex items-center gap-2 text-sm font-medium">
+                <Package className="w-4 h-4 text-amber-600 flex-shrink-0" />
+                {lowStockItems!.length} stock bajo
+              </span>
+            )}
+          </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigate(ROUTES.STOCK_MANAGEMENT)}
+            className="min-h-[40px] text-amber-800 hover:bg-amber-100 touch-manipulation"
+          >
+            Ver inventario
+          </Button>
         </div>
       )}
 
-      {/* TAB: Items */}
-      {activeTab === "items" && (
-        <div>
+      {/* Tabs tipo segmented control */}
+      <div
+        role="tablist"
+        aria-label="Sección del menú"
+        className={cn(
+          "inline-flex p-1.5 rounded-2xl border-2 border-sage-200 bg-sage-50/50",
+          "min-h-[48px] touch-manipulation"
+        )}
+      >
+        <button
+          role="tab"
+          aria-selected={activeTab === "items"}
+          aria-controls="panel-productos"
+          id="tab-productos"
+          onClick={() => handleTabChange("items")}
+          className={cn(
+            "inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium min-h-[44px] transition-all duration-200",
+            activeTab === "items"
+              ? "bg-white text-sage-800 shadow-sm border border-sage-200"
+              : "text-carbon-600 hover:text-carbon-800 hover:bg-sage-100/50"
+          )}
+        >
+          <UtensilsCrossed className="w-5 h-5 flex-shrink-0" />
+          Productos
+          <span
+            className={cn(
+              "ml-1 px-2 py-0.5 rounded-full text-xs font-semibold",
+              activeTab === "items" ? "bg-sage-100 text-sage-700" : "bg-sage-200/80 text-carbon-600"
+            )}
+          >
+            {items?.length ?? 0}
+          </span>
+        </button>
+        <button
+          role="tab"
+          aria-selected={activeTab === "categories"}
+          aria-controls="panel-categorias"
+          id="tab-categorias"
+          onClick={() => handleTabChange("categories")}
+          className={cn(
+            "inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium min-h-[44px] transition-all duration-200",
+            activeTab === "categories"
+              ? "bg-white text-sage-800 shadow-sm border border-sage-200"
+              : "text-carbon-600 hover:text-carbon-800 hover:bg-sage-100/50"
+          )}
+        >
+          <FolderOpen className="w-5 h-5 flex-shrink-0" />
+          Categorías
+          <span
+            className={cn(
+              "ml-1 px-2 py-0.5 rounded-full text-xs font-semibold",
+              activeTab === "categories" ? "bg-sage-100 text-sage-700" : "bg-sage-200/80 text-carbon-600"
+            )}
+          >
+            {categories?.length ?? 0}
+          </span>
+        </button>
+      </div>
+
+      {/* Panel de contenido */}
+      <section
+        id="panel-productos"
+        role="tabpanel"
+        aria-labelledby="tab-productos"
+        hidden={activeTab !== "items"}
+        className={cn(
+          "rounded-2xl border-2 border-sage-200 bg-white shadow-sm overflow-hidden",
+          "focus:outline-none"
+        )}
+      >
+        <div className="p-6 sm:p-8 space-y-4">
           <MenuSectionToolbar
             countLabel={`${filteredItems?.length ?? 0} ${(filteredItems?.length ?? 0) === 1 ? "producto" : "productos"}${filterCategory ? " en esta categoría" : ""}`}
-            primaryLabel="Nuevo Producto"
+            primaryLabel="Nuevo producto"
             onPrimaryAction={handleCreateItem}
             primaryIcon={<Plus className="w-5 h-5" />}
-          >
-            <div className="flex items-center gap-2">
-              <ListFilter className="w-5 h-5 text-carbon-500 flex-shrink-0" />
-              <select
-                value={filterCategory}
-                onChange={(e) => handleFilterChange(e.target.value)}
-                className="min-h-[44px] px-4 py-2.5 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sage-green-400 focus:border-sage-green-400 touch-manipulation"
-                aria-label="Filtrar por categoría"
-              >
-                <option value="">Todas las categorías</option>
-                {categories?.map((category) => (
-                  <option key={category.id} value={category.id}>
-                    {category.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </MenuSectionToolbar>
+          />
+
+          <FilterBar>
+            <FilterSelect
+              label="Categoría"
+              value={filterCategory}
+              onChange={handleFilterChange}
+              options={(categories ?? []).map((c) => ({ value: String(c.id), label: c.name }))}
+              placeholder="Todas las categorías"
+              aria-label="Filtrar por categoría"
+              className="max-w-xs"
+            />
+          </FilterBar>
+
+          {filterCategory && (
+            <ActiveFilterChips
+              chips={[
+                {
+                  key: "category",
+                  label: "Categoría",
+                  value: categoryNameById[Number(filterCategory)] ?? `#${filterCategory}`,
+                },
+              ]}
+              resultCount={filteredItems?.length ?? 0}
+              resultLabel={(filteredItems?.length ?? 0) === 1 ? "producto" : "productos"}
+              onClearFilter={(key) => { if (key === "category") handleFilterChange(""); }}
+              onClearAll={() => handleFilterChange("")}
+            />
+          )}
 
           {loadingItems ? (
             <>
-              <div className="mb-5">
-                <Skeleton variant="text" width={180} height={24} />
-              </div>
+              <Skeleton variant="text" width={180} height={24} className="mb-5" />
               <CardGrid>
                 {[...Array(6)].map((_, i) => (
                   <Skeleton key={i} variant="card" />
@@ -340,17 +346,9 @@ export function MenuPage() {
           ) : !filteredItems?.length ? (
             <EmptyState
               icon={<Grid3x3 />}
-              title={
-                filterCategory
-                  ? "No hay productos en esta categoría"
-                  : "No hay productos"
-              }
-              description={
-                filterCategory
-                  ? "Cambia el filtro o crea un producto en esta categoría"
-                  : "Crea tu primer producto para el menú"
-              }
-              actionLabel={!filterCategory ? "Crear Primer Producto" : undefined}
+              title={filterCategory ? "No hay productos en esta categoría" : "No hay productos"}
+              description={filterCategory ? "Cambia el filtro o crea un producto aquí" : "Crea tu primer producto del menú"}
+              actionLabel={!filterCategory ? "Crear primer producto" : undefined}
               onAction={!filterCategory ? handleCreateItem : undefined}
             />
           ) : (
@@ -367,7 +365,62 @@ export function MenuPage() {
             </CardGrid>
           )}
         </div>
-      )}
-    </>
+      </section>
+
+      <section
+        id="panel-categorias"
+        role="tabpanel"
+        aria-labelledby="tab-categorias"
+        hidden={activeTab !== "categories"}
+        className={cn(
+          "rounded-2xl border-2 border-sage-200 bg-white shadow-sm overflow-hidden",
+          "focus:outline-none"
+        )}
+      >
+        <div className="p-6 sm:p-8">
+          <MenuSectionToolbar
+            countLabel={`${categories?.length ?? 0} ${(categories?.length ?? 0) === 1 ? "categoría" : "categorías"}`}
+            primaryLabel="Nueva categoría"
+            onPrimaryAction={handleCreateCategory}
+            primaryIcon={<Plus className="w-5 h-5" />}
+          />
+
+          {loadingCategories ? (
+            <>
+              <Skeleton variant="text" width={160} height={24} className="mb-6" />
+              <CardGrid>
+                {[...Array(6)].map((_, i) => (
+                  <Skeleton key={i} variant="card" />
+                ))}
+              </CardGrid>
+            </>
+          ) : !categories?.length ? (
+            <EmptyState
+              icon={<FolderOpen />}
+              title="No hay categorías"
+              description="Crea tu primera categoría para organizar el menú"
+              actionLabel="Crear primera categoría"
+              onAction={handleCreateCategory}
+            />
+          ) : (
+            <CardGrid>
+              {sortedCategories.map((category, index) => (
+                <CategoryCard
+                  key={category.id}
+                  category={category}
+                  onEdit={handleEditCategory}
+                  onDelete={handleDeleteCategory}
+                  productCount={countByCategory[category.id]}
+                  onMoveUp={() => handleMoveCategoryUp(index)}
+                  onMoveDown={() => handleMoveCategoryDown(index)}
+                  canMoveUp={index > 0}
+                  canMoveDown={index < sortedCategories.length - 1}
+                />
+              ))}
+            </CardGrid>
+          )}
+        </div>
+      </section>
+    </div>
   );
 }
