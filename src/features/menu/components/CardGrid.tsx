@@ -1,0 +1,24 @@
+import type { ReactNode } from "react";
+import { cn } from "@/utils/cn";
+
+interface CardGridProps {
+  children: ReactNode;
+  className?: string;
+}
+
+/**
+ * Reusable grid for menu cards (productos / categorías).
+ * Touch-friendly spacing (gap-6), responsive columns.
+ */
+export function CardGrid({ children, className }: CardGridProps) {
+  return (
+    <div
+      className={cn(
+        "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6",
+        className
+      )}
+    >
+      {children}
+    </div>
+  );
+}

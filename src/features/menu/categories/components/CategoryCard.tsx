@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ArrowUpDown, Edit2, FolderOpen, Trash2 } from "lucide-react";
+import { ArrowUpDown, Edit2, FolderOpen, Package, Trash2 } from "lucide-react";
 import { Button, ConfirmDialog } from "@/components";
 import type { MenuCategory } from "@/types";
 import { cn } from "@/utils/cn";
@@ -8,6 +8,8 @@ interface CategoryCardProps {
   category: MenuCategory;
   onEdit: (categoryId: number) => void;
   onDelete: (id: number) => void;
+  /** Optional: number of products in this category (restaurant-friendly) */
+  productCount?: number;
 }
 
 /**
@@ -16,7 +18,7 @@ interface CategoryCardProps {
  * Modern card for a menu category: clear hierarchy, sage accent,
  * order, description, actions. Aligned with TableCard design (claude.md).
  */
-export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) {
+export function CategoryCard({ category, onEdit, onDelete, productCount }: CategoryCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   return (
@@ -41,9 +43,17 @@ export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) 
                 <h3 className="text-lg font-semibold text-carbon-900 truncate">
                   {category.name}
                 </h3>
-                <div className="flex items-center gap-1.5 mt-1 text-carbon-500">
-                  <ArrowUpDown className="w-4 h-4 flex-shrink-0 text-carbon-400" />
-                  <span className="text-sm">Orden: {category.order}</span>
+                <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1 text-carbon-500">
+                  <span className="flex items-center gap-1.5 text-sm">
+                    <ArrowUpDown className="w-4 h-4 flex-shrink-0 text-carbon-400" />
+                    Orden: {category.order}
+                  </span>
+                  {productCount !== undefined && (
+                    <span className="flex items-center gap-1.5 text-sm">
+                      <Package className="w-4 h-4 flex-shrink-0 text-carbon-400" />
+                      {productCount} {productCount === 1 ? "producto" : "productos"}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -55,21 +65,22 @@ export function CategoryCard({ category, onEdit, onDelete }: CategoryCardProps) 
             </p>
           )}
 
-          <div className="flex gap-2 pt-4 border-t border-sage-100">
+          {/* Actions - touch-friendly min 44px (claude.md) */}
+          <div className="flex gap-3 pt-4 border-t border-sage-100">
             <Button
               variant="ghost"
-              size="sm"
+              size="md"
               onClick={() => onEdit(category.id)}
-              className="flex-1 min-h-[40px]"
+              className="flex-1 min-h-[44px] touch-manipulation"
             >
               <Edit2 className="w-4 h-4 mr-2" />
               Editar
             </Button>
             <Button
               variant="ghost"
-              size="sm"
+              size="md"
               onClick={() => setIsDeleteDialogOpen(true)}
-              className="flex-1 min-h-[40px] text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+              className="flex-1 min-h-[44px] touch-manipulation text-rose-600 hover:bg-rose-50 hover:text-rose-700"
             >
               <Trash2 className="w-4 h-4 mr-2" />
               Eliminar

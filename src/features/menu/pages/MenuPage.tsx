@@ -6,6 +6,7 @@ import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 import { FolderOpen, Grid3x3, ListFilter, Plus } from "lucide-react";
 import type { AxiosErrorWithResponse } from "@/types/common";
+import { MenuSectionToolbar, CardGrid } from "../components";
 import {
   useCategories,
   useDeleteCategory,
@@ -85,6 +86,14 @@ export function MenuPage() {
     });
     return map;
   }, [categories]);
+
+  const countByCategory = useMemo(() => {
+    const map: Record<number, number> = {};
+    items?.forEach((i) => {
+      map[i.categoryId] = (map[i.categoryId] ?? 0) + 1;
+    });
+    return map;
+  }, [items]);
 
   const filteredItems = filterCategory
     ? items?.filter((item) => String(item.categoryId) === filterCategory)
@@ -248,32 +257,23 @@ export function MenuPage() {
       {/* TAB: Categories */}
       {activeTab === "categories" && (
         <div>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-            <p className="text-sm font-medium text-carbon-600">
-              {categories?.length ?? 0}{" "}
-              {(categories?.length ?? 0) === 1 ? "categoría" : "categorías"}
-            </p>
-            <Button
-              size="lg"
-              variant="primary"
-              onClick={handleCreateCategory}
-              className="w-full sm:w-auto min-h-[44px]"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Nueva Categoría
-            </Button>
-          </div>
+          <MenuSectionToolbar
+            countLabel={`${categories?.length ?? 0} ${(categories?.length ?? 0) === 1 ? "categoría" : "categorías"}`}
+            primaryLabel="Nueva Categoría"
+            onPrimaryAction={handleCreateCategory}
+            primaryIcon={<Plus className="w-5 h-5" />}
+          />
 
           {loadingCategories ? (
             <>
               <div className="mb-6">
                 <Skeleton variant="text" width={160} height={24} />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <CardGrid>
                 {[...Array(6)].map((_, i) => (
                   <Skeleton key={i} variant="card" />
                 ))}
-              </div>
+              </CardGrid>
             </>
           ) : !categories?.length ? (
             <EmptyState
@@ -284,16 +284,17 @@ export function MenuPage() {
               onAction={handleCreateCategory}
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <CardGrid>
               {categories.map((category) => (
                 <CategoryCard
                   key={category.id}
                   category={category}
                   onEdit={handleEditCategory}
                   onDelete={handleDeleteCategory}
+                  productCount={countByCategory[category.id]}
                 />
               ))}
-            </div>
+            </CardGrid>
           )}
         </div>
       )}
@@ -301,50 +302,40 @@ export function MenuPage() {
       {/* TAB: Items */}
       {activeTab === "items" && (
         <div>
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
-            <div className="flex flex-wrap items-center gap-4">
-              <p className="text-sm font-medium text-carbon-600">
-                {filteredItems?.length ?? 0}{" "}
-                {(filteredItems?.length ?? 0) === 1 ? "producto" : "productos"}
-                {filterCategory ? " en esta categoría" : ""}
-              </p>
-              <div className="flex items-center gap-2">
-                <ListFilter className="w-5 h-5 text-carbon-500" />
-                <select
-                  value={filterCategory}
-                  onChange={(e) => handleFilterChange(e.target.value)}
-                  className="px-4 py-2.5 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sage-green-400 focus:border-sage-green-400"
-                >
-                  <option value="">Todas las categorías</option>
-                  {categories?.map((category) => (
-                    <option key={category.id} value={category.id}>
-                      {category.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
+          <MenuSectionToolbar
+            countLabel={`${filteredItems?.length ?? 0} ${(filteredItems?.length ?? 0) === 1 ? "producto" : "productos"}${filterCategory ? " en esta categoría" : ""}`}
+            primaryLabel="Nuevo Producto"
+            onPrimaryAction={handleCreateItem}
+            primaryIcon={<Plus className="w-5 h-5" />}
+          >
+            <div className="flex items-center gap-2">
+              <ListFilter className="w-5 h-5 text-carbon-500 flex-shrink-0" />
+              <select
+                value={filterCategory}
+                onChange={(e) => handleFilterChange(e.target.value)}
+                className="min-h-[44px] px-4 py-2.5 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-sage-green-400 focus:border-sage-green-400 touch-manipulation"
+                aria-label="Filtrar por categoría"
+              >
+                <option value="">Todas las categorías</option>
+                {categories?.map((category) => (
+                  <option key={category.id} value={category.id}>
+                    {category.name}
+                  </option>
+                ))}
+              </select>
             </div>
-            <Button
-              size="lg"
-              variant="primary"
-              onClick={handleCreateItem}
-              className="w-full sm:w-auto min-h-[44px]"
-            >
-              <Plus className="w-5 h-5 mr-2" />
-              Nuevo Producto
-            </Button>
-          </div>
+          </MenuSectionToolbar>
 
           {loadingItems ? (
             <>
               <div className="mb-5">
                 <Skeleton variant="text" width={180} height={24} />
               </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <CardGrid>
                 {[...Array(6)].map((_, i) => (
                   <Skeleton key={i} variant="card" />
                 ))}
-              </div>
+              </CardGrid>
             </>
           ) : !filteredItems?.length ? (
             <EmptyState
@@ -363,7 +354,7 @@ export function MenuPage() {
               onAction={!filterCategory ? handleCreateItem : undefined}
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <CardGrid>
               {filteredItems.map((item) => (
                 <MenuItemCard
                   key={item.id}
@@ -373,7 +364,7 @@ export function MenuPage() {
                   onDelete={handleDeleteItem}
                 />
               ))}
-            </div>
+            </CardGrid>
           )}
         </div>
       )}

@@ -154,22 +154,22 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
             </span>
           </div>
 
-          {/* Actions */}
-          <div className="flex gap-2 pt-4 border-t border-sage-100">
+          {/* Actions - touch-friendly min 44px (claude.md) */}
+          <div className="flex gap-3 pt-4 border-t border-sage-100">
             <Button
               variant="ghost"
-              size="sm"
+              size="md"
               onClick={() => onEdit(item.id)}
-              className="flex-1 min-h-[40px]"
+              className="flex-1 min-h-[44px] touch-manipulation"
             >
               <Edit2 className="w-4 h-4 mr-2" />
               Editar
             </Button>
             <Button
               variant="ghost"
-              size="sm"
+              size="md"
               onClick={() => setIsDeleteDialogOpen(true)}
-              className="flex-1 min-h-[40px] text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+              className="flex-1 min-h-[44px] touch-manipulation text-rose-600 hover:bg-rose-50 hover:text-rose-700"
             >
               <Trash2 className="w-4 h-4 mr-2" />
               Eliminar
