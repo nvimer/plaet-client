@@ -1,8 +1,7 @@
 import { Button, Card, StatCard } from "@/components";
-import { Badge } from "@/components/ui/Badge/Badge";
 import { useTables } from "@/features/tables";
 import { useOrders } from "@/features/orders";
-
+import { getTableManageRoute } from "@/app/routes";
 import { TableStatus, OrderStatus } from "@/types";
 import {
   Table2,
@@ -10,9 +9,13 @@ import {
   DollarSign,
   Plus,
   MenuIcon,
+  CircleCheck,
+  CircleDot,
+  Clock,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMemo } from "react";
+import { cn } from "@/utils/cn";
 
 export function DashboardPage() {
   const { data } = useTables();
@@ -135,14 +138,14 @@ export function DashboardPage() {
 
       {/* Content Grid */}
       <div className="grid lg:grid-cols-2 gap-8">
-        {/* Recent Tables */}
+        {/* Recent Tables - same style as TableCard */}
         <Card variant="elevated" padding="lg">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between mb-6">
             <div>
-              <h3 className="text-xl font-semibold text-neutral-900 mb-2">
+              <h3 className="text-xl font-semibold text-carbon-900 mb-1">
                 Estado de Mesas
               </h3>
-              <p className="text-sm text-neutral-600 font-light">
+              <p className="text-sm text-carbon-500">
                 {activeTables} de {totalTables} mesas ocupadas
               </p>
             </div>
@@ -155,44 +158,87 @@ export function DashboardPage() {
             </Button>
           </div>
 
-          <div className="space-y-3">
-            {tables?.slice(0, 5).map((table) => (
-              <div
-                key={table.id}
-                className="flex items-center justify-between p-4 bg-neutral-50 rounded-xl hover:bg-neutral-100 transition-colors cursor-pointer"
-              >
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center font-semibold text-neutral-700 border border-neutral-200">
-                    {table.number}
-                  </div>
-                  <div>
-                    <div className="font-medium text-neutral-900">
-                      Mesa {table.number}
+          <div className="space-y-2">
+            {tables?.slice(0, 5).map((table) => {
+              const isAvailable = table.status === TableStatus.AVAILABLE;
+              const isOccupied = table.status === TableStatus.OCCUPIED;
+              const isCleaning = table.status === TableStatus.NEEDS_CLEANING;
+              const statusConfig = isAvailable
+                ? {
+                    label: "Disponible",
+                    icon: CircleCheck,
+                    pill: "bg-emerald-100 text-emerald-700 border-emerald-200",
+                    box: "bg-emerald-50 border-emerald-200",
+                    text: "text-emerald-700",
+                  }
+                : isOccupied
+                  ? {
+                      label: "Ocupada",
+                      icon: CircleDot,
+                      pill: "bg-rose-100 text-rose-700 border-rose-200",
+                      box: "bg-rose-50 border-rose-200",
+                      text: "text-rose-700",
+                    }
+                  : {
+                      label: "Limpieza",
+                      icon: Clock,
+                      pill: "bg-amber-100 text-amber-700 border-amber-200",
+                      box: "bg-amber-50 border-amber-200",
+                      text: "text-amber-700",
+                    };
+              const StatusIcon = statusConfig.icon;
+              return (
+                <button
+                  key={table.id}
+                  type="button"
+                  onClick={() => navigate(getTableManageRoute(table.id))}
+                  className={cn(
+                    "w-full flex items-center justify-between gap-4 p-3 rounded-xl",
+                    "border-2 border-sage-200/60 bg-white",
+                    "hover:border-sage-300 hover:bg-sage-50/50",
+                    "transition-all duration-200 text-left"
+                  )}
+                >
+                  <div className="flex items-center gap-3 min-w-0">
+                    <div
+                      className={cn(
+                        "w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0",
+                        "font-bold text-lg border",
+                        statusConfig.box,
+                        statusConfig.text
+                      )}
+                    >
+                      {table.number}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-medium text-carbon-900 truncate">
+                        Mesa {table.number}
+                      </p>
+                      {table.location && (
+                        <p className="text-xs text-carbon-500 truncate">
+                          {table.location}
+                        </p>
+                      )}
                     </div>
                   </div>
-                </div>
-                <Badge
-                  variant={
-                    table.status === TableStatus.OCCUPIED
-                      ? "error"
-                      : table.status === TableStatus.NEEDS_CLEANING
-                        ? "warning"
-                        : "success"
-                  }
-                >
-                  {table.status === TableStatus.OCCUPIED
-                    ? "Ocupada"
-                    : table.status === TableStatus.NEEDS_CLEANING
-                      ? "Limpieza"
-                      : "Disponible"}
-                </Badge>
-              </div>
-            ))}
+                  <span
+                    className={cn(
+                      "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full",
+                      "text-xs font-medium border flex-shrink-0",
+                      statusConfig.pill
+                    )}
+                  >
+                    <StatusIcon className="w-3.5 h-3.5" />
+                    {statusConfig.label}
+                  </span>
+                </button>
+              );
+            })}
           </div>
           {tables?.length === 0 && (
-            <div>
-              <Table2 className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
-              <p>No hay mesas registradas</p>
+            <div className="text-center py-8">
+              <Table2 className="w-12 h-12 text-carbon-300 mx-auto mb-4" />
+              <p className="text-carbon-500">No hay mesas registradas</p>
             </div>
           )}
         </Card>

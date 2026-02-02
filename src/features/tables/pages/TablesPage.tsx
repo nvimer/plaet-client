@@ -18,7 +18,6 @@ export function TablesPage() {
     // ============= DATA HOOKS ===============
     const { data, isLoading, error } = useTables();
     const tables = data?.tables;
-    const meta = data?.meta;
     
     // ============= FILTER HOOK ===============
     const {
@@ -59,38 +58,42 @@ export function TablesPage() {
         );
     }
 
-    // ========== ERROR STATE ========
+    // Error state
     if (error) {
         return (
-            <>
-                <div className="flex items-center justify-center min-h-[60vh]">
-                    <Card variant="elevated" padding="lg" className="max-w-md">
-                        <div className="text-center">
-                            <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <span className="text-3xl">⚠️</span>
-                            </div>
-                            <h2 className="text-xl font-semibold text-red-600 mb-2">
-                                Error al cargar mesas
-                            </h2>
-                            <p className="text-carbon-600 mb-6 font-light">{error.message}</p>
-                            <Button
-                                variant="primary"
-                                onClick={() => window.location.reload()}
-                                fullWidth
-                            >
-                                Reintentar
-                            </Button>
+            <div className="flex items-center justify-center min-h-[50vh]">
+                <Card
+                    variant="elevated"
+                    padding="lg"
+                    className="max-w-md w-full border border-sage-200 shadow-sm rounded-2xl"
+                >
+                    <div className="text-center">
+                        <div className="w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-rose-500">
+                            <TableIcon className="w-7 h-7" />
                         </div>
-                    </Card>
-                </div>
-            </>
+                        <h2 className="text-lg font-semibold text-carbon-900 mb-2">
+                            Error al cargar mesas
+                        </h2>
+                        <p className="text-carbon-500 text-sm mb-6">{error.message}</p>
+                        <Button
+                            variant="primary"
+                            size="lg"
+                            onClick={() => window.location.reload()}
+                            fullWidth
+                            className="min-h-[44px]"
+                        >
+                            Reintentar
+                        </Button>
+                    </div>
+                </Card>
+            </div>
         );
     }
 
-    // ======== MAIN RENDER ========
+    // Main render
     return (
         <>
-            {/* Page Header */}
+            {/* Header */}
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
                 <div>
                     <h1 className="text-2xl sm:text-3xl font-semibold text-carbon-900 tracking-tight">
@@ -136,8 +139,8 @@ export function TablesPage() {
                 </div>
             )}
 
-            {/* Results */}
-            <div className="mb-4">
+            {/* Results count */}
+            <div className="mb-5">
                 <p className="text-sm font-medium text-carbon-600">
                     {filteredTables.length}{" "}
                     {filteredTables.length === 1 ? "mesa" : "mesas"}
@@ -145,7 +148,7 @@ export function TablesPage() {
                 </p>
             </div>
 
-            {/* Tables Grid */}
+            {/* Grid of table cards */}
             {filteredTables && filteredTables.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
                     {filteredTables.map((table) => (
