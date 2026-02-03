@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DollarSign, Edit2, ImageIcon, Trash2, AlertTriangle, Package, Star } from "lucide-react";
+import { Edit2, ImageIcon, Trash2, AlertTriangle, Package, Star } from "lucide-react";
 import type { MenuItem } from "@/types";
 import { Button, ConfirmDialog } from "@/components";
 import { cn } from "@/utils/cn";
@@ -12,168 +12,149 @@ interface MenuItemCardProps {
 }
 
 /**
- * MenuItemCard Component
- *
- * Modern card for a menu item: clear hierarchy, status accent (available/unavailable/stock),
- * price, category name. Aligned with TableCard design (claude.md).
+ * MenuItemCard – Diseño horizontal: imagen a la izquierda, contenido a la derecha.
+ * Precio destacado, badges discretos, acciones en barra inferior. Fácil de escanear.
  */
 export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
-  // Accent by status: available = emerald, unavailable = rose, low/out stock = amber/rose
-  const isOutOfStock = item.inventoryType === "TRACKED" && (item.stockQuantity ?? 0) === 0;
+  const isOutOfStock =
+    item.inventoryType === "TRACKED" && (item.stockQuantity ?? 0) === 0;
   const isLowStock =
     item.inventoryType === "TRACKED" &&
     item.lowStockAlert != null &&
     (item.stockQuantity ?? 0) <= item.lowStockAlert &&
     (item.stockQuantity ?? 0) > 0;
 
-  const getAccentConfig = () => {
-    if (!item.isAvailable || isOutOfStock) {
-      return {
-        border: "border-rose-200",
-        accent: "bg-rose-500",
-        badge: "bg-rose-100 text-rose-700 border-rose-200",
-      };
-    }
-    if (isLowStock) {
-      return {
-        border: "border-amber-200",
-        accent: "bg-amber-500",
-        badge: "bg-amber-100 text-amber-700 border-amber-200",
-      };
-    }
-    return {
-      border: "border-emerald-200",
-      accent: "bg-emerald-500",
-      badge: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    };
-  };
-
-  const config = getAccentConfig();
+  const statusVariant =
+    !item.isAvailable || isOutOfStock
+      ? "rose"
+      : isLowStock
+        ? "amber"
+        : "emerald";
 
   return (
     <>
       <article
         className={cn(
           "group relative overflow-hidden",
-          "bg-white rounded-2xl border-2 shadow-sm",
-          "transition-all duration-200",
-          "hover:shadow-md hover:border-sage-200",
-          config.border
+          "bg-white rounded-2xl border-2 border-sage-200 shadow-sm",
+          "transition-all duration-200 hover:shadow-md hover:border-sage-300"
         )}
       >
-        <div className={cn("h-1 w-full", config.accent)} aria-hidden />
-
-        <div className="p-5 sm:p-6">
-          {/* Image */}
-          <div className="mb-4">
+        <div className="flex flex-col sm:flex-row min-h-0">
+          {/* Imagen – izquierda (o arriba en móvil) */}
+          <div className="relative w-full sm:w-36 sm:flex-shrink-0 sm:h-auto aspect-[4/3] sm:aspect-square bg-sage-100">
             {item.imageUrl ? (
-              <div className="w-full h-36 rounded-xl overflow-hidden border border-sage-200">
-                <img
-                  src={item.imageUrl}
-                  alt={item.name}
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
+              <img
+                src={item.imageUrl}
+                alt={item.name}
+                className="absolute inset-0 w-full h-full object-cover"
+              />
             ) : (
-              <div className="w-full h-36 bg-sage-100 rounded-xl flex items-center justify-center border border-sage-200">
+              <div className="absolute inset-0 flex items-center justify-center">
                 <ImageIcon className="w-10 h-10 text-sage-400" />
               </div>
             )}
+            {/* Badge de estado sobre la imagen */}
+            <div
+              className={cn(
+                "absolute top-2 left-2 px-2 py-1 rounded-lg text-xs font-semibold shadow-sm",
+                statusVariant === "emerald" &&
+                  "bg-emerald-500/90 text-white",
+                statusVariant === "amber" && "bg-amber-500/90 text-white",
+                statusVariant === "rose" && "bg-rose-500/90 text-white"
+              )}
+            >
+              {item.isAvailable && !isOutOfStock
+                ? "Disponible"
+                : "No disponible"}
+            </div>
           </div>
 
-          {/* Name + category + badges */}
-          <div className="flex flex-wrap items-start justify-between gap-2 mb-3">
-            <div className="min-w-0 flex-1">
-              <h3 className="text-lg font-semibold text-carbon-900 truncate">
+          {/* Contenido – derecha */}
+          <div
+            className={cn(
+              "relative flex flex-col flex-1 min-w-0 p-4 sm:p-5",
+              "border-l-0 sm:border-l-4 border-t-4 sm:border-t-0",
+              statusVariant === "emerald" && "border-emerald-400",
+              statusVariant === "amber" && "border-amber-400",
+              statusVariant === "rose" && "border-rose-400"
+            )}
+          >
+            {/* Línea: nombre + precio */}
+            <div className="flex items-start justify-between gap-3 mb-1">
+              <h3 className="text-lg font-bold text-carbon-900 truncate flex-1 min-w-0">
                 {item.name}
               </h3>
-              {categoryName && (
-                <p className="text-sm text-carbon-500 mt-0.5 truncate">
-                  {categoryName}
-                </p>
-              )}
-              {!categoryName && (
-                <p className="text-sm text-carbon-400 mt-0.5">
-                  Categoría #{item.categoryId}
-                </p>
-              )}
-            </div>
-            <div className="flex flex-wrap gap-1.5 justify-end">
-              <span
-                className={cn(
-                  "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border",
-                  config.badge
-                )}
-              >
-                {item.isAvailable && !isOutOfStock
-                  ? "Disponible"
-                  : "No disponible"}
+              <span className="text-xl font-bold text-sage-700 whitespace-nowrap">
+                ${item.price}
               </span>
+            </div>
+
+            {categoryName && (
+              <p className="text-sm text-carbon-500 truncate mb-2">
+                {categoryName}
+              </p>
+            )}
+
+            {item.description && (
+              <p className="text-sm text-carbon-600 font-light leading-snug line-clamp-2 mb-3">
+                {item.description}
+              </p>
+            )}
+
+            {/* Pills: stock, extra */}
+            <div className="flex flex-wrap gap-1.5 mb-4">
               {item.inventoryType === "TRACKED" && item.stockQuantity !== undefined && (
                 <>
                   {item.stockQuantity === 0 ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border bg-rose-100 text-rose-700 border-rose-200">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-rose-100 text-rose-700">
                       <AlertTriangle className="w-3 h-3" />
                       Sin stock
                     </span>
                   ) : isLowStock ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border bg-amber-100 text-amber-700 border-amber-200">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-amber-100 text-amber-700">
                       <Package className="w-3 h-3" />
-                      {item.stockQuantity}
+                      {item.stockQuantity} ud.
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border bg-sage-100 text-sage-700 border-sage-200">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-sage-100 text-sage-700">
                       <Package className="w-3 h-3" />
-                      {item.stockQuantity}
+                      {item.stockQuantity} ud.
                     </span>
                   )}
                 </>
               )}
               {item.isExtra && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium border bg-amber-100 text-amber-700 border-amber-200">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-amber-100 text-amber-700">
                   <Star className="w-3 h-3" />
                   Extra
                 </span>
               )}
             </div>
-          </div>
 
-          {item.description && (
-            <p className="text-sm text-carbon-600 font-light leading-relaxed line-clamp-2 mb-4">
-              {item.description}
-            </p>
-          )}
-
-          {/* Price */}
-          <div className="flex items-center justify-center gap-2 py-3 px-4 bg-sage-50 rounded-xl border border-sage-200 mb-5">
-            <DollarSign className="w-5 h-5 text-sage-600" />
-            <span className="text-2xl font-bold text-carbon-900">
-              {item.price}
-            </span>
-          </div>
-
-          {/* Actions */}
-          <div className="flex gap-2 pt-4 border-t border-sage-100">
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => onEdit(item.id)}
-              className="flex-1 min-h-[40px]"
-            >
-              <Edit2 className="w-4 h-4 mr-2" />
-              Editar
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={() => setIsDeleteDialogOpen(true)}
-              className="flex-1 min-h-[40px] text-rose-600 hover:bg-rose-50 hover:text-rose-700"
-            >
-              <Trash2 className="w-4 h-4 mr-2" />
-              Eliminar
-            </Button>
+            {/* Acciones – siempre visibles, barra inferior */}
+            <div className="mt-auto flex gap-2 pt-3 border-t border-sage-100">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onEdit(item.id)}
+                className="flex-1 min-h-[40px] touch-manipulation text-carbon-600 hover:bg-sage-50"
+              >
+                <Edit2 className="w-4 h-4 mr-1.5" />
+                Editar
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsDeleteDialogOpen(true)}
+                className="min-h-[40px] touch-manipulation text-rose-600 hover:bg-rose-50 px-3"
+                aria-label="Eliminar"
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </article>

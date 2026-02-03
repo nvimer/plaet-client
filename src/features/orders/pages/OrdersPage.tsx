@@ -1,14 +1,14 @@
-import { OrderStatus, type OrderType } from "@/types";
-import { useState } from "react";
+import { OrderStatus, OrderType } from "@/types";
+import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useOrders } from "../hooks";
-import { Button, Card, EmptyState, Skeleton, StatCard } from "@/components";
+import { Button, Skeleton, EmptyState, Card } from "@/components";
 import {
-    CheckCircle,
-    Clock,
-    Plus,
-    ShoppingCart,
-    TrendingUp,
+  CheckCircle,
+  Clock,
+  Plus,
+  ShoppingCart,
+  TrendingUp,
 } from "lucide-react";
 import { OrderCard, OrderFilters } from "../components";
 import { ROUTES, getOrderDetailRoute } from "@/app/routes";
@@ -16,197 +16,217 @@ import { ROUTES, getOrderDetailRoute } from "@/app/routes";
 /**
  * OrdersPage Component
  *
- * Main page for orders management
+ * Gestión de pedidos con diseño actualizado: filtros unificados,
+ * grid de tarjetas, y estados mejorados.
  */
 export function OrdersPage() {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    // ============ STATE =============
-    // Filters
-    const [statusFilter, setStatusFilter] = useState<OrderStatus | "ALL">("ALL");
-    const [typeFilter, setTypeFilter] = useState<OrderType | "ALL">("ALL");
+  // ============ STATE =============
+  const [statusFilter, setStatusFilter] = useState<OrderStatus | "ALL">("ALL");
+  const [typeFilter, setTypeFilter] = useState<OrderType | "ALL">("ALL");
 
-    // ============== QUERIES ===============
-    const { data: orders, isLoading, error } = useOrders();
+  // ============== QUERIES ===============
+  const { data: orders, isLoading, error } = useOrders();
 
-    // ================ COMPUTED VALUES =================
-    // Filter orders
-    const filteredOrders = orders?.filter((order) => {
-        const matchesStatus =
-            statusFilter === "ALL" || order.status === statusFilter;
-        return matchesStatus && matchesStatus;
+  // ================ COMPUTED VALUES =================
+  const filteredOrders = useMemo(() => {
+    if (!orders) return [];
+    return orders.filter((order) => {
+      const matchesStatus = statusFilter === "ALL" || order.status === statusFilter;
+      const matchesType = typeFilter === "ALL" || order.type === typeFilter;
+      return matchesStatus && matchesType;
     });
+  }, [orders, statusFilter, typeFilter]);
 
-    // Calculate counts
-    const counts = {
-        all: orders?.length || 0,
-        pending:
-            orders?.filter((o) => o.status === OrderStatus.PENDING).length || 0,
-        inKitchen:
-            orders?.filter((o) => o.status === OrderStatus.IN_KITCHEN).length || 0,
-        ready: orders?.filter((o) => o.status === OrderStatus.READY).length || 0,
-        delivered:
-            orders?.filter((o) => o.status === OrderStatus.DELIVERED).length || 0,
-    };
+  const counts = useMemo(() => ({
+    all: orders?.length || 0,
+    pending: orders?.filter((o) => o.status === OrderStatus.PENDING).length || 0,
+    inKitchen: orders?.filter((o) => o.status === OrderStatus.IN_KITCHEN).length || 0,
+    ready: orders?.filter((o) => o.status === OrderStatus.READY).length || 0,
+    delivered: orders?.filter((o) => o.status === OrderStatus.DELIVERED).length || 0,
+  }), [orders]);
 
-    // Calculate stats
-    const todayTotal = orders?.reduce((sum, o) => sum + o.totalAmount, 0) || 0;
+  const todayTotal = useMemo(() => 
+    orders?.reduce((sum, o) => sum + o.totalAmount, 0) || 0,
+  [orders]);
 
-    // ============= HANDLERS ===============
-    const handleViewDetail = (orderId: string) => {
-        navigate(getOrderDetailRoute(orderId));
-    };
+  const hasActiveFilters = statusFilter !== "ALL" || typeFilter !== "ALL";
 
-    const handleCreateOrder = () => {
-        navigate(ROUTES.ORDER_CREATE);
-    };
+  // ============= HANDLERS ===============
+  const handleViewDetail = (orderId: string) => {
+    navigate(getOrderDetailRoute(orderId));
+  };
 
-    const handleResetFilters = () => {
-        setStatusFilter("ALL");
-        setTypeFilter("ALL");
-    };
+  const handleCreateOrder = () => {
+    navigate(ROUTES.ORDER_CREATE);
+  };
 
-    // ============ LOADING STATE ===========
-    if (isLoading) {
-        return (
-            <>
-                {/* Header Skeleton */}
-                <div className="mb-8">
-                    <Skeleton variant="text" width={256} height={40} className="mb-2" />
-                    <Skeleton variant="text" width={384} height={24} />
-                </div>
+  const handleClearFilter = (key: string) => {
+    if (key === "status") setStatusFilter("ALL");
+    if (key === "type") setTypeFilter("ALL");
+  };
 
-                {/* Stats Skeleton  */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    {[...Array(4)].map((_, i) => (
-                        <Skeleton key={i} variant="stat" />
-                    ))}
-                </div>
-            </>
-        );
-    }
+  const handleClearAll = () => {
+    setStatusFilter("ALL");
+    setTypeFilter("ALL");
+  };
 
-    // ========== ERROR STATE =============
-    if (error) {
-        return (
-            <div className="flex items-center justify-center min-h-[400px]">
-                <Card>
-                    <div className="text-center p-8">
-                        <div className="text-4xl mb-4">⚠️</div>
-                        <h2 className="text-2xl font-semibold text-carbon-900 mb-2">
-                            Error al cargar los pedidos
-                        </h2>
-                        <p className="text-carbon-600 mb-4">{error.message}</p>
-                        <Button onClick={() => window.location.reload()}>Reintentar</Button>
-                    </div>
-                </Card>
-            </div>
-        );
-    }
-
-    // =============== MAIN RENDER =================
+  // ============ LOADING STATE ===========
+  if (isLoading) {
     return (
-        <>
-            {/* ============ PAGE HEADER =============== */}
-            <div className="flex items-center justify-between mb-8">
-                <div>
-                    <h1 className="text-4xl font-semibold text-carbon-900 tracking-tight">
-                        Gestión de Pedidos
-                    </h1>
-                    <p className="text-[15px] text-carbon-600 font-light">
-                        Administra los pedidos del restaurante
-                    </p>
-                </div>
-
-                {/* New Order Button */}
-                <Button variant="primary" size="lg" onClick={handleCreateOrder}>
-                    <Plus className="w-5 h-5 mr-2" />
-                    Nuevo Pedido
-                </Button>
-            </div>
-            {/* ================ STATS CARD ================== */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                {/* Total Orders */}
-                <StatCard
-                    title="Total Pedidos"
-                    value={counts.all}
-                    icon={<ShoppingCart />}
-                    iconBgColor="bg-sage-green-100"
-                    iconColor="text-sage-green-600"
-                />
-
-                {/* Pending */}
-                <StatCard
-                    title="Pendientes"
-                    value={counts.pending}
-                    icon={<Clock />}
-                    iconBgColor="bg-yellow-100"
-                    iconColor="text-yellow-600"
-                />
-
-                {/* Ready */}
-                <StatCard
-                    title="Listos"
-                    value={counts.ready}
-                    icon={<CheckCircle />}
-                    iconBgColor="bg-green-100"
-                    iconColor="text-green-600"
-                />
-
-                {/* Today's sales */}
-                <StatCard
-                    title="Ventas hoy"
-                    value={`$${todayTotal.toLocaleString("es-CO")}`}
-                    icon={<TrendingUp />}
-                    iconBgColor="bg-emerald-100"
-                    iconColor="text-emerald-600"
-                />
-            </div>
-            {/* ================ FILTERS ================= */}
-            <OrderFilters
-                statusFilter={statusFilter}
-                typeFilter={typeFilter}
-                onStatusChange={setStatusFilter}
-                onTypeChange={setTypeFilter}
-                onReset={handleResetFilters}
-                counts={counts}
-            />
-            {/* ============ ORDERS GRID ============== */}
-            {filteredOrders && filteredOrders.length > 0 ? (
-                <div>
-                    {filteredOrders?.map((order) => (
-                        <OrderCard
-                            key={order.id}
-                            order={order}
-                            onViewDetail={(orderId) => handleViewDetail(orderId)}
-                        />
-                    ))}
-                </div>
-            ) : (
-                <EmptyState
-                    icon={<ShoppingCart />}
-                    title={
-                        statusFilter === "ALL" && typeFilter === "ALL"
-                            ? "No hay pedidos"
-                            : "No hay pedidos con estos filtros"
-                    }
-                    description={
-                        statusFilter === "ALL" && typeFilter === "ALL"
-                            ? "Crea tu primer pedido para comenzar"
-                            : "Cambia los filtros para ver otros pedidos"
-                    }
-                    actionLabel={
-                        statusFilter === "ALL" && typeFilter === "ALL"
-                            ? "Crear Primer Pedido"
-                            : undefined
-                    }
-                    onAction={
-                        statusFilter === "ALL" && typeFilter === "ALL"
-                            ? handleCreateOrder
-                            : undefined
-                    }
-                />
-            )}
-        </>
+      <>
+        <div className="mb-8">
+          <Skeleton variant="text" width={240} height={32} className="mb-2" />
+          <Skeleton variant="text" width={320} height={20} />
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} variant="card" height={80} />
+          ))}
+        </div>
+        <Skeleton variant="card" height={80} className="mb-6" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          {[...Array(6)].map((_, i) => (
+            <Skeleton key={i} variant="card" />
+          ))}
+        </div>
+      </>
     );
+  }
+
+  // ========== ERROR STATE =============
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <Card
+          variant="elevated"
+          padding="lg"
+          className="max-w-md w-full border border-sage-200 shadow-sm rounded-2xl"
+        >
+          <div className="text-center">
+            <div className="w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-rose-500">
+              <ShoppingCart className="w-7 h-7" />
+            </div>
+            <h2 className="text-lg font-semibold text-carbon-900 mb-2">Error al cargar pedidos</h2>
+            <p className="text-carbon-500 text-sm mb-6">{error.message}</p>
+            <Button variant="primary" size="lg" onClick={() => window.location.reload()} fullWidth className="min-h-[44px]">
+              Reintentar
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  // =============== MAIN RENDER =================
+  return (
+    <>
+      {/* ============ PAGE HEADER =============== */}
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-semibold text-carbon-900 tracking-tight">
+            Gestión de Pedidos
+          </h1>
+          <p className="text-sm text-carbon-500 mt-1">Administra los pedidos del restaurante</p>
+        </div>
+        <Button size="lg" variant="primary" onClick={handleCreateOrder} className="w-full sm:w-auto min-h-[44px]">
+          <Plus className="w-5 h-5 mr-2" />
+          Nuevo Pedido
+        </Button>
+      </div>
+
+      {/* ================ STATS CARDS ================== */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-sage-100 flex items-center justify-center text-sage-600">
+              <ShoppingCart className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-sm text-carbon-500">Total</p>
+              <p className="text-xl font-bold text-carbon-900">{counts.all}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
+              <Clock className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-sm text-carbon-500">Pendientes</p>
+              <p className="text-xl font-bold text-carbon-900">{counts.pending}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
+              <CheckCircle className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-sm text-carbon-500">Listos</p>
+              <p className="text-xl font-bold text-carbon-900">{counts.ready}</p>
+            </div>
+          </div>
+        </div>
+        <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-sage-100 flex items-center justify-center text-sage-600">
+              <TrendingUp className="w-5 h-5" />
+            </div>
+            <div>
+              <p className="text-sm text-carbon-500">Ventas hoy</p>
+              <p className="text-xl font-bold text-sage-700">${todayTotal.toLocaleString("es-CO")}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* ================ FILTERS ================= */}
+      <div className="mb-6">
+        <OrderFilters
+          statusFilter={statusFilter}
+          typeFilter={typeFilter}
+          onStatusChange={setStatusFilter}
+          onTypeChange={setTypeFilter}
+          onClearFilter={handleClearFilter}
+          onClearAll={handleClearAll}
+          counts={counts}
+        />
+      </div>
+
+      {/* Result count */}
+      <p className="text-sm font-medium text-carbon-600 mb-5">
+        {filteredOrders.length} {filteredOrders.length === 1 ? "pedido" : "pedidos"}
+        {hasActiveFilters && " encontrados"}
+      </p>
+
+      {/* ============ ORDERS GRID ============= */}
+      {filteredOrders.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          {filteredOrders.map((order) => (
+            <OrderCard
+              key={order.id}
+              order={order}
+              onViewDetail={handleViewDetail}
+            />
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          icon={<ShoppingCart />}
+          title={hasActiveFilters ? "No hay pedidos con estos filtros" : "No hay pedidos"}
+          description={
+            hasActiveFilters
+              ? "Ajusta los filtros para ver más resultados"
+              : "Crea tu primer pedido para comenzar"
+          }
+          actionLabel={!hasActiveFilters ? "Crear primer pedido" : undefined}
+          onAction={!hasActiveFilters ? handleCreateOrder : undefined}
+        />
+      )}
+    </>
+  );
 }

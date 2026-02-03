@@ -12,6 +12,20 @@ export { BaseModal } from "./ui/BaseModal/BaseModal";
 export { SearchInput } from "./ui/SearchInput/SearchInput";
 export { RadioGroup } from "./ui/RadioGroup/RadioGroup";
 
+// Filters (unified design for all modules)
+export {
+  FilterBar,
+  FilterSelect,
+  FilterPills,
+  ActiveFilterChips,
+  FilterSearch,
+} from "./filters";
+export type {
+  FilterSelectOption,
+  FilterPillOption,
+  ActiveFilterChipItem,
+} from "./filters";
+
 // Route Components
 export { PrivateRoute } from "./PrivateRoute";
 export { RoleProtectedRoute } from "./RoleProtectedRoute";

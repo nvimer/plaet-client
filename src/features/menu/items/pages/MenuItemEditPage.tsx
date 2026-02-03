@@ -89,8 +89,20 @@ export function MenuItemEditPage() {
   }
 
   const onSubmit = (data: UpdateItemInput) => {
+    const payload: Record<string, unknown> = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (value === undefined) continue;
+      if (
+        (key === "initialStock" || key === "lowStockAlert") &&
+        typeof value === "number" &&
+        (Number.isNaN(value) || !Number.isFinite(value))
+      ) {
+        continue;
+      }
+      payload[key] = value;
+    }
     updateItem(
-      { id: item.id, ...data },
+      { id: item.id, ...payload } as UpdateItemInput & { id: number },
       {
         onSuccess: () => {
           toast.success("Producto actualizado", {
