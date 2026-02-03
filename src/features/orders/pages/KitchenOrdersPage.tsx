@@ -199,16 +199,16 @@ export function KitchenOrdersPage() {
 
         {/* ============ PENDING ORDERS ALERT =============== */}
         {counts.pending > 0 && (
-          <div className="bg-orange-50 border-2 border-orange-200 rounded-xl p-4">
+          <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4">
             <div className="flex items-center gap-3">
-              <div className="bg-orange-500 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold">
+              <div className="bg-amber-500 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold">
                 {counts.pending}
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-orange-900">
+                <h3 className="text-lg font-semibold text-amber-900">
                   Pedidos Pendientes
                 </h3>
-                <p className="text-orange-700">
+                <p className="text-amber-700">
                   {counts.pending === 1 
                     ? "Hay 1 pedido esperando ser atendido" 
                     : `Hay ${counts.pending} pedidos esperando ser atendidos`
