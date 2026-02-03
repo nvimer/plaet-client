@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { OrderType, TableStatus } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
-import { FullScreenLayout } from "@/layouts/FullScreenLayout";
-import { ProductGrid } from "../components/ProductGrid";
-import { TableGrid } from "@/features/tables/components/TableGrid";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
+import { ProductSelector } from "@/features/menu/items";
+import { TableSelector } from "@/features/tables";
 import { Button, Input } from "@/components";
 import { useItems } from "@/features/menu";
 import { useTables } from "@/features/tables";
@@ -150,7 +150,7 @@ export function OrderCreatePage() {
     createOrder(
       {
         type: orderType,
-        tableId: orderType === OrderType.DINE_IN ? selectedTable : null,
+        tableId: orderType === OrderType.DINE_IN && selectedTable ? selectedTable : undefined,
         items,
       },
       {
@@ -172,41 +172,39 @@ export function OrderCreatePage() {
   };
 
   return (
-    <FullScreenLayout
+    <SidebarLayout
       title="Nuevo Pedido"
       subtitle="Selecciona productos y completa la información"
       backRoute={ROUTES.ORDERS}
+      fullWidth
     >
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="max-w-[1600px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
           {/* ============ LEFT COLUMN: Order Type & Table ============ */}
-          <div className="space-y-6">
+          <div className="space-y-6 sm:space-y-8">
             {/* Order Type Selection */}
-            <div>
-              <h2 className="text-lg font-semibold text-carbon-900 mb-4">
+            <div className="bg-white rounded-2xl border-2 border-sage-200 p-5 sm:p-6 lg:p-8">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-carbon-900 mb-5 sm:mb-6 lg:mb-8">
                 Tipo de Pedido
               </h2>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 sm:grid-cols-3 gap-3 sm:gap-5 lg:gap-6">
                 {[
                   {
                     type: OrderType.DINE_IN,
                     label: "Aquí",
                     icon: UtensilsCrossed,
-                    description: "Consumo en el local",
                   },
                   {
                     type: OrderType.TAKE_OUT,
                     label: "Llevar",
                     icon: ShoppingBag,
-                    description: "Para llevar",
                   },
                   {
                     type: OrderType.DELIVERY,
                     label: "Domicilio",
                     icon: Bike,
-                    description: "Delivery",
                   },
-                ].map(({ type, label, icon: Icon, description }) => (
+                ].map(({ type, label, icon: Icon }) => (
                   <button
                     key={type}
                     onClick={() => {
@@ -216,18 +214,18 @@ export function OrderCreatePage() {
                       }
                     }}
                     className={`
-                      p-6 rounded-2xl border-2 transition-all
-                      flex flex-col items-center gap-2
+                      p-3 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border-2 transition-all duration-200
+                      flex flex-col items-center gap-2 sm:gap-4 lg:gap-5
+                      min-h-[70px] sm:min-h-[140px] lg:min-h-[180px]
                       ${
                         orderType === type
-                          ? "border-sage-green-400 bg-sage-green-50 text-sage-green-700"
-                          : "border-sage-border-subtle bg-white text-carbon-600 hover:border-sage-green-200"
+                          ? "border-sage-500 bg-sage-50 text-sage-700 shadow-sm sm:shadow-md"
+                          : "border-sage-200 bg-white text-carbon-600 hover:border-sage-300 hover:bg-sage-50/50"
                       }
                     `}
                   >
-                    <Icon className="w-8 h-8" />
-                    <span className="font-semibold text-lg">{label}</span>
-                    <span className="text-xs text-carbon-500">{description}</span>
+                    <Icon className="w-6 h-6 sm:w-10 sm:h-10 lg:w-12 lg:h-12" />
+                    <span className="font-semibold text-sm sm:text-lg lg:text-xl">{label}</span>
                   </button>
                 ))}
               </div>
@@ -235,68 +233,61 @@ export function OrderCreatePage() {
 
             {/* Table Selection - Only for DINE_IN */}
             {orderType === OrderType.DINE_IN && (
-              <div>
-                <h2 className="text-lg font-semibold text-carbon-900 mb-4">
-                  Seleccionar Mesa
-                </h2>
-                {availableTables.length > 0 ? (
-                  <TableGrid
-                    tables={availableTables}
-                    onSelect={(table) => setSelectedTable(table.id)}
-                    selectedTableId={selectedTable || undefined}
-                    showOnlyAvailable
-                  />
-                ) : (
-                  <div className="p-6 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
-                    <p className="text-sm text-yellow-800">
-                      No hay mesas disponibles
-                    </p>
-                  </div>
-                )}
+              <div className="bg-white rounded-2xl border-2 border-sage-200 p-5 sm:p-6 lg:p-8">
+                <div className="flex items-center justify-between mb-5 sm:mb-6 lg:mb-8">
+                  <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-carbon-900">
+                    Seleccionar Mesa
+                  </h2>
+                  {selectedTable && (
+                    <span className="text-base sm:text-lg lg:text-xl text-sage-600 font-medium">
+                      Mesa {selectedTable} seleccionada
+                    </span>
+                  )}
+                </div>
+                <TableSelector
+                  tables={availableTables}
+                  onSelect={(table) => setSelectedTable(table.id)}
+                  selectedTableId={selectedTable || undefined}
+                  showOnlyAvailable
+                />
               </div>
             )}
           </div>
 
-          {/* ============ MIDDLE COLUMN: Products ============ */}
-          <div className="lg:col-span-2 space-y-6">
+          {/* ============ RIGHT COLUMN: Products ============ */}
+          <div className="space-y-6 sm:space-y-8">
             {/* Search */}
-            <div>
+            <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 sm:p-5 lg:p-6">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-carbon-400 w-5 h-5" />
+                <Search className="absolute left-3 lg:left-4 top-1/2 transform -translate-y-1/2 text-carbon-400 w-5 h-5 lg:w-6 lg:h-6" />
                 <Input
                   type="text"
                   placeholder="Buscar producto..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 lg:pl-12 lg:text-lg"
                   fullWidth
                 />
               </div>
             </div>
 
             {/* Products Grid */}
-            <div>
-              <h2 className="text-lg font-semibold text-carbon-900 mb-4">
-                Productos Disponibles
-              </h2>
-              {filteredItems.length > 0 ? (
-                <ProductGrid
-                  products={filteredItems}
-                  onSelect={handleProductSelect}
-                  columns={3}
-                  selectedIds={selectedProductIds}
-                  showQuantity
-                  quantities={quantities}
-                />
-              ) : (
-                <div className="p-12 bg-sage-50 rounded-xl text-center">
-                  <p className="text-carbon-600">
-                    {searchTerm
-                      ? "No se encontraron productos"
-                      : "No hay productos disponibles"}
-                  </p>
-                </div>
-              )}
+            <div className="bg-white rounded-2xl border-2 border-sage-200 p-5 sm:p-6 lg:p-8">
+              <div className="flex items-center justify-between mb-5 sm:mb-6 lg:mb-8">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-carbon-900">
+                  Productos Disponibles
+                </h2>
+                <span className="text-base sm:text-lg lg:text-xl text-carbon-500">
+                  {filteredItems.length} productos
+                </span>
+              </div>
+              <ProductSelector
+                products={filteredItems}
+                onSelect={handleProductSelect}
+                selectedIds={selectedProductIds}
+                showQuantity
+                quantities={quantities}
+              />
             </div>
           </div>
         </div>
@@ -380,7 +371,7 @@ export function OrderCreatePage() {
           </div>
         )}
       </div>
-    </FullScreenLayout>
+    </SidebarLayout>
   );
 }
 

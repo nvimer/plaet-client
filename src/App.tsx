@@ -105,38 +105,32 @@ const App = () => {
           }
         />
 
-        {/* Orders - Create (Full Screen) */}
+        {/* Orders - Create (Sidebar Layout) */}
         <Route
           path={ROUTES.ORDER_CREATE}
           element={
             <PrivateRoute>
-              <FullScreenLayout>
-                <OrderCreatePage />
-              </FullScreenLayout>
+              <OrderCreatePage />
             </PrivateRoute>
           }
         />
 
-        {/* Orders - Detail (Full Screen) */}
+        {/* Orders - Detail (Sidebar Layout) */}
         <Route
           path={ROUTES.ORDER_DETAIL}
           element={
             <PrivateRoute>
-              <FullScreenLayout>
-                <OrderDetailPage />
-              </FullScreenLayout>
+              <OrderDetailPage />
             </PrivateRoute>
           }
         />
 
-        {/* Orders - Edit (Full Screen) */}
+        {/* Orders - Edit (Sidebar Layout) */}
         <Route
           path={ROUTES.ORDER_EDIT}
           element={
             <PrivateRoute>
-              <FullScreenLayout>
-                <OrderEditPage />
-              </FullScreenLayout>
+              <OrderEditPage />
             </PrivateRoute>
           }
         />

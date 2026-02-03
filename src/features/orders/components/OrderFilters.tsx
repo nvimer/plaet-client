@@ -1,140 +1,112 @@
-import { Card, Badge, Button } from "@/components";
 import { OrderStatus, OrderType } from "@/types";
-import { Filter, RotateCcw } from "lucide-react";
+import { FilterBar, FilterPills, FilterSelect, ActiveFilterChips } from "@/components";
 
-// ============== TYPES ===============
 interface OrderFiltersProps {
-    statusFilter: OrderStatus | "ALL";
-    typeFilter: OrderType | "ALL";
-    onStatusChange: (status: OrderStatus | "ALL") => void;
-    onTypeChange: (type: OrderType | "ALL") => void;
-    onReset: () => void;
-    counts: {
-        all: number;
-        pending: number;
-        inKitchen: number;
-        ready: number;
-        delivered: number;
-    };
+  statusFilter: OrderStatus | "ALL";
+  typeFilter: OrderType | "ALL";
+  onStatusChange: (status: OrderStatus | "ALL") => void;
+  onTypeChange: (type: OrderType | "ALL") => void;
+  onClearFilter: (key: string) => void;
+  onClearAll: () => void;
+  counts: {
+    all: number;
+    pending: number;
+    inKitchen: number;
+    ready: number;
+    delivered: number;
+  };
 }
+
+const STATUS_LABELS: Record<string, string> = {
+  ALL: "Todos",
+  [OrderStatus.PENDING]: "Pendientes",
+  [OrderStatus.IN_KITCHEN]: "En Cocina",
+  [OrderStatus.READY]: "Listos",
+  [OrderStatus.DELIVERED]: "Entregados",
+  [OrderStatus.PAID]: "Pagados",
+};
+
+const TYPE_LABELS: Record<string, string> = {
+  ALL: "Todos",
+  [OrderType.DINE_IN]: "Para comer aquí",
+  [OrderType.TAKE_OUT]: "Para llevar",
+  [OrderType.DELIVERY]: "Domicilio",
+  [OrderType.WHATSAPP]: "WhatsApp",
+};
 
 /**
  * OrderFilters Component
  *
- * Filter controls for orders list
+ * Filtros unificados con diseño consistente (FilterBar, FilterPills, ActiveFilterChips).
+ * Touch-friendly y responsive.
  */
 export function OrderFilters({
-    statusFilter,
-    typeFilter,
-    onStatusChange,
-    onTypeChange,
-    onReset,
-    counts,
+  statusFilter,
+  typeFilter,
+  onStatusChange,
+  onTypeChange,
+  onClearFilter,
+  onClearAll,
+  counts,
 }: OrderFiltersProps) {
-    // =============== FILTER OPTIONS ==========
-    const statusOptions: {
-        value: OrderStatus | "ALL";
-        label: string;
-        color: string;
-    }[] = [
-            { value: "ALL", label: "Todos", color: "bg-carbon-900" },
-            { value: OrderStatus.PENDING, label: "Pendientes", color: "bg-yellow-500" },
-            {
-                value: OrderStatus.IN_KITCHEN,
-                label: "En Cocina",
-                color: "bg-orange-500",
-            },
-            { value: OrderStatus.READY, label: "Listos", color: "bg-sage-green-500" },
-            {
-                value: OrderStatus.DELIVERED,
-                label: "Entregados",
-                color: "bg-green-500",
-            },
-        ];
+  const statusPillOptions = [
+    { value: "ALL", label: "Todos", count: counts.all },
+    { value: OrderStatus.PENDING, label: "Pendientes", count: counts.pending },
+    { value: OrderStatus.IN_KITCHEN, label: "En Cocina", count: counts.inKitchen },
+    { value: OrderStatus.READY, label: "Listos", count: counts.ready },
+    { value: OrderStatus.DELIVERED, label: "Entregados", count: counts.delivered },
+  ];
 
-    const typeOptions: { value: OrderType | "ALL"; label: string }[] = [
-        { value: "ALL", label: "Todos los tipos" },
-        { value: OrderType.DINE_IN, label: "Para comer aquí" },
-        { value: OrderType.TAKE_OUT, label: "Para lllevar" },
-        { value: OrderType.DELIVERY, label: "Domicilio" },
-    ];
+  const typeSelectOptions = [
+    { value: "ALL", label: "Todos los tipos" },
+    { value: OrderType.DINE_IN, label: "Para comer aquí" },
+    { value: OrderType.TAKE_OUT, label: "Para llevar" },
+    { value: OrderType.DELIVERY, label: "Domicilio" },
+    { value: OrderType.WHATSAPP, label: "WhatsApp" },
+  ];
 
-    // =============== RENDER =============
-    return (
-        <Card variant="elevated" padding="lg" className="mb-8">
-            <div className="space-y-4">
-                {/* ============== STATUS FILTER =============  */}
-                <div className="flex items-center gap-4">
-                    <div className="flex items-center gap-2 text-carbon-700 font-medium">
-                        <Filter className="w-5 h-5" />
-                        <span>Estado:</span>
-                    </div>
+  const hasActiveFilters = statusFilter !== "ALL" || typeFilter !== "ALL";
 
-                    <div className="flex flex-wrap gap-2">
-                        {statusOptions.map((option) => {
-                            const count =
-                                option.value === "ALL"
-                                    ? counts.all
-                                    : option.value === OrderStatus.PENDING
-                                        ? counts.pending
-                                        : option.value === OrderStatus.IN_KITCHEN
-                                            ? counts.inKitchen
-                                            : option.value === OrderStatus.READY
-                                                ? counts.ready
-                                                : counts.delivered;
+  const activeChips = [
+    ...(statusFilter !== "ALL" ? [{ key: "status", label: "Estado", value: STATUS_LABELS[statusFilter] }] : []),
+    ...(typeFilter !== "ALL" ? [{ key: "type", label: "Tipo", value: TYPE_LABELS[typeFilter] }] : []),
+  ];
 
-                            return (
-                                <Button
-                                    key={option.value}
-                                    variant={statusFilter === option.value ? "primary" : "ghost"}
-                                    size="sm"
-                                    onClick={() => onStatusChange(option.value)}
-                                    className={statusFilter === option.value ? `${option.color} hover:opacity-90 text-white` : ""}
-                                >
-                                    {option.label}
-                                    <Badge
-                                        size="md"
-                                        variant={
-                                            statusFilter === option.value ? "neutral" : "success"
-                                        }
-                                        className="ml-2"
-                                    >
-                                        {count}
-                                    </Badge>
-                                </Button>
-                            );
-                        })}
-                    </div>
-                </div>
+  return (
+    <div className="space-y-4">
+      <FilterBar>
+        <div className="flex flex-wrap items-end gap-4 [&>div]:min-w-0">
+          <div className="flex-shrink-0 w-full sm:w-auto min-w-0">
+            <FilterPills
+              label="Estado"
+              options={statusPillOptions}
+              value={statusFilter}
+              onChange={(v) => onStatusChange(v as OrderStatus | "ALL")}
+              aria-label="Filtrar por estado"
+            />
+          </div>
+          <div className="w-full sm:max-w-[240px] flex-shrink-0 basis-full sm:basis-auto">
+            <FilterSelect
+              label="Tipo de pedido"
+              value={typeFilter}
+              onChange={(v) => onTypeChange(v as OrderType | "ALL")}
+              options={typeSelectOptions}
+              placeholder="Todos los tipos"
+              aria-label="Filtrar por tipo"
+            />
+          </div>
+        </div>
+      </FilterBar>
 
-                {/* =============== TYPE FILTER ================== */}
-                <div className="flex items-center gap-4">
-                    <span className="text-carbon-700 font-medium">Tipo:</span>
-                    <select
-                        value={typeFilter}
-                        onChange={(e) => onTypeChange(e.target.value as OrderType | "ALL")}
-                        className="px-4 py-2 border-2 border-sage-border-subtle rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-green-300 focus:border-sage-green-300 bg-white text-carbon-900 font-medium text-sm"
-                    >
-                        {typeOptions.map((option) => (
-                            <option key={option.value} value={option.value}>
-                                {option.label}
-                            </option>
-                        ))}
-                    </select>
-
-                    {/* Reset Button */}
-                    {(statusFilter !== "ALL" || typeFilter !== "ALL") && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={onReset}
-                        >
-                            <RotateCcw className="w-4 h-4 mr-1" />
-                            Limpiar Filtros
-                        </Button>
-                    )}
-                </div>
-            </div>
-        </Card>
-    );
+      {hasActiveFilters && (
+        <ActiveFilterChips
+          chips={activeChips}
+          resultCount={0} // Se actualizará desde el padre
+          resultLabel="pedidos"
+          onClearFilter={onClearFilter}
+          onClearAll={onClearAll}
+        />
+      )}
+    </div>
+  );
 }

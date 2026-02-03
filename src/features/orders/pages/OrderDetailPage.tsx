@@ -16,7 +16,7 @@ import {
   XCircle,
 } from "lucide-react";
 import { toast } from "sonner";
-import { FullScreenLayout } from "@/layouts/FullScreenLayout";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { OrderStatusBadge } from "../components/OrderStatusBadge";
 import { OrderTypeBadge } from "../components/OrderTypeBadge";
 import { Button, Card, ConfirmDialog, Skeleton, EmptyState } from "@/components";
@@ -41,19 +41,19 @@ export function OrderDetailPage() {
   // Early returns
   if (isLoading) {
     return (
-      <FullScreenLayout title="Cargando..." backRoute={ROUTES.ORDERS}>
+      <SidebarLayout title="Cargando..." backRoute={ROUTES.ORDERS}>
         <div className="max-w-4xl mx-auto space-y-6">
           <Skeleton className="h-32" />
           <Skeleton className="h-64" />
           <Skeleton className="h-48" />
         </div>
-      </FullScreenLayout>
+      </SidebarLayout>
     );
   }
 
   if (error || !order) {
     return (
-      <FullScreenLayout title="Error" backRoute={ROUTES.ORDERS}>
+      <SidebarLayout title="Error" backRoute={ROUTES.ORDERS}>
         <EmptyState
           icon={<XCircle />}
           title="Pedido no encontrado"
@@ -61,7 +61,7 @@ export function OrderDetailPage() {
           actionLabel="Volver a Pedidos"
           onAction={() => navigate(ROUTES.ORDERS)}
         />
-      </FullScreenLayout>
+      </SidebarLayout>
     );
   }
 
@@ -156,7 +156,7 @@ export function OrderDetailPage() {
 
   return (
     <>
-      <FullScreenLayout
+      <SidebarLayout
         title={`Pedido ${shortId}`}
         subtitle={`Creado ${createdDate} a las ${createdTime}`}
         backRoute={ROUTES.ORDERS}
@@ -321,7 +321,7 @@ export function OrderDetailPage() {
             </Button>
           </div>
         </div>
-      </FullScreenLayout>
+      </SidebarLayout>
 
       {/* Delete Confirmation */}
       <ConfirmDialog

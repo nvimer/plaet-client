@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { OrderType, TableStatus } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
-import { FullScreenLayout } from "@/layouts/FullScreenLayout";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { Button, Input, Skeleton } from "@/components";
 import { useTables } from "@/features/tables";
 import { useOrder, useUpdateOrder } from "../hooks";
@@ -90,18 +90,18 @@ export function OrderEditPage() {
   // Loading state
   if (isLoading || !order) {
     return (
-      <FullScreenLayout title="Cargando..." backRoute={ROUTES.ORDERS}>
+      <SidebarLayout title="Cargando..." backRoute={ROUTES.ORDERS}>
         <div className="max-w-4xl mx-auto space-y-6">
           <Skeleton variant="card" height={400} />
         </div>
-      </FullScreenLayout>
+      </SidebarLayout>
     );
   }
 
   // Error state
   if (error) {
     return (
-      <FullScreenLayout title="Error" backRoute={ROUTES.ORDERS}>
+      <SidebarLayout title="Error" backRoute={ROUTES.ORDERS}>
         <div className="flex items-center justify-center min-h-[400px]">
           <div className="text-center">
             <div className="text-4xl mb-4">⚠️</div>
@@ -112,12 +112,12 @@ export function OrderEditPage() {
             <Button onClick={() => window.location.reload()}>Reintentar</Button>
           </div>
         </div>
-      </FullScreenLayout>
+      </SidebarLayout>
     );
   }
 
   return (
-    <FullScreenLayout
+    <SidebarLayout
       title="Editar Orden"
       subtitle={`Orden #${order.id.slice(-6).toUpperCase()}`}
       backRoute={getOrderDetailRoute(order.id)}
@@ -237,6 +237,6 @@ export function OrderEditPage() {
           </Button>
         </div>
       </div>
-    </FullScreenLayout>
+    </SidebarLayout>
   );
 }
