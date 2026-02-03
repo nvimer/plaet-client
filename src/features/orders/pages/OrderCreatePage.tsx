@@ -4,7 +4,7 @@ import { OrderType, TableStatus } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { ProductGrid } from "../components/ProductGrid";
-import { TableGrid } from "@/features/tables/components/TableGrid";
+import { TableSelector } from "@/features/tables";
 import { Button, Input } from "@/components";
 import { useItems } from "@/features/menu";
 import { useTables } from "@/features/tables";
@@ -183,31 +183,28 @@ export function OrderCreatePage() {
           {/* ============ LEFT COLUMN: Order Type & Table ============ */}
           <div className="space-y-6">
             {/* Order Type Selection */}
-            <div>
-              <h2 className="text-lg font-semibold text-carbon-900 mb-4">
+            <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 sm:p-5">
+              <h2 className="text-base sm:text-lg font-semibold text-carbon-900 mb-4">
                 Tipo de Pedido
               </h2>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3">
                 {[
                   {
                     type: OrderType.DINE_IN,
                     label: "Aquí",
                     icon: UtensilsCrossed,
-                    description: "Consumo en el local",
                   },
                   {
                     type: OrderType.TAKE_OUT,
                     label: "Llevar",
                     icon: ShoppingBag,
-                    description: "Para llevar",
                   },
                   {
                     type: OrderType.DELIVERY,
                     label: "Domicilio",
                     icon: Bike,
-                    description: "Delivery",
                   },
-                ].map(({ type, label, icon: Icon, description }) => (
+                ].map(({ type, label, icon: Icon }) => (
                   <button
                     key={type}
                     onClick={() => {
@@ -217,18 +214,18 @@ export function OrderCreatePage() {
                       }
                     }}
                     className={`
-                      p-6 rounded-2xl border-2 transition-all
-                      flex flex-col items-center gap-2
+                      p-3 sm:p-4 rounded-xl border-2 transition-all duration-200
+                      flex flex-col items-center gap-1.5 sm:gap-2
+                      min-h-[80px] sm:min-h-[90px]
                       ${
                         orderType === type
-                          ? "border-sage-green-400 bg-sage-green-50 text-sage-green-700"
-                          : "border-sage-border-subtle bg-white text-carbon-600 hover:border-sage-green-200"
+                          ? "border-sage-500 bg-sage-50 text-sage-700 shadow-sm"
+                          : "border-sage-200 bg-white text-carbon-600 hover:border-sage-300 hover:bg-sage-50/50"
                       }
                     `}
                   >
-                    <Icon className="w-8 h-8" />
-                    <span className="font-semibold text-lg">{label}</span>
-                    <span className="text-xs text-carbon-500">{description}</span>
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
+                    <span className="font-semibold text-sm sm:text-base">{label}</span>
                   </button>
                 ))}
               </div>
@@ -236,24 +233,23 @@ export function OrderCreatePage() {
 
             {/* Table Selection - Only for DINE_IN */}
             {orderType === OrderType.DINE_IN && (
-              <div>
-                <h2 className="text-lg font-semibold text-carbon-900 mb-4">
-                  Seleccionar Mesa
-                </h2>
-                {availableTables.length > 0 ? (
-                  <TableGrid
-                    tables={availableTables}
-                    onSelect={(table) => setSelectedTable(table.id)}
-                    selectedTableId={selectedTable || undefined}
-                    showOnlyAvailable
-                  />
-                ) : (
-                  <div className="p-6 bg-yellow-50 border border-yellow-200 rounded-xl text-center">
-                    <p className="text-sm text-yellow-800">
-                      No hay mesas disponibles
-                    </p>
-                  </div>
-                )}
+              <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 sm:p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-base sm:text-lg font-semibold text-carbon-900">
+                    Seleccionar Mesa
+                  </h2>
+                  {selectedTable && (
+                    <span className="text-sm text-sage-600 font-medium">
+                      Mesa {selectedTable} seleccionada
+                    </span>
+                  )}
+                </div>
+                <TableSelector
+                  tables={availableTables}
+                  onSelect={(table) => setSelectedTable(table.id)}
+                  selectedTableId={selectedTable || undefined}
+                  showOnlyAvailable
+                />
               </div>
             )}
           </div>
