@@ -178,16 +178,16 @@ export function OrderCreatePage() {
       backRoute={ROUTES.ORDERS}
       fullWidth
     >
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8">
+      <div className="max-w-[1600px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 lg:gap-10">
           {/* ============ LEFT COLUMN: Order Type & Table ============ */}
-          <div className="lg:col-span-4 xl:col-span-3 space-y-4 sm:space-y-6">
+          <div className="space-y-6 sm:space-y-8">
             {/* Order Type Selection */}
-            <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 sm:p-5 lg:p-6">
-              <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-carbon-900 mb-4 lg:mb-5">
+            <div className="bg-white rounded-2xl border-2 border-sage-200 p-5 sm:p-6 lg:p-8">
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-carbon-900 mb-5 sm:mb-6 lg:mb-8">
                 Tipo de Pedido
               </h2>
-              <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
                 {[
                   {
                     type: OrderType.DINE_IN,
@@ -214,18 +214,18 @@ export function OrderCreatePage() {
                       }
                     }}
                     className={`
-                      p-3 sm:p-4 lg:p-5 rounded-xl border-2 transition-all duration-200
-                      flex flex-col items-center gap-1.5 sm:gap-2 lg:gap-3
-                      min-h-[80px] sm:min-h-[90px] lg:min-h-[110px]
+                      p-5 sm:p-6 lg:p-8 rounded-2xl border-2 transition-all duration-200
+                      flex flex-col items-center gap-3 sm:gap-4 lg:gap-5
+                      min-h-[120px] sm:min-h-[140px] lg:min-h-[180px]
                       ${
                         orderType === type
-                          ? "border-sage-500 bg-sage-50 text-sage-700 shadow-sm"
+                          ? "border-sage-500 bg-sage-50 text-sage-700 shadow-md"
                           : "border-sage-200 bg-white text-carbon-600 hover:border-sage-300 hover:bg-sage-50/50"
                       }
                     `}
                   >
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8" />
-                    <span className="font-semibold text-sm sm:text-base lg:text-lg">{label}</span>
+                    <Icon className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12" />
+                    <span className="font-semibold text-base sm:text-lg lg:text-xl">{label}</span>
                   </button>
                 ))}
               </div>
@@ -233,13 +233,13 @@ export function OrderCreatePage() {
 
             {/* Table Selection - Only for DINE_IN */}
             {orderType === OrderType.DINE_IN && (
-              <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 sm:p-5 lg:p-6">
-                <div className="flex items-center justify-between mb-4 lg:mb-5">
-                  <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-carbon-900">
+              <div className="bg-white rounded-2xl border-2 border-sage-200 p-5 sm:p-6 lg:p-8">
+                <div className="flex items-center justify-between mb-5 sm:mb-6 lg:mb-8">
+                  <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-carbon-900">
                     Seleccionar Mesa
                   </h2>
                   {selectedTable && (
-                    <span className="text-sm lg:text-base text-sage-600 font-medium">
+                    <span className="text-base sm:text-lg lg:text-xl text-sage-600 font-medium">
                       Mesa {selectedTable} seleccionada
                     </span>
                   )}
@@ -255,7 +255,7 @@ export function OrderCreatePage() {
           </div>
 
           {/* ============ RIGHT COLUMN: Products ============ */}
-          <div className="lg:col-span-8 xl:col-span-9 space-y-4 sm:space-y-6">
+          <div className="space-y-6 sm:space-y-8">
             {/* Search */}
             <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 sm:p-5 lg:p-6">
               <div className="relative">
@@ -272,12 +272,12 @@ export function OrderCreatePage() {
             </div>
 
             {/* Products Grid */}
-            <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 sm:p-5 lg:p-6">
-              <div className="flex items-center justify-between mb-4 lg:mb-5">
-                <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-carbon-900">
+            <div className="bg-white rounded-2xl border-2 border-sage-200 p-5 sm:p-6 lg:p-8">
+              <div className="flex items-center justify-between mb-5 sm:mb-6 lg:mb-8">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-carbon-900">
                   Productos Disponibles
                 </h2>
-                <span className="text-sm lg:text-base text-carbon-500">
+                <span className="text-base sm:text-lg lg:text-xl text-carbon-500">
                   {filteredItems.length} productos
                 </span>
               </div>
