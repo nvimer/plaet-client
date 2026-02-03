@@ -187,7 +187,7 @@ export function OrderCreatePage() {
               <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-carbon-900 mb-5 sm:mb-6 lg:mb-8">
                 Tipo de Pedido
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-5 lg:gap-6">
+              <div className="grid grid-cols-3 sm:grid-cols-3 gap-3 sm:gap-5 lg:gap-6">
                 {[
                   {
                     type: OrderType.DINE_IN,
@@ -214,18 +214,18 @@ export function OrderCreatePage() {
                       }
                     }}
                     className={`
-                      p-5 sm:p-6 lg:p-8 rounded-2xl border-2 transition-all duration-200
-                      flex flex-col items-center gap-3 sm:gap-4 lg:gap-5
-                      min-h-[120px] sm:min-h-[140px] lg:min-h-[180px]
+                      p-3 sm:p-6 lg:p-8 rounded-xl sm:rounded-2xl border-2 transition-all duration-200
+                      flex flex-col items-center gap-2 sm:gap-4 lg:gap-5
+                      min-h-[70px] sm:min-h-[140px] lg:min-h-[180px]
                       ${
                         orderType === type
-                          ? "border-sage-500 bg-sage-50 text-sage-700 shadow-md"
+                          ? "border-sage-500 bg-sage-50 text-sage-700 shadow-sm sm:shadow-md"
                           : "border-sage-200 bg-white text-carbon-600 hover:border-sage-300 hover:bg-sage-50/50"
                       }
                     `}
                   >
-                    <Icon className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12" />
-                    <span className="font-semibold text-base sm:text-lg lg:text-xl">{label}</span>
+                    <Icon className="w-6 h-6 sm:w-10 sm:h-10 lg:w-12 lg:h-12" />
+                    <span className="font-semibold text-sm sm:text-lg lg:text-xl">{label}</span>
                   </button>
                 ))}
               </div>
