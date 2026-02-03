@@ -19,11 +19,17 @@ export interface TableSelectorProps {
  * Responsive design with proportional button sizes.
  * 
  * Features:
- * - Responsive grid (3-4-6 columns based on screen size)
+ * - Responsive grid (3-4-5-6 columns based on screen size)
  * - Proportional button sizes (not oversized)
  * - Clear visual hierarchy
  * - Touch-friendly but not overwhelming
  * - Status indicators
+ * 
+ * Grid breakpoints:
+ * - Mobile (<640px): 3 columns
+ * - Tablet (640px+): 4 columns  
+ * - Desktop (1024px+): 5 columns
+ * - Large Desktop (1280px+): 6 columns
  * 
  * @example
  * ```tsx
@@ -58,7 +64,7 @@ export function TableSelector({
   }
 
   return (
-    <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+    <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
       {filteredTables.map((table) => {
         const isSelected = selectedTableId === table.id;
         const isAvailable = table.status === "AVAILABLE";
@@ -79,31 +85,31 @@ export function TableSelector({
               ${!isAvailable && !isSelected ? "opacity-60" : ""}
             `}
           >
-            <div className="flex flex-col items-center justify-center py-2">
+            <div className="flex flex-col items-center justify-center py-1 sm:py-2">
               {/* Table Number - Proportional size */}
               <span className={`
-                text-2xl sm:text-3xl font-bold mb-1
+                text-xl sm:text-2xl lg:text-3xl font-bold mb-0.5 sm:mb-1
                 ${isSelected ? "text-sage-700" : "text-carbon-800"}
               `}>
                 {table.number}
               </span>
 
-              {/* Compact Status Badge */}
-              <div className="scale-90 origin-center">
+              {/* Compact Status Badge - scaled down */}
+              <div className="scale-75 origin-center">
                 <TableStatusBadge status={table.status} />
               </div>
 
-              {/* Location - Compact */}
+              {/* Location - Compact, only on larger screens */}
               {table.location && (
-                <span className="text-xs text-carbon-500 mt-1 truncate max-w-full px-1">
+                <span className="hidden sm:block text-xs text-carbon-500 mt-0.5 truncate max-w-full px-1">
                   {table.location}
                 </span>
               )}
 
               {/* Selected indicator - Subtle */}
               {isSelected && (
-                <span className="text-xs text-sage-600 font-medium mt-1">
-                  ✓ Seleccionada
+                <span className="text-xs text-sage-600 font-medium mt-0.5">
+                  ✓
                 </span>
               )}
             </div>

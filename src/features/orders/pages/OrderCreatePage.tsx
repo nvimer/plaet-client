@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { OrderType, TableStatus } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
-import { ProductGrid } from "../components/ProductGrid";
+import { ProductSelector } from "@/features/menu/items";
 import { TableSelector } from "@/features/tables";
 import { Button, Input } from "@/components";
 import { useItems } from "@/features/menu";
@@ -272,28 +272,22 @@ export function OrderCreatePage() {
             </div>
 
             {/* Products Grid */}
-            <div>
-              <h2 className="text-lg font-semibold text-carbon-900 mb-4">
-                Productos Disponibles
-              </h2>
-              {filteredItems.length > 0 ? (
-                <ProductGrid
-                  products={filteredItems}
-                  onSelect={handleProductSelect}
-                  columns={3}
-                  selectedIds={selectedProductIds}
-                  showQuantity
-                  quantities={quantities}
-                />
-              ) : (
-                <div className="p-12 bg-sage-50 rounded-xl text-center">
-                  <p className="text-carbon-600">
-                    {searchTerm
-                      ? "No se encontraron productos"
-                      : "No hay productos disponibles"}
-                  </p>
-                </div>
-              )}
+            <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 sm:p-5">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-base sm:text-lg font-semibold text-carbon-900">
+                  Productos Disponibles
+                </h2>
+                <span className="text-sm text-carbon-500">
+                  {filteredItems.length} productos
+                </span>
+              </div>
+              <ProductSelector
+                products={filteredItems}
+                onSelect={handleProductSelect}
+                selectedIds={selectedProductIds}
+                showQuantity
+                quantities={quantities}
+              />
             </div>
           </div>
         </div>
