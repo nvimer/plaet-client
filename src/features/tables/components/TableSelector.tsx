@@ -16,20 +16,16 @@ export interface TableSelectorProps {
  * TableSelector Component
  * 
  * Optimized table selection grid for order creation.
- * Responsive design with proportional button sizes.
+ * Responsive design with FEWER columns on large screens for bigger cards.
  * 
  * Features:
- * - Responsive grid (3-4-5-6 columns based on screen size)
- * - Proportional button sizes (not oversized)
+ * - Responsive grid with FEWER columns on large screens (cards get bigger)
+ * - Mobile: 3 columns (compact)
+ * - Tablet: 3 columns (medium)
+ * - Desktop: 3 columns (large cards)
+ * - Large Desktop: 4 columns (extra large cards)
  * - Clear visual hierarchy
- * - Touch-friendly but not overwhelming
- * - Status indicators
- * 
- * Grid breakpoints:
- * - Mobile (<640px): 3 columns
- * - Tablet (640px+): 4 columns  
- * - Desktop (1024px+): 5 columns
- * - Large Desktop (1280px+): 6 columns
+ * - Touch-friendly
  * 
  * @example
  * ```tsx
@@ -64,7 +60,7 @@ export function TableSelector({
   }
 
   return (
-    <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 lg:gap-4">
+    <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
       {filteredTables.map((table) => {
         const isSelected = selectedTableId === table.id;
         const isAvailable = table.status === "AVAILABLE";
@@ -78,7 +74,6 @@ export function TableSelector({
             selected={isSelected}
             disabled={!isAvailable && !isSelected}
             className={`
-              lg:p-5 xl:p-6
               ${isSelected 
                 ? "bg-sage-50 border-2 border-sage-400 lg:border-[3px]" 
                 : "bg-white border-2 border-sage-200 hover:border-sage-300"
@@ -86,32 +81,31 @@ export function TableSelector({
               ${!isAvailable && !isSelected ? "opacity-60" : ""}
             `}
           >
-            <div className="flex flex-col items-center justify-center py-1 sm:py-2 lg:py-3">
-              {/* Table Number - Larger on big screens */}
+            <div className="flex flex-col items-center justify-center py-2 sm:py-3 lg:py-4">
+              {/* Table Number - Gets much bigger on large screens */}
               <span className={`
-                text-xl sm:text-2xl lg:text-4xl xl:text-5xl font-bold mb-0.5 sm:mb-1 lg:mb-2
+                text-2xl sm:text-3xl lg:text-5xl xl:text-6xl font-bold mb-1 sm:mb-2 lg:mb-3
                 ${isSelected ? "text-sage-700" : "text-carbon-800"}
               `}>
                 {table.number}
               </span>
 
-              {/* Status Badge - Normal size on large screens */}
-              <div className="scale-75 sm:scale-75 lg:scale-90 xl:scale-100 origin-center">
+              {/* Status Badge - Full size on all screens */}
+              <div className="scale-90 sm:scale-90 lg:scale-100 origin-center">
                 <TableStatusBadge status={table.status} />
               </div>
 
-              {/* Location - Visible on all screens on large displays */}
+              {/* Location - Always visible on sm+, bigger on large screens */}
               {table.location && (
-                <span className="hidden sm:block lg:block text-xs lg:text-sm text-carbon-500 mt-1 lg:mt-2 truncate max-w-full px-1">
+                <span className="text-xs sm:text-sm lg:text-base text-carbon-500 mt-1 sm:mt-2 lg:mt-3 truncate max-w-full px-1">
                   {table.location}
                 </span>
               )}
 
-              {/* Selected indicator - More prominent on large screens */}
+              {/* Selected indicator */}
               {isSelected && (
-                <span className="text-xs lg:text-sm text-sage-600 font-medium mt-1 lg:mt-2">
-                  <span className="hidden lg:inline">✓ Seleccionada</span>
-                  <span className="lg:hidden">✓</span>
+                <span className="text-xs sm:text-sm lg:text-base text-sage-600 font-medium mt-1 sm:mt-2 lg:mt-3">
+                  ✓ Seleccionada
                 </span>
               )}
             </div>

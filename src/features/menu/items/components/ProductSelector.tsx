@@ -16,20 +16,16 @@ export interface ProductSelectorProps {
  * ProductSelector Component
  * 
  * Optimized product selection grid for order creation.
- * Responsive design with proportional card sizes.
+ * Responsive design with FEWER columns on large screens for bigger cards.
  * 
  * Features:
- * - Responsive grid (2-3-4-5 columns based on screen size)
- * - Proportional card sizes (not oversized)
+ * - Responsive grid with FEWER columns on large screens (cards get bigger)
+ * - Mobile: 2 columns (compact)
+ * - Tablet: 2 columns (medium)
+ * - Desktop: 2-3 columns (large spacious cards)
+ * - Large Desktop: 3 columns (extra large cards)
  * - Clear visual hierarchy
- * - Touch-friendly but not overwhelming
- * - Quantity indicators
- * 
- * Grid breakpoints:
- * - Mobile (<640px): 2 columns
- * - Tablet (640px+): 3 columns  
- * - Desktop (1024px+): 4 columns
- * - Large Desktop (1280px+): 5 columns
+ * - Touch-friendly
  * 
  * @example
  * ```tsx
@@ -63,7 +59,7 @@ export function ProductSelector({
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3 lg:gap-4">
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-3 sm:gap-4 lg:gap-5">
       {products.map((product) => {
         const isSelected = selectedIds?.has(product.id);
         const quantity = quantities?.get(product.id) || 0;
@@ -78,7 +74,6 @@ export function ProductSelector({
             selected={isSelected}
             disabled={!isAvailable}
             className={`
-              lg:p-6 xl:p-8
               ${isSelected 
                 ? "bg-sage-50 border-2 border-sage-400 lg:border-[3px]" 
                 : "bg-white border-2 border-sage-200 hover:border-sage-300"
@@ -87,9 +82,9 @@ export function ProductSelector({
             `}
           >
             <div className="flex flex-col h-full">
-              {/* Product Image - Larger on big screens */}
+              {/* Product Image - Much bigger on large screens */}
               {product.imageUrl ? (
-                <div className="w-full h-20 sm:h-24 lg:h-32 xl:h-40 mb-2 lg:mb-3 rounded-xl overflow-hidden bg-sage-50">
+                <div className="w-full h-28 sm:h-32 lg:h-48 xl:h-56 mb-2 sm:mb-3 lg:mb-4 rounded-xl overflow-hidden bg-sage-50">
                   <img
                     src={product.imageUrl}
                     alt={product.name}
@@ -97,45 +92,45 @@ export function ProductSelector({
                   />
                 </div>
               ) : (
-                <div className="w-full h-20 sm:h-24 lg:h-32 xl:h-40 mb-2 lg:mb-3 rounded-xl bg-sage-100 flex items-center justify-center">
-                  <span className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl">🍽️</span>
+                <div className="w-full h-28 sm:h-32 lg:h-48 xl:h-56 mb-2 sm:mb-3 lg:mb-4 rounded-xl bg-sage-100 flex items-center justify-center">
+                  <span className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl">🍽️</span>
                 </div>
               )}
 
-              {/* Product Name - Larger on big screens */}
-              <h3 className="font-semibold text-sm sm:text-base lg:text-lg xl:text-xl text-carbon-900 mb-1 lg:mb-2 line-clamp-2 leading-tight">
+              {/* Product Name - Much bigger on large screens */}
+              <h3 className="font-semibold text-base sm:text-lg lg:text-xl xl:text-2xl text-carbon-900 mb-1 sm:mb-2 lg:mb-3 line-clamp-2 leading-tight">
                 {product.name}
               </h3>
 
-              {/* Description - Visible on all screens on large displays */}
+              {/* Description - Visible on all screens */}
               {product.description && (
-                <p className="hidden sm:block lg:block text-xs lg:text-sm text-carbon-600 mb-1 lg:mb-2 line-clamp-2">
+                <p className="text-xs sm:text-sm lg:text-base text-carbon-600 mb-1 sm:mb-2 lg:mb-3 line-clamp-2">
                   {product.description}
                 </p>
               )}
 
-              {/* Price and Quantity - Bottom aligned, larger on big screens */}
-              <div className="mt-auto flex items-center justify-between gap-1 lg:gap-2">
-                <p className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-sage-700">
+              {/* Price and Quantity - Bottom aligned, much bigger on large screens */}
+              <div className="mt-auto flex items-center justify-between gap-2">
+                <p className="text-lg sm:text-xl lg:text-2xl xl:text-3xl font-bold text-sage-700">
                   ${Number(product.price).toLocaleString("es-CO")}
                 </p>
                 {showQuantity && quantity > 0 && (
-                  <span className="bg-sage-100 text-sage-700 px-2 py-0.5 lg:px-3 lg:py-1 rounded-full text-xs lg:text-sm font-semibold">
+                  <span className="bg-sage-100 text-sage-700 px-2 sm:px-3 py-0.5 sm:py-1 lg:px-4 lg:py-2 rounded-full text-sm sm:text-base lg:text-lg font-semibold">
                     {quantity}
                   </span>
                 )}
               </div>
 
-              {/* Availability Badge - Larger on big screens */}
+              {/* Availability Badge - Bigger on large screens */}
               {!isAvailable && (
-                <span className="text-xs lg:text-sm text-rose-500 mt-1 lg:mt-2 font-medium">
+                <span className="text-xs sm:text-sm lg:text-base text-rose-500 mt-1 sm:mt-2 lg:mt-3 font-medium">
                   No disponible
                 </span>
               )}
 
-              {/* Selected indicator - More prominent on large screens */}
+              {/* Selected indicator */}
               {isSelected && (
-                <span className="text-xs lg:text-sm text-sage-600 font-medium mt-1 lg:mt-2">
+                <span className="text-xs sm:text-sm lg:text-base text-sage-600 font-medium mt-1 sm:mt-2 lg:mt-3">
                   ✓ Agregado
                 </span>
               )}
