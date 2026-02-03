@@ -64,7 +64,7 @@ export function TableSelector({
   }
 
   return (
-    <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3">
+    <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 lg:gap-4">
       {filteredTables.map((table) => {
         const isSelected = selectedTableId === table.id;
         const isAvailable = table.status === "AVAILABLE";
@@ -78,38 +78,40 @@ export function TableSelector({
             selected={isSelected}
             disabled={!isAvailable && !isSelected}
             className={`
+              lg:p-5 xl:p-6
               ${isSelected 
-                ? "bg-sage-50 border-2 border-sage-400" 
+                ? "bg-sage-50 border-2 border-sage-400 lg:border-[3px]" 
                 : "bg-white border-2 border-sage-200 hover:border-sage-300"
               }
               ${!isAvailable && !isSelected ? "opacity-60" : ""}
             `}
           >
-            <div className="flex flex-col items-center justify-center py-1 sm:py-2">
-              {/* Table Number - Proportional size */}
+            <div className="flex flex-col items-center justify-center py-1 sm:py-2 lg:py-3">
+              {/* Table Number - Larger on big screens */}
               <span className={`
-                text-xl sm:text-2xl lg:text-3xl font-bold mb-0.5 sm:mb-1
+                text-xl sm:text-2xl lg:text-4xl xl:text-5xl font-bold mb-0.5 sm:mb-1 lg:mb-2
                 ${isSelected ? "text-sage-700" : "text-carbon-800"}
               `}>
                 {table.number}
               </span>
 
-              {/* Compact Status Badge - scaled down */}
-              <div className="scale-75 origin-center">
+              {/* Status Badge - Normal size on large screens */}
+              <div className="scale-75 sm:scale-75 lg:scale-90 xl:scale-100 origin-center">
                 <TableStatusBadge status={table.status} />
               </div>
 
-              {/* Location - Compact, only on larger screens */}
+              {/* Location - Visible on all screens on large displays */}
               {table.location && (
-                <span className="hidden sm:block text-xs text-carbon-500 mt-0.5 truncate max-w-full px-1">
+                <span className="hidden sm:block lg:block text-xs lg:text-sm text-carbon-500 mt-1 lg:mt-2 truncate max-w-full px-1">
                   {table.location}
                 </span>
               )}
 
-              {/* Selected indicator - Subtle */}
+              {/* Selected indicator - More prominent on large screens */}
               {isSelected && (
-                <span className="text-xs text-sage-600 font-medium mt-0.5">
-                  ✓
+                <span className="text-xs lg:text-sm text-sage-600 font-medium mt-1 lg:mt-2">
+                  <span className="hidden lg:inline">✓ Seleccionada</span>
+                  <span className="lg:hidden">✓</span>
                 </span>
               )}
             </div>

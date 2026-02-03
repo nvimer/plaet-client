@@ -179,15 +179,15 @@ export function OrderCreatePage() {
       fullWidth
     >
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 lg:gap-8">
           {/* ============ LEFT COLUMN: Order Type & Table ============ */}
-          <div className="space-y-6">
+          <div className="lg:col-span-4 xl:col-span-3 space-y-4 sm:space-y-6">
             {/* Order Type Selection */}
-            <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 sm:p-5">
-              <h2 className="text-base sm:text-lg font-semibold text-carbon-900 mb-4">
+            <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 sm:p-5 lg:p-6">
+              <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-carbon-900 mb-4 lg:mb-5">
                 Tipo de Pedido
               </h2>
-              <div className="grid grid-cols-3 gap-2 sm:gap-3">
+              <div className="grid grid-cols-3 gap-2 sm:gap-3 lg:gap-4">
                 {[
                   {
                     type: OrderType.DINE_IN,
@@ -214,9 +214,9 @@ export function OrderCreatePage() {
                       }
                     }}
                     className={`
-                      p-3 sm:p-4 rounded-xl border-2 transition-all duration-200
-                      flex flex-col items-center gap-1.5 sm:gap-2
-                      min-h-[80px] sm:min-h-[90px]
+                      p-3 sm:p-4 lg:p-5 rounded-xl border-2 transition-all duration-200
+                      flex flex-col items-center gap-1.5 sm:gap-2 lg:gap-3
+                      min-h-[80px] sm:min-h-[90px] lg:min-h-[110px]
                       ${
                         orderType === type
                           ? "border-sage-500 bg-sage-50 text-sage-700 shadow-sm"
@@ -224,8 +224,8 @@ export function OrderCreatePage() {
                       }
                     `}
                   >
-                    <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
-                    <span className="font-semibold text-sm sm:text-base">{label}</span>
+                    <Icon className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8" />
+                    <span className="font-semibold text-sm sm:text-base lg:text-lg">{label}</span>
                   </button>
                 ))}
               </div>
@@ -233,13 +233,13 @@ export function OrderCreatePage() {
 
             {/* Table Selection - Only for DINE_IN */}
             {orderType === OrderType.DINE_IN && (
-              <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 sm:p-5">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-base sm:text-lg font-semibold text-carbon-900">
+              <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 sm:p-5 lg:p-6">
+                <div className="flex items-center justify-between mb-4 lg:mb-5">
+                  <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-carbon-900">
                     Seleccionar Mesa
                   </h2>
                   {selectedTable && (
-                    <span className="text-sm text-sage-600 font-medium">
+                    <span className="text-sm lg:text-base text-sage-600 font-medium">
                       Mesa {selectedTable} seleccionada
                     </span>
                   )}
@@ -254,30 +254,30 @@ export function OrderCreatePage() {
             )}
           </div>
 
-          {/* ============ MIDDLE COLUMN: Products ============ */}
-          <div className="lg:col-span-2 space-y-6">
+          {/* ============ RIGHT COLUMN: Products ============ */}
+          <div className="lg:col-span-8 xl:col-span-9 space-y-4 sm:space-y-6">
             {/* Search */}
-            <div>
+            <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 sm:p-5 lg:p-6">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-carbon-400 w-5 h-5" />
+                <Search className="absolute left-3 lg:left-4 top-1/2 transform -translate-y-1/2 text-carbon-400 w-5 h-5 lg:w-6 lg:h-6" />
                 <Input
                   type="text"
                   placeholder="Buscar producto..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
+                  className="pl-10 lg:pl-12 lg:text-lg"
                   fullWidth
                 />
               </div>
             </div>
 
             {/* Products Grid */}
-            <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 sm:p-5">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-base sm:text-lg font-semibold text-carbon-900">
+            <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 sm:p-5 lg:p-6">
+              <div className="flex items-center justify-between mb-4 lg:mb-5">
+                <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-carbon-900">
                   Productos Disponibles
                 </h2>
-                <span className="text-sm text-carbon-500">
+                <span className="text-sm lg:text-base text-carbon-500">
                   {filteredItems.length} productos
                 </span>
               </div>

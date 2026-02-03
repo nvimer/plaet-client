@@ -63,7 +63,7 @@ export function ProductSelector({
   }
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3">
+    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-2 sm:gap-3 lg:gap-4">
       {products.map((product) => {
         const isSelected = selectedIds?.has(product.id);
         const quantity = quantities?.get(product.id) || 0;
@@ -78,17 +78,18 @@ export function ProductSelector({
             selected={isSelected}
             disabled={!isAvailable}
             className={`
+              lg:p-6 xl:p-8
               ${isSelected 
-                ? "bg-sage-50 border-2 border-sage-400" 
+                ? "bg-sage-50 border-2 border-sage-400 lg:border-[3px]" 
                 : "bg-white border-2 border-sage-200 hover:border-sage-300"
               }
               ${!isAvailable ? "opacity-60" : ""}
             `}
           >
             <div className="flex flex-col h-full">
-              {/* Product Image - Proportional height */}
+              {/* Product Image - Larger on big screens */}
               {product.imageUrl ? (
-                <div className="w-full h-20 sm:h-24 mb-2 rounded-xl overflow-hidden bg-sage-50">
+                <div className="w-full h-20 sm:h-24 lg:h-32 xl:h-40 mb-2 lg:mb-3 rounded-xl overflow-hidden bg-sage-50">
                   <img
                     src={product.imageUrl}
                     alt={product.name}
@@ -96,45 +97,45 @@ export function ProductSelector({
                   />
                 </div>
               ) : (
-                <div className="w-full h-20 sm:h-24 mb-2 rounded-xl bg-sage-100 flex items-center justify-center">
-                  <span className="text-2xl sm:text-3xl">🍽️</span>
+                <div className="w-full h-20 sm:h-24 lg:h-32 xl:h-40 mb-2 lg:mb-3 rounded-xl bg-sage-100 flex items-center justify-center">
+                  <span className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl">🍽️</span>
                 </div>
               )}
 
-              {/* Product Name - Compact */}
-              <h3 className="font-semibold text-sm sm:text-base text-carbon-900 mb-1 line-clamp-2 leading-tight">
+              {/* Product Name - Larger on big screens */}
+              <h3 className="font-semibold text-sm sm:text-base lg:text-lg xl:text-xl text-carbon-900 mb-1 lg:mb-2 line-clamp-2 leading-tight">
                 {product.name}
               </h3>
 
-              {/* Description - Only on larger screens, truncated */}
+              {/* Description - Visible on all screens on large displays */}
               {product.description && (
-                <p className="hidden sm:block text-xs text-carbon-600 mb-1 line-clamp-1">
+                <p className="hidden sm:block lg:block text-xs lg:text-sm text-carbon-600 mb-1 lg:mb-2 line-clamp-2">
                   {product.description}
                 </p>
               )}
 
-              {/* Price and Quantity - Bottom aligned */}
-              <div className="mt-auto flex items-center justify-between gap-1">
-                <p className="text-base sm:text-lg font-bold text-sage-700">
+              {/* Price and Quantity - Bottom aligned, larger on big screens */}
+              <div className="mt-auto flex items-center justify-between gap-1 lg:gap-2">
+                <p className="text-base sm:text-lg lg:text-xl xl:text-2xl font-bold text-sage-700">
                   ${Number(product.price).toLocaleString("es-CO")}
                 </p>
                 {showQuantity && quantity > 0 && (
-                  <span className="bg-sage-100 text-sage-700 px-2 py-0.5 rounded-full text-xs font-semibold">
+                  <span className="bg-sage-100 text-sage-700 px-2 py-0.5 lg:px-3 lg:py-1 rounded-full text-xs lg:text-sm font-semibold">
                     {quantity}
                   </span>
                 )}
               </div>
 
-              {/* Availability Badge */}
+              {/* Availability Badge - Larger on big screens */}
               {!isAvailable && (
-                <span className="text-xs text-rose-500 mt-1 font-medium">
+                <span className="text-xs lg:text-sm text-rose-500 mt-1 lg:mt-2 font-medium">
                   No disponible
                 </span>
               )}
 
-              {/* Selected indicator */}
+              {/* Selected indicator - More prominent on large screens */}
               {isSelected && (
-                <span className="text-xs text-sage-600 font-medium mt-1">
+                <span className="text-xs lg:text-sm text-sage-600 font-medium mt-1 lg:mt-2">
                   ✓ Agregado
                 </span>
               )}
