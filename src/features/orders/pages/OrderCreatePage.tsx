@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { OrderType, TableStatus } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
-import { FullScreenLayout } from "@/layouts/FullScreenLayout";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { ProductGrid } from "../components/ProductGrid";
 import { TableGrid } from "@/features/tables/components/TableGrid";
 import { Button, Input } from "@/components";
@@ -150,7 +150,7 @@ export function OrderCreatePage() {
     createOrder(
       {
         type: orderType,
-        tableId: orderType === OrderType.DINE_IN ? selectedTable : null,
+        tableId: orderType === OrderType.DINE_IN && selectedTable ? selectedTable : undefined,
         items,
       },
       {
@@ -172,10 +172,11 @@ export function OrderCreatePage() {
   };
 
   return (
-    <FullScreenLayout
+    <SidebarLayout
       title="Nuevo Pedido"
       subtitle="Selecciona productos y completa la información"
       backRoute={ROUTES.ORDERS}
+      fullWidth
     >
       <div className="max-w-7xl mx-auto">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -380,7 +381,7 @@ export function OrderCreatePage() {
           </div>
         )}
       </div>
-    </FullScreenLayout>
+    </SidebarLayout>
   );
 }
 
