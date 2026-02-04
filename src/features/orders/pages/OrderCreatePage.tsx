@@ -334,12 +334,29 @@ export function OrderCreatePage() {
     );
   };
 
+  // Check if we can duplicate
+  const canDuplicate = selectedProtein || looseItems.length > 0;
+
   return (
     <SidebarLayout
       title="Nuevo Pedido - Corrientazo"
       subtitle="Selecciona mesa y proteína"
       backRoute={ROUTES.ORDERS}
       fullWidth
+      actions={
+        canDuplicate ? (
+          <button
+            onClick={handleDuplicate}
+            disabled={isPending}
+            className="flex items-center gap-2 px-4 py-2 bg-sage-100 text-sage-700 rounded-lg font-medium hover:bg-sage-200 transition-colors disabled:opacity-50"
+          >
+            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+            </svg>
+            <span className="hidden sm:inline">Duplicar</span>
+          </button>
+        ) : undefined
+      }
     >
       <div className="max-w-[1600px] mx-auto space-y-6">
         
@@ -584,18 +601,38 @@ export function OrderCreatePage() {
               onDuplicate={handleDuplicate}
             />
 
-            <Button
-              variant="primary"
-              size="lg"
-              fullWidth
-              onClick={handleSubmit}
-              disabled={isPending || (!selectedProtein && looseItems.length === 0)}
-              isLoading={isPending}
-              className="min-h-[56px] text-lg"
-            >
-              <ShoppingBag className="w-5 h-5 mr-2" />
-              Crear Pedido - ${orderTotal.toLocaleString("es-CO")}
-            </Button>
+            {/* Action Buttons */}
+            <div className="space-y-3">
+              <Button
+                variant="primary"
+                size="lg"
+                fullWidth
+                onClick={handleSubmit}
+                disabled={isPending || (!selectedProtein && looseItems.length === 0)}
+                isLoading={isPending}
+                className="min-h-[56px] text-lg"
+              >
+                <ShoppingBag className="w-5 h-5 mr-2" />
+                Crear Pedido - ${orderTotal.toLocaleString("es-CO")}
+              </Button>
+              
+              {/* Quick Duplicate Button - Only show when there's something to duplicate */}
+              {(selectedProtein || looseItems.length > 0) && (
+                <Button
+                  variant="outline"
+                  size="lg"
+                  fullWidth
+                  onClick={handleDuplicate}
+                  disabled={isPending}
+                  className="min-h-[48px] border-2 border-sage-300 text-sage-700 hover:bg-sage-50"
+                >
+                  <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+                  </svg>
+                  Crear y Preparar Otro Igual
+                </Button>
+              )}
+            </div>
           </div>
         </div>
       </div>
