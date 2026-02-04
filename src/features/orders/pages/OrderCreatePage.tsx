@@ -14,7 +14,7 @@ import {
   PlateCustomizer,
 } from "../components";
 import { TableSelector } from "@/features/tables";
-import { Search, ShoppingBag, Plus, Trash2, ChevronDown, ChevronUp, Users, Edit2, Check, X, ArrowLeft } from "lucide-react";
+import { Search, ShoppingBag, Plus, Trash2, ChevronDown, ChevronUp, Users, Edit2, Check, X, ArrowLeft, UtensilsCrossed, Bike } from "lucide-react";
 import { cn } from "@/utils/cn";
 
 // Types
@@ -74,7 +74,8 @@ export function OrderCreatePage() {
   const tables = tablesData?.tables || [];
   const availableTables = tables.filter((t) => t.status === "AVAILABLE");
 
-  // Estado de la mesa
+  // Estado del tipo de pedido y mesa
+  const [selectedOrderType, setSelectedOrderType] = useState<OrderType | null>(null);
   const [selectedTable, setSelectedTable] = useState<number | null>(null);
   const [tableOrders, setTableOrders] = useState<TableOrder[]>([]);
   const [currentOrderIndex, setCurrentOrderIndex] = useState<number | null>(null);
@@ -338,8 +339,8 @@ export function OrderCreatePage() {
       return new Promise((resolve) => {
         createOrder(
           {
-            type: OrderType.DINE_IN,
-            tableId: selectedTable,
+            type: selectedOrderType!,
+            tableId: selectedOrderType === OrderType.DINE_IN ? selectedTable : undefined,
             items,
           },
           {
@@ -357,13 +358,18 @@ export function OrderCreatePage() {
 
     await Promise.all(promises);
     
-    toast.success(`${tableOrders.length} pedidos creados para Mesa ${selectedTable}`, {
-      description: `Total mesa: $${tableTotal.toLocaleString("es-CO")}`,
+    const successMessage = selectedOrderType === OrderType.DINE_IN 
+      ? `${tableOrders.length} pedidos creados para Mesa ${selectedTable}`
+      : `${tableOrders.length} pedidos creados para ${selectedOrderType === OrderType.TAKE_OUT ? 'Llevar' : 'Domicilio'}`;
+    
+    toast.success(successMessage, {
+      description: `Total: $${tableTotal.toLocaleString("es-CO")}`,
     });
     
     // Limpiar todo
     setTableOrders([]);
     setSelectedTable(null);
+    setSelectedOrderType(null);
     clearCurrentOrder();
     
     navigate(ROUTES.ORDERS);
@@ -375,15 +381,101 @@ export function OrderCreatePage() {
     toast.info("Edición cancelada");
   };
 
+  // Handler para seleccionar tipo de pedido
+  const handleSelectOrderType = (type: OrderType) => {
+    setSelectedOrderType(type);
+  };
+
+  // Handler para volver a seleccionar tipo de pedido
+  const handleBackToOrderType = () => {
+    setSelectedOrderType(null);
+    setSelectedTable(null);
+  };
+
   // Render
-  if (!selectedTable) {
-    // Paso 1: Seleccionar mesa
+  // Paso 1: Seleccionar tipo de pedido
+  if (!selectedOrderType) {
+    return (
+      <SidebarLayout
+        title="Nuevo Pedido - Corrientazo"
+        subtitle="Selecciona el tipo de pedido"
+        backRoute={ROUTES.ORDERS}
+        fullWidth
+      >
+        <div className="max-w-4xl mx-auto">
+          <Card className="overflow-hidden">
+            <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-4 py-6 sm:px-8 sm:py-8">
+              <h2 className="text-white font-semibold text-2xl flex items-center gap-3">
+                <ShoppingBag className="w-7 h-7" />
+                Tipo de Pedido
+              </h2>
+              <p className="text-sage-100 mt-2">
+                Selecciona cómo se servirá el pedido
+              </p>
+            </div>
+            
+            <div className="p-4 sm:p-8">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* Aquí (DINE_IN) */}
+                <button
+                  onClick={() => handleSelectOrderType(OrderType.DINE_IN)}
+                  className="flex flex-col items-center justify-center p-8 rounded-xl border-2 border-sage-200 bg-white hover:border-sage-400 hover:bg-sage-50 transition-all group"
+                >
+                  <div className="w-20 h-20 rounded-full bg-sage-100 text-sage-600 flex items-center justify-center mb-4 group-hover:bg-sage-200 transition-colors">
+                    <UtensilsCrossed className="w-10 h-10" />
+                  </div>
+                  <span className="text-xl font-semibold text-carbon-900">Aquí</span>
+                  <span className="text-sm text-carbon-500 mt-1">Comer en el restaurante</span>
+                </button>
+
+                {/* Llevar (TAKE_OUT) */}
+                <button
+                  onClick={() => handleSelectOrderType(OrderType.TAKE_OUT)}
+                  className="flex flex-col items-center justify-center p-8 rounded-xl border-2 border-sage-200 bg-white hover:border-sage-400 hover:bg-sage-50 transition-all group"
+                >
+                  <div className="w-20 h-20 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center mb-4 group-hover:bg-amber-200 transition-colors">
+                    <ShoppingBag className="w-10 h-10" />
+                  </div>
+                  <span className="text-xl font-semibold text-carbon-900">Llevar</span>
+                  <span className="text-sm text-carbon-500 mt-1">Para recoger</span>
+                </button>
+
+                {/* Domicilio (DELIVERY) */}
+                <button
+                  onClick={() => handleSelectOrderType(OrderType.DELIVERY)}
+                  className="flex flex-col items-center justify-center p-8 rounded-xl border-2 border-sage-200 bg-white hover:border-sage-400 hover:bg-sage-50 transition-all group"
+                >
+                  <div className="w-20 h-20 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
+                    <Bike className="w-10 h-10" />
+                  </div>
+                  <span className="text-xl font-semibold text-carbon-900">Domicilio</span>
+                  <span className="text-sm text-carbon-500 mt-1">Entrega a domicilio</span>
+                </button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </SidebarLayout>
+    );
+  }
+
+  // Paso 2: Si es DINE_IN y no hay mesa seleccionada, mostrar selector de mesa
+  if (selectedOrderType === OrderType.DINE_IN && !selectedTable) {
     return (
       <SidebarLayout
         title="Nuevo Pedido - Corrientazo"
         subtitle="Selecciona la mesa para tomar el pedido"
         backRoute={ROUTES.ORDERS}
         fullWidth
+        actions={
+          <button
+            onClick={handleBackToOrderType}
+            className="flex items-center gap-2 px-4 py-2 bg-sage-100 text-sage-700 rounded-lg font-medium hover:bg-sage-200 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Cambiar Tipo
+          </button>
+        }
       >
         <div className="max-w-4xl mx-auto">
           <Card className="overflow-hidden">
@@ -411,19 +503,31 @@ export function OrderCreatePage() {
     );
   }
 
+  // Determinar título y acciones según el tipo de pedido
+  const getOrderFormTitle = () => {
+    if (selectedOrderType === OrderType.DINE_IN) {
+      return `Mesa ${selectedTable} - ${tableOrders.length} pedido${tableOrders.length !== 1 ? 's' : ''}`;
+    }
+    return `${selectedOrderType === OrderType.TAKE_OUT ? 'Llevar' : 'Domicilio'} - ${tableOrders.length} pedido${tableOrders.length !== 1 ? 's' : ''}`;
+  };
+
+  const getOrderFormSubtitle = () => {
+    return `Total: $${tableTotal.toLocaleString("es-CO")}`;
+  };
+
   return (
     <SidebarLayout
-      title={`Mesa ${selectedTable} - ${tableOrders.length} pedido${tableOrders.length !== 1 ? 's' : ''}`}
-      subtitle={`Total: $${tableTotal.toLocaleString("es-CO")}`}
+      title={getOrderFormTitle()}
+      subtitle={getOrderFormSubtitle()}
       backRoute={ROUTES.ORDERS}
       fullWidth
       actions={
         <button
-          onClick={() => setSelectedTable(null)}
+          onClick={handleBackToOrderType}
           className="flex items-center gap-2 px-4 py-2 bg-sage-100 text-sage-700 rounded-lg font-medium hover:bg-sage-200 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          Cambiar Mesa
+          {selectedOrderType === OrderType.DINE_IN ? 'Cambiar Mesa' : 'Cambiar Tipo'}
         </button>
       }
     >
@@ -450,14 +554,17 @@ export function OrderCreatePage() {
                     ) : (
                       <>
                         <Plus className="w-5 h-5" />
-                        Pedido #{tableOrders.length + 1} para Mesa {selectedTable}
+                        Pedido #{tableOrders.length + 1}
+                        {selectedOrderType === OrderType.DINE_IN && ` para Mesa ${selectedTable}`}
                       </>
                     )}
                   </h2>
                   <p className="text-white/80 text-sm mt-0.5">
                     {currentOrderIndex !== null 
                       ? "Modifica el pedido existente" 
-                      : "Agrega un nuevo pedido a la mesa"}
+                      : selectedOrderType === OrderType.DINE_IN 
+                        ? "Agrega un nuevo pedido a la mesa"
+                        : "Agrega un nuevo pedido"}
                   </p>
                 </div>
                 {currentOrderIndex !== null && (
@@ -641,7 +748,7 @@ export function OrderCreatePage() {
                   <div>
                     <h2 className="text-white font-semibold text-xl flex items-center gap-2">
                       <ShoppingBag className="w-6 h-6" />
-                      Pedidos de la Mesa
+                      {selectedOrderType === OrderType.DINE_IN ? 'Pedidos de la Mesa' : 'Pedidos'}
                     </h2>
                     <p className="text-sage-100 text-sm mt-1">
                       {tableOrders.length} pedido{tableOrders.length !== 1 ? 's' : ''} agregado{tableOrders.length !== 1 ? 's' : ''}
@@ -651,7 +758,7 @@ export function OrderCreatePage() {
                     <p className="text-2xl font-bold text-white">
                       ${tableTotal.toLocaleString("es-CO")}
                     </p>
-                    <p className="text-sage-100 text-xs">Total mesa</p>
+                    <p className="text-sage-100 text-xs">{selectedOrderType === OrderType.DINE_IN ? 'Total mesa' : 'Total'}</p>
                   </div>
                 </div>
               </div>
