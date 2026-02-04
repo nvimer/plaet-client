@@ -1,25 +1,16 @@
 import { useState } from "react";
 import { Card } from "@/components";
 import { cn } from "@/utils/cn";
-import { Plus, Minus, ArrowRightLeft, Trash2 } from "lucide-react";
+import { Plus, Minus, X, ArrowRightLeft, Soup, Leaf, Salad, CircleDot } from "lucide-react";
 
-/**
- * PlateComponent
- */
 export type PlateComponent = "sopa" | "principio" | "ensalada" | "adicional";
 
-/**
- * Substitution
- */
 export interface Substitution {
   from: PlateComponent;
   to: PlateComponent;
   quantity: number;
 }
 
-/**
- * AdditionalItem
- */
 export interface AdditionalItem {
   id: number;
   name: string;
@@ -27,9 +18,6 @@ export interface AdditionalItem {
   quantity: number;
 }
 
-/**
- * PlateCustomizer Props
- */
 export interface PlateCustomizerProps {
   substitutions: Substitution[];
   additionals: AdditionalItem[];
@@ -47,24 +35,13 @@ export interface PlateCustomizerProps {
   className?: string;
 }
 
-/**
- * PlateCustomizer Component
- * 
- * Permite personalizar el plato del corrientazo:
- * - Sustituciones (sin costo): cambiar sopa por más principio, etc.
- * - Adicionales (con costo): agregar productos extra
- * 
- * @example
- * ```tsx
- * <PlateCustomizer
- *   substitutions={[{ from: "sopa", to: "principio", quantity: 1 }]}
- *   additionals={[{ id: 1, name: "Huevo", price: 2000, quantity: 1 }]}
- *   onAddSubstitution={handleAddSubstitution}
- *   onAddAdditional={handleAddAdditional}
- *   availableComponents={components}
- * />
- * ```
- */
+const componentConfig: Record<PlateComponent, { label: string; icon: typeof Soup; color: string }> = {
+  sopa: { label: "Sopa", icon: Soup, color: "bg-amber-50 border-amber-200 text-amber-700" },
+  principio: { label: "Principio", icon: Leaf, color: "bg-emerald-50 border-emerald-200 text-emerald-700" },
+  ensalada: { label: "Ensalada", icon: Salad, color: "bg-green-50 border-green-200 text-green-700" },
+  adicional: { label: "Adicional", icon: CircleDot, color: "bg-sage-50 border-sage-200 text-sage-700" },
+};
+
 export function PlateCustomizer({
   substitutions,
   additionals,
@@ -76,204 +53,226 @@ export function PlateCustomizer({
   availableComponents,
   className,
 }: PlateCustomizerProps) {
-  const [activeTab, setActiveTab] = useState<"substitutions" | "additionals">("substitutions");
-  const [selectedFrom, setSelectedFrom] = useState<PlateComponent | null>(null);
+  const [removingComponent, setRemovingComponent] = useState<PlateComponent | null>(null);
 
-  const componentLabels: Record<PlateComponent, string> = {
-    sopa: "Sopa",
-    principio: "Principio",
-    ensalada: "Ensalada",
-    adicional: "Adicional",
+  const getComponentStatus = (component: PlateComponent) => {
+    const subIndex = substitutions.findIndex((s) => s.from === component);
+    const hasSubstitution = subIndex !== -1;
+    const isRemoved = hasSubstitution;
+    const isAdded = substitutions.some((s) => s.to === component);
+    const additionalItems = additionals.filter((a) => 
+      availableComponents.find((c) => c.id === a.id)?.type === component
+    );
+    
+    return {
+      isRemoved,
+      isAdded,
+      isSubstituted: hasSubstitution,
+      substitution: hasSubstitution ? substitutions[subIndex] : null,
+      subIndex,
+      additionalItems,
+    };
+  };
+
+  const handleRemoveClick = (component: PlateComponent) => {
+    setRemovingComponent(component);
+  };
+
+  const handleSubstituteSelect = (to: PlateComponent) => {
+    if (removingComponent) {
+      onAddSubstitution(removingComponent, to);
+      setRemovingComponent(null);
+    }
+  };
+
+  const handleCancelRemove = () => {
+    setRemovingComponent(null);
   };
 
   return (
     <Card className={cn("overflow-hidden", className)}>
-      {/* Tabs */}
-      <div className="flex border-b border-sage-200">
-        <button
-          onClick={() => setActiveTab("substitutions")}
-          className={cn(
-            "flex-1 py-3 px-4 text-sm font-medium transition-colors",
-            activeTab === "substitutions"
-              ? "text-sage-700 border-b-2 border-sage-500 bg-sage-50"
-              : "text-carbon-500 hover:text-carbon-700"
-          )}
-        >
-          <span className="flex items-center justify-center gap-2">
-            <ArrowRightLeft className="w-4 h-4" />
-            Sustituciones
-            {substitutions.length > 0 && (
-              <span className="bg-sage-500 text-white text-xs px-2 py-0.5 rounded-full">
-                {substitutions.length}
-              </span>
-            )}
-          </span>
-        </button>
-        <button
-          onClick={() => setActiveTab("additionals")}
-          className={cn(
-            "flex-1 py-3 px-4 text-sm font-medium transition-colors",
-            activeTab === "additionals"
-              ? "text-sage-700 border-b-2 border-sage-500 bg-sage-50"
-              : "text-carbon-500 hover:text-carbon-700"
-          )}
-        >
-          <span className="flex items-center justify-center gap-2">
-            <Plus className="w-4 h-4" />
-            Adicionales
-            {additionals.length > 0 && (
-              <span className="bg-sage-500 text-white text-xs px-2 py-0.5 rounded-full">
-                {additionals.reduce((sum, a) => sum + a.quantity, 0)}
-              </span>
-            )}
-          </span>
-        </button>
+      <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-4 py-3">
+        <h3 className="text-white font-semibold text-base flex items-center gap-2">
+          <ArrowRightLeft className="w-5 h-5" />
+          Personalizar Plato
+        </h3>
+        <p className="text-sage-100 text-xs mt-0.5">
+          Toca "−" para sustituir, "+" para agregar extras
+        </p>
       </div>
 
-      {/* Content */}
-      <div className="p-4">
-        {activeTab === "substitutions" ? (
-          <div className="space-y-4">
-            <p className="text-sm text-carbon-600">
-              Cambia un componente por otro <span className="font-semibold text-sage-700">sin costo adicional</span>
-            </p>
+      <div className="p-4 space-y-3">
+        {/* Visual Plate Components */}
+        {(Object.keys(componentConfig) as PlateComponent[]).map((component) => {
+          const config = componentConfig[component];
+          const Icon = config.icon;
+          const status = getComponentStatus(component);
 
-            {/* Current substitutions */}
-            {substitutions.length > 0 && (
-              <div className="space-y-2">
-                {substitutions.map((sub, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 bg-sage-50 rounded-xl border border-sage-200"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2 text-sm">
-                        <span className="text-carbon-600">{componentLabels[sub.from]}</span>
-                        <ArrowRightLeft className="w-4 h-4 text-sage-500" />
-                        <span className="font-semibold text-sage-700">{componentLabels[sub.to]}</span>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => onRemoveSubstitution(index)}
-                      className="p-1.5 text-carbon-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+          return (
+            <div
+              key={component}
+              className={cn(
+                "relative rounded-xl border-2 p-3 transition-all",
+                status.isRemoved
+                  ? "bg-rose-50 border-rose-200 opacity-75"
+                  : status.isAdded
+                  ? "bg-emerald-50 border-emerald-400"
+                  : "bg-white border-sage-200"
+              )}
+            >
+              <div className="flex items-center justify-between">
+                {/* Left: Icon and Label */}
+                <div className="flex items-center gap-3">
+                  <div className={cn(
+                    "w-10 h-10 rounded-lg flex items-center justify-center",
+                    config.color
+                  )}>
+                    <Icon className="w-5 h-5" />
                   </div>
-                ))}
-              </div>
-            )}
-
-            {/* Add substitution */}
-            <div className="space-y-3">
-              <p className="text-sm font-medium text-carbon-700">Nueva sustitución:</p>
-              
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="text-xs text-carbon-500 mb-1.5 block">Quitar:</label>
-                  <select
-                    value={selectedFrom || ""}
-                    onChange={(e) => setSelectedFrom(e.target.value as PlateComponent || null)}
-                    className="w-full p-2.5 rounded-xl border-2 border-sage-200 bg-white text-sm focus:border-sage-500 focus:outline-none"
-                  >
-                    <option value="">Seleccionar...</option>
-                    {(Object.keys(componentLabels) as PlateComponent[]).map((comp) => (
-                      <option key={comp} value={comp}>
-                        {componentLabels[comp]}
-                      </option>
-                    ))}
-                  </select>
+                  <div>
+                    <p className={cn(
+                      "font-semibold",
+                      status.isRemoved ? "text-rose-700 line-through" : "text-carbon-900"
+                    )}>
+                      {config.label}
+                    </p>
+                    {status.isRemoved && status.substitution && (
+                      <p className="text-xs text-emerald-600 font-medium">
+                        → Sustituido por {componentConfig[status.substitution.to].label}
+                      </p>
+                    )}
+                  </div>
                 </div>
-                
-                <div>
-                  <label className="text-xs text-carbon-500 mb-1.5 block">Agregar:</label>
-                  <select
-                    disabled={!selectedFrom}
-                    onChange={(e) => {
-                      if (selectedFrom && e.target.value) {
-                        onAddSubstitution(selectedFrom, e.target.value as PlateComponent);
-                        setSelectedFrom(null);
+
+                {/* Right: Actions */}
+                <div className="flex items-center gap-2">
+                  {/* Remove/Undo button */}
+                  {status.isRemoved ? (
+                    <button
+                      onClick={() => onRemoveSubstitution(status.subIndex!)}
+                      className="p-2 rounded-lg bg-rose-100 text-rose-600 hover:bg-rose-200 transition-colors"
+                      title="Deshacer sustitución"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleRemoveClick(component)}
+                      className="p-2 rounded-lg bg-sage-100 text-sage-600 hover:bg-sage-200 transition-colors"
+                      title="Quitar y sustituir"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                  )}
+
+                  {/* Add additional button */}
+                  <button
+                    onClick={() => {
+                      const items = availableComponents.filter((c) => c.type === component && c.price > 0);
+                      if (items.length > 0) {
+                        onAddAdditional(items[0]);
                       }
                     }}
-                    className="w-full p-2.5 rounded-xl border-2 border-sage-200 bg-white text-sm focus:border-sage-500 focus:outline-none disabled:opacity-50"
+                    className="p-2 rounded-lg bg-sage-100 text-sage-600 hover:bg-sage-200 transition-colors"
+                    title="Agregar extra"
                   >
-                    <option value="">Seleccionar...</option>
-                    {(Object.keys(componentLabels) as PlateComponent[])
-                      .filter((comp) => comp !== selectedFrom)
-                      .map((comp) => (
-                        <option key={comp} value={comp}>
-                          {componentLabels[comp]}
-                        </option>
-                      ))}
-                  </select>
+                    <Plus className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
+
+              {/* Show additional items for this component */}
+              {status.additionalItems.length > 0 && (
+                <div className="mt-2 pt-2 border-t border-sage-200 space-y-1">
+                  {status.additionalItems.map((item) => (
+                    <div key={item.id} className="flex items-center justify-between text-sm">
+                      <span className="text-carbon-700">
+                        + {item.name} (${item.price.toLocaleString("es-CO")})
+                      </span>
+                      <div className="flex items-center gap-1">
+                        <button
+                          onClick={() => onUpdateAdditionalQuantity(item.id, item.quantity - 1)}
+                          className="p-1 rounded bg-white text-carbon-600 hover:bg-sage-100"
+                        >
+                          <Minus className="w-3 h-3" />
+                        </button>
+                        <span className="w-6 text-center font-medium">{item.quantity}</span>
+                        <button
+                          onClick={() => onUpdateAdditionalQuantity(item.id, item.quantity + 1)}
+                          className="p-1 rounded bg-white text-carbon-600 hover:bg-sage-100"
+                        >
+                          <Plus className="w-3 h-3" />
+                        </button>
+                        <button
+                          onClick={() => onRemoveAdditional(item.id)}
+                          className="p-1 rounded text-carbon-400 hover:text-rose-500 ml-1"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <p className="text-sm text-carbon-600">
-              Agrega productos extra <span className="font-semibold text-sage-700">con costo adicional</span>
+          );
+        })}
+
+        {/* Substitution Selector Modal (inline) */}
+        {removingComponent && (
+          <div className="mt-4 p-4 bg-sage-50 rounded-xl border-2 border-sage-300">
+            <p className="text-sm font-medium text-carbon-900 mb-3">
+              ¿Por qué quieres sustituir {componentConfig[removingComponent].label.toLowerCase()}?
             </p>
-
-            {/* Current additionals */}
-            {additionals.length > 0 && (
-              <div className="space-y-2">
-                {additionals.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex items-center justify-between p-3 bg-white rounded-xl border border-sage-200"
-                  >
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-carbon-900 truncate">{item.name}</p>
-                      <p className="text-sm text-sage-700">${item.price.toLocaleString("es-CO")} c/u</p>
-                    </div>
-                    
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => onUpdateAdditionalQuantity(item.id, item.quantity - 1)}
-                        disabled={item.quantity <= 1}
-                        className="p-1.5 rounded-lg bg-sage-100 text-sage-700 hover:bg-sage-200 disabled:opacity-50"
-                      >
-                        <Minus className="w-4 h-4" />
-                      </button>
-                      <span className="w-8 text-center font-semibold">{item.quantity}</span>
-                      <button
-                        onClick={() => onUpdateAdditionalQuantity(item.id, item.quantity + 1)}
-                        className="p-1.5 rounded-lg bg-sage-100 text-sage-700 hover:bg-sage-200"
-                      >
-                        <Plus className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => onRemoveAdditional(item.id)}
-                        className="p-1.5 text-carbon-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors ml-2"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Available components to add */}
-            <div className="space-y-2">
-              <p className="text-sm font-medium text-carbon-700">Productos disponibles:</p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                {availableComponents.map((component) => (
-                  <button
-                    key={component.id}
-                    onClick={() => onAddAdditional(component)}
-                    className="flex items-center justify-between p-3 rounded-xl border-2 border-sage-200 bg-white hover:border-sage-400 hover:bg-sage-50 transition-all text-left"
-                  >
-                    <span className="font-medium text-carbon-900">{component.name}</span>
-                    <span className="text-sm font-semibold text-sage-700">+${component.price.toLocaleString("es-CO")}</span>
-                  </button>
-                ))}
-              </div>
+            <div className="grid grid-cols-2 gap-2">
+              {(Object.keys(componentConfig) as PlateComponent[])
+                .filter((comp) => comp !== removingComponent)
+                .map((comp) => {
+                  const config = componentConfig[comp];
+                  const Icon = config.icon;
+                  return (
+                    <button
+                      key={comp}
+                      onClick={() => handleSubstituteSelect(comp)}
+                      className="flex items-center gap-2 p-3 rounded-xl border-2 border-sage-200 bg-white hover:border-sage-500 hover:bg-sage-50 transition-all text-left"
+                    >
+                      <Icon className="w-4 h-4 text-sage-600" />
+                      <span className="font-medium text-carbon-900">{config.label}</span>
+                    </button>
+                  );
+                })}
             </div>
+            <button
+              onClick={handleCancelRemove}
+              className="mt-3 w-full py-2 text-sm text-carbon-500 hover:text-carbon-700"
+            >
+              Cancelar
+            </button>
           </div>
         )}
+
+        {/* Quick Add Section */}
+        <div className="pt-3 border-t border-sage-200">
+          <p className="text-xs font-medium text-carbon-500 mb-2 uppercase tracking-wide">
+            Agregar rápido
+          </p>
+          <div className="flex flex-wrap gap-2">
+            {availableComponents
+              .filter((c) => c.price > 0)
+              .slice(0, 4)
+              .map((component) => (
+                <button
+                  key={component.id}
+                  onClick={() => onAddAdditional(component)}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-sage-100 text-sage-700 hover:bg-sage-200 transition-colors text-sm"
+                >
+                  <Plus className="w-3 h-3" />
+                  {component.name}
+                  <span className="text-xs font-semibold">+${component.price.toLocaleString("es-CO")}</span>
+                </button>
+              ))}
+          </div>
+        </div>
       </div>
     </Card>
   );
