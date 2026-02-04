@@ -6,19 +6,18 @@ import { Button, Card, Input } from "@/components";
 import { useTables } from "@/features/tables";
 import { useItems } from "@/features/menu";
 import { useCreateOrder } from "../hooks";
-import { ROUTES, getOrderDetailRoute } from "@/app/routes";
+import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
 import {
   DailyMenuSection,
   ProteinSelector,
   PlateCustomizer,
-  OrderSummary,
 } from "../components";
 import { TableSelector } from "@/features/tables";
-import { Search, ShoppingBag, Plus, Trash2, ChevronDown, ChevronUp, MapPin, UtensilsCrossed, ShoppingBag as ShoppingBagIcon, Bike } from "lucide-react";
+import { Search, ShoppingBag, Plus, Trash2, ChevronDown, ChevronUp, Users, Edit2, Check, X, ArrowLeft } from "lucide-react";
 import { cn } from "@/utils/cn";
 
-// Types for corrientazo
+// Types
 interface ProteinOption {
   id: number;
   name: string;
@@ -47,14 +46,24 @@ interface LooseItem {
   quantity: number;
 }
 
+interface TableOrder {
+  id: string;
+  protein: ProteinOption;
+  substitutions: Substitution[];
+  additionals: AdditionalItem[];
+  looseItems: LooseItem[];
+  total: number;
+  notes?: string;
+}
+
 /**
- * OrderCreatePage Component - Corrientazo Edition
- *
- * Flujo optimizado para restaurante de corrientazos/almuerzos:
- * 1. Tipo de pedido + Mesa (si aplica) - PRIMERO
- * 2. Menú del día - COLAPSABLE
- * 3. Proteínas - DESTACADO
- * 4. Personalización y productos
+ * OrderCreatePage - Multi-diner Edition
+ * 
+ * Flujo para mesas con múltiples comensales:
+ * 1. Seleccionar mesa (una vez)
+ * 2. Agregar pedidos uno por uno
+ * 3. Ver lista de pedidos de la mesa
+ * 4. Confirmar todos juntos o individualmente
  */
 export function OrderCreatePage() {
   const navigate = useNavigate();
@@ -65,18 +74,21 @@ export function OrderCreatePage() {
   const tables = tablesData?.tables || [];
   const availableTables = tables.filter((t) => t.status === "AVAILABLE");
 
-  // State
-  const [orderType, setOrderType] = useState<OrderType>(OrderType.DINE_IN);
+  // Estado de la mesa
   const [selectedTable, setSelectedTable] = useState<number | null>(null);
+  const [tableOrders, setTableOrders] = useState<TableOrder[]>([]);
+  const [currentOrderIndex, setCurrentOrderIndex] = useState<number | null>(null);
+  
+  // Estado del pedido actual
   const [selectedProtein, setSelectedProtein] = useState<ProteinOption | null>(null);
   const [substitutions, setSubstitutions] = useState<Substitution[]>([]);
   const [additionals, setAdditionals] = useState<AdditionalItem[]>([]);
   const [looseItems, setLooseItems] = useState<LooseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showDailyMenu, setShowDailyMenu] = useState(false);
-  const [showTableSelector, setShowTableSelector] = useState(false);
+  const [orderNotes, setOrderNotes] = useState("");
 
-  // Mock data - Menú del día
+  // Mock data
   const dailyMenu = {
     principio: "Frijoles con plátano maduro",
     sopa: "Sopa de verduras",
@@ -84,7 +96,6 @@ export function OrderCreatePage() {
     postre: "Gelatina",
   };
 
-  // Mock data - Proteínas
   const proteins: ProteinOption[] = useMemo(
     () => [
       { id: 1, name: "Carne a la plancha", price: 10000, icon: "beef", isAvailable: true },
@@ -97,7 +108,6 @@ export function OrderCreatePage() {
     []
   );
 
-  // Mock data - Componentes
   const availableComponents = useMemo(
     () => [
       { id: 101, name: "Porción de principio", type: "principio" as const, price: 0 },
@@ -113,7 +123,6 @@ export function OrderCreatePage() {
     []
   );
 
-  // Productos sueltos filtrados
   const filteredLooseItems = useMemo(() => {
     if (!menuItems) return [];
     return menuItems.filter(
@@ -124,8 +133,8 @@ export function OrderCreatePage() {
     );
   }, [menuItems, searchTerm]);
 
-  // Cálculo del total
-  const orderTotal = useMemo(() => {
+  // Calcular total del pedido actual
+  const currentOrderTotal = useMemo(() => {
     let total = 0;
     if (selectedProtein) {
       total += selectedProtein.price;
@@ -139,56 +148,12 @@ export function OrderCreatePage() {
     return total;
   }, [selectedProtein, additionals, looseItems]);
 
-  // Items para el resumen
-  const summaryItems = useMemo(() => {
-    const items = [];
-    if (selectedProtein) {
-      items.push({
-        name: "Almuerzo Completo",
-        quantity: 1,
-        unitPrice: selectedProtein.price,
-        totalPrice: selectedProtein.price,
-        type: "base" as const,
-      });
-      items.push({
-        name: selectedProtein.name,
-        quantity: 1,
-        unitPrice: selectedProtein.price,
-        totalPrice: selectedProtein.price,
-        type: "protein" as const,
-      });
-    }
-    substitutions.forEach((sub) => {
-      items.push({
-        name: `Sust: ${sub.from} → ${sub.to}`,
-        quantity: 1,
-        unitPrice: 0,
-        totalPrice: 0,
-        type: "substitution" as const,
-      });
-    });
-    additionals.forEach((item) => {
-      items.push({
-        name: item.name,
-        quantity: item.quantity,
-        unitPrice: item.price,
-        totalPrice: item.price * item.quantity,
-        type: "additional" as const,
-      });
-    });
-    looseItems.forEach((item) => {
-      items.push({
-        name: item.name,
-        quantity: item.quantity,
-        unitPrice: item.price,
-        totalPrice: item.price * item.quantity,
-        type: "additional" as const,
-      });
-    });
-    return items;
-  }, [selectedProtein, substitutions, additionals, looseItems]);
+  // Calcular total de la mesa
+  const tableTotal = useMemo(() => {
+    return tableOrders.reduce((sum, order) => sum + order.total, 0);
+  }, [tableOrders]);
 
-  // Handlers
+  // Handlers para personalización
   const handleAddSubstitution = (from: Substitution["from"], to: Substitution["to"]) => {
     setSubstitutions((prev) => [...prev, { from, to, quantity: 1 }]);
   };
@@ -247,259 +212,305 @@ export function OrderCreatePage() {
     setLooseItems((prev) => prev.filter((i) => i.id !== id));
   };
 
-  const handleDuplicate = () => {
-    const currentOrder = {
-      orderType,
-      selectedTable,
-      selectedProtein,
-      substitutions,
-      additionals,
-      looseItems,
-    };
-
-    handleSubmit();
-
-    setTimeout(() => {
-      setOrderType(currentOrder.orderType);
-      setSelectedTable(currentOrder.selectedTable);
-      setSelectedProtein(currentOrder.selectedProtein);
-      setSubstitutions(currentOrder.substitutions);
-      setAdditionals(currentOrder.additionals);
-      setLooseItems(currentOrder.looseItems);
-      toast.success("Pedido duplicado", {
-        description: "Se creó el pedido y se preparó uno igual para el siguiente cliente",
-      });
-    }, 500);
-  };
-
-  const handleSubmit = () => {
+  // Agregar pedido a la mesa
+  const handleAddOrderToTable = () => {
     if (!selectedProtein && looseItems.length === 0) {
       toast.error("Selecciona al menos una proteína o un producto");
       return;
     }
 
-    if (orderType === OrderType.DINE_IN && !selectedTable) {
-      toast.error("Selecciona una mesa para el pedido");
+    const newOrder: TableOrder = {
+      id: Date.now().toString(),
+      protein: selectedProtein!,
+      substitutions: [...substitutions],
+      additionals: [...additionals],
+      looseItems: [...looseItems],
+      total: currentOrderTotal,
+      notes: orderNotes,
+    };
+
+    if (currentOrderIndex !== null) {
+      // Editando pedido existente
+      setTableOrders((prev) =>
+        prev.map((order, idx) => (idx === currentOrderIndex ? newOrder : order))
+      );
+      toast.success("Pedido actualizado");
+    } else {
+      // Nuevo pedido
+      setTableOrders((prev) => [...prev, newOrder]);
+      toast.success(`Pedido #${tableOrders.length + 1} agregado a la mesa`);
+    }
+
+    // Limpiar para siguiente pedido
+    clearCurrentOrder();
+  };
+
+  // Limpiar pedido actual
+  const clearCurrentOrder = () => {
+    setSelectedProtein(null);
+    setSubstitutions([]);
+    setAdditionals([]);
+    setLooseItems([]);
+    setOrderNotes("");
+    setCurrentOrderIndex(null);
+    setSearchTerm("");
+  };
+
+  // Editar pedido existente
+  const handleEditOrder = (index: number) => {
+    const order = tableOrders[index];
+    setCurrentOrderIndex(index);
+    setSelectedProtein(order.protein);
+    setSubstitutions([...order.substitutions]);
+    setAdditionals([...order.additionals]);
+    setLooseItems([...order.looseItems]);
+    setOrderNotes(order.notes || "");
+    
+    // Scroll al formulario
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  // Eliminar pedido
+  const handleRemoveOrder = (index: number) => {
+    setTableOrders((prev) => prev.filter((_, i) => i !== index));
+    toast.success("Pedido eliminado");
+  };
+
+  // Duplicar pedido
+  const handleDuplicateOrder = (index: number) => {
+    const order = tableOrders[index];
+    const duplicatedOrder: TableOrder = {
+      ...order,
+      id: Date.now().toString(),
+    };
+    setTableOrders((prev) => [...prev, duplicatedOrder]);
+    toast.success("Pedido duplicado");
+  };
+
+  // Confirmar todos los pedidos de la mesa
+  const handleConfirmTableOrders = async () => {
+    if (tableOrders.length === 0) {
+      toast.error("No hay pedidos para confirmar");
       return;
     }
 
-    const items = [];
-
-    if (selectedProtein) {
-      items.push({
-        menuItemId: selectedProtein.id,
-        quantity: 1,
-        priceAtOrder: selectedProtein.price,
-        notes: `Almuerzo con ${selectedProtein.name}`,
-      });
+    if (!selectedTable) {
+      toast.error("Selecciona una mesa primero");
+      return;
     }
 
-    additionals.forEach((item) => {
-      items.push({
-        menuItemId: item.id,
-        quantity: item.quantity,
-        priceAtOrder: item.price,
-        notes: item.name,
-      });
-    });
-
-    looseItems.forEach((item) => {
-      items.push({
-        menuItemId: item.id,
-        quantity: item.quantity,
-        priceAtOrder: item.price,
-        notes: item.name,
-      });
-    });
-
-    createOrder(
-      {
-        type: orderType,
-        tableId: orderType === OrderType.DINE_IN && selectedTable ? selectedTable : undefined,
-        items,
-      },
-      {
-        onSuccess: (order) => {
-          toast.success("Pedido creado exitosamente", {
-            description: `Total: $${orderTotal.toLocaleString("es-CO")}`,
-          });
-          navigate(getOrderDetailRoute(order.id));
-        },
-        onError: (error: any) => {
-          toast.error("Error al crear pedido", {
-            description: error.response?.data?.message || error.message,
-          });
-        },
+    // Crear todos los pedidos
+    const promises = tableOrders.map((order) => {
+      const items: Array<{
+        menuItemId: number;
+        quantity: number;
+        priceAtOrder: number;
+        notes: string;
+      }> = [];
+      
+      if (order.protein) {
+        items.push({
+          menuItemId: order.protein.id,
+          quantity: 1,
+          priceAtOrder: order.protein.price,
+          notes: `Almuerzo con ${order.protein.name}${order.notes ? ` - ${order.notes}` : ""}`,
+        });
       }
-    );
+
+      order.additionals.forEach((item) => {
+        items.push({
+          menuItemId: item.id,
+          quantity: item.quantity,
+          priceAtOrder: item.price,
+          notes: item.name,
+        });
+      });
+
+      order.looseItems.forEach((item) => {
+        items.push({
+          menuItemId: item.id,
+          quantity: item.quantity,
+          priceAtOrder: item.price,
+          notes: item.name,
+        });
+      });
+
+      return new Promise((resolve) => {
+        createOrder(
+          {
+            type: OrderType.DINE_IN,
+            tableId: selectedTable,
+            items,
+          },
+          {
+            onSuccess: resolve,
+            onError: (error: any) => {
+              toast.error("Error en pedido", {
+                description: error.response?.data?.message || error.message,
+              });
+              resolve(null);
+            },
+          }
+        );
+      });
+    });
+
+    await Promise.all(promises);
+    
+    toast.success(`${tableOrders.length} pedidos creados para Mesa ${selectedTable}`, {
+      description: `Total mesa: $${tableTotal.toLocaleString("es-CO")}`,
+    });
+    
+    // Limpiar todo
+    setTableOrders([]);
+    setSelectedTable(null);
+    clearCurrentOrder();
+    
+    navigate(ROUTES.ORDERS);
   };
 
-  // Check if we can duplicate
-  const canDuplicate = selectedProtein || looseItems.length > 0;
+  // Cancelar edición
+  const handleCancelEdit = () => {
+    clearCurrentOrder();
+    toast.info("Edición cancelada");
+  };
+
+  // Render
+  if (!selectedTable) {
+    // Paso 1: Seleccionar mesa
+    return (
+      <SidebarLayout
+        title="Nuevo Pedido - Corrientazo"
+        subtitle="Selecciona la mesa para tomar el pedido"
+        backRoute={ROUTES.ORDERS}
+        fullWidth
+      >
+        <div className="max-w-4xl mx-auto">
+          <Card className="overflow-hidden">
+            <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-4 py-6 sm:px-8 sm:py-8">
+              <h2 className="text-white font-semibold text-2xl flex items-center gap-3">
+                <Users className="w-7 h-7" />
+                Seleccionar Mesa
+              </h2>
+              <p className="text-sage-100 mt-2">
+                Elige la mesa donde vas a tomar los pedidos de los comensales
+              </p>
+            </div>
+            
+            <div className="p-4 sm:p-8">
+              <TableSelector
+                tables={availableTables}
+                onSelect={(table) => setSelectedTable(table.id)}
+                selectedTableId={selectedTable || undefined}
+                showOnlyAvailable
+              />
+            </div>
+          </Card>
+        </div>
+      </SidebarLayout>
+    );
+  }
 
   return (
     <SidebarLayout
-      title="Nuevo Pedido - Corrientazo"
-      subtitle="Selecciona mesa y proteína"
+      title={`Mesa ${selectedTable} - ${tableOrders.length} pedido${tableOrders.length !== 1 ? 's' : ''}`}
+      subtitle={`Total: $${tableTotal.toLocaleString("es-CO")}`}
       backRoute={ROUTES.ORDERS}
       fullWidth
       actions={
-        canDuplicate ? (
-          <button
-            onClick={handleDuplicate}
-            disabled={isPending}
-            className="flex items-center gap-2 px-4 py-2 bg-sage-100 text-sage-700 rounded-lg font-medium hover:bg-sage-200 transition-colors disabled:opacity-50"
-          >
-            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-            </svg>
-            <span className="hidden sm:inline">Duplicar</span>
-          </button>
-        ) : undefined
+        <button
+          onClick={() => setSelectedTable(null)}
+          className="flex items-center gap-2 px-4 py-2 bg-sage-100 text-sage-700 rounded-lg font-medium hover:bg-sage-200 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Cambiar Mesa
+        </button>
       }
     >
-      <div className="max-w-[1600px] mx-auto space-y-6">
-        
-        {/* STEP 1: Order Type & Table Selection */}
-        <Card className="overflow-hidden">
-          <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-4 py-3 sm:px-6 sm:py-4">
-            <h2 className="text-white font-semibold text-lg flex items-center gap-2">
-              <MapPin className="w-5 h-5" />
-              Paso 1: Ubicación del Pedido
-            </h2>
-          </div>
+      <div className="max-w-[1600px] mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
           
-          <div className="p-4 sm:p-6 space-y-4">
-            {/* Order Type */}
-            <div className="grid grid-cols-3 gap-3">
-              {[
-                { type: OrderType.DINE_IN, label: "Aquí", icon: UtensilsCrossed },
-                { type: OrderType.TAKE_OUT, label: "Llevar", icon: ShoppingBagIcon },
-                { type: OrderType.DELIVERY, label: "Domicilio", icon: Bike },
-              ].map(({ type, label, icon: Icon }) => (
-                <button
-                  key={type}
-                  onClick={() => {
-                    setOrderType(type);
-                    if (type !== OrderType.DINE_IN) {
-                      setSelectedTable(null);
-                      setShowTableSelector(false);
-                    }
-                  }}
-                  className={cn(
-                    "p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 flex flex-col items-center gap-2",
-                    orderType === type
-                      ? "border-sage-500 bg-sage-50 text-sage-700 shadow-sm"
-                      : "border-sage-200 bg-white text-carbon-600 hover:border-sage-300"
-                  )}
-                >
-                  <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
-                  <span className="font-semibold text-sm sm:text-base">{label}</span>
-                </button>
-              ))}
-            </div>
-
-            {/* Table Selection (only for DINE_IN) */}
-            {orderType === OrderType.DINE_IN && (
-              <div className="pt-4 border-t border-sage-200">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <h3 className="font-semibold text-carbon-900">Seleccionar Mesa</h3>
-                    {selectedTable && (
-                      <span className="px-3 py-1 bg-sage-100 text-sage-700 rounded-full text-sm font-medium">
-                        Mesa {selectedTable} seleccionada
-                      </span>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => setShowTableSelector(!showTableSelector)}
-                    className="text-sm text-sage-600 hover:text-sage-800 font-medium flex items-center gap-1"
-                  >
-                    {showTableSelector ? (
+          {/* LEFT: Formulario de pedido actual */}
+          <div className="lg:col-span-7 space-y-6">
+            {/* Header del pedido actual */}
+            <Card className="overflow-hidden">
+              <div className={cn(
+                "px-4 py-3 sm:px-6 sm:py-4 flex items-center justify-between",
+                currentOrderIndex !== null 
+                  ? "bg-gradient-to-r from-amber-500 to-amber-400" 
+                  : "bg-gradient-to-r from-sage-600 to-sage-500"
+              )}>
+                <div>
+                  <h2 className="text-white font-semibold text-lg flex items-center gap-2">
+                    {currentOrderIndex !== null ? (
                       <>
-                        Ocultar mesas <ChevronUp className="w-4 h-4" />
+                        <Edit2 className="w-5 h-5" />
+                        Editando Pedido #{currentOrderIndex + 1}
                       </>
                     ) : (
                       <>
-                        Ver mesas <ChevronDown className="w-4 h-4" />
+                        <Plus className="w-5 h-5" />
+                        Pedido #{tableOrders.length + 1} para Mesa {selectedTable}
                       </>
                     )}
-                  </button>
+                  </h2>
+                  <p className="text-white/80 text-sm mt-0.5">
+                    {currentOrderIndex !== null 
+                      ? "Modifica el pedido existente" 
+                      : "Agrega un nuevo pedido a la mesa"}
+                  </p>
                 </div>
-                
-                {showTableSelector && (
-                  <TableSelector
-                    tables={availableTables}
-                    onSelect={(table) => {
-                      setSelectedTable(table.id);
-                      setShowTableSelector(false);
-                    }}
-                    selectedTableId={selectedTable || undefined}
-                    showOnlyAvailable
-                  />
+                {currentOrderIndex !== null && (
+                  <button
+                    onClick={handleCancelEdit}
+                    className="p-2 bg-white/20 hover:bg-white/30 rounded-lg text-white transition-colors"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
                 )}
-              </div>
-            )}
-          </div>
-        </Card>
-
-        {/* STEP 2: Daily Menu (Collapsible) */}
-        <Card className="overflow-hidden">
-          <button
-            onClick={() => setShowDailyMenu(!showDailyMenu)}
-            className="w-full bg-gradient-to-r from-amber-500 to-amber-400 px-4 py-3 sm:px-6 sm:py-4 flex items-center justify-between hover:from-amber-600 hover:to-amber-500 transition-colors"
-          >
-            <div className="flex items-center gap-2">
-              <UtensilsCrossed className="w-5 h-5 text-white" />
-              <h2 className="text-white font-semibold text-lg">Paso 2: Menú del Día</h2>
-            </div>
-            <div className="flex items-center gap-2">
-              <span className="text-amber-100 text-sm hidden sm:inline">Toca para {showDailyMenu ? "ocultar" : "ver"}</span>
-              {showDailyMenu ? (
-                <ChevronUp className="w-5 h-5 text-white" />
-              ) : (
-                <ChevronDown className="w-5 h-5 text-white" />
-              )}
-            </div>
-          </button>
-          
-          {showDailyMenu && (
-            <DailyMenuSection
-              principio={dailyMenu.principio}
-              sopa={dailyMenu.sopa}
-              jugo={dailyMenu.jugo}
-              postre={dailyMenu.postre}
-            />
-          )}
-          
-          {!showDailyMenu && (
-            <div className="p-4 bg-amber-50/50">
-              <p className="text-sm text-carbon-600">
-                <span className="font-medium">Hoy:</span> {dailyMenu.principio}, {dailyMenu.sopa}, {dailyMenu.jugo}
-              </p>
-            </div>
-          )}
-        </Card>
-
-        {/* STEP 3: Protein Selection */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left: Protein & Customization */}
-          <div className="space-y-6">
-            <Card className="overflow-hidden border-2 border-sage-300">
-              <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-4 py-3 sm:px-6 sm:py-4">
-                <h2 className="text-white font-semibold text-lg">Paso 3: Selecciona la Proteína</h2>
-                <p className="text-sage-100 text-sm mt-1">Elige la proteína principal del almuerzo</p>
-              </div>
-              <div className="p-4 sm:p-6">
-                <ProteinSelector
-                  proteins={proteins}
-                  selectedProteinId={selectedProtein?.id}
-                  onSelect={setSelectedProtein}
-                  basePrice={10000}
-                />
               </div>
             </Card>
 
+            {/* Menú del día colapsable */}
+            <Card className="overflow-hidden">
+              <button
+                onClick={() => setShowDailyMenu(!showDailyMenu)}
+                className="w-full bg-gradient-to-r from-amber-500 to-amber-400 px-4 py-3 sm:px-6 flex items-center justify-between hover:from-amber-600 hover:to-amber-500 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-white font-semibold">Menú del Día</span>
+                  <span className="text-amber-100 text-sm hidden sm:inline">
+                    ({dailyMenu.principio}, {dailyMenu.sopa}, {dailyMenu.jugo})
+                  </span>
+                </div>
+                {showDailyMenu ? (
+                  <ChevronUp className="w-5 h-5 text-white" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-white" />
+                )}
+              </button>
+              {showDailyMenu && (
+                <DailyMenuSection
+                  principio={dailyMenu.principio}
+                  sopa={dailyMenu.sopa}
+                  jugo={dailyMenu.jugo}
+                  postre={dailyMenu.postre}
+                />
+              )}
+            </Card>
+
+            {/* Selector de proteína */}
+            <Card className="p-4 sm:p-6 border-2 border-sage-300">
+              <h3 className="text-lg font-semibold text-carbon-900 mb-4">Selecciona la Proteína</h3>
+              <ProteinSelector
+                proteins={proteins}
+                selectedProteinId={selectedProtein?.id}
+                onSelect={setSelectedProtein}
+                basePrice={10000}
+              />
+            </Card>
+
+            {/* Personalización */}
             {selectedProtein && (
               <PlateCustomizer
                 substitutions={substitutions}
@@ -512,10 +523,8 @@ export function OrderCreatePage() {
                 availableComponents={availableComponents}
               />
             )}
-          </div>
 
-          {/* Right: Loose Items & Summary */}
-          <div className="space-y-6">
+            {/* Productos sueltos */}
             <Card className="p-4 sm:p-6">
               <h3 className="text-lg font-semibold text-carbon-900 mb-4">Productos Sueltos</h3>
               
@@ -595,44 +604,159 @@ export function OrderCreatePage() {
               )}
             </Card>
 
-            <OrderSummary
-              items={summaryItems}
-              total={orderTotal}
-              onDuplicate={handleDuplicate}
-            />
+            {/* Notas del pedido */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-carbon-700">Notas (opcional):</label>
+              <Input
+                type="text"
+                placeholder="Ej: Sin sal, bien cocido, etc."
+                value={orderNotes}
+                onChange={(e) => setOrderNotes(e.target.value)}
+                fullWidth
+              />
+            </div>
 
-            {/* Action Buttons */}
-            <div className="space-y-3">
+            {/* Botón agregar/actualizar */}
+            <div className="flex gap-3">
               <Button
                 variant="primary"
                 size="lg"
                 fullWidth
-                onClick={handleSubmit}
-                disabled={isPending || (!selectedProtein && looseItems.length === 0)}
-                isLoading={isPending}
+                onClick={handleAddOrderToTable}
+                disabled={!selectedProtein && looseItems.length === 0}
                 className="min-h-[56px] text-lg"
               >
-                <ShoppingBag className="w-5 h-5 mr-2" />
-                Crear Pedido - ${orderTotal.toLocaleString("es-CO")}
+                <Plus className="w-5 h-5 mr-2" />
+                {currentOrderIndex !== null ? "Actualizar Pedido" : "Agregar a la Mesa"}
+                {currentOrderTotal > 0 && ` - $${currentOrderTotal.toLocaleString("es-CO")}`}
               </Button>
-              
-              {/* Quick Duplicate Button - Only show when there's something to duplicate */}
-              {(selectedProtein || looseItems.length > 0) && (
-                <Button
-                  variant="outline"
-                  size="lg"
-                  fullWidth
-                  onClick={handleDuplicate}
-                  disabled={isPending}
-                  className="min-h-[48px] border-2 border-sage-300 text-sage-700 hover:bg-sage-50"
-                >
-                  <svg className="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
-                  </svg>
-                  Crear y Preparar Otro Igual
-                </Button>
-              )}
             </div>
+          </div>
+
+          {/* RIGHT: Lista de pedidos de la mesa */}
+          <div className="lg:col-span-5 space-y-6">
+            <Card className="overflow-hidden sticky top-4">
+              <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-4 py-4 sm:px-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-white font-semibold text-xl flex items-center gap-2">
+                      <ShoppingBag className="w-6 h-6" />
+                      Pedidos de la Mesa
+                    </h2>
+                    <p className="text-sage-100 text-sm mt-1">
+                      {tableOrders.length} pedido{tableOrders.length !== 1 ? 's' : ''} agregado{tableOrders.length !== 1 ? 's' : ''}
+                    </p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-white">
+                      ${tableTotal.toLocaleString("es-CO")}
+                    </p>
+                    <p className="text-sage-100 text-xs">Total mesa</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-4 space-y-3 max-h-[calc(100vh-400px)] overflow-y-auto">
+                {tableOrders.length === 0 ? (
+                  <div className="text-center py-8 text-carbon-500">
+                    <p className="text-sm">No hay pedidos aún</p>
+                    <p className="text-xs mt-1">Agrega el primer pedido desde el formulario</p>
+                  </div>
+                ) : (
+                  tableOrders.map((order, index) => (
+                    <div
+                      key={order.id}
+                      className={cn(
+                        "p-4 rounded-xl border-2 transition-all",
+                        currentOrderIndex === index
+                          ? "border-amber-400 bg-amber-50"
+                          : "border-sage-200 bg-white"
+                      )}
+                    >
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="w-8 h-8 rounded-full bg-sage-100 text-sage-700 flex items-center justify-center font-bold text-sm">
+                            {index + 1}
+                          </span>
+                          <div>
+                            <p className="font-semibold text-carbon-900">{order.protein.name}</p>
+                            <p className="text-sm text-sage-700 font-medium">
+                              ${order.total.toLocaleString("es-CO")}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleEditOrder(index)}
+                            className="p-1.5 text-carbon-400 hover:text-sage-600 hover:bg-sage-100 rounded-lg transition-colors"
+                            title="Editar"
+                          >
+                            <Edit2 className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDuplicateOrder(index)}
+                            className="p-1.5 text-carbon-400 hover:text-sage-600 hover:bg-sage-100 rounded-lg transition-colors"
+                            title="Duplicar"
+                          >
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => handleRemoveOrder(index)}
+                            className="p-1.5 text-carbon-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
+                            title="Eliminar"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </div>
+                      
+                      {/* Detalles del pedido */}
+                      <div className="text-xs text-carbon-600 space-y-1">
+                        {order.substitutions.length > 0 && (
+                          <p>
+                            {order.substitutions.length} sustitución{order.substitutions.length !== 1 ? 'es' : ''}
+                          </p>
+                        )}
+                        {order.additionals.length > 0 && (
+                          <p>
+                            {order.additionals.reduce((sum, a) => sum + a.quantity, 0)} adicional{order.additionals.reduce((sum, a) => sum + a.quantity, 0) !== 1 ? 'es' : ''}
+                          </p>
+                        )}
+                        {order.looseItems.length > 0 && (
+                          <p>
+                            {order.looseItems.reduce((sum, i) => sum + i.quantity, 0)} producto{order.looseItems.reduce((sum, i) => sum + i.quantity, 0) !== 1 ? 's' : ''} suelto{order.looseItems.reduce((sum, i) => sum + i.quantity, 0) !== 1 ? 's' : ''}
+                          </p>
+                        )}
+                        {order.notes && (
+                          <p className="text-amber-600 italic">Nota: {order.notes}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Botón confirmar todos */}
+              {tableOrders.length > 0 && (
+                <div className="p-4 border-t border-sage-200 bg-sage-50">
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    fullWidth
+                    onClick={handleConfirmTableOrders}
+                    disabled={isPending}
+                    isLoading={isPending}
+                    className="min-h-[56px]"
+                  >
+                    <Check className="w-5 h-5 mr-2" />
+                    Confirmar {tableOrders.length} Pedido{tableOrders.length !== 1 ? 's' : ''}
+                    <span className="ml-2">(${tableTotal.toLocaleString("es-CO")})</span>
+                  </Button>
+                </div>
+              )}
+            </Card>
           </div>
         </div>
       </div>
