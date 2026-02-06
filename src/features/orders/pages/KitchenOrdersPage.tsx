@@ -4,8 +4,8 @@ import { OrderStatus } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
 import { useOrders } from "../hooks";
 import { useUpdateOrderStatus } from "../hooks/useUpdateOrderStatus";
-import { FullScreenLayout } from "@/layouts/FullScreenLayout";
-import { Button, Card, Skeleton, EmptyState } from "@/components";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
+import { Button, Card, Skeleton, EmptyState, Badge } from "@/components";
 import { OrderStatusBadge } from "../components/OrderStatusBadge";
 import { ROUTES, getOrderDetailRoute } from "@/app/routes";
 import { toast } from "sonner";
@@ -16,22 +16,25 @@ import {
   ArrowRight,
   UtensilsCrossed,
   RefreshCw,
+  AlertCircle,
+  Timer,
 } from "lucide-react";
 import type { Order } from "@/types";
+import { cn } from "@/utils/cn";
 
 /**
  * KitchenOrdersPage Component
- *
- * Full-screen page optimized for kitchen view.
+ * 
+ * Kitchen display for order management.
  * Shows orders sorted by arrival time (oldest first).
- * Allows kitchen managers to change order statuses.
- *
+ * Allows kitchen staff to update order statuses.
+ * 
  * Features:
- * - Orders sorted by creation time (oldest first)
- * - Large, easy-to-read order cards
- * - Quick status change buttons
- * - Filter by status (IN_KITCHEN, PENDING, READY)
- * - Visual indicators for order priority
+ * - Auto-refresh every 30 seconds
+ * - Orders sorted by urgency (creation time)
+ * - Large touch-friendly buttons for tablet/kiosk use
+ * - Visual priority indicators
+ * - Status filtering
  */
 export function KitchenOrdersPage() {
   const navigate = useNavigate();
@@ -42,12 +45,12 @@ export function KitchenOrdersPage() {
   useEffect(() => {
     const interval = setInterval(() => {
       refetch();
-    }, 30000); // 30 seconds
+    }, 30000);
 
     return () => clearInterval(interval);
   }, [refetch]);
 
-  // Filter state - only show orders relevant to kitchen
+  // Filter state
   const [statusFilter, setStatusFilter] = useState<
     OrderStatus.IN_KITCHEN | OrderStatus.PENDING | OrderStatus.READY | "ALL"
   >("ALL");
@@ -56,7 +59,6 @@ export function KitchenOrdersPage() {
   const kitchenOrders = useMemo(() => {
     if (!orders) return [];
 
-    // Filter orders relevant to kitchen
     const relevantStatuses = [
       OrderStatus.PENDING,
       OrderStatus.IN_KITCHEN,
@@ -67,16 +69,13 @@ export function KitchenOrdersPage() {
       relevantStatuses.includes(order.status)
     );
 
-    // Apply status filter if not "ALL"
     if (statusFilter !== "ALL") {
       filtered = filtered.filter((order) => order.status === statusFilter);
     }
 
-    // Sort by creation time (oldest first) - most urgent orders first
+    // Sort by creation time (oldest first) - most urgent
     return filtered.sort((a, b) => {
-      const dateA = new Date(a.createdAt).getTime();
-      const dateB = new Date(b.createdAt).getTime();
-      return dateA - dateB;
+      return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
     });
   }, [orders, statusFilter]);
 
@@ -93,13 +92,9 @@ export function KitchenOrdersPage() {
     );
 
     return {
-      pending:
-        relevantOrders.filter((o) => o.status === OrderStatus.PENDING).length,
-      inKitchen:
-        relevantOrders.filter((o) => o.status === OrderStatus.IN_KITCHEN)
-          .length,
-      ready:
-        relevantOrders.filter((o) => o.status === OrderStatus.READY).length,
+      pending: relevantOrders.filter((o) => o.status === OrderStatus.PENDING).length,
+      inKitchen: relevantOrders.filter((o) => o.status === OrderStatus.IN_KITCHEN).length,
+      ready: relevantOrders.filter((o) => o.status === OrderStatus.READY).length,
       total: relevantOrders.length,
     };
   }, [orders]);
@@ -120,15 +115,11 @@ export function KitchenOrdersPage() {
             [OrderStatus.CANCELLED]: "Pedido cancelado",
           };
 
-          toast.success(statusMessages[newStatus] || "Estado actualizado", {
-            icon: "✅",
-          });
+          toast.success(statusMessages[newStatus] || "Estado actualizado");
         },
         onError: (error: AxiosErrorWithResponse) => {
           toast.error("Error al actualizar estado", {
-            description:
-              error.response?.data?.message || error.message,
-            icon: "❌",
+            description: error.response?.data?.message || error.message,
           });
         },
       }
@@ -140,164 +131,263 @@ export function KitchenOrdersPage() {
     navigate(getOrderDetailRoute(orderId));
   };
 
-  // ============ LOADING STATE ===========
+  // Loading state
   if (isLoading) {
     return (
-      <FullScreenLayout title="Cocina" backRoute={ROUTES.DASHBOARD}>
+      <SidebarLayout
+        title="Vista de Cocina"
+        subtitle="Gestión de pedidos en preparación"
+        backRoute={ROUTES.DASHBOARD}
+      >
         <div className="space-y-6">
-          {[...Array(3)].map((_, i) => (
-            <Skeleton key={i} className="h-48" />
-          ))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} variant="card" height={100} />
+            ))}
+          </div>
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} variant="card" height={300} />
+            ))}
+          </div>
         </div>
-      </FullScreenLayout>
+      </SidebarLayout>
     );
   }
 
-  // ========== ERROR STATE =============
+  // Error state
   if (error) {
     return (
-      <FullScreenLayout title="Cocina" backRoute={ROUTES.DASHBOARD}>
-        <div className="flex items-center justify-center min-h-[400px]">
-          <Card>
-            <div className="text-center p-8">
-              <div className="text-4xl mb-4">⚠️</div>
-              <h2 className="text-2xl font-semibold text-carbon-900 mb-2">
-                Error al cargar los pedidos
+      <SidebarLayout
+        title="Vista de Cocina"
+        subtitle="Gestión de pedidos en preparación"
+        backRoute={ROUTES.DASHBOARD}
+      >
+        <div className="flex items-center justify-center min-h-[50vh]">
+          <Card variant="elevated" padding="lg" className="max-w-md w-full">
+            <div className="text-center">
+              <div className="w-16 h-16 bg-rose-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <AlertCircle className="w-8 h-8 text-rose-500" />
+              </div>
+              <h2 className="text-xl font-bold text-carbon-900 mb-2">
+                Error al cargar pedidos
               </h2>
-              <p className="text-carbon-600 mb-4">{error.message}</p>
-              <Button onClick={() => window.location.reload()}>
+              <p className="text-carbon-500 mb-6">{error.message}</p>
+              <Button variant="primary" size="lg" onClick={() => window.location.reload()} fullWidth>
                 Reintentar
               </Button>
             </div>
           </Card>
         </div>
-      </FullScreenLayout>
+      </SidebarLayout>
     );
   }
 
-  // =============== MAIN RENDER =================
   return (
-    <FullScreenLayout title="Cocina" backRoute={ROUTES.DASHBOARD}>
-      <div className="max-w-7xl mx-auto space-y-6">
-        {/* ============ HEADER =============== */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-4xl font-semibold text-carbon-900 tracking-tight mb-2">
-              Vista de Cocina
-            </h1>
-            <p className="text-carbon-600">
-              Órdenes ordenadas por tiempo de llegada (más antiguas primero)
-            </p>
-          </div>
-          
-          {/* Refresh indicator */}
-          <div className="flex items-center gap-2 text-sm text-carbon-500">
-            <RefreshCw className="w-4 h-4" />
-            <span>Auto-refresh cada 30s</span>
-          </div>
+    <SidebarLayout
+      title="Vista de Cocina"
+      subtitle="Gestión de pedidos en preparación"
+      backRoute={ROUTES.DASHBOARD}
+      actions={
+        <div className="flex items-center gap-2 text-sm text-carbon-500 bg-sage-50 px-3 py-1.5 rounded-lg">
+          <RefreshCw className="w-4 h-4" />
+          <span>Auto-refresh: 30s</span>
         </div>
+      }
+    >
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+        <StatCard
+          label="Total"
+          count={counts.total}
+          icon={<ChefHat className="w-5 h-5" />}
+          color="sage"
+        />
+        <StatCard
+          label="Pendientes"
+          count={counts.pending}
+          icon={<Clock className="w-5 h-5" />}
+          color="amber"
+          isUrgent={counts.pending > 3}
+        />
+        <StatCard
+          label="En Cocina"
+          count={counts.inKitchen}
+          icon={<Timer className="w-5 h-5" />}
+          color="orange"
+        />
+        <StatCard
+          label="Listos"
+          count={counts.ready}
+          icon={<CheckCircle className="w-5 h-5" />}
+          color="emerald"
+        />
+      </div>
 
-        {/* ============ PENDING ORDERS ALERT =============== */}
-        {counts.pending > 0 && (
-          <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4">
-            <div className="flex items-center gap-3">
-              <div className="bg-amber-500 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold">
-                {counts.pending}
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-amber-900">
-                  Pedidos Pendientes
-                </h3>
-                <p className="text-amber-700">
-                  {counts.pending === 1 
-                    ? "Hay 1 pedido esperando ser atendido" 
-                    : `Hay ${counts.pending} pedidos esperando ser atendidos`
-                  }
-                </p>
-              </div>
+      {/* Pending Alert */}
+      {counts.pending > 0 && (
+        <div className="bg-amber-50 border-2 border-amber-200 rounded-2xl p-4 mb-6">
+          <div className="flex items-center gap-3">
+            <div className="bg-amber-500 text-white rounded-full w-12 h-12 flex items-center justify-center text-xl font-bold">
+              {counts.pending}
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-amber-900">
+                Pedidos Pendientes
+              </h3>
+              <p className="text-amber-700">
+                {counts.pending === 1 
+                  ? "Hay 1 pedido esperando ser atendido" 
+                  : `Hay ${counts.pending} pedidos esperando ser atendidos`
+                }
+              </p>
             </div>
           </div>
-        )}
-
-        {/* ============ STATUS FILTERS =============== */}
-        <div className="flex gap-4 flex-wrap">
-          <Button
-            variant={statusFilter === "ALL" ? "primary" : "ghost"}
-            size="lg" // Larger buttons for tablet/kiosk
-            onClick={() => setStatusFilter("ALL")}
-            className="min-h-[60px] min-w-[140px]"
-          >
-            Todas ({counts.total})
-          </Button>
-          <Button
-            variant={
-              statusFilter === OrderStatus.PENDING ? "primary" : "ghost"
-            }
-            size="lg" // Larger buttons for tablet/kiosk
-            onClick={() => setStatusFilter(OrderStatus.PENDING)}
-            className="min-h-[60px] min-w-[160px]"
-          >
-            <Clock className="w-6 h-6 mr-3" />
-            Pendientes ({counts.pending})
-          </Button>
-          <Button
-            variant={
-              statusFilter === OrderStatus.IN_KITCHEN ? "primary" : "ghost"
-            }
-            size="lg" // Larger buttons for tablet/kiosk
-            onClick={() => setStatusFilter(OrderStatus.IN_KITCHEN)}
-            className="min-h-[60px] min-w-[160px]"
-          >
-            <ChefHat className="w-6 h-6 mr-3" />
-            En Cocina ({counts.inKitchen})
-          </Button>
-          <Button
-            variant={statusFilter === OrderStatus.READY ? "primary" : "ghost"}
-            size="lg" // Larger buttons for tablet/kiosk
-            onClick={() => setStatusFilter(OrderStatus.READY)}
-            className="min-h-[60px] min-w-[140px]"
-          >
-            <CheckCircle className="w-6 h-6 mr-3" />
-            Listos ({counts.ready})
-          </Button>
         </div>
+      )}
 
-         {/* ============ ORDERS GRID ============= */}
-         {kitchenOrders.length > 0 ? (
-           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-             {kitchenOrders.map((order) => (
-               <KitchenOrderCard
-                 key={order.id}
-                 order={order}
-                 onStatusChange={handleStatusChange}
-                 onViewDetail={handleViewDetail}
-                 isUpdating={isUpdating}
-               />
-             ))}
-           </div>
-         ) : (
-           <EmptyState
-             icon={<ChefHat />}
-             title="No hay pedidos en cocina"
-             description={
-               statusFilter === "ALL"
-                 ? "No hay pedidos pendientes, en cocina o listos"
-                 : "No hay pedidos con este estado"
-             }
-             size="lg"
-           />
-         )}
+      {/* Filter Buttons */}
+      <div className="flex flex-wrap gap-3 mb-6">
+        <FilterButton
+          active={statusFilter === "ALL"}
+          onClick={() => setStatusFilter("ALL")}
+          icon={<ChefHat className="w-5 h-5" />}
+          label="Todas"
+          count={counts.total}
+        />
+        <FilterButton
+          active={statusFilter === OrderStatus.PENDING}
+          onClick={() => setStatusFilter(OrderStatus.PENDING)}
+          icon={<Clock className="w-5 h-5" />}
+          label="Pendientes"
+          count={counts.pending}
+          color="amber"
+        />
+        <FilterButton
+          active={statusFilter === OrderStatus.IN_KITCHEN}
+          onClick={() => setStatusFilter(OrderStatus.IN_KITCHEN)}
+          icon={<Timer className="w-5 h-5" />}
+          label="En Cocina"
+          count={counts.inKitchen}
+          color="orange"
+        />
+        <FilterButton
+          active={statusFilter === OrderStatus.READY}
+          onClick={() => setStatusFilter(OrderStatus.READY)}
+          icon={<CheckCircle className="w-5 h-5" />}
+          label="Listos"
+          count={counts.ready}
+          color="emerald"
+        />
       </div>
-    </FullScreenLayout>
+
+      {/* Orders Grid */}
+      {kitchenOrders.length > 0 ? (
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
+          {kitchenOrders.map((order) => (
+            <KitchenOrderCard
+              key={order.id}
+              order={order}
+              onStatusChange={handleStatusChange}
+              onViewDetail={handleViewDetail}
+              isUpdating={isUpdating}
+            />
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          icon={<ChefHat className="w-16 h-16" />}
+          title="No hay pedidos en cocina"
+          description={
+            statusFilter === "ALL"
+              ? "No hay pedidos pendientes, en cocina o listos"
+              : "No hay pedidos con este estado"
+          }
+        />
+      )}
+    </SidebarLayout>
   );
 }
 
-/**
- * KitchenOrderCard Component
- *
- * Large, easy-to-read card optimized for kitchen display.
- * Shows order details and quick action buttons.
- */
+// Stat Card Component
+interface StatCardProps {
+  label: string;
+  count: number;
+  icon: React.ReactNode;
+  color: "sage" | "amber" | "orange" | "emerald";
+  isUrgent?: boolean;
+}
+
+function StatCard({ label, count, icon, color, isUrgent }: StatCardProps) {
+  const colorClasses = {
+    sage: "bg-sage-50 border-sage-200 text-sage-700",
+    amber: "bg-amber-50 border-amber-200 text-amber-700",
+    orange: "bg-orange-50 border-orange-200 text-orange-700",
+    emerald: "bg-emerald-50 border-emerald-200 text-emerald-700",
+  };
+
+  return (
+    <Card className={cn("p-4", colorClasses[color])}>
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm font-medium opacity-80">{label}</p>
+          <p className={cn("text-2xl font-bold", isUrgent && "text-rose-600")}>
+            {count}
+          </p>
+        </div>
+        <div className="opacity-60">{icon}</div>
+      </div>
+      {isUrgent && (
+        <Badge variant="error" size="sm" className="mt-2">
+          Urgente
+        </Badge>
+      )}
+    </Card>
+  );
+}
+
+// Filter Button Component
+interface FilterButtonProps {
+  active: boolean;
+  onClick: () => void;
+  icon: React.ReactNode;
+  label: string;
+  count: number;
+  color?: "default" | "amber" | "orange" | "emerald";
+}
+
+function FilterButton({ active, onClick, icon, label, count, color = "default" }: FilterButtonProps) {
+  const colorClasses = {
+    default: "",
+    amber: active ? "bg-amber-100 text-amber-800 border-amber-300" : "",
+    orange: active ? "bg-orange-100 text-orange-800 border-orange-300" : "",
+    emerald: active ? "bg-emerald-100 text-emerald-800 border-emerald-300" : "",
+  };
+
+  return (
+    <Button
+      variant={active ? "primary" : "outline"}
+      size="lg"
+      onClick={onClick}
+      className={cn(
+        "min-h-[56px] flex items-center gap-2",
+        !active && "border-2",
+        colorClasses[color]
+      )}
+    >
+      {icon}
+      <span>{label}</span>
+      <span className={cn(
+        "ml-2 px-2 py-0.5 text-xs font-bold rounded-full",
+        active ? "bg-white text-sage-700" : "bg-sage-100 text-sage-600"
+      )}>
+        {count}
+      </span>
+    </Button>
+  );
+}
+
+// Kitchen Order Card Component
 interface KitchenOrderCardProps {
   order: Order;
   onStatusChange: (orderId: string, status: OrderStatus) => void;
@@ -311,22 +401,32 @@ function KitchenOrderCard({
   onViewDetail,
   isUpdating,
 }: KitchenOrderCardProps) {
-  // Calculate time since order creation
-  const timeSinceCreation = useMemo(() => {
+  // Calculate time since creation
+  const timeInfo = useMemo(() => {
     const now = new Date().getTime();
     const created = new Date(order.createdAt).getTime();
     const diffMinutes = Math.floor((now - created) / (1000 * 60));
 
-    if (diffMinutes < 1) return "Hace menos de 1 minuto";
-    if (diffMinutes === 1) return "Hace 1 minuto";
-    if (diffMinutes < 60) return `Hace ${diffMinutes} minutos`;
+    let text: string;
+    let isWarning = false;
 
-    const hours = Math.floor(diffMinutes / 60);
-    if (hours === 1) return "Hace 1 hora";
-    return `Hace ${hours} horas`;
+    if (diffMinutes < 1) {
+      text = "Hace menos de 1 min";
+    } else if (diffMinutes === 1) {
+      text = "Hace 1 minuto";
+    } else if (diffMinutes < 60) {
+      text = `Hace ${diffMinutes} minutos`;
+      isWarning = diffMinutes > 20; // Warning if > 20 minutes
+    } else {
+      const hours = Math.floor(diffMinutes / 60);
+      text = hours === 1 ? "Hace 1 hora" : `Hace ${hours} horas`;
+      isWarning = true;
+    }
+
+    return { text, isWarning, diffMinutes };
   }, [order.createdAt]);
 
-  // Get next status based on current status
+  // Get next status
   const getNextStatus = (): OrderStatus | null => {
     switch (order.status) {
       case OrderStatus.PENDING:
@@ -341,36 +441,50 @@ function KitchenOrderCard({
   };
 
   const nextStatus = getNextStatus();
-  const nextStatusLabel: Record<OrderStatus, string> = {
-    [OrderStatus.IN_KITCHEN]: "En Cocina",
-    [OrderStatus.READY]: "Listo",
-    [OrderStatus.DELIVERED]: "Entregado",
-    [OrderStatus.PENDING]: "Pendiente",
-    [OrderStatus.PAID]: "Pagado",
-    [OrderStatus.SENT_TO_CASHIER]: "Enviado a Caja",
-    [OrderStatus.CANCELLED]: "Cancelado",
+  
+  const nextStatusConfig: Record<OrderStatus, { label: string; icon: React.ReactNode; color: string }> = {
+    [OrderStatus.IN_KITCHEN]: { 
+      label: "En Cocina", 
+      icon: <Timer className="w-5 h-5" />,
+      color: "bg-orange-500 hover:bg-orange-600"
+    },
+    [OrderStatus.READY]: { 
+      label: "Listo", 
+      icon: <CheckCircle className="w-5 h-5" />,
+      color: "bg-emerald-500 hover:bg-emerald-600"
+    },
+    [OrderStatus.DELIVERED]: { 
+      label: "Entregado", 
+      icon: <ArrowRight className="w-5 h-5" />,
+      color: "bg-blue-500 hover:bg-blue-600"
+    },
+    [OrderStatus.PENDING]: { label: "Pendiente", icon: <Clock className="w-5 h-5" />, color: "" },
+    [OrderStatus.PAID]: { label: "Pagado", icon: <CheckCircle className="w-5 h-5" />, color: "" },
+    [OrderStatus.SENT_TO_CASHIER]: { label: "Enviado a Caja", icon: <ArrowRight className="w-5 h-5" />, color: "" },
+    [OrderStatus.CANCELLED]: { label: "Cancelado", icon: <AlertCircle className="w-5 h-5" />, color: "" },
   };
 
   return (
-    <Card variant="elevated" padding="lg" className="hover:shadow-lg transition-all">
+    <Card variant="elevated" padding="lg" className="hover:shadow-lg transition-shadow">
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
+      <div className="flex items-start justify-between mb-4">
         <div className="flex-1">
-          <div className="flex items-center gap-4 mb-3">
-            <h3 className="text-3xl font-bold text-carbon-900">
+          <div className="flex items-center gap-3 mb-2">
+            <h3 className="text-xl font-bold text-carbon-900">
               Pedido #{order.id.slice(-6).toUpperCase()}
             </h3>
             <OrderStatusBadge status={order.status} />
           </div>
-          <div className="flex items-center gap-6 text-lg text-carbon-600">
-            <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5" />
-              <span className="font-medium">{timeSinceCreation}</span>
+          <div className="flex items-center gap-4 text-sm text-carbon-600">
+            <div className={cn("flex items-center gap-1.5", timeInfo.isWarning && "text-rose-600 font-semibold")}>
+              <Clock className="w-4 h-4" />
+              <span>{timeInfo.text}</span>
+              {timeInfo.isWarning && <span className="text-xs">(¡Urgente!)</span>}
             </div>
             {order.table && (
-              <div className="flex items-center gap-2">
-                <UtensilsCrossed className="w-5 h-5" />
-                <span className="font-medium">Mesa {order.table.number}</span>
+              <div className="flex items-center gap-1.5">
+                <UtensilsCrossed className="w-4 h-4" />
+                <span>Mesa {order.table.number}</span>
               </div>
             )}
           </div>
@@ -379,20 +493,19 @@ function KitchenOrderCard({
 
       {/* Items */}
       {order.items && order.items.length > 0 && (
-        <div className="mb-6 space-y-3">
-          <h4 className="text-xl font-semibold text-carbon-900 mb-3">Items:</h4>
-          <div className="space-y-3">
+        <div className="mb-4 space-y-2">
+          <h4 className="text-sm font-semibold text-carbon-700 uppercase tracking-wide">Items:</h4>
+          <div className="space-y-2">
             {order.items.map((item) => (
               <div
                 key={item.id}
                 className="flex items-center justify-between p-3 bg-sage-50 rounded-lg"
               >
-                <span className="text-lg font-medium text-carbon-700">
-                  {item.quantity}x{" "}
-                  {item.menuItem?.name || `Item #${item.menuItemId}`}
+                <span className="font-medium text-carbon-700">
+                  {item.quantity}x {item.menuItem?.name || `Item #${item.menuItemId}`}
                 </span>
                 {item.notes && (
-                  <span className="text-carbon-500 italic text-sm bg-yellow-100 px-2 py-1 rounded">
+                  <span className="text-xs text-carbon-500 italic bg-yellow-100 px-2 py-0.5 rounded">
                     {item.notes}
                   </span>
                 )}
@@ -404,39 +517,30 @@ function KitchenOrderCard({
 
       {/* Notes */}
       {order.notes && (
-        <div className="mb-6 p-4 bg-yellow-50 border-2 border-yellow-200 rounded-xl">
-          <p className="text-lg text-yellow-800 font-semibold mb-2">📝 Notas:</p>
-          <p className="text-lg text-yellow-700">{order.notes}</p>
+        <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-sm text-yellow-800 font-medium">📝 Notas: {order.notes}</p>
         </div>
       )}
 
-      {/* Actions - Optimized for tablet/kiosk */}
-      <div className="flex gap-4 pt-6 border-t-2 border-sage-border-subtle">
+      {/* Actions */}
+      <div className="flex gap-3 pt-4 border-t border-sage-100">
         {nextStatus && (
           <Button
             variant="primary"
-            size="lg" // Larger button for tablet/kiosk
+            size="lg"
             onClick={() => onStatusChange(order.id, nextStatus)}
             disabled={isUpdating}
-            className="flex-1 min-h-[70px] text-lg font-semibold"
+            className={cn("flex-1", nextStatusConfig[nextStatus].color)}
           >
-            {nextStatus === OrderStatus.IN_KITCHEN && (
-              <ChefHat className="w-6 h-6 mr-3" />
-            )}
-            {nextStatus === OrderStatus.READY && (
-              <CheckCircle className="w-6 h-6 mr-3" />
-            )}
-            {nextStatus === OrderStatus.DELIVERED && (
-              <ArrowRight className="w-6 h-6 mr-3" />
-            )}
-            Marcar como {nextStatusLabel[nextStatus]}
+            {nextStatusConfig[nextStatus].icon}
+            <span className="ml-2">Marcar como {nextStatusConfig[nextStatus].label}</span>
           </Button>
         )}
         <Button
           variant="ghost"
-          size="lg" // Larger button for tablet/kiosk
+          size="lg"
           onClick={() => onViewDetail(order.id)}
-          className="min-h-[70px] min-w-[140px] text-lg"
+          className="min-w-[120px]"
         >
           Ver Detalle
         </Button>
