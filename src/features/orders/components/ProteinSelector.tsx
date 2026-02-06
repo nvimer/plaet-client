@@ -69,14 +69,14 @@ export function ProteinSelector({
       <div className="flex items-center justify-between">
         <div>
           <h3 className="text-lg sm:text-xl font-bold text-carbon-900">
-            Select Protein
+            Seleccionar Proteína
           </h3>
           <p className="text-sm text-carbon-500 mt-0.5">
-            Choose the main protein for the lunch combo
+            Elige la proteína principal para el combo de almuerzo
           </p>
         </div>
         <span className="text-sm font-medium text-sage-600 bg-sage-50 px-3 py-1 rounded-full">
-          {availableCount} available
+          {availableCount} disponible{availableCount !== 1 ? 's' : ''}
         </span>
       </div>
 
@@ -182,7 +182,7 @@ export function ProteinSelector({
                 <div className="absolute inset-0 bg-white/70 flex flex-col items-center justify-center rounded-2xl backdrop-blur-sm">
                   <AlertCircle className="w-8 h-8 text-carbon-400 mb-1" />
                   <span className="text-sm font-bold text-carbon-500">
-                    Out of Stock
+                    Agotado
                   </span>
                 </div>
               )}
@@ -193,7 +193,7 @@ export function ProteinSelector({
 
       {/* Helper text */}
       <p className="text-xs text-carbon-500 text-center">
-        Premium proteins have an additional cost. Select one to continue.
+        Las proteínas premium tienen un costo adicional. Selecciona una para continuar.
       </p>
     </div>
   );

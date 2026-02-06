@@ -111,15 +111,15 @@ export function OrderCreatePage() {
 
   const availableComponents = useMemo(
     () => [
-      { id: 101, name: "Side portion", type: "principle" as const, price: 0 },
-      { id: 102, name: "Salad portion", type: "salad" as const, price: 0 },
-      { id: 103, name: "Potato portion", type: "additional" as const, price: 0 },
-      { id: 104, name: "Plantain portion", type: "additional" as const, price: 0 },
-      { id: 201, name: "Egg", type: "additional" as const, price: 2000 },
-      { id: 202, name: "Double egg", type: "additional" as const, price: 3500 },
-      { id: 203, name: "Extra side portion", type: "principle" as const, price: 3000 },
-      { id: 204, name: "Extra salad portion", type: "salad" as const, price: 2500 },
-      { id: 205, name: "Avocado portion", type: "additional" as const, price: 3000 },
+      { id: 101, name: "Porción de acompañamiento", type: "principle" as const, price: 0 },
+      { id: 102, name: "Porción de ensalada", type: "salad" as const, price: 0 },
+      { id: 103, name: "Porción de papa", type: "additional" as const, price: 0 },
+      { id: 104, name: "Porción de plátano", type: "additional" as const, price: 0 },
+      { id: 201, name: "Huevo", type: "additional" as const, price: 2000 },
+      { id: 202, name: "Doble huevo", type: "additional" as const, price: 3500 },
+      { id: 203, name: "Porción extra de acompañamiento", type: "principle" as const, price: 3000 },
+      { id: 204, name: "Porción extra de ensalada", type: "salad" as const, price: 2500 },
+      { id: 205, name: "Porción de aguacate", type: "additional" as const, price: 3000 },
     ],
     []
   );
