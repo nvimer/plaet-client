@@ -8,7 +8,6 @@ import {
   Users,
   ChefHat,
   Menu,
-  Utensils,
   Package2,
   PanelLeftClose,
   PanelLeft,
@@ -102,6 +101,14 @@ const baseNavigationItems: NavItem[] = [
   },
 ];
 
+// Direct menu navigation item
+const menuNavItem: NavItem = {
+  path: ROUTES.MENU,
+  name: "Menú",
+  icon: Menu,
+  description: "Catálogo de productos",
+};
+
 /**
  * Sidebar Component
  *
@@ -132,7 +139,7 @@ export function Sidebar() {
   // Flyout state for collapsed sidebar
   const [flyoutItem, setFlyoutItem] = useState<string | null>(null);
   const flyoutRef = useRef<HTMLDivElement>(null);
-  const flyoutTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const flyoutTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Expanded state for nested items (e.g. "Categorías" inside Menú)
   const [expandedNested, setExpandedNested] = useState<Set<string>>(new Set());
@@ -199,10 +206,7 @@ export function Sidebar() {
       baseNavigationItems[0], // Dashboard
       baseNavigationItems[1], // Mesas
       {
-        path: ROUTES.MENU,
-        name: "Menú",
-        icon: Menu,
-        description: "Catálogo de productos",
+        ...menuNavItem,
         children: menuChildren,
       },
       baseNavigationItems[2], // Pedidos

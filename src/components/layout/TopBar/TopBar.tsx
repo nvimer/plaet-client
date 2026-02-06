@@ -90,7 +90,11 @@ export function TopBar({
       )}
     >
       {/* Left: Back + Title + Breadcrumbs */}
-      <div className="flex items-center gap-3 min-w-0 flex-1">
+      <div className={cn(
+        "flex items-center gap-3 min-w-0 flex-1",
+        // Add left padding on mobile when no back button to avoid hamburger menu overlap
+        !backRoute && "pl-14 lg:pl-0"
+      )}>
         {backRoute && (
           <button
             type="button"
