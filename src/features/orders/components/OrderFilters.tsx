@@ -14,7 +14,11 @@ interface OrderFiltersProps {
     inKitchen: number;
     ready: number;
     delivered: number;
+    paid: number;
+    sentToCashier: number;
+    cancelled: number;
   };
+  resultCount?: number;
 }
 
 const STATUS_LABELS: Record<string, string> = {
@@ -24,6 +28,8 @@ const STATUS_LABELS: Record<string, string> = {
   [OrderStatus.READY]: "Listos",
   [OrderStatus.DELIVERED]: "Entregados",
   [OrderStatus.PAID]: "Pagados",
+  [OrderStatus.SENT_TO_CASHIER]: "En Caja",
+  [OrderStatus.CANCELLED]: "Cancelados",
 };
 
 const TYPE_LABELS: Record<string, string> = {
@@ -48,6 +54,7 @@ export function OrderFilters({
   onClearFilter,
   onClearAll,
   counts,
+  resultCount = 0,
 }: OrderFiltersProps) {
   const statusPillOptions = [
     { value: "ALL", label: "Todos", count: counts.all },
@@ -55,6 +62,8 @@ export function OrderFilters({
     { value: OrderStatus.IN_KITCHEN, label: "En Cocina", count: counts.inKitchen },
     { value: OrderStatus.READY, label: "Listos", count: counts.ready },
     { value: OrderStatus.DELIVERED, label: "Entregados", count: counts.delivered },
+    { value: OrderStatus.PAID, label: "Pagados", count: counts.paid },
+    { value: OrderStatus.SENT_TO_CASHIER, label: "En Caja", count: counts.sentToCashier },
   ];
 
   const typeSelectOptions = [
@@ -101,7 +110,7 @@ export function OrderFilters({
       {hasActiveFilters && (
         <ActiveFilterChips
           chips={activeChips}
-          resultCount={0} // Se actualizará desde el padre
+          resultCount={resultCount}
           resultLabel="pedidos"
           onClearFilter={onClearFilter}
           onClearAll={onClearAll}

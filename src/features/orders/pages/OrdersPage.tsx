@@ -12,6 +12,28 @@ import {
 } from "lucide-react";
 import { OrderCard, OrderFilters } from "../components";
 import { ROUTES, getOrderDetailRoute } from "@/app/routes";
+import type { Order } from "@/types";
+
+/**
+ * Helper: Check if order date is today
+ */
+const isToday = (dateString: string): boolean => {
+  const date = new Date(dateString);
+  const today = new Date();
+  return (
+    date.getDate() === today.getDate() &&
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear()
+  );
+};
+
+/**
+ * Helper: Check if order counts as a sale
+ * Only PAID or DELIVERED orders count as sales
+ */
+const isSaleOrder = (order: Order): boolean => {
+  return order.status === OrderStatus.PAID || order.status === OrderStatus.DELIVERED;
+};
 
 /**
  * OrdersPage Component
@@ -45,11 +67,17 @@ export function OrdersPage() {
     inKitchen: orders?.filter((o) => o.status === OrderStatus.IN_KITCHEN).length || 0,
     ready: orders?.filter((o) => o.status === OrderStatus.READY).length || 0,
     delivered: orders?.filter((o) => o.status === OrderStatus.DELIVERED).length || 0,
+    paid: orders?.filter((o) => o.status === OrderStatus.PAID).length || 0,
+    sentToCashier: orders?.filter((o) => o.status === OrderStatus.SENT_TO_CASHIER).length || 0,
+    cancelled: orders?.filter((o) => o.status === OrderStatus.CANCELLED).length || 0,
   }), [orders]);
 
-  const todayTotal = useMemo(() => 
-    orders?.reduce((sum, o) => sum + o.totalAmount, 0) || 0,
-  [orders]);
+  const todayTotal = useMemo(() => {
+    if (!orders) return 0;
+    return orders
+      .filter((o) => isToday(o.createdAt) && isSaleOrder(o))
+      .reduce((sum, o) => sum + o.totalAmount, 0);
+  }, [orders]);
 
   const hasActiveFilters = statusFilter !== "ALL" || typeFilter !== "ALL";
 
@@ -194,6 +222,7 @@ export function OrdersPage() {
           onClearFilter={handleClearFilter}
           onClearAll={handleClearAll}
           counts={counts}
+          resultCount={filteredOrders.length}
         />
       </div>
 
