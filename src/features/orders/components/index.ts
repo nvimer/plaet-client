@@ -3,3 +3,7 @@ export { OrderTypeBadge } from "./OrderTypeBadge";
 export { OrderCard } from "./OrderCard";
 export { OrderFilters } from "./OrderFilters";
 export { ProductGrid } from "./ProductGrid";
+export { DailyMenuSection } from "./DailyMenuSection";
+export { ProteinSelector } from "./ProteinSelector";
+export { PlateCustomizer } from "./PlateCustomizer";
+export { OrderSummary } from "./OrderSummary";
