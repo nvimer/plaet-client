@@ -1,30 +1,45 @@
 /**
- * CONSTANTES DE LA APLICACIÓN
+ * APPLICATION CONSTANTS
  *
- * Centralizamos todos los valores constantes aquí para:
- * 1. Evitar "magic numbers" en el código
- * 2. Facilitar cambios (un solo lugar)
- * 3. Mejor mantenibilidad
+ * Centralized constants for:
+ * 1. Avoiding magic numbers
+ * 2. Easy configuration changes
+ * 3. Better maintainability
  */
 
-// URL base de tu API de Node.js
-// import.meta.env.VITE_API_URL viene de las variables de entorno
-// Si no existe, usa localhost:8080 como fallback
-// IMPORTANTE: Tu API usa /api/v1 como prefijo base
-export const API_BASE_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:8080";
-export const API_PREFIX = "/api/v1"; // Prefijo de tu API
-export const API_URL = `${API_BASE_URL}${API_PREFIX}`; // URL completa
+// Base API URL from environment variables
+// VITE_API_URL comes from .env file
+// Fallback to localhost for development
+const getApiBaseUrl = (): string => {
+  const envUrl = import.meta.env.VITE_API_URL;
+  if (envUrl) {
+    return envUrl;
+  }
+  // Default to localhost for development
+  return "http://localhost:8080";
+};
 
-// Nombre de la aplicación
-export const APP_NAME = "SazonArte";
+// Check if we're in production
+export const isProduction = import.meta.env.PROD;
 
-// Configuración de paginación
+// API Configuration
+export const API_BASE_URL = getApiBaseUrl();
+export const API_PREFIX = "/api/v1";
+export const API_URL = `${API_BASE_URL}${API_PREFIX}`;
+
+// Application Name
+export const APP_NAME = "Plaet";
+
+// Pagination
 export const ITEMS_PER_PAGE = 20;
 
-// Tiempos de timeout para requests (en milisegundos)
-export const API_TIMEOUT = 10000; // 10 segundos
+// Request timeout (milliseconds)
+export const API_TIMEOUT = 15000; // 15 seconds for production reliability
 
-// Tiempo de revalidación de caché (React Query)
-export const CACHE_TIME = 5 * 60 * 1000; // 5 minutos
-export const STALE_TIME = 1 * 60 * 1000; // 1 minuto
+// React Query cache times
+export const CACHE_TIME = 5 * 60 * 1000; // 5 minutes
+export const STALE_TIME = 1 * 60 * 1000; // 1 minute
+
+// Auth Keys
+export const AUTH_TOKEN_KEY = "authToken";
+export const USER_DATA_KEY = "userData";
