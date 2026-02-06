@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { Card } from "@/components";
 import { cn } from "@/utils/cn";
-import { Plus, Minus, X, ArrowRightLeft, Soup, Leaf, Salad, CircleDot } from "lucide-react";
+import { Plus, Minus, X, ArrowRightLeft, Soup, Leaf, Salad, CircleDot, RefreshCcw, ChevronRight } from "lucide-react";
 
-export type PlateComponent = "sopa" | "principio" | "ensalada" | "adicional";
+export type PlateComponent = "soup" | "principle" | "salad" | "additional";
 
 export interface Substitution {
   from: PlateComponent;
@@ -35,11 +35,49 @@ export interface PlateCustomizerProps {
   className?: string;
 }
 
-const componentConfig: Record<PlateComponent, { label: string; icon: typeof Soup; color: string }> = {
-  sopa: { label: "Sopa", icon: Soup, color: "bg-amber-50 border-amber-200 text-amber-700" },
-  principio: { label: "Principio", icon: Leaf, color: "bg-emerald-50 border-emerald-200 text-emerald-700" },
-  ensalada: { label: "Ensalada", icon: Salad, color: "bg-green-50 border-green-200 text-green-700" },
-  adicional: { label: "Adicional", icon: CircleDot, color: "bg-sage-50 border-sage-200 text-sage-700" },
+const componentConfig: Record<PlateComponent, { label: string; icon: typeof Soup; color: string; bgColor: string }> = {
+  soup: { 
+    label: "Soup", 
+    icon: Soup, 
+    color: "text-amber-700",
+    bgColor: "bg-amber-50 border-amber-200"
+  },
+  principle: { 
+    label: "Principle", 
+    icon: Leaf, 
+    color: "text-emerald-700",
+    bgColor: "bg-emerald-50 border-emerald-200"
+  },
+  salad: { 
+    label: "Salad", 
+    icon: Salad, 
+    color: "text-green-700",
+    bgColor: "bg-green-50 border-green-200"
+  },
+  additional: { 
+    label: "Additional", 
+    icon: CircleDot, 
+    color: "text-slate-700",
+    bgColor: "bg-slate-50 border-slate-200"
+  },
+};
+
+const statusStyles = {
+  removed: {
+    container: "bg-rose-50 border-rose-300",
+    label: "text-rose-700 line-through",
+    badge: "bg-rose-100 text-rose-700",
+  },
+  added: {
+    container: "bg-emerald-50 border-emerald-400 shadow-sm",
+    label: "text-emerald-800",
+    badge: "bg-emerald-100 text-emerald-700",
+  },
+  default: {
+    container: "bg-white border-sage-200 hover:border-sage-300",
+    label: "text-slate-900",
+    badge: "bg-sage-100 text-sage-700",
+  },
 };
 
 export function PlateCustomizer({
@@ -53,21 +91,19 @@ export function PlateCustomizer({
   availableComponents,
   className,
 }: PlateCustomizerProps) {
-  const [removingComponent, setRemovingComponent] = useState<PlateComponent | null>(null);
+  const [activeSubstitution, setActiveSubstitution] = useState<PlateComponent | null>(null);
 
   const getComponentStatus = (component: PlateComponent) => {
     const subIndex = substitutions.findIndex((s) => s.from === component);
     const hasSubstitution = subIndex !== -1;
-    const isRemoved = hasSubstitution;
     const isAdded = substitutions.some((s) => s.to === component);
     const additionalItems = additionals.filter((a) => 
       availableComponents.find((c) => c.id === a.id)?.type === component
     );
     
     return {
-      isRemoved,
+      isRemoved: hasSubstitution,
       isAdded,
-      isSubstituted: hasSubstitution,
       substitution: hasSubstitution ? substitutions[subIndex] : null,
       subIndex,
       additionalItems,
@@ -75,71 +111,79 @@ export function PlateCustomizer({
   };
 
   const handleRemoveClick = (component: PlateComponent) => {
-    setRemovingComponent(component);
+    setActiveSubstitution(component);
   };
 
   const handleSubstituteSelect = (to: PlateComponent) => {
-    if (removingComponent) {
-      onAddSubstitution(removingComponent, to);
-      setRemovingComponent(null);
+    if (activeSubstitution) {
+      onAddSubstitution(activeSubstitution, to);
+      setActiveSubstitution(null);
     }
   };
 
-  const handleCancelRemove = () => {
-    setRemovingComponent(null);
+  const handleCancelSubstitution = () => {
+    setActiveSubstitution(null);
   };
 
+  const formatPrice = (price: number) => `$${price.toLocaleString("en-US")}`;
+
   return (
-    <Card className={cn("overflow-hidden", className)}>
-      <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-4 py-3">
-        <h3 className="text-white font-semibold text-base flex items-center gap-2">
-          <ArrowRightLeft className="w-5 h-5" />
-          Personalizar Plato
+    <Card className={cn("overflow-hidden shadow-lg", className)}>
+      <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-5 py-4">
+        <h3 className="text-white font-semibold text-lg flex items-center gap-2">
+          <ArrowRightLeft className="w-5 h-5" aria-hidden="true" />
+          Customize Plate
         </h3>
-        <p className="text-sage-100 text-xs mt-0.5">
-          Toca "−" para sustituir, "+" para agregar extras
+        <p className="text-sage-100 text-sm mt-1">
+          Tap "−" to substitute, "+" to add extras
         </p>
       </div>
 
-      <div className="p-4 space-y-3">
+      <div className="p-5 space-y-4">
         {/* Visual Plate Components */}
         {(Object.keys(componentConfig) as PlateComponent[]).map((component) => {
           const config = componentConfig[component];
           const Icon = config.icon;
           const status = getComponentStatus(component);
+          const style = status.isRemoved 
+            ? statusStyles.removed 
+            : status.isAdded 
+            ? statusStyles.added 
+            : statusStyles.default;
 
           return (
             <div
               key={component}
               className={cn(
-                "relative rounded-xl border-2 p-3 transition-all",
-                status.isRemoved
-                  ? "bg-rose-50 border-rose-200 opacity-75"
-                  : status.isAdded
-                  ? "bg-emerald-50 border-emerald-400"
-                  : "bg-white border-sage-200"
+                "relative rounded-xl border-2 p-4 transition-all duration-300 ease-out",
+                style.container,
+                !status.isRemoved && "hover:shadow-md"
               )}
+              role="group"
+              aria-label={`${config.label} section`}
             >
               <div className="flex items-center justify-between">
                 {/* Left: Icon and Label */}
                 <div className="flex items-center gap-3">
                   <div className={cn(
-                    "w-10 h-10 rounded-lg flex items-center justify-center",
-                    config.color
+                    "w-11 h-11 rounded-xl flex items-center justify-center transition-transform duration-300",
+                    config.bgColor,
+                    (status.isAdded || status.isRemoved) && "scale-105"
                   )}>
-                    <Icon className="w-5 h-5" />
+                    <Icon className={cn("w-5 h-5", config.color)} aria-hidden="true" />
                   </div>
-                  <div>
-                    <p className={cn(
-                      "font-semibold",
-                      status.isRemoved ? "text-rose-700 line-through" : "text-carbon-900"
+                  <div className="flex flex-col">
+                    <span className={cn(
+                      "font-semibold text-base transition-all duration-300",
+                      style.label
                     )}>
                       {config.label}
-                    </p>
+                    </span>
                     {status.isRemoved && status.substitution && (
-                      <p className="text-xs text-emerald-600 font-medium">
-                        → Sustituido por {componentConfig[status.substitution.to].label}
-                      </p>
+                      <span className="text-xs text-emerald-600 font-medium flex items-center gap-1 mt-0.5 animate-in fade-in slide-in-from-left-2 duration-300">
+                        <RefreshCcw className="w-3 h-3" aria-hidden="true" />
+                        Swapped for {componentConfig[status.substitution.to].label}
+                      </span>
                     )}
                   </div>
                 </div>
@@ -150,18 +194,20 @@ export function PlateCustomizer({
                   {status.isRemoved ? (
                     <button
                       onClick={() => onRemoveSubstitution(status.subIndex!)}
-                      className="p-2 rounded-lg bg-rose-100 text-rose-600 hover:bg-rose-200 transition-colors"
-                      title="Deshacer sustitución"
+                      className="p-2.5 rounded-xl bg-rose-100 text-rose-600 hover:bg-rose-200 active:scale-95 transition-all duration-200"
+                      aria-label={`Undo ${config.label} substitution`}
+                      title="Undo substitution"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-4 h-4" aria-hidden="true" />
                     </button>
                   ) : (
                     <button
                       onClick={() => handleRemoveClick(component)}
-                      className="p-2 rounded-lg bg-sage-100 text-sage-600 hover:bg-sage-200 transition-colors"
-                      title="Quitar y sustituir"
+                      className="p-2.5 rounded-xl bg-sage-100 text-sage-600 hover:bg-sage-200 active:scale-95 transition-all duration-200"
+                      aria-label={`Substitute ${config.label}`}
+                      title="Substitute"
                     >
-                      <Minus className="w-4 h-4" />
+                      <Minus className="w-4 h-4" aria-hidden="true" />
                     </button>
                   )}
 
@@ -173,41 +219,55 @@ export function PlateCustomizer({
                         onAddAdditional(items[0]);
                       }
                     }}
-                    className="p-2 rounded-lg bg-sage-100 text-sage-600 hover:bg-sage-200 transition-colors"
-                    title="Agregar extra"
+                    className="p-2.5 rounded-xl bg-sage-100 text-sage-600 hover:bg-sage-200 active:scale-95 transition-all duration-200"
+                    aria-label={`Add extra ${config.label}`}
+                    title="Add extra"
                   >
-                    <Plus className="w-4 h-4" />
+                    <Plus className="w-4 h-4" aria-hidden="true" />
                   </button>
                 </div>
               </div>
 
-              {/* Show additional items for this component */}
+              {/* Additional items for this component */}
               {status.additionalItems.length > 0 && (
-                <div className="mt-2 pt-2 border-t border-sage-200 space-y-1">
-                  {status.additionalItems.map((item) => (
-                    <div key={item.id} className="flex items-center justify-between text-sm">
-                      <span className="text-carbon-700">
-                        + {item.name} (${item.price.toLocaleString("es-CO")})
+                <div className="mt-3 pt-3 border-t border-sage-200/60 space-y-2">
+                  {status.additionalItems.map((item, idx) => (
+                    <div 
+                      key={item.id} 
+                      className="flex items-center justify-between text-sm animate-in fade-in slide-in-from-top-1 duration-300"
+                      style={{ animationDelay: `${idx * 50}ms` }}
+                    >
+                      <span className="text-slate-700 flex items-center gap-2">
+                        <span className="w-1.5 h-1.5 rounded-full bg-sage-400" aria-hidden="true" />
+                        {item.name}
+                        <span className="text-sage-600 font-medium">
+                          {formatPrice(item.price)}
+                        </span>
                       </span>
-                      <div className="flex items-center gap-1">
+                      <div className="flex items-center gap-2 bg-white rounded-lg p-1 shadow-sm">
                         <button
-                          onClick={() => onUpdateAdditionalQuantity(item.id, item.quantity - 1)}
-                          className="p-1 rounded bg-white text-carbon-600 hover:bg-sage-100"
+                          onClick={() => onUpdateAdditionalQuantity(item.id, Math.max(0, item.quantity - 1))}
+                          className="p-1.5 rounded-md hover:bg-sage-100 text-slate-600 active:scale-95 transition-all"
+                          aria-label={`Decrease ${item.name} quantity`}
                         >
-                          <Minus className="w-3 h-3" />
+                          <Minus className="w-3.5 h-3.5" aria-hidden="true" />
                         </button>
-                        <span className="w-6 text-center font-medium">{item.quantity}</span>
+                        <span className="w-6 text-center font-semibold text-slate-800" aria-live="polite">
+                          {item.quantity}
+                        </span>
                         <button
                           onClick={() => onUpdateAdditionalQuantity(item.id, item.quantity + 1)}
-                          className="p-1 rounded bg-white text-carbon-600 hover:bg-sage-100"
+                          className="p-1.5 rounded-md hover:bg-sage-100 text-slate-600 active:scale-95 transition-all"
+                          aria-label={`Increase ${item.name} quantity`}
                         >
-                          <Plus className="w-3 h-3" />
+                          <Plus className="w-3.5 h-3.5" aria-hidden="true" />
                         </button>
                         <button
                           onClick={() => onRemoveAdditional(item.id)}
-                          className="p-1 rounded text-carbon-400 hover:text-rose-500 ml-1"
+                          className="p-1.5 rounded-md text-slate-400 hover:text-rose-500 hover:bg-rose-50 ml-1 transition-colors"
+                          aria-label={`Remove ${item.name}`}
                         >
-                          <X className="w-3 h-3" />
+                          <X className="w-3.5 h-3.5" aria-hidden="true" />
                         </button>
                       </div>
                     </div>
@@ -218,15 +278,28 @@ export function PlateCustomizer({
           );
         })}
 
-        {/* Substitution Selector Modal (inline) */}
-        {removingComponent && (
-          <div className="mt-4 p-4 bg-sage-50 rounded-xl border-2 border-sage-300">
-            <p className="text-sm font-medium text-carbon-900 mb-3">
-              ¿Por qué quieres sustituir {componentConfig[removingComponent].label.toLowerCase()}?
-            </p>
-            <div className="grid grid-cols-2 gap-2">
+        {/* Substitution Selector */}
+        {activeSubstitution && (
+          <div 
+            className="mt-4 p-5 bg-sage-50 rounded-xl border-2 border-sage-300 animate-in fade-in zoom-in-95 duration-300"
+            role="dialog"
+            aria-label="Select substitution"
+          >
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm font-semibold text-slate-900">
+                Replace {componentConfig[activeSubstitution].label} with:
+              </p>
+              <button
+                onClick={handleCancelSubstitution}
+                className="p-1.5 rounded-lg hover:bg-sage-200 text-slate-500 transition-colors"
+                aria-label="Cancel substitution"
+              >
+                <X className="w-4 h-4" aria-hidden="true" />
+              </button>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
               {(Object.keys(componentConfig) as PlateComponent[])
-                .filter((comp) => comp !== removingComponent)
+                .filter((comp) => comp !== activeSubstitution)
                 .map((comp) => {
                   const config = componentConfig[comp];
                   const Icon = config.icon;
@@ -234,29 +307,38 @@ export function PlateCustomizer({
                     <button
                       key={comp}
                       onClick={() => handleSubstituteSelect(comp)}
-                      className="flex items-center gap-2 p-3 rounded-xl border-2 border-sage-200 bg-white hover:border-sage-500 hover:bg-sage-50 transition-all text-left"
+                      className="group flex items-center justify-between p-3.5 rounded-xl border-2 border-sage-200 bg-white hover:border-sage-500 hover:bg-sage-50 active:scale-[0.98] transition-all duration-200 text-left"
+                      aria-label={`Substitute with ${config.label}`}
                     >
-                      <Icon className="w-4 h-4 text-sage-600" />
-                      <span className="font-medium text-carbon-900">{config.label}</span>
+                      <div className="flex items-center gap-2.5">
+                        <Icon className="w-4 h-4 text-sage-600 group-hover:text-sage-700" aria-hidden="true" />
+                        <span className="font-medium text-slate-900">{config.label}</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-400 group-hover:text-sage-500 group-hover:translate-x-0.5 transition-all" aria-hidden="true" />
                     </button>
                   );
                 })}
             </div>
             <button
-              onClick={handleCancelRemove}
-              className="mt-3 w-full py-2 text-sm text-carbon-500 hover:text-carbon-700"
+              onClick={handleCancelSubstitution}
+              className="mt-4 w-full py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-sage-100 rounded-lg transition-all"
             >
-              Cancelar
+              Cancel
             </button>
           </div>
         )}
 
         {/* Quick Add Section */}
-        <div className="pt-3 border-t border-sage-200">
-          <p className="text-xs font-medium text-carbon-500 mb-2 uppercase tracking-wide">
-            Agregar rápido
-          </p>
-          <div className="flex flex-wrap gap-2">
+        <div className="pt-4 border-t border-sage-200">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-sage-500 to-sage-600 flex items-center justify-center">
+              <Plus className="w-3.5 h-3.5 text-white" aria-hidden="true" />
+            </div>
+            <p className="text-sm font-semibold text-slate-700 uppercase tracking-wide">
+              Quick Add
+            </p>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
             {availableComponents
               .filter((c) => c.price > 0)
               .slice(0, 4)
@@ -264,11 +346,15 @@ export function PlateCustomizer({
                 <button
                   key={component.id}
                   onClick={() => onAddAdditional(component)}
-                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-sage-100 text-sage-700 hover:bg-sage-200 transition-colors text-sm"
+                  className="group flex items-center justify-between px-4 py-3 rounded-xl bg-gradient-to-r from-sage-50 to-white border border-sage-200 hover:border-sage-400 hover:shadow-md active:scale-[0.98] transition-all duration-200"
+                  aria-label={`Add ${component.name} for ${formatPrice(component.price)}`}
                 >
-                  <Plus className="w-3 h-3" />
-                  {component.name}
-                  <span className="text-xs font-semibold">+${component.price.toLocaleString("es-CO")}</span>
+                  <span className="font-medium text-slate-700 group-hover:text-slate-900">
+                    {component.name}
+                  </span>
+                  <span className="text-xs font-bold text-emerald-600 bg-emerald-100 px-2 py-1 rounded-full group-hover:bg-emerald-200 transition-colors">
+                    {formatPrice(component.price)}
+                  </span>
                 </button>
               ))}
           </div>

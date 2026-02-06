@@ -27,8 +27,8 @@ interface ProteinOption {
 }
 
 interface Substitution {
-  from: "sopa" | "principio" | "ensalada" | "adicional";
-  to: "sopa" | "principio" | "ensalada" | "adicional";
+  from: "soup" | "principle" | "salad" | "additional";
+  to: "soup" | "principle" | "salad" | "additional";
   quantity: number;
 }
 
@@ -89,12 +89,12 @@ export function OrderCreatePage() {
   const [showDailyMenu, setShowDailyMenu] = useState(false);
   const [orderNotes, setOrderNotes] = useState("");
 
-  // Mock data
+  // Mock data - Daily Menu
   const dailyMenu = {
-    principio: "Frijoles con plátano maduro",
-    sopa: "Sopa de verduras",
-    jugo: "Limonada natural",
-    postre: "Gelatina",
+    side: "Frijoles con plátano maduro",
+    soup: "Sopa de verduras",
+    drink: "Limonada natural",
+    dessert: "Gelatina",
   };
 
   const proteins: ProteinOption[] = useMemo(
@@ -111,15 +111,15 @@ export function OrderCreatePage() {
 
   const availableComponents = useMemo(
     () => [
-      { id: 101, name: "Porción de principio", type: "principio" as const, price: 0 },
-      { id: 102, name: "Porción de ensalada", type: "ensalada" as const, price: 0 },
-      { id: 103, name: "Porción de papa", type: "adicional" as const, price: 0 },
-      { id: 104, name: "Porción de plátano", type: "adicional" as const, price: 0 },
-      { id: 201, name: "Huevo", type: "adicional" as const, price: 2000 },
-      { id: 202, name: "Huevo doble", type: "adicional" as const, price: 3500 },
-      { id: 203, name: "Porción extra de principio", type: "principio" as const, price: 3000 },
-      { id: 204, name: "Porción extra de ensalada", type: "ensalada" as const, price: 2500 },
-      { id: 205, name: "Porción de aguacate", type: "adicional" as const, price: 3000 },
+      { id: 101, name: "Side portion", type: "principle" as const, price: 0 },
+      { id: 102, name: "Salad portion", type: "salad" as const, price: 0 },
+      { id: 103, name: "Potato portion", type: "additional" as const, price: 0 },
+      { id: 104, name: "Plantain portion", type: "additional" as const, price: 0 },
+      { id: 201, name: "Egg", type: "additional" as const, price: 2000 },
+      { id: 202, name: "Double egg", type: "additional" as const, price: 3500 },
+      { id: 203, name: "Extra side portion", type: "principle" as const, price: 3000 },
+      { id: 204, name: "Extra salad portion", type: "salad" as const, price: 2500 },
+      { id: 205, name: "Avocado portion", type: "additional" as const, price: 3000 },
     ],
     []
   );
@@ -154,7 +154,7 @@ export function OrderCreatePage() {
     return tableOrders.reduce((sum, order) => sum + order.total, 0);
   }, [tableOrders]);
 
-  // Handlers para personalización
+  // Customization handlers
   const handleAddSubstitution = (from: Substitution["from"], to: Substitution["to"]) => {
     setSubstitutions((prev) => [...prev, { from, to, quantity: 1 }]);
   };
@@ -587,7 +587,7 @@ export function OrderCreatePage() {
                 <div className="flex items-center gap-2">
                   <span className="text-white font-semibold">Menú del Día</span>
                   <span className="text-amber-100 text-sm hidden sm:inline">
-                    ({dailyMenu.principio}, {dailyMenu.sopa}, {dailyMenu.jugo})
+                    ({dailyMenu.side}, {dailyMenu.soup}, {dailyMenu.drink})
                   </span>
                 </div>
                 {showDailyMenu ? (
@@ -598,10 +598,10 @@ export function OrderCreatePage() {
               </button>
               {showDailyMenu && (
                 <DailyMenuSection
-                  principio={dailyMenu.principio}
-                  sopa={dailyMenu.sopa}
-                  jugo={dailyMenu.jugo}
-                  postre={dailyMenu.postre}
+                  side={dailyMenu.side}
+                  soup={dailyMenu.soup}
+                  drink={dailyMenu.drink}
+                  dessert={dailyMenu.dessert}
                 />
               )}
             </Card>
