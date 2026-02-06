@@ -1,6 +1,7 @@
 import { CACHE_TIME, STALE_TIME } from "@/config/constants";
 import { QueryClient } from "@tanstack/react-query";
 import type { PaginationParams } from "@/types/common";
+import type { OrderSearchParams } from "@/services/orderApi";
 
 /**
  * QueryClient configuration
@@ -65,6 +66,15 @@ export const queryKeys = {
     byTable: (tableId: string) => ["orders", { tableId }] as const,
     // Today's orders
     today: () => ["orders", { today: true }] as const,
+    // Kitchen orders
+    kitchen: (status?: string) => ["orders", "kitchen", { status }] as const,
+    // Daily sales
+    dailySales: (date: string) => ["orders", "daily-sales", { date }] as const,
+    // Search
+    search: (params: OrderSearchParams) => ["orders", "search", params] as const,
+    // Table availability
+    tableAvailability: (tableId: number, datetime?: string) => 
+      ["orders", "table-availability", { tableId, datetime }] as const,
   },
 
   // Users

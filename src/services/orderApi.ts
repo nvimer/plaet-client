@@ -1,4 +1,4 @@
-//  ORDERS API SERVICE
+// ORDERS API SERVICE - Enhanced with missing endpoints
 
 import {
   type Order,
@@ -15,6 +15,8 @@ import {
   type UpdateOrderInput,
 } from "@/types";
 import axiosClient from "./axiosClient";
+
+// =================== EXISTING ENDPOINTS ===================
 
 /**
  * GET /orders
@@ -118,7 +120,7 @@ export const deleteOrder = async (id: string) => {
   return data;
 };
 
-// =================== ORDER ITEMS ====================
+// =================== ORDER ITEMS ===================
 
 /**
  * POST /orders/:id/items
@@ -156,7 +158,225 @@ export const removeOrderItem = async (orderId: string, itemId: number) => {
   return data;
 };
 
-// ============= PAYMENTS ===============
+// =================== NEW ENDPOINTS ===================
+
+/**
+ * PATCH /orders/:orderId/items/:itemId
+ *
+ * Update order item quantity and details
+ *
+ * @param orderId - Order ID
+ * @param itemId - Item ID
+ * @param updateData - Update data
+ * @returns Updated order
+ */
+export interface UpdateOrderItemInput {
+  quantity?: number;
+  notes?: string;
+  isFreeSubstitution?: boolean;
+}
+
+export const updateOrderItem = async (
+  orderId: string,
+  itemId: number,
+  updateData: UpdateOrderItemInput,
+) => {
+  const { data } = await axiosClient.patch<ApiResponse<Order>>(
+    `/orders/${orderId}/items/${itemId}`,
+    updateData,
+  );
+  return data;
+};
+
+/**
+ * POST /orders/batch-status
+ *
+ * Update status for multiple orders at once
+ *
+ * @param batchData - Batch update data
+ * @returns Updated orders
+ */
+export interface BatchStatusUpdateInput {
+  orderIds: string[];
+  status: OrderStatus;
+}
+
+export const updateBatchOrderStatus = async (batchData: BatchStatusUpdateInput) => {
+  const { data } = await axiosClient.patch<ApiResponse<Order[]>>(
+    "/orders/batch-status",
+    batchData,
+  );
+  return data;
+};
+
+/**
+ * GET /orders/kitchen
+ *
+ * Get orders for kitchen view with status filtering
+ *
+ * @param status - Status filter (comma-separated)
+ * @returns Orders for kitchen
+ */
+export const getKitchenOrders = async (status?: string) => {
+  const { data } = await axiosClient.get<ApiResponse<Order[]>>("/orders/kitchen", {
+    params: { status },
+  });
+  return data;
+};
+
+/**
+ * GET /orders/daily-sales
+ *
+ * Get daily sales summary and statistics
+ *
+ * @param date - Date for sales summary (YYYY-MM-DD)
+ * @returns Daily sales data
+ */
+export interface DailySalesResponse {
+  totalOrders: number;
+  totalRevenue: number;
+  ordersByStatus: Record<OrderStatus, number>;
+  averageOrderValue: number;
+  peakHour?: {
+    hour: number;
+    orderCount: number;
+  };
+}
+
+export const getDailySales = async (date: string) => {
+  const { data } = await axiosClient.get<ApiResponse<DailySalesResponse>>(
+    "/orders/daily-sales",
+    { params: { date } }
+  );
+  return data;
+};
+
+/**
+ * GET /orders/search
+ *
+ * Full-text search for orders
+ *
+ * @param query - Search query
+ * @param params - Additional search params
+ * @returns Search results
+ */
+export interface OrderSearchParams {
+  q: string;
+  limit?: number;
+  offset?: number;
+  status?: OrderStatus;
+  type?: OrderType;
+}
+
+export const searchOrders = async (params: OrderSearchParams) => {
+  const { data } = await axiosClient.get<PaginatedResponse<Order>>(
+    "/orders/search",
+    { params }
+  );
+  return data;
+};
+
+/**
+ * POST /orders/:id/duplicate
+ *
+ * Duplicate an existing order
+ *
+ * @param orderId - Order ID to duplicate
+ * @param options - Duplication options
+ * @returns New duplicated order
+ */
+export interface DuplicateOrderOptions {
+  tableId?: number; // Optional: change table
+  notes?: string; // Optional: add notes
+}
+
+export const duplicateOrder = async (
+  orderId: string,
+  options?: DuplicateOrderOptions,
+) => {
+  const { data } = await axiosClient.post<ApiResponse<Order>>(
+    `/orders/${orderId}/duplicate`,
+    options || {}
+  );
+  return data;
+};
+
+/**
+ * POST /orders/validate
+ *
+ * Validate order data before creation
+ *
+ * @param orderData - Order data to validate
+ * @returns Validation result
+ */
+export interface OrderValidationResult {
+  valid: boolean;
+  errors: string[];
+  warnings: string[];
+  estimatedTotal?: number;
+}
+
+export const validateOrder = async (orderData: CreateOrderInput) => {
+  const { data } = await axiosClient.post<ApiResponse<OrderValidationResult>>(
+    "/orders/validate",
+    orderData
+  );
+  return data;
+};
+
+/**
+ * GET /orders/table-availability/:tableId
+ *
+ * Check table availability for specific datetime
+ *
+ * @param tableId - Table ID
+ * @param datetime - DateTime to check (ISO string)
+ * @returns Availability information
+ */
+export interface TableAvailabilityResponse {
+  available: boolean;
+  nextAvailable?: string;
+  currentOrders?: Order[];
+  conflictingOrders?: Order[];
+}
+
+export const getTableAvailability = async (
+  tableId: number,
+  datetime?: string
+) => {
+  const { data } = await axiosClient.get<ApiResponse<TableAvailabilityResponse>>(
+    `/orders/table-availability/${tableId}`,
+    { params: { datetime } }
+  );
+  return data;
+};
+
+/**
+ * PATCH /orders/:id/cancel
+ *
+ * Cancel order with reason
+ *
+ * @param orderId - Order ID
+ * @param cancelData - Cancellation data
+ * @returns Updated order
+ */
+export interface CancelOrderInput {
+  reason: string;
+  refundAmount?: number;
+}
+
+export const cancelOrder = async (
+  orderId: string,
+  cancelData: CancelOrderInput
+) => {
+  const { data } = await axiosClient.patch<ApiResponse<Order>>(
+    `/orders/${orderId}/cancel`,
+    cancelData
+  );
+  return data;
+};
+
+// =================== PAYMENTS ===================
 
 /**
  * POST /orders/:id/payments
@@ -176,4 +396,60 @@ export const addPayment = async (
     paymentData,
   );
   return data;
+};
+
+/**
+ * GET /orders/:id/payments
+ *
+ * Get all payments for an order
+ *
+ * @param orderId - Order ID
+ * @returns Order payments
+ */
+export const getOrderPayments = async (orderId: string) => {
+  const { data } = await axiosClient.get<ApiResponse<Payment[]>>(
+    `/orders/${orderId}/payments`
+  );
+  return data;
+};
+
+// =================== EXPORTS ===================
+
+export const orderApi = {
+  // Core operations
+  getOrders,
+  getOrderById,
+  createOrder,
+  updateOrder,
+  updateOrderStatus,
+  deleteOrder,
+  
+  // Order items
+  addOrderItem,
+  removeOrderItem,
+  updateOrderItem,
+  
+  // Batch operations
+  updateBatchOrderStatus,
+  
+  // Kitchen & Status
+  getKitchenOrders,
+  
+  // Reports & Analytics
+  getDailySales,
+  
+  // Search
+  searchOrders,
+  
+  // Actions
+  duplicateOrder,
+  validateOrder,
+  cancelOrder,
+  
+  // Utilities
+  getTableAvailability,
+  
+  // Payments
+  addPayment,
+  getOrderPayments,
 };
