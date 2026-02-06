@@ -10,7 +10,7 @@ import {
 } from "../schemas/categorySchemas";
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
-import { Check, Loader2, Trash2, XCircle } from "lucide-react";
+import { Check, Trash2, XCircle } from "lucide-react";
 import { useState } from "react";
 import type { AxiosErrorWithResponse } from "@/types/common";
 

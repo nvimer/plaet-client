@@ -49,7 +49,6 @@ export function MenuItemCreatePage() {
     mode: "onChange",
   });
 
-  const isExtra = watch("isExtra");
   const inventoryType = watch("inventoryType");
   const isTracked = inventoryType === InventoryType.TRACKED;
 
