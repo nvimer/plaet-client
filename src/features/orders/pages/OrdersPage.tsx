@@ -103,12 +103,12 @@ export function OrdersPage() {
   // ============ LOADING STATE ===========
   if (isLoading) {
     return (
-      <>
+      <div className="px-4 sm:px-6 lg:px-8">
         <div className="mb-8">
           <Skeleton variant="text" width={240} height={32} className="mb-2" />
           <Skeleton variant="text" width={320} height={20} />
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {[...Array(4)].map((_, i) => (
             <Skeleton key={i} variant="card" height={80} />
           ))}
@@ -119,14 +119,14 @@ export function OrdersPage() {
             <Skeleton key={i} variant="card" />
           ))}
         </div>
-      </>
+      </div>
     );
   }
 
   // ========== ERROR STATE =============
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh]">
+      <div className="flex items-center justify-center min-h-[50vh] px-4 sm:px-6 lg:px-8">
         <Card
           variant="elevated"
           padding="lg"
@@ -149,7 +149,7 @@ export function OrdersPage() {
 
   // =============== MAIN RENDER =================
   return (
-    <>
+    <div className="px-4 sm:px-6 lg:px-8">
       {/* ============ PAGE HEADER =============== */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
@@ -256,6 +256,6 @@ export function OrdersPage() {
           onAction={!hasActiveFilters ? handleCreateOrder : undefined}
         />
       )}
-    </>
+    </div>
   );
 }
