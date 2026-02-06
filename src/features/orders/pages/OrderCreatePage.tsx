@@ -405,7 +405,7 @@ export function OrderCreatePage() {
         backRoute={ROUTES.ORDERS}
         fullWidth
       >
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             {/* Aquí (DINE_IN) */}
             <button
@@ -466,7 +466,7 @@ export function OrderCreatePage() {
           </button>
         }
       >
-        <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <Card variant="elevated" className="overflow-hidden rounded-2xl">
             <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-4 py-6 sm:px-8 sm:py-8">
               <h2 className="text-white font-semibold text-2xl flex items-center gap-3">
@@ -520,7 +520,7 @@ export function OrderCreatePage() {
         </button>
       }
     >
-      <div className="max-w-[1600px] mx-auto">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
           
           {/* LEFT: Formulario de pedido actual */}
