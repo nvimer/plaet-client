@@ -89,12 +89,12 @@ export function OrderCreatePage() {
   const [showDailyMenu, setShowDailyMenu] = useState(false);
   const [orderNotes, setOrderNotes] = useState("");
 
-  // Mock data
+  // Mock data - Daily Menu
   const dailyMenu = {
-    principio: "Frijoles con plátano maduro",
-    sopa: "Sopa de verduras",
-    jugo: "Limonada natural",
-    postre: "Gelatina",
+    side: "Frijoles con plátano maduro",
+    soup: "Sopa de verduras",
+    drink: "Limonada natural",
+    dessert: "Gelatina",
   };
 
   const proteins: ProteinOption[] = useMemo(
@@ -587,7 +587,7 @@ export function OrderCreatePage() {
                 <div className="flex items-center gap-2">
                   <span className="text-white font-semibold">Menú del Día</span>
                   <span className="text-amber-100 text-sm hidden sm:inline">
-                    ({dailyMenu.principio}, {dailyMenu.sopa}, {dailyMenu.jugo})
+                    ({dailyMenu.side}, {dailyMenu.soup}, {dailyMenu.drink})
                   </span>
                 </div>
                 {showDailyMenu ? (
@@ -598,10 +598,10 @@ export function OrderCreatePage() {
               </button>
               {showDailyMenu && (
                 <DailyMenuSection
-                  principio={dailyMenu.principio}
-                  sopa={dailyMenu.sopa}
-                  jugo={dailyMenu.jugo}
-                  postre={dailyMenu.postre}
+                  side={dailyMenu.side}
+                  soup={dailyMenu.soup}
+                  drink={dailyMenu.drink}
+                  dessert={dailyMenu.dessert}
                 />
               )}
             </Card>
