@@ -86,10 +86,10 @@ export function DailyMenuSection({
         
         <h3 className="relative text-white font-bold text-lg sm:text-xl flex items-center gap-2">
           <CircleDot className="w-5 h-5 sm:w-6 sm:h-6" />
-          Daily Menu
+          Menú del Día
         </h3>
         <p className="relative text-sage-100 text-xs sm:text-sm mt-1.5 font-medium">
-          Complete lunch includes: Side + Protein + Salad + Extra + Soup + Drink
+          El almuerzo completo incluye: Acompañamiento + Proteína + Ensalada + Extra + Sopa + Bebida
         </p>
       </div>
       
@@ -97,7 +97,7 @@ export function DailyMenuSection({
       <div className="p-3 sm:p-5 space-y-2 sm:space-y-3">
         <DailyMenuItem
           icon={<Leaf className="w-5 h-5 text-emerald-600" />}
-          label="Side Dish"
+          label="Acompañamiento"
           value={side}
           color="emerald"
           delay={0}
@@ -105,7 +105,7 @@ export function DailyMenuSection({
         
         <DailyMenuItem
           icon={<Soup className="w-5 h-5 text-amber-600" />}
-          label="Soup of the Day"
+          label="Sopa del Día"
           value={soup}
           color="amber"
           delay={100}
@@ -113,7 +113,7 @@ export function DailyMenuSection({
         
         <DailyMenuItem
           icon={<GlassWater className="w-5 h-5 text-blue-600" />}
-          label="Drink of the Day"
+          label="Bebida del Día"
           value={drink}
           color="blue"
           delay={200}
@@ -122,7 +122,7 @@ export function DailyMenuSection({
         {dessert && (
           <DailyMenuItem
             icon={<CircleDot className="w-5 h-5 text-sage-600" />}
-            label="Dessert"
+            label="Postre"
             value={dessert}
             color="sage"
             delay={300}
@@ -133,7 +133,7 @@ export function DailyMenuSection({
       {/* Footer note */}
       <div className="px-4 py-2 bg-sage-50 border-t border-sage-100">
         <p className="text-xs text-carbon-500 text-center">
-          All items are included in the complete lunch combo
+          Todos los ítems están incluidos en el combo de almuerzo completo
         </p>
       </div>
     </Card>

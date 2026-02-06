@@ -350,7 +350,7 @@ export function Sidebar() {
                     "p-2 rounded-xl transition-all duration-200",
                     "text-sage-400 hover:text-sage-600 hover:bg-sage-100"
                   )}
-                  aria-label="Collapse sidebar"
+                  aria-label="Contraer barra lateral"
                 >
                   <PanelLeftClose className="w-5 h-5" />
                 </button>
@@ -359,7 +359,7 @@ export function Sidebar() {
                 <button
                   onClick={closeMobile}
                   className="p-2 rounded-xl hover:bg-sage-100 transition-all duration-200 text-sage-500 hover:text-sage-700"
-                  aria-label="Close sidebar"
+                  aria-label="Cerrar barra lateral"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -378,7 +378,7 @@ export function Sidebar() {
                 "text-sage-400 hover:text-sage-600 hover:bg-sage-100",
                 "flex items-center justify-center"
               )}
-              aria-label="Expand sidebar"
+              aria-label="Expandir barra lateral"
             >
               <PanelLeft className="w-5 h-5" />
             </button>
@@ -729,7 +729,7 @@ export function Sidebar() {
             "transition-all duration-200",
             "active:scale-95"
           )}
-          aria-label="Open menu"
+          aria-label="Abrir menú"
         >
           <Menu className="w-5 h-5" />
         </button>

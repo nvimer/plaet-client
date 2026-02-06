@@ -19,7 +19,7 @@ export function Breadcrumbs({ items, className }: BreadcrumbsProps) {
 
   return (
     <nav
-      aria-label="Breadcrumb"
+      aria-label="Migas de pan"
       className={cn(
         "flex items-center gap-1.5 text-sm text-carbon-500",
         className

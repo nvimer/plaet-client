@@ -37,25 +37,25 @@ export interface PlateCustomizerProps {
 
 const componentConfig: Record<PlateComponent, { label: string; icon: typeof Soup; color: string; bgColor: string }> = {
   soup: { 
-    label: "Soup", 
+    label: "Sopa", 
     icon: Soup, 
     color: "text-amber-700",
     bgColor: "bg-amber-50 border-amber-200"
   },
   principle: { 
-    label: "Principle", 
+    label: "Proteína", 
     icon: Leaf, 
     color: "text-emerald-700",
     bgColor: "bg-emerald-50 border-emerald-200"
   },
   salad: { 
-    label: "Salad", 
+    label: "Ensalada", 
     icon: Salad, 
     color: "text-green-700",
     bgColor: "bg-green-50 border-green-200"
   },
   additional: { 
-    label: "Additional", 
+    label: "Adicional", 
     icon: CircleDot, 
     color: "text-slate-700",
     bgColor: "bg-slate-50 border-slate-200"
@@ -132,10 +132,10 @@ export function PlateCustomizer({
       <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-5 py-4">
         <h3 className="text-white font-semibold text-lg flex items-center gap-2">
           <ArrowRightLeft className="w-5 h-5" aria-hidden="true" />
-          Customize Plate
+          Personalizar Plato
         </h3>
         <p className="text-sage-100 text-sm mt-1">
-          Tap "−" to substitute, "+" to add extras
+          Toca "−" para sustituir, "+" para agregar extras
         </p>
       </div>
 
@@ -160,7 +160,7 @@ export function PlateCustomizer({
                 !status.isRemoved && "hover:shadow-md"
               )}
               role="group"
-              aria-label={`${config.label} section`}
+              aria-label={`Sección de ${config.label}`}
             >
               <div className="flex items-center justify-between">
                 {/* Left: Icon and Label */}
@@ -182,7 +182,7 @@ export function PlateCustomizer({
                     {status.isRemoved && status.substitution && (
                       <span className="text-xs text-emerald-600 font-medium flex items-center gap-1 mt-0.5 animate-in fade-in slide-in-from-left-2 duration-300">
                         <RefreshCcw className="w-3 h-3" aria-hidden="true" />
-                        Swapped for {componentConfig[status.substitution.to].label}
+                        Cambiado por {componentConfig[status.substitution.to].label}
                       </span>
                     )}
                   </div>
@@ -196,7 +196,7 @@ export function PlateCustomizer({
                       onClick={() => onRemoveSubstitution(status.subIndex!)}
                       className="p-2.5 rounded-xl bg-rose-100 text-rose-600 hover:bg-rose-200 active:scale-95 transition-all duration-200"
                       aria-label={`Undo ${config.label} substitution`}
-                      title="Undo substitution"
+                      title="Deshacer sustitución"
                     >
                       <X className="w-4 h-4" aria-hidden="true" />
                     </button>
@@ -204,8 +204,8 @@ export function PlateCustomizer({
                     <button
                       onClick={() => handleRemoveClick(component)}
                       className="p-2.5 rounded-xl bg-sage-100 text-sage-600 hover:bg-sage-200 active:scale-95 transition-all duration-200"
-                      aria-label={`Substitute ${config.label}`}
-                      title="Substitute"
+                      aria-label={`Sustituir ${config.label}`}
+                      title="Sustituir"
                     >
                       <Minus className="w-4 h-4" aria-hidden="true" />
                     </button>
@@ -220,8 +220,8 @@ export function PlateCustomizer({
                       }
                     }}
                     className="p-2.5 rounded-xl bg-sage-100 text-sage-600 hover:bg-sage-200 active:scale-95 transition-all duration-200"
-                    aria-label={`Add extra ${config.label}`}
-                    title="Add extra"
+                    aria-label={`Agregar extra ${config.label}`}
+                    title="Agregar extra"
                   >
                     <Plus className="w-4 h-4" aria-hidden="true" />
                   </button>
@@ -248,7 +248,7 @@ export function PlateCustomizer({
                         <button
                           onClick={() => onUpdateAdditionalQuantity(item.id, Math.max(0, item.quantity - 1))}
                           className="p-1.5 rounded-md hover:bg-sage-100 text-slate-600 active:scale-95 transition-all"
-                          aria-label={`Decrease ${item.name} quantity`}
+                          aria-label={`Disminuir cantidad de ${item.name}`}
                         >
                           <Minus className="w-3.5 h-3.5" aria-hidden="true" />
                         </button>
@@ -258,14 +258,14 @@ export function PlateCustomizer({
                         <button
                           onClick={() => onUpdateAdditionalQuantity(item.id, item.quantity + 1)}
                           className="p-1.5 rounded-md hover:bg-sage-100 text-slate-600 active:scale-95 transition-all"
-                          aria-label={`Increase ${item.name} quantity`}
+                          aria-label={`Aumentar cantidad de ${item.name}`}
                         >
                           <Plus className="w-3.5 h-3.5" aria-hidden="true" />
                         </button>
                         <button
                           onClick={() => onRemoveAdditional(item.id)}
                           className="p-1.5 rounded-md text-slate-400 hover:text-rose-500 hover:bg-rose-50 ml-1 transition-colors"
-                          aria-label={`Remove ${item.name}`}
+                          aria-label={`Eliminar ${item.name}`}
                         >
                           <X className="w-3.5 h-3.5" aria-hidden="true" />
                         </button>
@@ -283,16 +283,16 @@ export function PlateCustomizer({
           <div 
             className="mt-4 p-5 bg-sage-50 rounded-xl border-2 border-sage-300 animate-in fade-in zoom-in-95 duration-300"
             role="dialog"
-            aria-label="Select substitution"
+            aria-label="Seleccionar sustitución"
           >
             <div className="flex items-center justify-between mb-4">
               <p className="text-sm font-semibold text-slate-900">
-                Replace {componentConfig[activeSubstitution].label} with:
+                Reemplazar {componentConfig[activeSubstitution].label} con:
               </p>
               <button
                 onClick={handleCancelSubstitution}
                 className="p-1.5 rounded-lg hover:bg-sage-200 text-slate-500 transition-colors"
-                aria-label="Cancel substitution"
+                aria-label="Cancelar sustitución"
               >
                 <X className="w-4 h-4" aria-hidden="true" />
               </button>
@@ -308,7 +308,7 @@ export function PlateCustomizer({
                       key={comp}
                       onClick={() => handleSubstituteSelect(comp)}
                       className="group flex items-center justify-between p-3.5 rounded-xl border-2 border-sage-200 bg-white hover:border-sage-500 hover:bg-sage-50 active:scale-[0.98] transition-all duration-200 text-left"
-                      aria-label={`Substitute with ${config.label}`}
+                      aria-label={`Sustituir con ${config.label}`}
                     >
                       <div className="flex items-center gap-2.5">
                         <Icon className="w-4 h-4 text-sage-600 group-hover:text-sage-700" aria-hidden="true" />
@@ -323,7 +323,7 @@ export function PlateCustomizer({
               onClick={handleCancelSubstitution}
               className="mt-4 w-full py-2.5 text-sm font-medium text-slate-500 hover:text-slate-700 hover:bg-sage-100 rounded-lg transition-all"
             >
-              Cancel
+              Cancelar
             </button>
           </div>
         )}
@@ -335,7 +335,7 @@ export function PlateCustomizer({
               <Plus className="w-3.5 h-3.5 text-white" aria-hidden="true" />
             </div>
             <p className="text-sm font-semibold text-slate-700 uppercase tracking-wide">
-              Quick Add
+              Agregar Rápido
             </p>
           </div>
           <div className="grid grid-cols-2 gap-2">
