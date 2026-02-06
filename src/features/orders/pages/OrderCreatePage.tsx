@@ -304,12 +304,13 @@ export function OrderCreatePage() {
 
     // Crear todos los pedidos
     const promises = tableOrders.map((order) => {
-      const items: Array<{
+      type OrderItemInput = {
         menuItemId: number;
         quantity: number;
         priceAtOrder: number;
         notes: string;
-      }}> = [];
+      };
+      const items: OrderItemInput[] = [];
       
       if (order.protein) {
         items.push({
