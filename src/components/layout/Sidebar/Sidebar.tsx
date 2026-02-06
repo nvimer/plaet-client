@@ -84,12 +84,13 @@ const baseNavigationItems: NavItem[] = [
     icon: ShoppingCart,
     description: "Gestionar pedidos",
     children: [
+      { type: "link", path: ROUTES.ORDERS, name: "Todos los pedidos", icon: ShoppingCart },
       { type: "link", path: ROUTES.KITCHEN, name: "Cocina", icon: ChefHat },
       {
         type: "link",
         path: ROUTES.ORDER_CREATE,
         name: "Nuevo Pedido",
-        icon: ShoppingCart,
+        icon: Plus,
       },
     ],
   },
