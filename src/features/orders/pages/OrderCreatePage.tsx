@@ -91,40 +91,31 @@ export function OrderCreatePage() {
   const [showDailyMenu, setShowDailyMenu] = useState(false);
   const [orderNotes, setOrderNotes] = useState("");
 
-  // Mock data - Daily Menu
-  const dailyMenu = {
-    side: "Frijoles con plátano maduro",
-    soup: "Sopa de verduras",
-    drink: "Limonada natural",
-    dessert: "Gelatina",
-  };
+  // Get proteins from real menu items (available main dishes)
+  const proteins = useMemo(() => {
+    if (!menuItems) return [];
+    return menuItems
+      .filter((item) => item.isAvailable && !item.isExtra)
+      .map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: Number(item.price),
+        isAvailable: item.isAvailable,
+      }));
+  }, [menuItems]);
 
-  const proteins: ProteinOption[] = useMemo(
-    () => [
-      { id: 1, name: "Carne a la plancha", price: 10000, icon: "beef", isAvailable: true },
-      { id: 2, name: "Chuleta de cerdo", price: 10000, icon: "pork", isAvailable: true },
-      { id: 3, name: "Pollo asado", price: 10000, icon: "chicken", isAvailable: true },
-      { id: 4, name: "Carne de res", price: 11000, icon: "beef", isAvailable: true },
-      { id: 5, name: "Pescado frito", price: 11000, icon: "fish", isAvailable: true },
-      { id: 6, name: "Pollo apanado", price: 10000, icon: "chicken", isAvailable: true },
-    ],
-    []
-  );
-
-  const availableComponents = useMemo(
-    () => [
-      { id: 101, name: "Porción de acompañamiento", type: "principle" as const, price: 0 },
-      { id: 102, name: "Porción de ensalada", type: "salad" as const, price: 0 },
-      { id: 103, name: "Porción de papa", type: "additional" as const, price: 0 },
-      { id: 104, name: "Porción de plátano", type: "additional" as const, price: 0 },
-      { id: 201, name: "Huevo", type: "additional" as const, price: 2000 },
-      { id: 202, name: "Doble huevo", type: "additional" as const, price: 3500 },
-      { id: 203, name: "Porción extra de acompañamiento", type: "principle" as const, price: 3000 },
-      { id: 204, name: "Porción extra de ensalada", type: "salad" as const, price: 2500 },
-      { id: 205, name: "Porción de aguacate", type: "additional" as const, price: 3000 },
-    ],
-    []
-  );
+  // Get available components/extras from menu items
+  const availableComponents = useMemo(() => {
+    if (!menuItems) return [];
+    return menuItems
+      .filter((item) => item.isAvailable && item.isExtra)
+      .map((item) => ({
+        id: item.id,
+        name: item.name,
+        price: Number(item.price),
+        type: "additional" as const,
+      }));
+  }, [menuItems]);
 
   const filteredLooseItems = useMemo(() => {
     if (!menuItems) return [];
@@ -135,6 +126,13 @@ export function OrderCreatePage() {
           item.name.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }, [menuItems, searchTerm]);
+
+  const dailyMenu = {
+    side: "Bandeja",
+    soup: "Sopa del día",
+    drink: "Gaseosa",
+    dessert: "Postre del día",
+  };
 
   // Calcular total del pedido actual
   const currentOrderTotal = useMemo(() => {
