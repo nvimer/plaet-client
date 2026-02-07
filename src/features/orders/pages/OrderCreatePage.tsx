@@ -5,6 +5,7 @@ import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { Button, Card, Input } from "@/components";
 import { useTables } from "@/features/tables";
 import { useItems } from "@/features/menu";
+import { useDailyMenuToday } from "@/features/daily-menu";
 import { useCreateOrder } from "../hooks";
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
@@ -71,6 +72,7 @@ export function OrderCreatePage() {
   const navigate = useNavigate();
   const { data: tablesData } = useTables();
   const { data: menuItems } = useItems();
+  const { data: dailyMenuData } = useDailyMenuToday();
   const { mutate: createOrder, isPending } = useCreateOrder();
 
   const tables = tablesData?.tables || [];
@@ -127,12 +129,25 @@ export function OrderCreatePage() {
     );
   }, [menuItems, searchTerm]);
 
-  const dailyMenu = {
-    side: "Bandeja",
-    soup: "Sopa del día",
-    drink: "Gaseosa",
-    dessert: "Postre del día",
-  };
+  // Build daily menu display from API data
+  const dailyMenuDisplay = useMemo(() => {
+    if (!dailyMenuData) {
+      return {
+        side: "Bandeja",
+        soup: "Sopa del día",
+        drink: "Gaseosa",
+        dessert: "Postre del día",
+        isConfigured: false,
+      };
+    }
+    return {
+      side: dailyMenuData.side,
+      soup: dailyMenuData.soup,
+      drink: dailyMenuData.drink,
+      dessert: dailyMenuData.dessert || "Sin postre",
+      isConfigured: true,
+    };
+  }, [dailyMenuData]);
 
   // Calcular total del pedido actual
   const currentOrderTotal = useMemo(() => {
@@ -579,7 +594,7 @@ export function OrderCreatePage() {
                   <div className="text-left">
                     <span className="text-white font-semibold block">Menú del Día</span>
                     <span className="text-amber-100 text-sm hidden sm:inline">
-                      {dailyMenu.side}, {dailyMenu.soup}, {dailyMenu.drink}
+                      {dailyMenuDisplay.side}, {dailyMenuDisplay.soup}, {dailyMenuDisplay.drink}
                     </span>
                   </div>
                 </div>
@@ -591,10 +606,10 @@ export function OrderCreatePage() {
               </button>
               {showDailyMenu && (
                 <DailyMenuSection
-                  side={dailyMenu.side}
-                  soup={dailyMenu.soup}
-                  drink={dailyMenu.drink}
-                  dessert={dailyMenu.dessert}
+                  side={dailyMenuDisplay.side}
+                  soup={dailyMenuDisplay.soup}
+                  drink={dailyMenuDisplay.drink}
+                  dessert={dailyMenuDisplay.dessert}
                 />
               )}
             </Card>
