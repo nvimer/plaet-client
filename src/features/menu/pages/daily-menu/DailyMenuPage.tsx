@@ -22,15 +22,33 @@ function LoadingState() {
   );
 }
 
-function ErrorState({ onRetry }: { onRetry: () => void }) {
+function ErrorState({ onRetry, error }: { onRetry: () => void; error: Error | null }) {
+  // Detect authentication errors
+  const isAuthError = error?.message?.includes("401") || 
+                      error?.message?.includes("Unauthorized") ||
+                      error?.message?.includes("auth token");
+  
+  const isNetworkError = error?.message?.includes("Network Error") ||
+                         error?.message?.includes("ECONNREFUSED");
+
   return (
     <Card variant="elevated" padding="lg" className="max-w-md w-full border border-sage-200 shadow-sm rounded-2xl mx-auto">
       <div className="text-center">
-        <div className="w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-rose-500">
+        <div className={`w-14 h-14 rounded-xl flex items-center justify-center mx-auto mb-4 ${
+          isAuthError ? "bg-amber-50 text-amber-500" : "bg-rose-50 text-rose-500"
+        }`}>
           <UtensilsCrossed className="w-7 h-7" />
         </div>
-        <h2 className="text-lg font-semibold text-carbon-900 mb-2">Error al cargar el menú</h2>
-        <p className="text-carbon-500 text-sm mb-6">No se pudo cargar la información del menú del día.</p>
+        <h2 className="text-lg font-semibold text-carbon-900 mb-2">
+          {isAuthError ? "Sesión requerida" : isNetworkError ? "Error de conexión" : "Error al cargar el menú"}
+        </h2>
+        <p className="text-carbon-500 text-sm mb-6">
+          {isAuthError 
+            ? "Debes iniciar sesión para ver y configurar el menú del día."
+            : isNetworkError
+            ? "No se pudo conectar con el servidor. Verifica que el backend esté corriendo."
+            : "No se pudo cargar la información del menú del día."}
+        </p>
         <Button variant="primary" size="lg" onClick={onRetry} fullWidth className="min-h-[44px]">
           <RefreshCw className="w-5 h-5 mr-2" />
           Reintentar
@@ -148,7 +166,7 @@ export function DailyMenuPage() {
           </p>
         </div>
         <div className="flex items-center justify-center min-h-[50vh]">
-          <ErrorState onRetry={() => refetch()} />
+          <ErrorState onRetry={() => refetch()} error={error} />
         </div>
       </>
     );

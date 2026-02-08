@@ -28,10 +28,24 @@ export function useDailyMenuToday() {
   return useQuery({
     queryKey: DAILY_MENU_KEYS.today(),
     queryFn: async () => {
-      const response = await dailyMenuApi.getToday();
-      return response.data;
+      try {
+        if (import.meta.env.DEV) {
+          console.log("[DailyMenu] Fetching today's menu...");
+        }
+        const response = await dailyMenuApi.getToday();
+        if (import.meta.env.DEV) {
+          console.log("[DailyMenu] Response:", response);
+        }
+        return response.data;
+      } catch (error) {
+        if (import.meta.env.DEV) {
+          console.error("[DailyMenu] Error fetching menu:", error);
+        }
+        throw error;
+      }
     },
     staleTime: 1000 * 60 * 5,
+    retry: 1,
   });
 }
 
@@ -44,6 +58,7 @@ export function useDailyMenuByDate(date: string) {
     },
     enabled: !!date,
     staleTime: 1000 * 60 * 5,
+    retry: 1,
   });
 }
 
