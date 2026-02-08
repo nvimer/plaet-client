@@ -7,8 +7,7 @@
 
 import { createContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
-import type { User, LoginInput, AuthResponse } from "@/types";
-import type { AxiosErrorWithResponse } from "@/types/common";
+import type { User, LoginInput } from "@/types";
 import { authApi, profileApi } from "@/services";
 
 /**
@@ -25,20 +24,20 @@ interface AuthContextType {
 }
 
 /**
- * Crear el contexto con valor undefined por defecto
- * undefined = no hay Provider (error de desarrollo)
+ * Create the context with undefined default value
+ * undefined = no Provider (development error)
  */
 export const AuthContext = createContext<AuthContextType | undefined>(
   undefined,
 );
 
 // ============================================================
-// 3. CREAR EL PROVIDER
+// 3. CREATE PROVIDER
 // ============================================================
 
 /**
- * Props del AuthProvider
- * children = todos los componentes que envuelve
+ * Props of the AuthProvider
+ * children = all components it wraps
  */
 interface AuthProviderProps {
   children: ReactNode;
@@ -47,88 +46,82 @@ interface AuthProviderProps {
 /**
  * AuthProvider
  *
- * Este componente:
- * 1. Guarda el usuario y token en estado
- * 2. Persiste la sesión en localStorage
- * 3. Provee funciones login/logout
- * 4. Comparte todo con los componentes hijos
+ * This component:
+ * 1. Stores user and token in state
+ * 2. Persists session in localStorage
+ * 3. Provides login/logout functions
+ * 4. Shares everything with child components
  */
 export function AuthProvider({ children }: AuthProviderProps) {
   // ============================================================
-  // ESTADO LOCAL
+  // LOCAL STATE
   // ============================================================
 
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true); // Inicia en true
+  const [isLoading, setIsLoading] = useState(true); // Starts as true
 
   // ============================================================
-  // EFECTO: RESTAURAR SESIÓN AL CARGAR
+  // EFFECT: RESTORE SESSION ON LOAD
   // ============================================================
 
   /**
-   * useEffect se ejecuta cuando el componente se monta
-   * Aquí verificamos si hay una sesión guardada en localStorage
+   * useEffect runs when the component mounts
+   * Here we verify if there is a saved session in localStorage
    */
   useEffect(() => {
-    // Función para restaurar sesión guardada
+    // Function to restore saved session
     const restoreSession = () => {
       try {
-        // Intentar obtener token del localStorage
+        // Try to get token from localStorage
         const storedToken = localStorage.getItem("authToken");
 
-        // Intentar obtener usuario del localStorage
+        // Try to get user from localStorage
         const storedUser = localStorage.getItem("user");
 
-        // Si hay token Y usuario guardados
+        // If both token and user are saved
         if (storedToken && storedUser) {
-          // Restaurar en el estado
+          // Restore in state
           setToken(storedToken);
-          setUser(JSON.parse(storedUser)); // Convertir string JSON a objeto
+          setUser(JSON.parse(storedUser)); // Convert JSON string to object
 
-          console.log("✅ Sesión restaurada desde localStorage");
+          console.log("✅ Session restored from localStorage");
         } else {
-          console.log("ℹ️ No hay sesión guardada");
+          console.log("ℹ️ No saved session");
         }
       } catch (error) {
-        // Si hay error al parsear el JSON, limpiar todo
-        console.error("❌ Error al restaurar sesión:", error);
+        // If there is an error parsing JSON, clean everything
+        console.error("❌ Error restoring session:", error);
         localStorage.removeItem("authToken");
         localStorage.removeItem("user");
       } finally {
-        // Siempre marcar como "no cargando"
+        // Always mark as "not loading"
         setIsLoading(false);
       }
     };
 
     restoreSession();
-  }, []); // [] = solo se ejecuta una vez al montar
+  }, []); // [] = only runs once when mounted
 
   // ============================================================
-  // FUNCIÓN: LOGIN
+  // FUNCTION: LOGIN
   // ============================================================
 
   /**
-   * Función para iniciar sesión
+   * Function to login
    *
-   * 1. Llama a la API con email y password
-   * 2. Si es exitoso, guarda token y usuario
-   * 3. Persiste en localStorage
+   * 1. Call API with email and password
+   * 2. If successful, store token and user
+   * 3. NOTE: Tokens are now handled in httpOnly cookies
    */
   const login = async (credentials: LoginInput) => {
     try {
-      // Llamar a la API de login
-      const response: AuthResponse = await authApi.login(credentials);
+      // Call the login API
+      await authApi.login(credentials);
 
-      // Extraer token de la ubicación correcta (según tu API)
-      const authToken = response.data.access.token;
-      console.log("🔍 Token extraído:", authToken);
-
-      // Guardar token en el estado
-      setToken(authToken);
-
-      // Persistir token en localStorage
-      localStorage.setItem("authToken", authToken);
+      // Tokens are automatically handled by httpOnly cookies
+      // No longer necessary to save token in state
+      setToken(null); // No token visible on the client
 
       // Get user profile with roles and permissions
       const profileResponse = await profileApi.getMyProfile();
@@ -139,7 +132,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         try {
           const { usersApi } = await import("@/services");
           const rolesResponse = await usersApi.getUserWithRolesAndPermissions(
-            userData.id
+            userData.id,
           );
           // Merge roles into user data
           const userWithRoles = {
@@ -159,73 +152,73 @@ export function AuthProvider({ children }: AuthProviderProps) {
         localStorage.setItem("user", JSON.stringify(userData));
       }
     } catch (error) {
-      // Si hay error, limpiar todo
-      console.error("❌ Error en login:", error);
+      // If there is an error, clean everything
+      console.error("❌ Login error:", error);
 
-      // Re-lanzar el error para que el componente pueda manejarlo
+      // Re-throw the error so the component can handle it
       throw error;
     }
   };
 
   // ============================================================
-  // FUNCIÓN: LOGOUT
+  // FUNCTION: LOGOUT
   // ============================================================
 
   /**
-   * Función para cerrar sesión
+   * Function to logout
    *
-   * 1. Llama a la API de logout (opcional)
-   * 2. Limpia el estado
-   * 3. Limpia localStorage
+   * 1. Call the logout API (optional)
+   * 2. Clear state
+   * 3. Clear localStorage
    */
   const logout = () => {
     try {
-      // Intentar llamar a la API de logout
-      // No esperamos la respuesta (fire and forget)
+      // Try to call the logout API
+      // We don't wait for the response (fire and forget)
       authApi.logout().catch((error) => {
-        console.error("Error al hacer logout en el servidor:", error);
+        console.error("Error logging out on server:", error);
       });
     } catch (error) {
-      console.error("Error en logout:", error);
+      console.error("Logout error:", error);
     } finally {
-      // Limpiar estado local
+      // Clear local state
       setUser(null);
       setToken(null);
 
-      // Limpiar localStorage
+      // Clear localStorage
       localStorage.removeItem("authToken");
       localStorage.removeItem("user");
 
-      console.log("✅ Sesión cerrada");
+      console.log("✅ Session closed");
     }
   };
 
   // ============================================================
-  // VALOR A COMPARTIR
+  // VALUE TO SHARE
   // ============================================================
 
   /**
-   * Este objeto es lo que compartimos con todos los componentes
-   * Cualquier componente hijo puede acceder a esto con useAuth()
+   * This object is what we share with all components
+   * Any child component can access this with useAuth()
    */
   const value: AuthContextType = {
-    // Estado
+    // State
     user,
     token,
-    isAuthenticated: !!user && !!token, // !! convierte a boolean
+    isAuthenticated: !!user, // !! converts to boolean
     isLoading,
 
-    // Funciones
+    // Functions
     login,
     logout,
   };
 
   // ============================================================
-  // RENDERIZAR PROVIDER
+  // RENDER PROVIDER
   // ============================================================
 
   /**
-   * El Provider envuelve a los hijos y les da acceso al value
+   * The Provider wraps children and gives them access to the value
    */
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
