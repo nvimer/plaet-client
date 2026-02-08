@@ -20,6 +20,7 @@ import { CategoryCreatePage } from "./features/menu/categories/pages/CategoryCre
 import { CategoryEditPage } from "./features/menu/categories/pages/CategoryEditPage";
 import { MenuItemCreatePage } from "./features/menu/items/pages/MenuItemCreatePage";
 import { MenuItemEditPage } from "./features/menu/items/pages/MenuItemEditPage";
+import { DailyMenuPage } from "./features/menu/pages/daily-menu/DailyMenuPage";
 import {
   UsersPage,
   UserCreatePage,
@@ -223,6 +224,18 @@ const App = () => {
                   <StockManagementPage />
                 </FullScreenLayout>
               </RoleProtectedRoute>
+            </PrivateRoute>
+          }
+        />
+
+        {/* Menu - Daily Menu Configuration */}
+        <Route
+          path={ROUTES.DAILY_MENU}
+          element={
+            <PrivateRoute>
+              <DashboardLayout>
+                <DailyMenuPage />
+              </DashboardLayout>
             </PrivateRoute>
           }
         />

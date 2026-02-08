@@ -32,6 +32,7 @@ export const ROUTES = {
   MENU_ITEM_EDIT: "/menu/items/:id/edit",
   MENU_CATEGORY_CREATE: "/menu/categories/new",
   MENU_CATEGORY_EDIT: "/menu/categories/:id/edit",
+  DAILY_MENU: "/menu/daily",
   STOCK_MANAGEMENT: "/menu/stock",
 
   // Tables

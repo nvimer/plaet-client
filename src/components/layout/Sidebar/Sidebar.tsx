@@ -189,6 +189,12 @@ export function Sidebar() {
         badge: "⚡",
       },
       {
+        type: "link",
+        path: ROUTES.DAILY_MENU,
+        name: "Menú del Día",
+        icon: ChefHat,
+      },
+      {
         type: "divider",
         path: "",
         name: "divider",

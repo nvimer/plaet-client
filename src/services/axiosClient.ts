@@ -9,7 +9,7 @@
  */
 import type { InternalAxiosRequestConfig } from "axios";
 import axios, { AxiosError } from "axios";
-import { API_URL, API_TIMEOUT, AUTH_TOKEN_KEY } from "../config/constants";
+import { API_URL, API_TIMEOUT } from "../config/constants";
 
 // Create Axios instance with secure configuration
 export const axiosClient = axios.create({
@@ -17,7 +17,7 @@ export const axiosClient = axios.create({
   timeout: API_TIMEOUT,
   headers: {
     "Content-Type": "application/json",
-    "Accept": "application/json",
+    Accept: "application/json",
   },
   withCredentials: true, // Enable credentials for CORS
 });
@@ -25,18 +25,13 @@ export const axiosClient = axios.create({
 /**
  * REQUEST INTERCEPTOR
  *
- * Security: Adds authentication token to every request.
- * Only sends token if it exists.
+ * Security: Cookies are automatically sent with withCredentials: true
+ * No need to manually add Authorization header
  */
 axiosClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Get token from secure storage
-    const token = localStorage.getItem(AUTH_TOKEN_KEY);
-
-    // Add token to Authorization header if exists
-    if (token && config.headers) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+    // Tokens are automatically sent via httpOnly cookies
+    // No need to manually add Authorization header
 
     // Add request timestamp for debugging (dev only)
     if (import.meta.env.DEV) {
@@ -81,10 +76,13 @@ axiosClient.interceptors.response.use(
         case 401:
           // Unauthorized - Clear auth and redirect to login
           console.warn("[API] Unauthorized - Clearing auth state");
-          localStorage.removeItem(AUTH_TOKEN_KEY);
+          localStorage.removeItem("user");
 
           // Redirect to login if in browser
-          if (typeof window !== "undefined" && !window.location.pathname.includes("/login")) {
+          if (
+            typeof window !== "undefined" &&
+            !window.location.pathname.includes("/login")
+          ) {
             // Only redirect if not already on login page
             window.location.href = "/login";
           }

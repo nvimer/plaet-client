@@ -83,6 +83,14 @@ const BREADCRUMB_MAP: Array<{ path: string; items: BreadcrumbItem[] }> = [
       { label: "Inventario" },
     ],
   },
+  {
+    path: "/menu/daily",
+    items: [
+      { label: "Inicio", path: "/dashboard" },
+      { label: "Menú", path: "/menu" },
+      { label: "Menú del Día" },
+    ],
+  },
   // Users
   {
     path: "/users",
