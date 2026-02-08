@@ -1,5 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { dailyMenuApi } from "@/services";
+import {
+  getToday,
+  getByDate,
+  updateToday,
+  updateByDate,
+} from "@/services/dailyMenuApi";
 
 export interface DailyMenu {
   id: string;
@@ -32,7 +37,7 @@ export function useDailyMenuToday() {
         if (import.meta.env.DEV) {
           console.log("[DailyMenu] Fetching today's menu...");
         }
-        const response = await dailyMenuApi.getToday();
+        const response = await getToday();
         if (import.meta.env.DEV) {
           console.log("[DailyMenu] Response:", response);
         }
@@ -53,7 +58,7 @@ export function useDailyMenuByDate(date: string) {
   return useQuery({
     queryKey: DAILY_MENU_KEYS.byDate(date),
     queryFn: async () => {
-      const response = await dailyMenuApi.getByDate(date);
+      const response = await getByDate(date);
       return response.data;
     },
     enabled: !!date,
@@ -67,7 +72,7 @@ export function useUpdateDailyMenu() {
 
   return useMutation({
     mutationFn: async (data: UpdateDailyMenuData) => {
-      const response = await dailyMenuApi.updateToday(data);
+      const response = await updateToday(data);
       return response.data;
     },
     onSuccess: () => {
@@ -81,7 +86,7 @@ export function useUpdateDailyMenuByDate() {
 
   return useMutation({
     mutationFn: async ({ date, data }: { date: string; data: UpdateDailyMenuData }) => {
-      const response = await dailyMenuApi.updateByDate(date, data);
+      const response = await updateByDate(date, data);
       return response.data;
     },
     onSuccess: () => {
