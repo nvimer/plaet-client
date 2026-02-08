@@ -1,4 +1,3 @@
-import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { Card, Button } from "@/components";
 import { DailyMenuForm } from "./DailyMenuForm";
 import { useDailyMenuToday } from "@/features/daily-menu";
@@ -127,19 +126,19 @@ export function DailyMenuPage() {
 
   if (isLoading) {
     return (
-      <SidebarLayout>
+      <>
         <div className="mb-8">
           <Skeleton variant="text" width={280} height={36} className="mb-2" />
           <Skeleton variant="text" width={400} height={20} />
         </div>
         <LoadingState />
-      </SidebarLayout>
+      </>
     );
   }
 
   if (error) {
     return (
-      <SidebarLayout>
+      <>
         <div className="mb-8">
           <h1 className="text-2xl sm:text-3xl font-semibold text-carbon-900 tracking-tight">
             Menú del Día
@@ -151,12 +150,12 @@ export function DailyMenuPage() {
         <div className="flex items-center justify-center min-h-[50vh]">
           <ErrorState onRetry={() => refetch()} />
         </div>
-      </SidebarLayout>
+      </>
     );
   }
 
   return (
-    <SidebarLayout>
+    <>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-semibold text-carbon-900 tracking-tight">
@@ -182,6 +181,6 @@ export function DailyMenuPage() {
           <HelpCard />
         </div>
       </div>
-    </SidebarLayout>
+    </>
   );
 }
