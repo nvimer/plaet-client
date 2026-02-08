@@ -99,9 +99,51 @@ import { OrderCard } from "./components/OrderCard"; // same feature only
 ### TypeScript
 
 - **Strict mode enabled** - all code fully typed
+- **NO `any` or `unknown` types allowed** - all variables, parameters, and return types must be explicitly typed
 - Use `type` for type aliases, `interface` for object shapes
 - Props interfaces named `{ComponentName}Props`
 - Export types from `src/types/index.ts` barrel file
+
+**❌ INCORRECT:**
+```typescript
+// Using any - NOT ALLOWED
+function processData(data: any): any {
+  return data.items;
+}
+
+// Using unknown - NOT ALLOWED  
+function handleError(error: unknown): void {
+  console.log(error.message);
+}
+
+// Implicit any - NOT ALLOWED
+function calculateTotal(items) {
+  return items.reduce((sum, item) => sum + item.price, 0);
+}
+```
+
+**✅ CORRECT:**
+```typescript
+// Explicit types required
+interface ProcessedData {
+  items: MenuItem[];
+  total: number;
+}
+
+function processData(data: ProcessedData): MenuItem[] {
+  return data.items;
+}
+
+// Use proper error handling
+function handleError(error: Error): void {
+  console.log(error.message);
+}
+
+// All parameters typed
+function calculateTotal(items: MenuItem[]): number {
+  return items.reduce((sum: number, item: MenuItem) => sum + item.price, 0);
+}
+```
 
 ### JSDoc Documentation
 
