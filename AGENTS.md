@@ -222,13 +222,15 @@ docs: update component documentation
 ## Pre-Commit Checklist
 
 - [ ] `npm run type-check` passes
-- [ ] `npm run lint` passes
+- [ ] `npm run lint` passes (run `npm run lint -- --fix` to auto-fix)
 - [ ] JSDoc on all public methods
 - [ ] No `console.log` or debug code
 - [ ] All imports use `@/` paths except same-feature relatives
 - [ ] Touch targets minimum 44x44px
 - [ ] Loading states for async operations
 - [ ] Types exported from `src/types/index.ts`
+- [ ] **NO `any` or `unknown` types** - use explicit types
+- [ ] Unused variables prefixed with `_` (e.g., `_unused`)
 
 ## Key Dependencies
 
@@ -248,6 +250,73 @@ docs: update component documentation
 - Labels on all inputs
 - Semantic HTML and ARIA
 
+## Authentication & Token Handling
+
+The app uses JWT tokens with httpOnly cookies:
+
+**Login Flow:**
+1. POST `/auth/login` with email/password
+2. Server sets httpOnly cookies (`accessToken`, `refreshToken`)
+3. Frontend stores user data in AuthContext (NOT tokens)
+4. Axios interceptors automatically include cookies in requests
+
+**Token Blacklist:**
+- Tokens are checked against a blacklist on each request
+- Auth routes (`/auth/*`) skip blacklist check to allow login with old tokens
+- Logout adds token to blacklist
+
+**AuthContext Pattern:**
+```typescript
+// Export context (with eslint-disable for Fast Refresh)
+// eslint-disable-next-line react-refresh/only-export-components
+export const AuthContext = createContext<AuthContextType>(...);
+
+// Export hook separately
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) throw new Error("useAuth must be used within AuthProvider");
+  return context;
+};
+```
+
+## Common Patterns
+
+### Component with Loading State
+```typescript
+export function MyPage() {
+  const { data, isLoading, error } = useData();
+  
+  if (isLoading) return <LoadingState />;
+  if (error) return <ErrorState error={error} onRetry={refetch} />;
+  
+  return <Content data={data} />;
+}
+```
+
+### API Error Handling
+```typescript
+try {
+  await mutation.mutateAsync(data);
+  toast.success("Success!");
+} catch (error) {
+  // Error already handled by axios interceptors
+  console.error("Operation failed:", error);
+}
+```
+
+### Form with React Hook Form + Zod
+```typescript
+const schema = z.object({
+  name: z.string().min(1, "Required"),
+  email: z.string().email("Invalid email"),
+});
+
+const { control, handleSubmit } = useForm({
+  resolver: zodResolver(schema),
+  mode: 'onChange',
+});
+```
+
 ## Notes Directory
 
 Project documentation in `/notes/`:
@@ -258,14 +327,88 @@ Project documentation in `/notes/`:
 - `COMMIT_GUIDE.md` - Commit guidelines
 - `[date]-[task].md` - Task-specific notes
 
+## ESLint Configuration
+
+The project uses TypeScript ESLint with custom rules:
+
+```javascript
+// eslint.config.js
+rules: {
+  '@typescript-eslint/no-unused-vars': ['error', { 
+    argsIgnorePattern: '^_',
+    varsIgnorePattern: '^_',
+    caughtErrorsIgnorePattern: '^_'
+  }],
+}
+```
+
+**Unused Variables:** Prefix with underscore (e.g., `_unused`, `_id`)
+```typescript
+// ✅ CORRECT - underscore prefix ignores the variable
+const handleClick = (_event: MouseEvent) => { ... }
+
+// ❌ INCORRECT - will cause ESLint error
+const handleClick = (event: MouseEvent) => { ... } // event not used
+```
+
+**Fast Refresh Warnings:** For React Context files that export both context and hook, add:
+```typescript
+// eslint-disable-next-line react-refresh/only-export-components
+export const AuthContext = createContext<AuthContextType>(...);
+```
+
 ## Daily Menu Module
 
-Located at `/menu/daily` - Configure today's menu for POS display.
+Located at `/menu/daily` - Category-based daily menu configuration for POS.
+
+### Architecture
+
+**Simplified Database Relations:**
+- MenuItem and MenuCategory have NO relations to DailyMenu
+- DailyMenu stores only IDs (foreign keys without `@relation`)
+- Relations queried manually in repository layer
+- This keeps MenuItem/MenuCategory clean and decoupled
+
+**Price Configuration:**
+- `basePrice`: $10,000 (chicken, pork)
+- `premiumProteinPrice`: $11,000 (beef, fish)
+
+**Categories:**
+- Sopas (Soups) - 2 options
+- Principios (Principles) - 2 options  
+- Proteínas (Proteins) - 2-3 options
+- Jugos (Drinks) - 2 options
+- Extras - 2 options
+- Arroz (Rice) - Always included
+- Ensaladas (Salads) - Always included
 
 **API Endpoints:**
-- `GET /daily-menu/current` - Get today's menu
-- `PUT /daily-menu` - Update today's menu
+- `GET /daily-menu/current` - Get today's menu with full item details
+- `PUT /daily-menu` - Update menu configuration
+- `GET /menu/items/by-category/:id` - Get items by category
 
-**Page:** `src/features/menu/pages/daily-menu/DailyMenuPage.tsx`
-**Service:** `src/services/dailyMenuApi.ts`
-**Hooks:** `src/features/daily-menu/hooks/useDailyMenu.ts`
+**Key Files:**
+- Page: `src/features/menu/pages/daily-menu/DailyMenuPage.tsx`
+- Form: `src/features/menu/pages/daily-menu/DailyMenuConfigForm.tsx`
+- Service: `src/services/dailyMenuApi.ts`
+- Hooks: `src/features/daily-menu/hooks/useDailyMenu.ts`
+
+### Usage
+
+```typescript
+// Get today's menu
+const { data: dailyMenu } = useDailyMenuToday();
+
+// Get items by category
+const { data: soupItems } = useItemsByCategory(categoryId);
+
+// Update menu
+const updateMenu = useUpdateDailyMenu();
+await updateMenu.mutateAsync({
+  basePrice: 10000,
+  premiumProteinPrice: 11000,
+  soupCategoryId: 1,
+  soupOptions: { option1Id: 101, option2Id: 102 },
+  // ... other options
+});
+```
