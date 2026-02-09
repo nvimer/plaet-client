@@ -110,7 +110,7 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
   // Toggle functions
   const toggleCollapsed = useCallback(() => {
     if (!isMobile) {
-      setIsCollapsed((prev) => {
+      setIsCollapsed((prev: boolean) => {
         const newValue = !prev;
         localStorage.setItem(STORAGE_KEYS.collapsed, JSON.stringify(newValue));
         return newValue;
@@ -174,6 +174,7 @@ export function SidebarProvider({ children }: { children: ReactNode }) {
  * @example
  * const { isCollapsed, toggleCollapsed, sidebarWidth } = useSidebar();
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export function useSidebar() {
   const context = useContext(SidebarContext);
   if (!context) {

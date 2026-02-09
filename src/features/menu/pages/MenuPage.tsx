@@ -1,7 +1,7 @@
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import { Button, Card, FilterBar, FilterSelect, ActiveFilterChips } from "@/components";
+import { Button, FilterBar, FilterSelect, ActiveFilterChips } from "@/components";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 import { FolderOpen, Grid3x3, Plus, UtensilsCrossed, AlertTriangle, Package } from "lucide-react";

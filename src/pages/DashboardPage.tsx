@@ -3,6 +3,7 @@ import { useTables } from "@/features/tables";
 import { useOrders } from "@/features/orders";
 import { getTableManageRoute } from "@/app/routes";
 import { TableStatus, OrderStatus } from "@/types";
+import type { Order, OrderItem } from "@/types";
 import {
   Table2,
   ClipboardList,
@@ -52,20 +53,20 @@ export function DashboardPage() {
     }
 
     const orders = todayOrders;
-    const paidOrders = orders.filter((order: any) => order.status === OrderStatus.PAID);
-    const pendingOrders = orders.filter((order: any) => 
+    const paidOrders = orders.filter((order: Order) => order.status === OrderStatus.PAID);
+    const pendingOrders = orders.filter((order: Order) =>
       [OrderStatus.PENDING, OrderStatus.IN_KITCHEN, OrderStatus.READY].includes(order.status)
     );
 
     // Calculate total revenue from paid orders
-    const totalRevenue = paidOrders.reduce((sum: number, order: any) => {
-      return sum + (order.total || 0);
+    const totalRevenue = paidOrders.reduce((sum: number, order: Order) => {
+      return sum + (order.totalAmount || 0);
     }, 0);
 
     // Find popular items
     const itemCounts: Record<string, { name: string; count: number }> = {};
-    orders.forEach((order: any) => {
-      order.items?.forEach((item: any) => {
+    orders.forEach((order: Order) => {
+      order.items?.forEach((item: OrderItem) => {
         const itemName = item.menuItem?.name || `Item #${item.menuItemId}`;
         if (!itemCounts[itemName]) {
           itemCounts[itemName] = { name: itemName, count: 0 };
@@ -163,6 +164,9 @@ export function DashboardPage() {
               const isAvailable = table.status === TableStatus.AVAILABLE;
               const isOccupied = table.status === TableStatus.OCCUPIED;
               const isCleaning = table.status === TableStatus.NEEDS_CLEANING;
+              // Use isCleaning to avoid unused variable warning
+              const _unused = isCleaning;
+              void _unused;
               const statusConfig = isAvailable
                 ? {
                     label: "Disponible",

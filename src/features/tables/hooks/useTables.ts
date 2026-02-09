@@ -1,5 +1,4 @@
 import { tablesApi } from "@/services";
-import { queryKeys } from "@/lib";
 import { useQuery } from "@tanstack/react-query";
 import type { PaginationParams } from "@/types/common";
 

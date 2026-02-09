@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-import { useState } from "react";
 import { cn } from "@/utils/cn";
 
 /**
@@ -56,8 +55,6 @@ export function TouchableCard({
   selected = false,
   className,
 }: TouchableCardProps) {
-  const [isPressed, setIsPressed] = useState(false);
-
   /**
    * Handles the press interaction
    */
@@ -98,8 +95,6 @@ export function TouchableCard({
       )}
       whileTap={{ scale: disabled ? 1 : 0.95 }}
       whileHover={{ scale: disabled ? 1 : 1.02 }}
-      onTouchStart={() => setIsPressed(true)}
-      onTouchEnd={() => setIsPressed(false)}
       onClick={handlePress}
       role="button"
       tabIndex={disabled ? -1 : 0}

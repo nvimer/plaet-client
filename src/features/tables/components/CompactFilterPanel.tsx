@@ -6,7 +6,7 @@ import type { TableFilters } from '@/types';
 
 interface CompactFilterPanelProps {
   filters: TableFilters;
-  onFilterChange: (key: keyof TableFilters, value: any) => void;
+  onFilterChange: (key: keyof TableFilters, value: string | TableStatus | 'ALL') => void;
   counts: {
     all: number;
     available: number;
