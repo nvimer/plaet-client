@@ -39,9 +39,25 @@ const defaultPrices = {
   premiumProteinPrice: 11000,
 };
 
+// Default category names that should be auto-selected
+const DEFAULT_CATEGORY_NAMES = {
+  soup: 'Sopas',
+  principle: 'Principios',
+  protein: 'Proteínas',
+  drink: 'Jugos',
+  extra: 'Extras',
+};
+
 export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigFormProps) {
   const updateMenu = useUpdateDailyMenu();
   const { data: categories } = useCategories();
+
+  // Helper to find category ID by name
+  const findCategoryIdByName = (name: string): number | null => {
+    if (!categories) return null;
+    const category = categories.find(c => c.name.toLowerCase() === name.toLowerCase());
+    return category?.id || null;
+  };
 
   const [formState, setFormState] = useState<FormState>({
     basePrice: initialData?.basePrice || defaultPrices.basePrice,
@@ -63,6 +79,20 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
     extraOption1Id: initialData?.extraOptions?.[0]?.id || null,
     extraOption2Id: initialData?.extraOptions?.[1]?.id || null,
   });
+
+  // Auto-set default categories when categories load and no initial data
+  useEffect(() => {
+    if (categories && !initialData) {
+      setFormState(prev => ({
+        ...prev,
+        soupCategoryId: prev.soupCategoryId || findCategoryIdByName(DEFAULT_CATEGORY_NAMES.soup),
+        principleCategoryId: prev.principleCategoryId || findCategoryIdByName(DEFAULT_CATEGORY_NAMES.principle),
+        proteinCategoryId: prev.proteinCategoryId || findCategoryIdByName(DEFAULT_CATEGORY_NAMES.protein),
+        drinkCategoryId: prev.drinkCategoryId || findCategoryIdByName(DEFAULT_CATEGORY_NAMES.drink),
+        extraCategoryId: prev.extraCategoryId || findCategoryIdByName(DEFAULT_CATEGORY_NAMES.extra),
+      }));
+    }
+  }, [categories, initialData]);
 
   // Fetch items for each selected category
   const soupItems = useItemsByCategory(formState.soupCategoryId || 0);
@@ -197,17 +227,27 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
 
         {/* Categories and Items */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Soup Section */}
+          {/* Soup Section - Pre-selected category */}
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-carbon-700">
-              Categoría de Sopas
-            </label>
-            <FilterSelect
-              value={formState.soupCategoryId?.toString() || ""}
-              onChange={(value: string) => setFormState({ ...formState, soupCategoryId: value ? Number(value) : null })}
-              options={[{ value: "", label: "Seleccionar categoría..." }, ...categoryOptions]}
-            />
-            {formState.soupCategoryId && (
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium text-carbon-700">
+                Sopas del Día
+              </label>
+              <span className="text-xs text-sage-600 bg-sage-100 px-2 py-1 rounded-full">
+                Categoría pre-seleccionada
+              </span>
+            </div>
+            {formState.soupCategoryId && categories && (
+              <div className="p-3 bg-sage-50 rounded-lg border border-sage-200">
+                <span className="text-sm font-medium text-carbon-800">
+                  {categories.find(c => c.id === formState.soupCategoryId)?.name || 'Sopas'}
+                </span>
+                <p className="text-xs text-carbon-500 mt-1">
+                  Selecciona las opciones disponibles:
+                </p>
+              </div>
+            )}
+            {formState.soupCategoryId ? (
               <div className="space-y-2 pl-4 border-l-2 border-sage-200">
                 <FilterSelect
                   value={formState.soupOption1Id?.toString() || ""}
@@ -222,6 +262,10 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
                   placeholder="Opción 2"
                 />
               </div>
+            ) : (
+              <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
+                No se encontró la categoría "Sopas". Por favor, créala primero.
+              </p>
             )}
           </div>
 
