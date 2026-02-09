@@ -65,5 +65,5 @@ export interface FilterConfig {
   key: keyof TableFilters;
   label: string;
   type: 'text' | 'select' | 'multiselect';
-  options?: Array<{ label: string; value: any }>;
+  options?: Array<{ label: string; value: string }>;
 }

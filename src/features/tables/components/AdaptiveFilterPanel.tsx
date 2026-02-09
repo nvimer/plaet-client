@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react';
 import { FilterPanel, CompactFilterPanel, UltraCompactFilter } from './index';
 import type { TableFilters } from '@/types';
+import type { TableStatus } from '@/types';
 
 interface AdaptiveFilterPanelProps {
   filters: TableFilters;
-  onFilterChange: (key: keyof TableFilters, value: any) => void;
+  onFilterChange: (key: keyof TableFilters, value: string | TableStatus | 'ALL') => void;
   counts: {
     all: number;
     available: number;

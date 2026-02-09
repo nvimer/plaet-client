@@ -35,6 +35,62 @@ function useCountUp(
 }
 
 /**
+ * StatCard Component
+ *
+ * Individual stat card with animated counter.
+ */
+interface StatCardProps {
+  stat: {
+    icon: React.ComponentType<{ className?: string }>;
+    value: number;
+    suffix: string;
+    label: string;
+    color: string;
+  };
+  index: number;
+  isInView: boolean;
+}
+
+function StatCard({ stat, index, isInView }: StatCardProps) {
+  const Icon = stat.icon;
+  const count = useCountUp(stat.value, 2000, isInView);
+
+  return (
+    <motion.div
+      key={stat.label}
+      initial={{ opacity: 0, scale: 0.9 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.6, delay: index * 0.1 }}
+      whileHover={{ y: -8, scale: 1.02 }}
+    >
+      <Card
+        variant="elevated"
+        padding="lg"
+        hover
+        className="h-full group"
+      >
+        {/* Icon */}
+        <div
+          className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${stat.color} mb-6 group-hover:animate-glow-pulse transition-all`}
+        >
+          <Icon className="w-8 h-8 text-white" />
+        </div>
+
+        {/* Number */}
+        <div className="text-4xl md:text-5xl font-bold text-white mb-2">
+          {count}
+          {stat.suffix}
+        </div>
+
+        {/* Label */}
+        <div className="text-carbon-300 font-medium">{stat.label}</div>
+      </Card>
+    </motion.div>
+  );
+}
+
+/**
  * StatsSection Component
  *
  * Display impressive statistics with animated numbers.
@@ -115,58 +171,9 @@ export function StatsSection() {
 
         {/* Stat Grid using Card component */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-          {stats.map((stat, index) => {
-            const Icon = stat.icon;
-            const count = useCountUp(stat.value, 2000, isInView);
-
-            return (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ y: -8, scale: 1.02 }}
-              >
-                <Card
-                  variant="elevated"
-                  padding="lg"
-                  hover
-                  className="h-full group"
-                >
-                  {/* Icon */}
-                  <div
-                    className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${stat.color} mb-6 group-hover:animate-glow-pulse transition-all`}
-                  >
-                    <Icon className="w-6 h-6 text-white" strokeWidth={2.5} />
-                  </div>
-
-                  {/* Number  */}
-                  <div className="mb-3">
-                    <span className="text-5xl md:text-6xl font-black text-carbon-900 tracking-tight">
-                      {count.toLocaleString()}
-                    </span>
-                    <span className="text-4xl md:text-5xl font-black text-sage-green-500 ml-1">
-                      {stat.suffix}
-                    </span>
-                  </div>
-
-                  {/* Label */}
-                  <h3 className="text-lg font-bold text-carbon-900 mb-2">
-                    {stat.label}
-                  </h3>
-
-                  {/* Description */}
-                  <p className="tsm text-carbon-500 font-light">
-                    {stat.description}
-                  </p>
-
-                  {/* Hover Glow Effect */}
-                  <div className="absolute inset-0 rounded-3xl bg-gradient-sage opacity-0 group-hover:opacity-10 transition-opacity duration-300 pointer-events-none"></div>
-                </Card>
-              </motion.div>
-            );
-          })}
+          {stats.map((stat, index) => (
+            <StatCard key={stat.label} stat={stat} index={index} isInView={isInView} />
+          ))}
         </div>
       </div>
     </section>

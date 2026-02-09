@@ -27,6 +27,7 @@ interface AuthContextType {
  * Create the context with undefined default value
  * undefined = no Provider (development error)
  */
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext<AuthContextType | undefined>(
   undefined,
 );

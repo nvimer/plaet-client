@@ -361,9 +361,9 @@ export function OrderCreatePage() {
           },
           {
             onSuccess: resolve,
-            onError: (error: any) => {
+            onError: (error: Error) => {
               toast.error("Error en pedido", {
-                description: error.response?.data?.message || error.message,
+                description: error.message,
               });
               resolve(null);
             },

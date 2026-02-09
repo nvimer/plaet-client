@@ -74,7 +74,7 @@ export const useTableFilters = (tables?: Table[]) => {
   }, [tables]);
 
   // Update a single filter
-  const updateFilter = (key: keyof TableFilters, value: any) => {
+  const updateFilter = (key: keyof TableFilters, value: string | TableStatus | 'ALL') => {
     setFilters(prev => ({ ...prev, [key]: value }));
   };
 

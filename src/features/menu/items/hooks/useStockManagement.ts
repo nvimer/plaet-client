@@ -143,9 +143,9 @@ export function useResetStock() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id }: { id: number }) => {
-      // const response = await menuApi.resetStock(id);
-      const response = { success: true }; // Temporary fix
+    mutationFn: async (_variables: { id: number }) => {
+      // TODO: Use _variables.id when menuApi.resetStock is implemented
+      const response = { success: true };
       return response;
     },
     onSuccess: (_, variables) => {
