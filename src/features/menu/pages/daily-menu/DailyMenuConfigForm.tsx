@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { Card, Button } from "@/components";
 import { FilterSelect } from "@/components/filters/FilterSelect";
 import { Save, UtensilsCrossed } from "lucide-react";
@@ -52,12 +52,12 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
   const updateMenu = useUpdateDailyMenu();
   const { data: categories } = useCategories();
 
-  // Helper to find category ID by name
-  const findCategoryIdByName = (name: string): number | null => {
+  // Helper to find category ID by name - memoized to avoid ESLint warning
+  const findCategoryIdByName = useCallback((name: string): number | null => {
     if (!categories) return null;
     const category = categories.find(c => c.name.toLowerCase() === name.toLowerCase());
     return category?.id || null;
-  };
+  }, [categories]);
 
   const [formState, setFormState] = useState<FormState>({
     basePrice: initialData?.basePrice || defaultPrices.basePrice,
@@ -92,7 +92,7 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
         extraCategoryId: prev.extraCategoryId || findCategoryIdByName(DEFAULT_CATEGORY_NAMES.extra),
       }));
     }
-  }, [categories, initialData]);
+  }, [categories, initialData, findCategoryIdByName]);
 
   // Fetch items for each selected category
   const soupItems = useItemsByCategory(formState.soupCategoryId || 0);
@@ -166,11 +166,6 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
       toast.error("Error al guardar el menú del día");
     }
   };
-
-  const categoryOptions = categories?.map((cat) => ({
-    value: cat.id.toString(),
-    label: cat.name,
-  })) || [];
 
   const getItemOptions = (items: { id: number; name: string }[]) => [
     { value: "", label: "Seleccionar..." },
@@ -269,17 +264,27 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
             )}
           </div>
 
-          {/* Principle Section */}
+          {/* Principle Section - Pre-selected category */}
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-carbon-700">
-              Categoría de Principios
-            </label>
-            <FilterSelect
-              value={formState.principleCategoryId?.toString() || ""}
-              onChange={(value: string) => setFormState({ ...formState, principleCategoryId: value ? Number(value) : null })}
-              options={[{ value: "", label: "Seleccionar categoría..." }, ...categoryOptions]}
-            />
-            {formState.principleCategoryId && (
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium text-carbon-700">
+                Principios del Día
+              </label>
+              <span className="text-xs text-sage-600 bg-sage-100 px-2 py-1 rounded-full">
+                Categoría pre-seleccionada
+              </span>
+            </div>
+            {formState.principleCategoryId && categories && (
+              <div className="p-3 bg-sage-50 rounded-lg border border-sage-200">
+                <span className="text-sm font-medium text-carbon-800">
+                  {categories.find(c => c.id === formState.principleCategoryId)?.name || 'Principios'}
+                </span>
+                <p className="text-xs text-carbon-500 mt-1">
+                  Selecciona las opciones disponibles:
+                </p>
+              </div>
+            )}
+            {formState.principleCategoryId ? (
               <div className="space-y-2 pl-4 border-l-2 border-sage-200">
                 <FilterSelect
                   value={formState.principleOption1Id?.toString() || ""}
@@ -294,20 +299,34 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
                   placeholder="Opción 2"
                 />
               </div>
+            ) : (
+              <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
+                No se encontró la categoría "Principios". Por favor, créala primero.
+              </p>
             )}
           </div>
 
-          {/* Protein Section */}
+          {/* Protein Section - Pre-selected category */}
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-carbon-700">
-              Categoría de Proteínas
-            </label>
-            <FilterSelect
-              value={formState.proteinCategoryId?.toString() || ""}
-              onChange={(value: string) => setFormState({ ...formState, proteinCategoryId: value ? Number(value) : null })}
-              options={[{ value: "", label: "Seleccionar categoría..." }, ...categoryOptions]}
-            />
-            {formState.proteinCategoryId && (
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium text-carbon-700">
+                Proteínas del Día
+              </label>
+              <span className="text-xs text-sage-600 bg-sage-100 px-2 py-1 rounded-full">
+                Categoría pre-seleccionada
+              </span>
+            </div>
+            {formState.proteinCategoryId && categories && (
+              <div className="p-3 bg-sage-50 rounded-lg border border-sage-200">
+                <span className="text-sm font-medium text-carbon-800">
+                  {categories.find(c => c.id === formState.proteinCategoryId)?.name || 'Proteínas'}
+                </span>
+                <p className="text-xs text-carbon-500 mt-1">
+                  Selecciona las opciones disponibles:
+                </p>
+              </div>
+            )}
+            {formState.proteinCategoryId ? (
               <div className="space-y-2 pl-4 border-l-2 border-sage-200">
                 <FilterSelect
                   value={formState.proteinOption1Id?.toString() || ""}
@@ -328,20 +347,34 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
                   placeholder="Opción 3"
                 />
               </div>
+            ) : (
+              <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
+                No se encontró la categoría "Proteínas". Por favor, créala primero.
+              </p>
             )}
           </div>
 
-          {/* Drink Section */}
+          {/* Drink Section - Pre-selected category */}
           <div className="space-y-3">
-            <label className="block text-sm font-medium text-carbon-700">
-              Categoría de Bebidas
-            </label>
-            <FilterSelect
-              value={formState.drinkCategoryId?.toString() || ""}
-              onChange={(value: string) => setFormState({ ...formState, drinkCategoryId: value ? Number(value) : null })}
-              options={[{ value: "", label: "Seleccionar categoría..." }, ...categoryOptions]}
-            />
-            {formState.drinkCategoryId && (
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium text-carbon-700">
+                Bebidas del Día
+              </label>
+              <span className="text-xs text-sage-600 bg-sage-100 px-2 py-1 rounded-full">
+                Categoría pre-seleccionada
+              </span>
+            </div>
+            {formState.drinkCategoryId && categories && (
+              <div className="p-3 bg-sage-50 rounded-lg border border-sage-200">
+                <span className="text-sm font-medium text-carbon-800">
+                  {categories.find(c => c.id === formState.drinkCategoryId)?.name || 'Jugos'}
+                </span>
+                <p className="text-xs text-carbon-500 mt-1">
+                  Selecciona las opciones disponibles:
+                </p>
+              </div>
+            )}
+            {formState.drinkCategoryId ? (
               <div className="space-y-2 pl-4 border-l-2 border-sage-200">
                 <FilterSelect
                   value={formState.drinkOption1Id?.toString() || ""}
@@ -356,20 +389,34 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
                   placeholder="Opción 2"
                 />
               </div>
+            ) : (
+              <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
+                No se encontró la categoría "Jugos". Por favor, créala primero.
+              </p>
             )}
           </div>
 
-          {/* Extra Section */}
+          {/* Extra Section - Pre-selected category */}
           <div className="space-y-3 md:col-span-2">
-            <label className="block text-sm font-medium text-carbon-700">
-              Categoría de Extras
-            </label>
-            <FilterSelect
-              value={formState.extraCategoryId?.toString() || ""}
-              onChange={(value: string) => setFormState({ ...formState, extraCategoryId: value ? Number(value) : null })}
-              options={[{ value: "", label: "Seleccionar categoría..." }, ...categoryOptions]}
-            />
-            {formState.extraCategoryId && (
+            <div className="flex items-center justify-between">
+              <label className="block text-sm font-medium text-carbon-700">
+                Extras del Día
+              </label>
+              <span className="text-xs text-sage-600 bg-sage-100 px-2 py-1 rounded-full">
+                Categoría pre-seleccionada
+              </span>
+            </div>
+            {formState.extraCategoryId && categories && (
+              <div className="p-3 bg-sage-50 rounded-lg border border-sage-200">
+                <span className="text-sm font-medium text-carbon-800">
+                  {categories.find(c => c.id === formState.extraCategoryId)?.name || 'Extras'}
+                </span>
+                <p className="text-xs text-carbon-500 mt-1">
+                  Selecciona las opciones disponibles:
+                </p>
+              </div>
+            )}
+            {formState.extraCategoryId ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-4 border-l-2 border-sage-200">
                 <FilterSelect
                   value={formState.extraOption1Id?.toString() || ""}
@@ -384,6 +431,10 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
                   placeholder="Opción 2"
                 />
               </div>
+            ) : (
+              <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
+                No se encontró la categoría "Extras". Por favor, créala primero.
+              </p>
             )}
           </div>
         </div>
