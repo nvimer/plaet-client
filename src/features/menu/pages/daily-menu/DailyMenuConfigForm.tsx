@@ -2,10 +2,9 @@ import { useEffect, useState, useCallback } from "react";
 import { Card, Button } from "@/components";
 import { FilterSelect } from "@/components/filters/FilterSelect";
 import { Save, UtensilsCrossed } from "lucide-react";
-import { useUpdateDailyMenu } from "@/features/daily-menu";
+import { useUpdateDailyMenu, useItemsByCategory } from "@/features/menu/hooks/useDailyMenu";
 import { type DailyMenu, type UpdateDailyMenuData } from "@/services/dailyMenuApi";
 import { useCategories } from "@/features/menu/categories/hooks";
-import { useItemsByCategory } from "@/features/daily-menu/hooks/useDailyMenu";
 import { toast } from "sonner";
 
 interface DailyMenuConfigFormProps {

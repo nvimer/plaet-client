@@ -5,7 +5,7 @@ import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { Button, Card, Input } from "@/components";
 import { useTables } from "@/features/tables";
 import { useItems } from "@/features/menu";
-import { useDailyMenuToday } from "@/features/daily-menu";
+import { useDailyMenuToday } from "@/features/menu/hooks/useDailyMenu";
 import { useCreateOrder } from "../hooks";
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";

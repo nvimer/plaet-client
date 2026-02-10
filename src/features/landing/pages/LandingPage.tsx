@@ -6,7 +6,7 @@ import {
   CTASection,
   Footer,
   BenefitsSection,
-} from "../sections";
+} from "../components";
 
 /**
  * LandingPage Component
