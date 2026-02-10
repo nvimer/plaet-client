@@ -44,12 +44,10 @@ export interface CreateMenuItemInput {
   categoryId: number;
   name: string;
   description?: string;
-  price: string;
+  price: string | number;
   isAvailable?: boolean;
-  isExtra?: boolean;
   imageUrl?: string;
   inventoryType?: string;
-  stockQuantity?: number;
   initialStock?: number;
   lowStockAlert?: number;
   autoMarkUnavailable?: boolean;
@@ -114,10 +112,18 @@ export interface DailyStockResetInput {
 }
 
 /**
+ * Inventory type change input
+ */
+export interface InventoryTypeInput {
+  inventoryType: string;
+  lowStockAlert?: number;
+}
+
+/**
  * Inventory type enum
+ * Synced with server enum - DO NOT ADD VALUES WITHOUT SERVER UPDATE
  */
 export enum InventoryType {
-  NONE = "NONE",
   TRACKED = "TRACKED",
   UNLIMITED = "UNLIMITED",
 }

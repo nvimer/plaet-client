@@ -15,12 +15,6 @@ import { InventoryType } from "@/types";
 const inputClass =
   "w-full px-4 py-3 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 placeholder:text-carbon-400 focus:outline-none focus:ring-2 focus:ring-sage-green-400 focus:border-sage-green-400";
 
-/**
- * MenuItemCreatePage Component
- *
- * Create a new menu item. Uses SidebarLayout and card form
- * aligned with the app design system (claude.md).
- */
 export function MenuItemCreatePage() {
   const navigate = useNavigate();
   const { mutate: createItem, isPending } = useCreateItem();
@@ -36,17 +30,16 @@ export function MenuItemCreatePage() {
     defaultValues: {
       name: "",
       description: "",
-      categoryId: undefined,
+      categoryId: 0,
       price: "",
-      isExtra: false,
       isAvailable: true,
       imageUrl: "",
-      inventoryType: InventoryType.NONE,
+      inventoryType: InventoryType.UNLIMITED,
       initialStock: undefined,
       lowStockAlert: undefined,
       autoMarkUnavailable: false,
     },
-    mode: "onChange",
+    mode: "onTouched",
   });
 
   const inventoryType = watch("inventoryType");
@@ -88,7 +81,6 @@ export function MenuItemCreatePage() {
         <div className="bg-white rounded-2xl border border-sage-200 shadow-sm">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="p-6 lg:p-8 space-y-8">
-              {/* Datos básicos */}
               <section>
                 <h3 className="text-lg font-semibold text-carbon-800 mb-4">
                   Datos básicos
@@ -148,7 +140,6 @@ export function MenuItemCreatePage() {
                 </div>
               </section>
 
-              {/* Precio e imagen */}
               <section className="pt-6 border-t border-sage-200">
                 <h3 className="text-lg font-semibold text-carbon-800 mb-4">
                   Precio e imagen
@@ -173,7 +164,6 @@ export function MenuItemCreatePage() {
                 </div>
               </section>
 
-              {/* Inventario */}
               <section className="pt-6 border-t border-sage-200">
                 <h3 className="text-lg font-semibold text-carbon-800 mb-4">
                   Inventario
@@ -182,13 +172,13 @@ export function MenuItemCreatePage() {
                   <label className="block text-sm font-semibold text-carbon-800 mb-3">
                     Tipo de inventario
                   </label>
-                  <select
-                    {...register("inventoryType")}
-                    className={inputClass}
-                  >
-                    <option value={InventoryType.NONE}>Sin inventario</option>
-                    <option value={InventoryType.TRACKED}>Rastreado</option>
-                    <option value={InventoryType.UNLIMITED}>Ilimitado</option>
+                  <select {...register("inventoryType")} className={inputClass}>
+                    <option value={InventoryType.UNLIMITED}>
+                      Ilimitado (sin control)
+                    </option>
+                    <option value={InventoryType.TRACKED}>
+                      Rastreado (con control de stock)
+                    </option>
                   </select>
                   {errors.inventoryType && (
                     <p className="text-sm text-red-600 mt-1">
@@ -262,7 +252,6 @@ export function MenuItemCreatePage() {
                 )}
               </section>
 
-              {/* Opciones */}
               <section className="pt-6 border-t border-sage-200">
                 <h3 className="text-lg font-semibold text-carbon-800 mb-4">
                   Opciones
@@ -271,20 +260,12 @@ export function MenuItemCreatePage() {
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
-                      {...register("isExtra")}
-                      className="w-5 h-5 rounded border-sage-300 text-sage-green-600 focus:ring-sage-green-400"
-                    />
-                    <span className="text-carbon-800">
-                      Es un extra o complemento
-                    </span>
-                  </label>
-                  <label className="flex items-center gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
                       {...register("isAvailable")}
                       className="w-5 h-5 rounded border-sage-300 text-sage-green-600 focus:ring-sage-green-400"
                     />
-                    <span className="text-carbon-800">Disponible en el menú</span>
+                    <span className="text-carbon-800">
+                      Disponible en el menú
+                    </span>
                   </label>
                 </div>
               </section>
@@ -307,7 +288,7 @@ export function MenuItemCreatePage() {
                   variant="primary"
                   size="lg"
                   isLoading={isPending}
-                  disabled={isPending || !isValid}
+                  disabled={!isValid}
                   className="sm:min-w-[180px]"
                 >
                   {isPending ? (
