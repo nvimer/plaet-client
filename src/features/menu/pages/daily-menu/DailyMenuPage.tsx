@@ -1,6 +1,6 @@
 import { Card, Button } from "@/components";
 import { DailyMenuConfigForm } from "./DailyMenuConfigForm";
-import { useDailyMenuToday } from "@/features/daily-menu";
+import { useDailyMenuToday } from "@/features/menu/hooks/useDailyMenu";
 import { type DailyMenu } from "@/services/dailyMenuApi";
 import { Calendar, RefreshCw, UtensilsCrossed } from "lucide-react";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";

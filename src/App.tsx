@@ -1,12 +1,12 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./hooks";
-import LoginPage from "./pages/LoginPage";
+import LoginPage from "./features/auth/pages/LoginPage";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import { FullScreenLayout } from "./layouts/FullScreenLayout";
-import { DashboardPage } from "./pages/DashboardPage";
+import { DashboardPage } from "./features/dashboard/pages/DashboardPage";
 import { TablesPage } from "./features/tables";
-import { LandingPage } from "./pages";
+import { LandingPage } from "./features/landing/pages";
 import { MenuPage } from "./features/menu";
 import { StockManagementPage } from "./features/menu/items/pages/StockManagementPage";
 import { OrdersPage } from "./features/orders";
