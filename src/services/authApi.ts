@@ -96,3 +96,52 @@ export const resetPassword = async (token: string, newPassword: string) => {
   );
   return data;
 };
+
+/**
+ * POST /auth/verify-email
+ *
+ * Verifica el email del usuario con un token
+ *
+ * @param token - Token de verificación
+ */
+export const verifyEmail = async (token: string) => {
+  const { data } = await axiosClient.post<ApiResponse<{ message: string }>>(
+    "/auth/verify-email",
+    { token },
+  );
+  return data;
+};
+
+/**
+ * POST /auth/resend-verification
+ *
+ * Reenvía el email de verificación
+ *
+ * @param email - Email del usuario
+ */
+export const resendVerification = async (email: string) => {
+  const { data } = await axiosClient.post<ApiResponse<{ message: string }>>(
+    "/auth/resend-verification",
+    { email },
+  );
+  return data;
+};
+
+/**
+ * POST /auth/change-password
+ *
+ * Cambia la contraseña del usuario autenticado
+ *
+ * @param currentPassword - Contraseña actual
+ * @param newPassword - Nueva contraseña
+ */
+export const changePassword = async (
+  currentPassword: string,
+  newPassword: string,
+) => {
+  const { data } = await axiosClient.post<ApiResponse<{ message: string }>>(
+    "/auth/change-password",
+    { currentPassword, newPassword },
+  );
+  return data;
+};
