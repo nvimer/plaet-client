@@ -22,7 +22,7 @@ export const createItemSchema = z.object({
 
   inventoryType: z.nativeEnum(InventoryType),
 
-  initialStock: z.number().int().min(0, "El stock inicial no puede ser negativo").optional(),
+  stockQuantity: z.number().int().min(0, "El stock no puede ser negativo").optional(),
 
   lowStockAlert: z.number().int().min(0, "La alerta de stock bajo no puede ser negativa").optional(),
 
@@ -30,11 +30,11 @@ export const createItemSchema = z.object({
 }).refine(
   (data) => {
     if (data.inventoryType === InventoryType.TRACKED) {
-      return data.initialStock !== undefined && data.initialStock >= 0;
+      return data.stockQuantity !== undefined && data.stockQuantity >= 0;
     }
     return true;
   },
-  { message: "El stock inicial es requerido cuando el inventario es rastreado", path: ["initialStock"] },
+  { message: "El stock es requerido cuando el inventario es rastreado", path: ["stockQuantity"] },
 );
 
 export const updateItemSchema = z.object({
@@ -58,7 +58,7 @@ export const updateItemSchema = z.object({
 
   inventoryType: z.nativeEnum(InventoryType).optional(),
 
-  initialStock: z.number().int().min(0, "El stock inicial no puede ser negativo").optional(),
+  stockQuantity: z.number().int().min(0, "El stock no puede ser negativo").optional(),
 
   lowStockAlert: z.number().int().min(0, "La alerta de stock bajo no puede ser negativa").optional(),
 
@@ -66,11 +66,11 @@ export const updateItemSchema = z.object({
 }).refine(
   (data) => {
     if (data.inventoryType === InventoryType.TRACKED) {
-      return data.initialStock !== undefined && data.initialStock >= 0;
+      return data.stockQuantity !== undefined && data.stockQuantity >= 0;
     }
     return true;
   },
-  { message: "El stock inicial es requerido cuando el inventario es rastreado", path: ["initialStock"] },
+  { message: "El stock es requerido cuando el inventario es rastreado", path: ["stockQuantity"] },
 );
 
 export type CreateItemInput = z.infer<typeof createItemSchema>;

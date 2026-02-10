@@ -35,7 +35,7 @@ export function MenuItemCreatePage() {
       isAvailable: true,
       imageUrl: "",
       inventoryType: InventoryType.UNLIMITED,
-      initialStock: undefined,
+      stockQuantity: undefined,
       lowStockAlert: undefined,
       autoMarkUnavailable: false,
     },
@@ -200,18 +200,18 @@ export function MenuItemCreatePage() {
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                        Stock inicial *
+                        Stock *
                       </label>
                       <Input
                         type="number"
                         placeholder="Ej: 100"
-                        {...register("initialStock", { valueAsNumber: true })}
-                        error={errors.initialStock?.message}
+                        {...register("stockQuantity", { valueAsNumber: true })}
+                        error={errors.stockQuantity?.message}
                         min={0}
                         fullWidth
                       />
                       <p className="mt-2 text-sm text-carbon-400">
-                        Cantidad al crear el producto
+                        Cantidad en inventario
                       </p>
                     </div>
                     <div>

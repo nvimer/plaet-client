@@ -48,7 +48,7 @@ export interface CreateMenuItemInput {
   isAvailable?: boolean;
   imageUrl?: string;
   inventoryType?: string;
-  initialStock?: number;
+  stockQuantity?: number;
   lowStockAlert?: number;
   autoMarkUnavailable?: boolean;
 }
@@ -59,11 +59,9 @@ export interface UpdateMenuItemInput {
   description?: string;
   price?: string;
   isAvailable?: boolean;
-  isExtra?: boolean;
   imageUrl?: string;
   inventoryType?: string;
   stockQuantity?: number;
-  initialStock?: number;
   lowStockAlert?: number;
   autoMarkUnavailable?: boolean;
 }
