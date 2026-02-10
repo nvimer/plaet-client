@@ -64,7 +64,6 @@ npm run lint -- --fix    # Auto-fix ESLint errors
 ## 📖 Documentation
 
 - `AGENTS.md` - Complete development guidelines
-- `notes/` - Project notes and decisions
 
 ## 🔑 Key Features
 
@@ -77,6 +76,7 @@ npm run lint -- --fix    # Auto-fix ESLint errors
 ## 📝 Code Standards
 
 See `AGENTS.md` for complete guidelines including:
+
 - TypeScript strict mode (no `any` or `unknown`)
 - ESLint configuration with underscore prefix for unused vars
 - Component and file naming conventions
@@ -91,5 +91,3 @@ JWT-based authentication with httpOnly cookies. See AGENTS.md for details.
 Optimized for both desktop (admin) and tablet/kiosk (POS) interfaces.
 
 ---
-
-Built with ❤️ using React + TypeScript + Vite
