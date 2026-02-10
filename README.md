@@ -1,75 +1,95 @@
-# React + TypeScript + Vite
+# SazonArte - Restaurant Management POS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React + TypeScript + Vite restaurant management application with tactile/kiosk UX.
 
-Currently, two official plugins are available:
+## 🚀 Quick Start
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+```bash
+# Install dependencies
+npm install
 
-## React Compiler
+# Start development server
+npm run dev
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+# Build for production
+npm run build
 
-Note: This will impact Vite dev & build performances.
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+# Preview production build
+npm run preview
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🏗️ Project Architecture
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+src/
+├── features/          # Feature-based modules
+│   ├── daily-menu/   # Daily menu configuration
+│   ├── menu/         # Menu items & categories
+│   ├── orders/       # Order management
+│   ├── tables/       # Table management
+│   └── users/        # User management
+├── components/        # UI components
+├── contexts/          # React contexts
+├── hooks/            # Custom hooks
+├── layouts/          # Page layouts
+├── lib/              # Utilities & config
+├── pages/            # Route pages
+├── services/         # API services
+└── types/            # TypeScript types
+```
+
+## 📋 Available Scripts
+
+```bash
+npm run dev              # Start dev server
+npm run build            # Production build
+npm run preview          # Preview build
+npm run type-check       # TypeScript check
+npm run lint             # ESLint check
+npm run lint -- --fix    # Auto-fix ESLint errors
+```
+
+## 🎨 Tech Stack
+
+- **React 19** + TypeScript 5.8
+- **Vite** - Build tool
+- **TanStack Query 5** - Server state management
+- **React Router 7** - Routing
+- **Tailwind CSS 3.4** - Styling
+- **React Hook Form + Zod** - Forms & validation
+- **Framer Motion** - Animations
+- **Axios** - HTTP client
+- **Sonner** - Toast notifications
+
+## 📖 Documentation
+
+- `AGENTS.md` - Complete development guidelines
+- `notes/` - Project notes and decisions
+
+## 🔑 Key Features
+
+- **Daily Menu**: Configure daily menu with auto-selected categories
+- **Orders**: Create and manage orders with real-time status
+- **Tables**: Visual table management
+- **Menu**: Product and category management
+- **Users**: Role-based access control
+
+## 📝 Code Standards
+
+See `AGENTS.md` for complete guidelines including:
+- TypeScript strict mode (no `any` or `unknown`)
+- ESLint configuration with underscore prefix for unused vars
+- Component and file naming conventions
+- Git workflow and commit conventions
+
+## 🔒 Authentication
+
+JWT-based authentication with httpOnly cookies. See AGENTS.md for details.
+
+## 📱 Responsive Design
+
+Optimized for both desktop (admin) and tablet/kiosk (POS) interfaces.
+
+---
+
+Built with ❤️ using React + TypeScript + Vite
