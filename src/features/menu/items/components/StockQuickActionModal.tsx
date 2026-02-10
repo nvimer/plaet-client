@@ -27,6 +27,7 @@ export function StockQuickActionModal({
 }: StockQuickActionModalProps) {
   const [quantity, setQuantity] = useState<string>("");
   const [reason, setReason] = useState<string>("");
+  const [reasonError, setReasonError] = useState<string>("");
 
   const { mutate: addStock, isPending: isAdding } = useAddStock();
   const { mutate: removeStock, isPending: isRemoving } = useRemoveStock();
@@ -52,9 +53,15 @@ export function StockQuickActionModal({
       return;
     }
 
+    if (!reason.trim() || reason.trim().length < 3) {
+      setReasonError("La razón es requerida (mínimo 3 caracteres)");
+      return;
+    }
+    setReasonError("");
+
     const stockData = {
       quantity: qty,
-      reason: reason || undefined,
+      reason: reason.trim(),
     };
 
     if (actionType === "ADD") {
@@ -153,15 +160,21 @@ export function StockQuickActionModal({
         {/* Reason Input */}
         <div>
           <label className="block text-sm font-medium text-carbon-700 mb-2">
-            Razón (opcional)
+            Razón *
           </label>
           <Input
             type="text"
             placeholder="Ej: Reposición, Ajuste de inventario, etc."
             value={reason}
-            onChange={(e) => setReason(e.target.value)}
+            onChange={(e) => {
+              setReason(e.target.value);
+              if (reasonError) setReasonError("");
+            }}
             fullWidth
           />
+          {reasonError && (
+            <p className="text-sm text-red-600 mt-1">{reasonError}</p>
+          )}
         </div>
 
         {/* Actions */}

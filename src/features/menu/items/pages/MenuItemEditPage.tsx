@@ -54,17 +54,16 @@ export function MenuItemEditPage() {
           description: item.description || "",
           categoryId: item.categoryId,
           price: item.price,
-          isExtra: item.isExtra,
           isAvailable: item.isAvailable,
           imageUrl: item.imageUrl || "",
           inventoryType:
             (item.inventoryType as InventoryType) || InventoryType.UNLIMITED,
-          initialStock: item.initialStock,
+          stockQuantity: item.stockQuantity,
           lowStockAlert: item.lowStockAlert,
           autoMarkUnavailable: item.autoMarkUnavailable,
         }
       : undefined,
-    mode: "onChange",
+    mode: "onTouched",
   });
 
   const inventoryType = watch("inventoryType");
@@ -302,16 +301,16 @@ export function MenuItemEditPage() {
                       </div>
                       <div>
                         <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                          Stock inicial
-                        </label>
-                        <Input
-                          type="number"
-                          placeholder="Ej: 100"
-                          {...register("initialStock", { valueAsNumber: true })}
-                          error={errors.initialStock?.message}
-                          min={0}
-                          fullWidth
-                        />
+                        Stock
+                      </label>
+                      <Input
+                        type="number"
+                        placeholder="Ej: 100"
+                        {...register("stockQuantity", { valueAsNumber: true })}
+                        error={errors.stockQuantity?.message}
+                        min={0}
+                        fullWidth
+                      />
                       </div>
                       <div>
                         <label className="block text-sm font-semibold text-carbon-800 mb-3">
@@ -352,16 +351,6 @@ export function MenuItemEditPage() {
                     Opciones
                   </h3>
                   <div className="space-y-4">
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        {...register("isExtra")}
-                        className="w-5 h-5 rounded border-sage-300 text-sage-green-600 focus:ring-sage-green-400"
-                      />
-                      <span className="text-carbon-800">
-                        Es un extra o complemento
-                      </span>
-                    </label>
                     <label className="flex items-center gap-3 cursor-pointer">
                       <input
                         type="checkbox"
