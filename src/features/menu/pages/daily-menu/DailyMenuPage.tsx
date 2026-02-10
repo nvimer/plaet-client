@@ -44,7 +44,11 @@ function InfoCard({ menu }: { menu: DailyMenu | null | undefined }) {
   const hasOptions = 
     (menu?.soupOptions?.length || 0) > 0 ||
     (menu?.principleOptions?.length || 0) > 0 ||
-    (menu?.proteinOptions?.length || 0) > 0;
+    (menu?.saladOptions?.length || 0) > 0 ||
+    (menu?.proteinOptions?.length || 0) > 0 ||
+    (menu?.drinkOptions?.length || 0) > 0 ||
+    (menu?.extraOptions?.length || 0) > 0 ||
+    (menu?.dessertOptions?.length || 0) > 0;
 
   return (
     <Card variant="elevated" className="p-6 rounded-2xl">
@@ -91,9 +95,18 @@ function InfoCard({ menu }: { menu: DailyMenu | null | undefined }) {
             </div>
           )}
 
+          {menu?.saladOptions && menu.saladOptions.length > 0 && (
+            <div>
+              <div className="text-xs text-carbon-500 mb-1">Ensaladas ({menu.saladOptions.length})</div>
+              <div className="text-sm text-carbon-800">
+                {menu.saladOptions.map((o: { name: string }) => o.name).join(", ")}
+              </div>
+            </div>
+          )}
+
           {menu?.proteinOptions && menu.proteinOptions.length > 0 && (
             <div>
-              <div className="text-xs text-carbon-500 mb-1">Proteínas ({menu.proteinOptions.length})</div>
+              <div className="text-xs text-carbon-500 mb-1">Proteínas Disponibles ({menu.proteinOptions.length})</div>
               <div className="text-sm text-carbon-800">
                 {menu.proteinOptions.map((o: { name: string }) => o.name).join(", ")}
               </div>
@@ -114,6 +127,15 @@ function InfoCard({ menu }: { menu: DailyMenu | null | undefined }) {
               <div className="text-xs text-carbon-500 mb-1">Extras ({menu.extraOptions.length})</div>
               <div className="text-sm text-carbon-800">
                 {menu.extraOptions.map((o: { name: string }) => o.name).join(", ")}
+              </div>
+            </div>
+          )}
+
+          {menu?.dessertOptions && menu.dessertOptions.length > 0 && (
+            <div>
+              <div className="text-xs text-carbon-500 mb-1">Postres ({menu.dessertOptions.length})</div>
+              <div className="text-sm text-carbon-800">
+                {menu.dessertOptions.map((o: { name: string }) => o.name).join(", ")}
               </div>
             </div>
           )}
@@ -140,9 +162,10 @@ function HelpCard() {
     <Card variant="bordered" className="p-6 rounded-2xl">
       <h3 className="font-semibold text-carbon-900 mb-2">Cómo Configurar</h3>
       <ol className="text-sm text-carbon-500 space-y-2 list-decimal list-inside">
-        <li>Selecciona la categoría para cada componente</li>
-        <li>Elige hasta 2 opciones para cada categoría</li>
-        <li>Para proteínas puedes elegir hasta 3 opciones</li>
+        <li>Las categorías se detectan automáticamente por nombre</li>
+        <li>Elige hasta 2 opciones para Sopas, Principios, Ensaladas, Extras, Jugos</li>
+        <li>Selecciona todas las proteínas que estarán disponibles hoy</li>
+        <li>El postre es opcional - actívalo si deseas incluirlo</li>
         <li>Configura los precios base y premium</li>
         <li>Guarda los cambios</li>
       </ol>

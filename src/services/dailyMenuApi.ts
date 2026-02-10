@@ -39,13 +39,19 @@ export interface DailyMenu {
   proteinCategory: MenuCategory | null;
   drinkCategory: MenuCategory | null;
   extraCategory: MenuCategory | null;
+  saladCategory: MenuCategory | null;
+  dessertCategory?: MenuCategory | null;
 
   // Item options for each category
   soupOptions: MenuItemOption[];
   principleOptions: MenuItemOption[];
-  proteinOptions: MenuItemOption[];
   drinkOptions: MenuItemOption[];
   extraOptions: MenuItemOption[];
+  saladOptions: MenuItemOption[];
+  dessertOptions?: MenuItemOption[];
+
+  // All proteins available (not limited options)
+  proteinOptions: MenuItemOption[];
 }
 
 /**
@@ -71,13 +77,19 @@ export interface UpdateDailyMenuData {
   proteinCategoryId?: number | null;
   drinkCategoryId?: number | null;
   extraCategoryId?: number | null;
+  saladCategoryId?: number | null;
+  dessertCategoryId?: number | null;
 
   // Item options for each category
   soupOptions?: ItemOptionInput;
   principleOptions?: ItemOptionInput;
-  proteinOptions?: ItemOptionInput;
   drinkOptions?: ItemOptionInput;
   extraOptions?: ItemOptionInput;
+  saladOptions?: ItemOptionInput;
+  dessertOptions?: ItemOptionInput;
+
+  // All protein IDs available (array of all protein item IDs)
+  allProteinIds?: number[];
 }
 
 /**
