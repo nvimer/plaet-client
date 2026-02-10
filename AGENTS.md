@@ -279,6 +279,42 @@ export const useAuth = () => {
 };
 ```
 
+## Prepared Hooks (Future Use)
+
+The following hooks are exported and ready for use but currently have no UI consuming them. They represent the complete API surface:
+
+### Orders Module
+**Location:** `src/features/orders/hooks/useCreateOrder.ts`
+
+Available but not yet used in UI:
+- `useUpdateOrderItem()` - Update individual order items
+- `useBatchOrderStatusUpdate()` - Batch update order statuses  
+- `useDuplicateOrder()` - Duplicate existing orders
+- `useValidateOrder()` - Validate order before creation
+- `useCancelOrder()` - Cancel orders with validation
+
+**Backend Status:** ✅ Endpoints exist and are functional
+**Planned Use:** Order management page, batch operations
+
+### Daily Menu Module
+**Location:** `src/features/daily-menu/hooks/useDailyMenu.ts`
+
+Available but not yet used:
+- `useDailyMenuByDate(date)` - Get menu for specific date
+- `useUpdateDailyMenuByDate()` - Update menu for specific date
+- `useDailyMenuItems(menu)` - Fetch all items for a menu configuration
+
+**Backend Status:** ✅ Endpoints exist and are functional
+**Planned Use:** Menu history, advance scheduling, item filtering
+
+### Stock Management
+**Location:** `src/features/menu/items/hooks/useStockManagement.ts`
+
+Partially implemented:
+- `useResetStock()` - TODO: Complete API integration
+
+**Note:** Keep these hooks exported. They provide API completeness and will be used as features are built.
+
 ## Common Patterns
 
 ### Component with Loading State

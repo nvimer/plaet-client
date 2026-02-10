@@ -140,11 +140,15 @@ export function OrderCreatePage() {
         isConfigured: false,
       };
     }
+    // Extract first options from each category for display
+    const firstSoup = dailyMenuData.soupOptions?.[0]?.name || "Sopa del día";
+    const firstDrink = dailyMenuData.drinkOptions?.[0]?.name || "Gaseosa";
+    
     return {
-      side: dailyMenuData.side,
-      soup: dailyMenuData.soup,
-      drink: dailyMenuData.drink,
-      dessert: dailyMenuData.dessert || "Sin postre",
+      side: "Bandeja",
+      soup: firstSoup,
+      drink: firstDrink,
+      dessert: "Postre del día",
       isConfigured: true,
     };
   }, [dailyMenuData]);
