@@ -328,16 +328,18 @@ export const dailyStockReset = async (resetData: {
  * Set inventory type for a menu item
  *
  * @param id - Menu Item ID
- * @param inventoryType - Inventory type (NONE, TRACKED, UNLIMITED)
+ * @param inventoryType - Inventory type (TRACKED, UNLIMITED)
+ * @param lowStockAlert - Optional low stock alert threshold for TRACKED items
  * @returns Updated Menu Item
  */
 export const setInventoryType = async (
   id: number,
   inventoryType: string,
+  lowStockAlert?: number,
 ) => {
   const { data } = await axiosClient.patch<ApiResponse<MenuItem>>(
     `/menu/items/${id}/inventory-type`,
-    { inventoryType },
+    { inventoryType, lowStockAlert },
   );
   return data;
 };

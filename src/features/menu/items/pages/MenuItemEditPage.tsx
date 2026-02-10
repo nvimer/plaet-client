@@ -2,10 +2,19 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
-import { Button, Input, Skeleton, EmptyState, ConfirmDialog } from "@/components";
+import {
+  Button,
+  Input,
+  Skeleton,
+  EmptyState,
+  ConfirmDialog,
+} from "@/components";
 import { useMenuItem, useUpdateItem, useDeleteItem } from "../hooks";
 import { useCategories } from "../../categories/hooks";
-import { updateItemSchema, type UpdateItemInput } from "../schemas/itemsSchemas";
+import {
+  updateItemSchema,
+  type UpdateItemInput,
+} from "../schemas/itemsSchemas";
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
 import { Check, Trash2, XCircle, Package } from "lucide-react";
@@ -35,7 +44,7 @@ export function MenuItemEditPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid },
+    formState: { errors, isValid, isDirty },
     watch,
   } = useForm<UpdateItemInput>({
     resolver: zodResolver(updateItemSchema),
@@ -48,7 +57,8 @@ export function MenuItemEditPage() {
           isExtra: item.isExtra,
           isAvailable: item.isAvailable,
           imageUrl: item.imageUrl || "",
-          inventoryType: (item.inventoryType as InventoryType) || InventoryType.NONE,
+          inventoryType:
+            (item.inventoryType as InventoryType) || InventoryType.UNLIMITED,
           initialStock: item.initialStock,
           lowStockAlert: item.lowStockAlert,
           autoMarkUnavailable: item.autoMarkUnavailable,
@@ -62,7 +72,12 @@ export function MenuItemEditPage() {
 
   if (isLoading) {
     return (
-      <SidebarLayout title="Cargando..." backRoute={ROUTES.MENU} fullWidth contentClassName="p-6 lg:p-10">
+      <SidebarLayout
+        title="Cargando..."
+        backRoute={ROUTES.MENU}
+        fullWidth
+        contentClassName="p-6 lg:p-10"
+      >
         <div className="max-w-2xl mx-auto space-y-6">
           <Skeleton className="h-10 w-64" />
           <Skeleton className="h-32" />
@@ -74,7 +89,12 @@ export function MenuItemEditPage() {
 
   if (error || !item) {
     return (
-      <SidebarLayout title="Error" backRoute={ROUTES.MENU} fullWidth contentClassName="p-6 lg:p-10">
+      <SidebarLayout
+        title="Error"
+        backRoute={ROUTES.MENU}
+        fullWidth
+        contentClassName="p-6 lg:p-10"
+      >
         <div className="max-w-2xl mx-auto">
           <EmptyState
             icon={<XCircle />}
@@ -89,18 +109,29 @@ export function MenuItemEditPage() {
   }
 
   const onSubmit = (data: UpdateItemInput) => {
+    // Debug: log the data being submitted
+    console.log("Submitting item data:", data);
+
     const payload: Record<string, unknown> = {};
     for (const [key, value] of Object.entries(data)) {
       if (value === undefined) continue;
+
+      // Debug: log each field being processed
+      console.log(`Field ${key}:`, value, `(type: ${typeof value})`);
+
       if (
         (key === "initialStock" || key === "lowStockAlert") &&
         typeof value === "number" &&
         (Number.isNaN(value) || !Number.isFinite(value))
       ) {
+        console.log(`Skipping ${key} - invalid number:`, value);
         continue;
       }
       payload[key] = value;
     }
+
+    console.log("Final payload:", payload);
+
     updateItem(
       { id: item.id, ...payload } as UpdateItemInput & { id: number },
       {
@@ -111,11 +142,12 @@ export function MenuItemEditPage() {
           navigate(ROUTES.MENU);
         },
         onError: (error: AxiosErrorWithResponse) => {
+          console.error("Update error:", error);
           toast.error("Error al actualizar producto", {
             description: error.response?.data?.message || error.message,
           });
         },
-      }
+      },
     );
   };
 
@@ -146,9 +178,7 @@ export function MenuItemEditPage() {
             <h2 className="text-2xl lg:text-3xl font-semibold text-carbon-900 mb-2">
               Editar Producto
             </h2>
-            <p className="text-carbon-500">
-              Modifica los datos del producto
-            </p>
+            <p className="text-carbon-500">Modifica los datos del producto</p>
           </div>
 
           <div className="bg-white rounded-2xl border border-sage-200 shadow-sm">
@@ -244,10 +274,16 @@ export function MenuItemEditPage() {
                     <label className="block text-sm font-semibold text-carbon-800 mb-3">
                       Tipo de inventario
                     </label>
-                    <select {...register("inventoryType")} className={inputClass}>
-                      <option value={InventoryType.NONE}>Sin inventario</option>
-                      <option value={InventoryType.TRACKED}>Rastreado</option>
-                      <option value={InventoryType.UNLIMITED}>Ilimitado</option>
+                    <select
+                      {...register("inventoryType")}
+                      className={inputClass}
+                    >
+                      <option value={InventoryType.UNLIMITED}>
+                        Ilimitado (sin control)
+                      </option>
+                      <option value={InventoryType.TRACKED}>
+                        Rastreado (con control de stock)
+                      </option>
                     </select>
                     {errors.inventoryType && (
                       <p className="text-sm text-red-600 mt-1">
@@ -287,7 +323,9 @@ export function MenuItemEditPage() {
                         <Input
                           type="number"
                           placeholder="Ej: 10"
-                          {...register("lowStockAlert", { valueAsNumber: true })}
+                          {...register("lowStockAlert", {
+                            valueAsNumber: true,
+                          })}
                           error={errors.lowStockAlert?.message}
                           min={0}
                           fullWidth
@@ -355,7 +393,7 @@ export function MenuItemEditPage() {
                     variant="primary"
                     size="lg"
                     isLoading={isUpdating}
-                    disabled={isUpdating || !isValid}
+                    disabled={isUpdating || (!isDirty && !isValid)}
                     className="sm:min-w-[180px]"
                   >
                     {!isUpdating && <Check className="w-5 h-5 mr-2" />}

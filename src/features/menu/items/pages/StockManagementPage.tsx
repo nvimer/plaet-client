@@ -1,29 +1,16 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
+import { Button, Card, Badge, Skeleton, EmptyState } from "@/components";
+import { useItems } from "../hooks";
 import {
-  Button,
-  Card,
-  Badge,
-  Skeleton,
-  EmptyState,
-} from "@/components";
-import {
-  useItems,
-  useLowStockItems,
-  useOutOfStockItems,
-} from "../hooks";
+  DailyResetModal,
+  InventoryTypeModal,
+  InventoryDashboard,
+} from "../components";
 import { usePermissions } from "@/hooks/usePermissions";
 import { ROUTES } from "@/app/routes";
-import { toast } from "sonner";
-import {
-  Package,
-  AlertTriangle,
-  RotateCcw,
-  TrendingUp,
-  ShoppingCart,
-  ArrowRight,
-} from "lucide-react";
+import { Package, RotateCcw, ArrowRight } from "lucide-react";
 import type { MenuItem } from "@/types";
 
 type StockFilter = "ALL" | "LOW_STOCK" | "OUT_OF_STOCK" | "TRACKED";
@@ -40,11 +27,13 @@ export function StockManagementPage() {
 
   // State
   const [filter, setFilter] = useState<StockFilter>("ALL");
+  const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+  const [isInventoryTypeModalOpen, setIsInventoryTypeModalOpen] =
+    useState(false);
+  const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
 
   // Queries
   const { data: allItems, isLoading: loadingItems } = useItems();
-  const { data: lowStockItems } = useLowStockItems();
-  const { data: outOfStockItems } = useOutOfStockItems();
 
   // Filter items
   const filteredItems = useMemo(() => {
@@ -61,13 +50,13 @@ export function StockManagementPage() {
             item.stockQuantity !== undefined &&
             item.lowStockAlert !== undefined &&
             item.stockQuantity <= item.lowStockAlert &&
-            item.stockQuantity > 0
+            item.stockQuantity > 0,
         );
         break;
       case "OUT_OF_STOCK":
         items = items.filter(
           (item) =>
-            item.inventoryType === "TRACKED" && item.stockQuantity === 0
+            item.inventoryType === "TRACKED" && item.stockQuantity === 0,
         );
         break;
       case "TRACKED":
@@ -78,47 +67,10 @@ export function StockManagementPage() {
     return items;
   }, [allItems, filter]);
 
-  // Statistics
-  const stats = useMemo(() => {
-    if (!allItems) {
-      return {
-        total: 0,
-        tracked: 0,
-        lowStock: 0,
-        outOfStock: 0,
-      };
-    }
-
-    return {
-      total: allItems.length,
-      tracked: allItems.filter((item) => item.inventoryType === "TRACKED")
-        .length,
-      lowStock:
-        lowStockItems?.length ||
-        allItems.filter(
-          (item) =>
-            item.inventoryType === "TRACKED" &&
-            item.stockQuantity !== undefined &&
-            item.lowStockAlert !== undefined &&
-            item.stockQuantity <= item.lowStockAlert &&
-            item.stockQuantity > 0
-        ).length,
-      outOfStock:
-        outOfStockItems?.length ||
-        allItems.filter(
-          (item) =>
-            item.inventoryType === "TRACKED" && item.stockQuantity === 0
-        ).length,
-    };
-  }, [allItems, lowStockItems, outOfStockItems]);
-
   // Handlers
   const handleDailyReset = () => {
-    // Admin check done in JSX
-    toast.info("Función no disponible temporalmente", {
-      description: "El reseteo diario de stock está en desarrollo",
-      icon: "🚧",
-    });
+    if (!isAdmin) return;
+    setIsResetModalOpen(true);
   };
 
   // Loading state
@@ -154,55 +106,9 @@ export function StockManagementPage() {
       fullWidth
       contentClassName="p-4 sm:p-6 lg:p-10"
     >
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-sage-100 flex items-center justify-center text-sage-600">
-              <ShoppingCart className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-sm text-carbon-500">Total Items</p>
-              <p className="text-xl font-bold text-carbon-900">{stats.total}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
-              <Package className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-sm text-carbon-500">Rastreados</p>
-              <p className="text-xl font-bold text-carbon-900">{stats.tracked}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
-              <TrendingUp className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-sm text-carbon-500">Stock Bajo</p>
-              <p className="text-xl font-bold text-carbon-900">{stats.lowStock}</p>
-            </div>
-          </div>
-        </div>
-
-        <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center text-rose-600">
-              <AlertTriangle className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-sm text-carbon-500">Sin Stock</p>
-              <p className="text-xl font-bold text-carbon-900">{stats.outOfStock}</p>
-            </div>
-          </div>
-        </div>
+      {/* Dashboard */}
+      <div className="mb-8">
+        <InventoryDashboard items={allItems || []} />
       </div>
 
       {/* Filters */}
@@ -256,7 +162,8 @@ export function StockManagementPage() {
 
       {/* Result count */}
       <p className="text-sm font-medium text-carbon-600 mb-5">
-        {filteredItems.length} {filteredItems.length === 1 ? "producto" : "productos"}
+        {filteredItems.length}{" "}
+        {filteredItems.length === 1 ? "producto" : "productos"}
         {filter !== "ALL" && " encontrados"}
       </p>
 
@@ -273,12 +180,33 @@ export function StockManagementPage() {
             <StockItemCard
               key={item.id}
               item={item}
-              onViewDetail={() =>
-                navigate(`${ROUTES.MENU}/items/${item.id}`)
-              }
+              onViewDetail={() => navigate(`${ROUTES.MENU}/items/${item.id}`)}
+              onChangeInventoryType={() => {
+                setSelectedItem(item);
+                setIsInventoryTypeModalOpen(true);
+              }}
             />
           ))}
         </div>
+      )}
+
+      {/* Daily Reset Modal */}
+      <DailyResetModal
+        items={allItems || []}
+        isOpen={isResetModalOpen}
+        onClose={() => setIsResetModalOpen(false)}
+      />
+
+      {/* Inventory Type Modal */}
+      {selectedItem && (
+        <InventoryTypeModal
+          item={selectedItem}
+          isOpen={isInventoryTypeModalOpen}
+          onClose={() => {
+            setIsInventoryTypeModalOpen(false);
+            setSelectedItem(null);
+          }}
+        />
       )}
     </SidebarLayout>
   );
@@ -292,16 +220,20 @@ export function StockManagementPage() {
 interface StockItemCardProps {
   item: MenuItem;
   onViewDetail: () => void;
+  onChangeInventoryType: () => void;
 }
 
 function StockItemCard({
   item,
   onViewDetail,
+  onChangeInventoryType,
 }: StockItemCardProps) {
   const isTracked = item.inventoryType === "TRACKED";
   const currentStock = item.stockQuantity ?? 0;
   const isLowStock =
-    item.lowStockAlert !== undefined && currentStock <= item.lowStockAlert && currentStock > 0;
+    item.lowStockAlert !== undefined &&
+    currentStock <= item.lowStockAlert &&
+    currentStock > 0;
   const isOutOfStock = currentStock === 0;
 
   return (
@@ -312,8 +244,8 @@ function StockItemCard({
         isOutOfStock
           ? "border-2 border-rose-200 bg-rose-50/30"
           : isLowStock
-          ? "border-2 border-amber-200 bg-amber-50/30"
-          : ""
+            ? "border-2 border-amber-200 bg-amber-50/30"
+            : ""
       }`}
     >
       {/* Header */}
@@ -363,16 +295,26 @@ function StockItemCard({
         </div>
       )}
 
-      {/* Action */}
-      <Button
-        variant="ghost"
-        size="md"
-        onClick={onViewDetail}
-        className="w-full"
-      >
-        Ver Detalle
-        <ArrowRight className="w-4 h-4 ml-2" />
-      </Button>
+      {/* Actions */}
+      <div className="flex gap-2">
+        <Button
+          variant="ghost"
+          size="md"
+          onClick={onChangeInventoryType}
+          className="flex-1"
+        >
+          Tipo Inventario
+        </Button>
+        <Button
+          variant="outline"
+          size="md"
+          onClick={onViewDetail}
+          className="flex-1"
+        >
+          Ver Detalle
+          <ArrowRight className="w-4 h-4 ml-2" />
+        </Button>
+      </div>
     </Card>
   );
 }
