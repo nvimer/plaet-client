@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { OrderType } from "@/types";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import {
   DailyMenuSection,
   ProteinSelector,
+  MenuItemSelector,
   ReplacementManager,
   type Replacement,
 } from "../components";
@@ -213,6 +214,32 @@ export function OrderCreatePage() {
   const tableTotal = useMemo(() => {
     return tableOrders.reduce((sum, order) => sum + order.total, 0);
   }, [tableOrders]);
+
+  // Auto-select single options when daily menu loads
+  useEffect(() => {
+    if (dailyMenuDisplay.isConfigured) {
+      // Auto-select soup if only 1 option
+      if (dailyMenuDisplay.soupOptions.length === 1 && !selectedSoup) {
+        setSelectedSoup(dailyMenuDisplay.soupOptions[0]);
+      }
+      // Auto-select principle if only 1 option
+      if (dailyMenuDisplay.principleOptions.length === 1 && !selectedPrinciple) {
+        setSelectedPrinciple(dailyMenuDisplay.principleOptions[0]);
+      }
+      // Auto-select salad if only 1 option
+      if (dailyMenuDisplay.saladOptions.length === 1 && !selectedSalad) {
+        setSelectedSalad(dailyMenuDisplay.saladOptions[0]);
+      }
+      // Auto-select drink if only 1 option
+      if (dailyMenuDisplay.drinkOptions.length === 1 && !selectedDrink) {
+        setSelectedDrink(dailyMenuDisplay.drinkOptions[0]);
+      }
+      // Auto-select extra if only 1 option
+      if (dailyMenuDisplay.extraOptions.length === 1 && !selectedExtra) {
+        setSelectedExtra(dailyMenuDisplay.extraOptions[0]);
+      }
+    }
+  }, [dailyMenuDisplay, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra]);
 
   // Validation
   const validateOrder = (): ValidationError[] => {
@@ -766,59 +793,105 @@ export function OrderCreatePage() {
                 </div>
               )}
 
-              {/* Menú del Día - Visualización simple */}
-              {dailyMenuDisplay.isConfigured && (
-                <Card variant="elevated" className="p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-white border-amber-200">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
-                      <UtensilsCrossed className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-carbon-900">Menú del Día</h3>
-                      <p className="text-xs text-carbon-500">Configuración actual</p>
-                    </div>
+              {/* Configuración del Almuerzo - Selectores condicionales */}
+              <Card variant="elevated" className="p-6 rounded-2xl">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-600 flex items-center justify-center">
+                    <UtensilsCrossed className="w-6 h-6" />
                   </div>
-                  
-                  <div className="space-y-2 text-sm">
-                    {dailyMenuDisplay.soupOptions.length > 0 && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-amber-600 font-medium min-w-[80px]">Sopa:</span>
-                        <span className="text-carbon-700">{dailyMenuDisplay.soupOptions.map(o => o.name).join(" o ")}</span>
-                      </div>
-                    )}
-                    {dailyMenuDisplay.principleOptions.length > 0 && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-emerald-600 font-medium min-w-[80px]">Principio:</span>
-                        <span className="text-carbon-700">{dailyMenuDisplay.principleOptions.map(o => o.name).join(" o ")}</span>
-                      </div>
-                    )}
-                    {dailyMenuDisplay.saladOptions.length > 0 && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-sage-600 font-medium min-w-[80px]">Ensalada:</span>
-                        <span className="text-carbon-700">{dailyMenuDisplay.saladOptions.map(o => o.name).join(" o ")}</span>
-                      </div>
-                    )}
-                    {dailyMenuDisplay.drinkOptions.length > 0 && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-blue-600 font-medium min-w-[80px]">Jugo:</span>
-                        <span className="text-carbon-700">{dailyMenuDisplay.drinkOptions.map(o => o.name).join(" o ")}</span>
-                      </div>
-                    )}
-                    {dailyMenuDisplay.extraOptions.length > 0 && (
-                      <div className="flex items-center gap-2">
-                        <span className="text-purple-600 font-medium min-w-[80px]">Extra:</span>
-                        <span className="text-carbon-700">{dailyMenuDisplay.extraOptions.map(o => o.name).join(" o ")}</span>
-                      </div>
-                    )}
-                    {dailyMenuDisplay.riceOption && (
-                      <div className="flex items-center gap-2 pt-2 border-t border-amber-200 mt-2">
-                        <span className="text-amber-700 font-medium min-w-[80px]">🍚 Arroz:</span>
-                        <span className="text-carbon-700">{dailyMenuDisplay.riceOption.name}</span>
-                      </div>
-                    )}
+                  <div>
+                    <h3 className="text-lg font-bold text-carbon-900">Configurar Almuerzo</h3>
+                    <p className="text-sm text-carbon-500">Selecciona los elementos del menú</p>
                   </div>
-                </Card>
-              )}
+                </div>
+
+                <div className="space-y-4">
+                  {/* Sopa - Solo mostrar selector si hay 2+ opciones */}
+                  {dailyMenuDisplay.soupOptions.length >= 2 && (
+                    <MenuItemSelector
+                      label="Sopa"
+                      options={dailyMenuDisplay.soupOptions}
+                      selectedOption={selectedSoup}
+                      onSelect={setSelectedSoup}
+                      required={true}
+                      error={hasError("soup") ? validationErrors.find(e => e.field === "soup")?.message : undefined}
+                      icon="🍲"
+                      color="amber"
+                    />
+                  )}
+
+                  {/* Principio - Solo mostrar selector si hay 2+ opciones */}
+                  {dailyMenuDisplay.principleOptions.length >= 2 && (
+                    <MenuItemSelector
+                      label="Principio"
+                      options={dailyMenuDisplay.principleOptions}
+                      selectedOption={selectedPrinciple}
+                      onSelect={setSelectedPrinciple}
+                      required={true}
+                      error={hasError("principle") ? validationErrors.find(e => e.field === "principle")?.message : undefined}
+                      icon="🥔"
+                      color="emerald"
+                    />
+                  )}
+
+                  {/* Ensalada - Solo mostrar selector si hay 2+ opciones */}
+                  {dailyMenuDisplay.saladOptions.length >= 2 && (
+                    <MenuItemSelector
+                      label="Ensalada"
+                      options={dailyMenuDisplay.saladOptions}
+                      selectedOption={selectedSalad}
+                      onSelect={setSelectedSalad}
+                      required={true}
+                      error={hasError("salad") ? validationErrors.find(e => e.field === "salad")?.message : undefined}
+                      icon="🥗"
+                      color="sage"
+                    />
+                  )}
+
+                  {/* Jugo - Solo mostrar selector si hay 2+ opciones */}
+                  {dailyMenuDisplay.drinkOptions.length >= 2 && (
+                    <MenuItemSelector
+                      label="Jugo"
+                      options={dailyMenuDisplay.drinkOptions}
+                      selectedOption={selectedDrink}
+                      onSelect={setSelectedDrink}
+                      required={true}
+                      error={hasError("drink") ? validationErrors.find(e => e.field === "drink")?.message : undefined}
+                      icon="🥤"
+                      color="blue"
+                    />
+                  )}
+
+                  {/* Extra - Solo mostrar selector si hay 2+ opciones */}
+                  {dailyMenuDisplay.extraOptions.length >= 2 && (
+                    <MenuItemSelector
+                      label="Extra"
+                      options={dailyMenuDisplay.extraOptions}
+                      selectedOption={selectedExtra}
+                      onSelect={setSelectedExtra}
+                      required={true}
+                      error={hasError("extra") ? validationErrors.find(e => e.field === "extra")?.message : undefined}
+                      icon="🍌"
+                      color="purple"
+                      showRiceInfo={true}
+                      riceName={dailyMenuDisplay.riceOption?.name}
+                    />
+                  )}
+
+                  {/* Mensaje cuando todo está auto-seleccionado */}
+                  {dailyMenuDisplay.soupOptions.length <= 1 &&
+                   dailyMenuDisplay.principleOptions.length <= 1 &&
+                   dailyMenuDisplay.saladOptions.length <= 1 &&
+                   dailyMenuDisplay.drinkOptions.length <= 1 &&
+                   dailyMenuDisplay.extraOptions.length <= 1 && (
+                    <div className="p-4 bg-sage-50 rounded-xl border border-sage-200">
+                      <p className="text-sm text-carbon-600 text-center">
+                        Menú del día configurado automáticamente
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </Card>
 
               {/* Selector de proteína */}
               <Card variant="elevated" className="p-6 rounded-2xl">

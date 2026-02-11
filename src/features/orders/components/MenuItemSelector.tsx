@@ -119,7 +119,6 @@ export function MenuItemSelector({
               <p className="text-lg font-bold text-carbon-900 mt-1">
                 {onlyOption.name}
               </p>
-              <p className="text-xs text-carbon-500">Elemento del día</p>
             </div>
           </div>
           <div
