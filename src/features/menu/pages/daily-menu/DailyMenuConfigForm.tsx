@@ -127,8 +127,10 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
         proteinCategoryId: initialData.proteinCategory?.id || null,
         drinkCategoryId: initialData.drinkCategory?.id || null,
         extraCategoryId: initialData.extraCategory?.id || null,
-        saladCategoryId: initialData.saladCategory?.id || null,
-        dessertCategoryId: initialData.dessertCategory?.id || null,
+        // If saladCategory is null in initialData but categories are loaded, try to find it by name
+        saladCategoryId: initialData.saladCategory?.id || (categories ? findCategoryIdByName(DEFAULT_CATEGORY_NAMES.salad) : null),
+        // Same for dessert
+        dessertCategoryId: initialData.dessertCategory?.id || (categories ? findCategoryIdByName(DEFAULT_CATEGORY_NAMES.dessert) : null),
         includeDessert: !!initialData.dessertCategory,
         soupOption1Id: initialData.soupOptions?.[0]?.id || null,
         soupOption2Id: initialData.soupOptions?.[1]?.id || null,
@@ -145,7 +147,7 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
         selectedProteinIds: initialData.proteinOptions?.map(p => p.id) || [],
       });
     }
-  }, [initialData]);
+  }, [initialData, categories, findCategoryIdByName]);
 
   const handleSubmit = async () => {
     try {
