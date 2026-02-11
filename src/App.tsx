@@ -61,15 +61,15 @@ const App = () => {
             )
           }
         />
-        {/* Public Route: Register */}
+        {/* Protected Route: Register (Admin Only) */}
         <Route
           path="/register"
           element={
-            isAuthenticated ? (
-              <Navigate to="/dashboard" replace />
-            ) : (
-              <RegisterForm />
-            )
+            <PrivateRoute>
+              <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
+                <RegisterForm />
+              </RoleProtectedRoute>
+            </PrivateRoute>
           }
         />
         {/* Public Route: Forgot Password */}

@@ -259,15 +259,15 @@ export default function LoginPage() {
             </Button>
           </form>
 
-          {/* Footer - Only for superadmin registration */}
+          {/* Footer - Admin registration only */}
           <div className="mt-8 text-center">
             <p className="text-sm text-carbon-600 font-light">
-              ¿Eres administrador de un restaurante?{" "}
+              ¿Eres administrador?{" "}
               <Link
                 to="/register"
                 className="text-sage-green-600 font-semibold hover:text-sage-green-700 transition-colors"
               >
-                Solicita acceso
+                Registra tu restaurante
               </Link>
             </p>
           </div>
