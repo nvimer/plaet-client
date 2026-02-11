@@ -46,11 +46,17 @@ export default function LoginPage() {
       // Navigate to dashboard on success
       navigate("/dashboard", { replace: true });
     } catch (error) {
-      // Log error for debbuging
       const errorMessage =
-        error.response?.data?.message ||
-        error.response?.data?.error ||
-        "Error al iniciar sesión. Verifica tus credenciales.";
+        error instanceof Error && "response" in error
+          ? (
+              error as {
+                response?: { data?: { message?: string; error?: string } };
+              }
+            ).response?.data?.message ||
+            (error as { response?: { data?: { error?: string } } }).response
+              ?.data?.error ||
+            error.message
+          : "Error al iniciar sesión. Verifica tus credenciales.";
 
       setError(errorMessage);
     } finally {
@@ -221,10 +227,10 @@ export default function LoginPage() {
             <p className="text-sm text-carbon-600 font-light">
               ¿Primera vez aquí?{" "}
               <Link
-                to="/"
+                to="/register"
                 className="text-sage-green-600 font-semibold hover:to-sage-green-700 transition-colors"
               >
-                Conoce más
+                Regístrate
               </Link>
             </p>
           </div>

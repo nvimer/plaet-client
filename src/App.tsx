@@ -1,6 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./hooks";
-import LoginPage from "./features/auth/pages/LoginPage";
+import { LoginPage, RegisterForm } from "./features/auth";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import { FullScreenLayout } from "./layouts/FullScreenLayout";
@@ -53,6 +53,17 @@ const App = () => {
               <Navigate to="/dashboard" replace />
             ) : (
               <LoginPage />
+            )
+          }
+        />
+        {/* Public Route: Register */}
+        <Route
+          path="/register"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <RegisterForm />
             )
           }
         />
