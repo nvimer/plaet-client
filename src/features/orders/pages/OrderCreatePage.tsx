@@ -13,6 +13,9 @@ import {
   DailyMenuSection,
   ProteinSelector,
   PlateCustomizer,
+  MenuItemSelector,
+  ReplacementManager,
+  type Replacement,
 } from "../components";
 import { TableSelector } from "@/features/tables";
 import { 
@@ -23,6 +26,11 @@ import {
 import { cn } from "@/utils/cn";
 
 // Types
+interface MenuOption {
+  id: number;
+  name: string;
+}
+
 interface ProteinOption {
   id: number;
   name: string;
@@ -52,9 +60,22 @@ interface LooseItem {
   quantity: number;
 }
 
+interface LunchSelection {
+  soup: MenuOption | null;
+  principle: MenuOption | null;
+  salad: MenuOption | null;
+  drink: MenuOption | null;
+  extra: MenuOption | null;
+  protein: ProteinOption | null;
+  rice: MenuOption | null;
+  replacements: Replacement[];
+  additionalItems: AdditionalItem[];
+}
+
 interface TableOrder {
   id: string;
   protein: ProteinOption | null;
+  lunch: LunchSelection | null;
   substitutions: Substitution[];
   additionals: AdditionalItem[];
   looseItems: LooseItem[];
@@ -103,6 +124,15 @@ export function OrderCreatePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showDailyMenu, setShowDailyMenu] = useState(false);
   const [orderNotes, setOrderNotes] = useState("");
+  
+  // NEW: Estado para selección de elementos del almuerzo
+  const [selectedSoup, setSelectedSoup] = useState<MenuOption | null>(null);
+  const [selectedPrinciple, setSelectedPrinciple] = useState<MenuOption | null>(null);
+  const [selectedSalad, setSelectedSalad] = useState<MenuOption | null>(null);
+  const [selectedDrink, setSelectedDrink] = useState<MenuOption | null>(null);
+  const [selectedExtra, setSelectedExtra] = useState<MenuOption | null>(null);
+  const [selectedRice, setSelectedRice] = useState<MenuOption | null>(null);
+  const [replacements, setReplacements] = useState<Replacement[]>([]);
   
   // UI State
   const [showSummaryModal, setShowSummaryModal] = useState(false);
@@ -171,6 +201,11 @@ export function OrderCreatePage() {
       };
     }
     
+    // NEW: Get rice info from daily menu
+    const riceOption = dailyMenuData.riceOptions && dailyMenuData.riceOptions.length > 0
+      ? dailyMenuData.riceOptions[0]
+      : null;
+    
     return {
       soupOptions: dailyMenuData.soupOptions || [],
       principleOptions: dailyMenuData.principleOptions || [],
@@ -178,26 +213,43 @@ export function OrderCreatePage() {
       extraOptions: dailyMenuData.extraOptions || [],
       drinkOptions: dailyMenuData.drinkOptions || [],
       dessertOptions: dailyMenuData.dessertOptions || [],
+      riceOption, // NEW: Add rice
       basePrice: dailyMenuData.basePrice || dailyMenuPrices.basePrice,
       premiumPrice: dailyMenuData.premiumProteinPrice || dailyMenuPrices.premiumPrice,
       isConfigured: true,
     };
   }, [dailyMenuData, dailyMenuPrices]);
 
+  // NEW: Calcular precio base del almuerzo según proteína seleccionada
+  const lunchBasePrice = useMemo(() => {
+    if (!selectedProtein) return 0;
+    
+    // Si la proteína tiene un precio mayor al base, usar el precio de la proteína
+    // Esto asume que las proteínas premium tienen precios individuales mayores
+    const isPremium = selectedProtein.price > dailyMenuPrices.basePrice;
+    
+    return isPremium ? selectedProtein.price : dailyMenuPrices.basePrice;
+  }, [selectedProtein, dailyMenuPrices]);
+
   // Calcular total del pedido actual
   const currentOrderTotal = useMemo(() => {
     let total = 0;
-    if (selectedProtein) {
-      total += selectedProtein.price;
-    }
+    
+    // Precio del almuerzo base
+    total += lunchBasePrice;
+    
+    // Extras adicionales (fuera de los reemplazos gratuitos)
     additionals.forEach((item) => {
       total += item.price * item.quantity;
     });
+    
+    // Productos sueltos
     looseItems.forEach((item) => {
       total += item.price * item.quantity;
     });
+    
     return total;
-  }, [selectedProtein, additionals, looseItems]);
+  }, [lunchBasePrice, additionals, looseItems]);
 
   // Calcular total de la mesa
   const tableTotal = useMemo(() => {
@@ -210,6 +262,25 @@ export function OrderCreatePage() {
     
     if (!selectedProtein && looseItems.length === 0) {
       errors.push({ field: "protein", message: "Selecciona una proteína o agrega productos" });
+    }
+    
+    // NEW: Validate lunch items are selected (if protein is selected)
+    if (selectedProtein) {
+      if (dailyMenuDisplay.soupOptions.length > 0 && !selectedSoup) {
+        errors.push({ field: "soup", message: "Selecciona una sopa" });
+      }
+      if (dailyMenuDisplay.principleOptions.length > 0 && !selectedPrinciple) {
+        errors.push({ field: "principle", message: "Selecciona un principio" });
+      }
+      if (dailyMenuDisplay.saladOptions.length > 0 && !selectedSalad) {
+        errors.push({ field: "salad", message: "Selecciona una ensalada" });
+      }
+      if (dailyMenuDisplay.drinkOptions.length > 0 && !selectedDrink) {
+        errors.push({ field: "drink", message: "Selecciona un jugo" });
+      }
+      if (dailyMenuDisplay.extraOptions.length > 0 && !selectedExtra) {
+        errors.push({ field: "extra", message: "Selecciona un extra" });
+      }
     }
     
     if (selectedOrderType === OrderType.DINE_IN && !selectedTable) {
@@ -282,9 +353,38 @@ export function OrderCreatePage() {
     setLooseItems((prev) => prev.filter((i) => i.id !== id));
   };
 
+  // NEW: Build detailed order notes with lunch selections
+  const buildOrderNotes = (): string => {
+    const parts: string[] = [];
+    
+    if (selectedProtein) {
+      parts.push(`Almuerzo Ejecutivo:`);
+      parts.push(`• Arroz: ${selectedRice?.name || dailyMenuDisplay.riceOption?.name || 'Arroz del día'}`);
+      parts.push(`• Sopa: ${selectedSoup?.name || 'No seleccionada'}`);
+      parts.push(`• Principio: ${selectedPrinciple?.name || 'No seleccionado'}`);
+      parts.push(`• Ensalada: ${selectedSalad?.name || 'No seleccionada'}`);
+      parts.push(`• Jugo: ${selectedDrink?.name || 'No seleccionado'}`);
+      parts.push(`• Extra: ${selectedExtra?.name || 'No seleccionado'}`);
+      parts.push(`• Proteína: ${selectedProtein.name}`);
+      
+      if (replacements.length > 0) {
+        parts.push(`\nReemplazos:`);
+        replacements.forEach(r => {
+          parts.push(`• No ${r.fromName} → ${r.itemName} (${r.toName})`);
+        });
+      }
+    }
+    
+    if (orderNotes) {
+      parts.push(`\nNotas: ${orderNotes}`);
+    }
+    
+    return parts.join('\n');
+  };
+
   // Agregar pedido a la mesa
   const handleAddOrderToTable = () => {
-    setTouchedFields(new Set(["protein"]));
+    setTouchedFields(new Set(["protein", "soup", "principle", "salad", "drink", "extra"]));
     const errors = validateOrder();
     
     if (errors.length > 0) {
@@ -293,14 +393,28 @@ export function OrderCreatePage() {
       return;
     }
 
+    // NEW: Create lunch selection object
+    const lunchSelection: LunchSelection | null = selectedProtein ? {
+      soup: selectedSoup,
+      principle: selectedPrinciple,
+      salad: selectedSalad,
+      drink: selectedDrink,
+      extra: selectedExtra,
+      protein: selectedProtein,
+      rice: selectedRice || dailyMenuDisplay.riceOption || null,
+      replacements: [...replacements],
+      additionalItems: [...additionals],
+    } : null;
+
     const newOrder: TableOrder = {
       id: Date.now().toString(),
       protein: selectedProtein,
+      lunch: lunchSelection,
       substitutions: [...substitutions],
       additionals: [...additionals],
       looseItems: [...looseItems],
       total: currentOrderTotal,
-      notes: orderNotes,
+      notes: buildOrderNotes(),
       createdAt: Date.now(),
     };
 
@@ -322,6 +436,13 @@ export function OrderCreatePage() {
   // Limpiar pedido actual
   const clearCurrentOrder = () => {
     setSelectedProtein(null);
+    setSelectedSoup(null);
+    setSelectedPrinciple(null);
+    setSelectedSalad(null);
+    setSelectedDrink(null);
+    setSelectedExtra(null);
+    setSelectedRice(null);
+    setReplacements([]);
     setSubstitutions([]);
     setAdditionals([]);
     setLooseItems([]);
@@ -335,6 +456,18 @@ export function OrderCreatePage() {
     const order = tableOrders[index];
     setCurrentOrderIndex(index);
     setSelectedProtein(order.protein);
+    
+    // NEW: Restore lunch selections if they exist
+    if (order.lunch) {
+      setSelectedSoup(order.lunch.soup);
+      setSelectedPrinciple(order.lunch.principle);
+      setSelectedSalad(order.lunch.salad);
+      setSelectedDrink(order.lunch.drink);
+      setSelectedExtra(order.lunch.extra);
+      setSelectedRice(order.lunch.rice);
+      setReplacements([...order.lunch.replacements]);
+    }
+    
     setSubstitutions([...order.substitutions]);
     setAdditionals([...order.additionals]);
     setLooseItems([...order.looseItems]);
@@ -731,9 +864,117 @@ export function OrderCreatePage() {
                 </div>
               )}
 
+              {/* NEW: Configuración del Almuerzo */}
+              <Card variant="elevated" className="p-6 rounded-2xl">
+                <div className="flex items-center gap-3 mb-6">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-600 flex items-center justify-center">
+                    <UtensilsCrossed className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-bold text-carbon-900">Configurar Almuerzo</h3>
+                    <p className="text-sm text-carbon-500">Selecciona los elementos del menú del día</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {/* Sopa */}
+                  {dailyMenuDisplay.soupOptions.length > 0 && (
+                    <MenuItemSelector
+                      label="Sopa"
+                      options={dailyMenuDisplay.soupOptions}
+                      selectedOption={selectedSoup}
+                      onSelect={setSelectedSoup}
+                      required={true}
+                      error={hasError("soup") ? validationErrors.find(e => e.field === "soup")?.message : undefined}
+                      icon="🍲"
+                      color="amber"
+                    />
+                  )}
+
+                  {/* Principio */}
+                  {dailyMenuDisplay.principleOptions.length > 0 && (
+                    <MenuItemSelector
+                      label="Principio"
+                      options={dailyMenuDisplay.principleOptions}
+                      selectedOption={selectedPrinciple}
+                      onSelect={setSelectedPrinciple}
+                      required={true}
+                      error={hasError("principle") ? validationErrors.find(e => e.field === "principle")?.message : undefined}
+                      icon="🥔"
+                      color="emerald"
+                    />
+                  )}
+
+                  {/* Ensalada */}
+                  {dailyMenuDisplay.saladOptions.length > 0 && (
+                    <MenuItemSelector
+                      label="Ensalada"
+                      options={dailyMenuDisplay.saladOptions}
+                      selectedOption={selectedSalad}
+                      onSelect={setSelectedSalad}
+                      required={true}
+                      error={hasError("salad") ? validationErrors.find(e => e.field === "salad")?.message : undefined}
+                      icon="🥗"
+                      color="sage"
+                    />
+                  )}
+
+                  {/* Jugo */}
+                  {dailyMenuDisplay.drinkOptions.length > 0 && (
+                    <MenuItemSelector
+                      label="Jugo"
+                      options={dailyMenuDisplay.drinkOptions}
+                      selectedOption={selectedDrink}
+                      onSelect={setSelectedDrink}
+                      required={true}
+                      error={hasError("drink") ? validationErrors.find(e => e.field === "drink")?.message : undefined}
+                      icon="🥤"
+                      color="blue"
+                    />
+                  )}
+
+                  {/* Extra */}
+                  {dailyMenuDisplay.extraOptions.length > 0 && (
+                    <MenuItemSelector
+                      label="Extra"
+                      options={dailyMenuDisplay.extraOptions}
+                      selectedOption={selectedExtra}
+                      onSelect={setSelectedExtra}
+                      required={true}
+                      error={hasError("extra") ? validationErrors.find(e => e.field === "extra")?.message : undefined}
+                      icon="🍌"
+                      color="purple"
+                      showRiceInfo={true}
+                      riceName={dailyMenuDisplay.riceOption?.name}
+                    />
+                  )}
+                </div>
+              </Card>
+
               {/* Selector de proteína */}
               <Card variant="elevated" className="p-6 rounded-2xl">
                 <div className={cn(hasError("protein") && "rounded-xl border-2 border-rose-300 p-2 -m-2")}>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-100 to-rose-200 text-rose-600 flex items-center justify-center">
+                        <span className="text-2xl">🥩</span>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-bold text-carbon-900">Selecciona la Proteína</h3>
+                        <p className="text-sm text-carbon-500">
+                          El precio del almuerzo varía según la proteína
+                        </p>
+                      </div>
+                    </div>
+                    {/* Price display */}
+                    <div className="text-right">
+                      <p className="text-2xl font-bold text-sage-700">
+                        ${lunchBasePrice.toLocaleString()}
+                      </p>
+                      <p className="text-xs text-carbon-500">Precio del almuerzo</p>
+                    </div>
+                  </div>
+
                   {proteins.length > 0 ? (
                     <>
                       <ProteinSelector
@@ -774,7 +1015,26 @@ export function OrderCreatePage() {
                 </div>
               </Card>
 
-              {/* Personalización del plato */}
+              {/* NEW: Replacement Manager */}
+              {selectedProtein && (
+                <Card variant="elevated" className="p-6 rounded-2xl">
+                  <ReplacementManager
+                    availableItems={{
+                      soup: dailyMenuDisplay.soupOptions,
+                      principle: dailyMenuDisplay.principleOptions,
+                      salad: dailyMenuDisplay.saladOptions,
+                      drink: dailyMenuDisplay.drinkOptions,
+                      extra: dailyMenuDisplay.extraOptions,
+                    }}
+                    replacements={replacements}
+                    onAddReplacement={(r) => setReplacements(prev => [...prev, r])}
+                    onRemoveReplacement={(id) => setReplacements(prev => prev.filter(rep => rep.id !== id))}
+                    disabled={!selectedProtein}
+                  />
+                </Card>
+              )}
+
+              {/* Personalización del plato - Extras adicionales con costo */}
               {selectedProtein && (
                 <PlateCustomizer
                   substitutions={substitutions}
@@ -1085,13 +1345,13 @@ export function OrderCreatePage() {
               <div className="space-y-4">
                 {tableOrders.map((order, index) => (
                   <div key={order.id} className="p-4 bg-sage-50 rounded-xl border border-sage-200">
-                    <div className="flex items-start justify-between mb-2">
+                    <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-2">
                         <span className="w-8 h-8 rounded-lg bg-sage-200 text-sage-700 flex items-center justify-center font-bold text-sm">
                           {index + 1}
                         </span>
                         <span className="font-bold text-carbon-900">
-                          {order.protein ? order.protein.name : "Productos sueltos"}
+                          {order.protein ? `Almuerzo ${order.protein.name}` : "Productos sueltos"}
                         </span>
                       </div>
                       <span className="font-bold text-sage-700">
@@ -1099,19 +1359,72 @@ export function OrderCreatePage() {
                       </span>
                     </div>
                     
+                    {/* NEW: Detailed lunch breakdown */}
+                    {order.lunch && (
+                      <div className="ml-10 mb-3 p-3 bg-white rounded-lg border border-sage-200">
+                        <div className="grid grid-cols-2 gap-2 text-sm">
+                          {order.lunch.rice && (
+                            <div className="flex items-center gap-1">
+                              <span>🍚</span>
+                              <span className="text-carbon-600">{order.lunch.rice.name}</span>
+                            </div>
+                          )}
+                          {order.lunch.soup && (
+                            <div className="flex items-center gap-1">
+                              <span>🍲</span>
+                              <span className="text-carbon-600">{order.lunch.soup.name}</span>
+                            </div>
+                          )}
+                          {order.lunch.principle && (
+                            <div className="flex items-center gap-1">
+                              <span>🥔</span>
+                              <span className="text-carbon-600">{order.lunch.principle.name}</span>
+                            </div>
+                          )}
+                          {order.lunch.salad && (
+                            <div className="flex items-center gap-1">
+                              <span>🥗</span>
+                              <span className="text-carbon-600">{order.lunch.salad.name}</span>
+                            </div>
+                          )}
+                          {order.lunch.drink && (
+                            <div className="flex items-center gap-1">
+                              <span>🥤</span>
+                              <span className="text-carbon-600">{order.lunch.drink.name}</span>
+                            </div>
+                          )}
+                          {order.lunch.extra && (
+                            <div className="flex items-center gap-1">
+                              <span>🍌</span>
+                              <span className="text-carbon-600">{order.lunch.extra.name}</span>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Replacements */}
+                        {order.lunch.replacements.length > 0 && (
+                          <div className="mt-2 pt-2 border-t border-sage-100">
+                            <p className="text-xs font-medium text-emerald-600 mb-1">Reemplazos:</p>
+                            <div className="space-y-1">
+                              {order.lunch.replacements.map(r => (
+                                <p key={r.id} className="text-xs text-carbon-500">
+                                  No {r.fromName} → {r.itemName}
+                                </p>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    )}
+                    
                     <div className="ml-10 space-y-1 text-sm text-carbon-600">
-                      {order.substitutions.length > 0 && (
-                        <p>Sustituciones: {order.substitutions.map(s => 
-                          `${s.from} → ${s.to}`
-                        ).join(", ")}</p>
-                      )}
                       {order.additionals.length > 0 && (
-                        <p>Adicionales: {order.additionals.map(a => 
+                        <p>Extras adicionales: {order.additionals.map(a => 
                           `${a.name} (x${a.quantity})`
                         ).join(", ")}</p>
                       )}
                       {order.looseItems.length > 0 && (
-                        <p>Extras: {order.looseItems.map(i => 
+                        <p>Productos sueltos: {order.looseItems.map(i => 
                           `${i.name} (x${i.quantity})`
                         ).join(", ")}</p>
                       )}

@@ -49,6 +49,7 @@ export interface DailyMenu {
   extraOptions: MenuItemOption[];
   saladOptions: MenuItemOption[];
   dessertOptions?: MenuItemOption[];
+  riceOptions?: MenuItemOption[]; // NEW: Rice options
 
   // All proteins available (not limited options)
   proteinOptions: MenuItemOption[];

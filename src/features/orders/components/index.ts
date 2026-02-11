@@ -7,3 +7,5 @@ export { DailyMenuSection } from "./DailyMenuSection";
 export { ProteinSelector } from "./ProteinSelector";
 export { PlateCustomizer } from "./PlateCustomizer";
 export { OrderSummary } from "./OrderSummary";
+export { MenuItemSelector } from "./MenuItemSelector";
+export { ReplacementManager, type Replacement } from "./ReplacementManager";
