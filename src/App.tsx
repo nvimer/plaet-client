@@ -1,6 +1,11 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./hooks";
-import { LoginPage, RegisterForm } from "./features/auth";
+import {
+  LoginPage,
+  RegisterForm,
+  ForgotPasswordPage,
+  ResetPasswordPage,
+} from "./features/auth";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { DashboardLayout } from "./layouts/DashboardLayout";
 import { FullScreenLayout } from "./layouts/FullScreenLayout";
@@ -56,14 +61,36 @@ const App = () => {
             )
           }
         />
-        {/* Public Route: Register */}
+        {/* Protected Route: Register (Admin Only) */}
         <Route
           path="/register"
+          element={
+            <PrivateRoute>
+              <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
+                <RegisterForm />
+              </RoleProtectedRoute>
+            </PrivateRoute>
+          }
+        />
+        {/* Public Route: Forgot Password */}
+        <Route
+          path="/forgot-password"
           element={
             isAuthenticated ? (
               <Navigate to="/dashboard" replace />
             ) : (
-              <RegisterForm />
+              <ForgotPasswordPage />
+            )
+          }
+        />
+        {/* Public Route: Reset Password */}
+        <Route
+          path="/reset-password"
+          element={
+            isAuthenticated ? (
+              <Navigate to="/dashboard" replace />
+            ) : (
+              <ResetPasswordPage />
             )
           }
         />
