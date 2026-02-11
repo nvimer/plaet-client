@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { Card, Button } from "@/components";
 import { cn } from "@/utils/cn";
-import { X, Plus, ArrowRight, AlertCircle } from "lucide-react";
+import { X, Plus, ArrowRight, ArrowLeft, Check } from "lucide-react";
 
 interface MenuOption {
   id: number;
@@ -51,6 +51,12 @@ const CATEGORY_ICONS: Record<string, string> = {
   rice: "🍚",
 };
 
+const STEPS = [
+  { id: 'select', label: 'Quitar' },
+  { id: 'replace', label: 'Agregar' },
+  { id: 'item', label: 'Elegir' },
+];
+
 export function ReplacementManager({
   availableItems,
   replacements,
@@ -59,11 +65,11 @@ export function ReplacementManager({
   disabled = false,
 }: ReplacementManagerProps) {
   const [showAddModal, setShowAddModal] = useState(false);
+  const [currentStep, setCurrentStep] = useState(0);
   const [selectedFrom, setSelectedFrom] = useState<string | null>(null);
   const [selectedTo, setSelectedTo] = useState<string | null>(null);
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
 
-  // Calculate which categories can be replaced (have items configured)
   const replaceableCategories = useMemo(() => {
     const categories: Array<{ key: string; name: string; icon: string; hasItems: boolean }> = [
       { key: "soup", name: "Sopa", icon: CATEGORY_ICONS.soup, hasItems: availableItems.soup.length > 0 },
@@ -75,7 +81,6 @@ export function ReplacementManager({
     return categories.filter((c) => c.hasItems);
   }, [availableItems]);
 
-  // Calculate which categories can receive replacements
   const availableTargets = useMemo(() => {
     if (!selectedFrom) return [];
     
@@ -84,7 +89,6 @@ export function ReplacementManager({
     );
   }, [selectedFrom, replaceableCategories, replacements]);
 
-  // Get items for selected target category
   const targetItems = useMemo(() => {
     if (!selectedTo) return [];
     return (availableItems as Record<string, MenuOption[]>)[selectedTo] || [];
@@ -92,9 +96,42 @@ export function ReplacementManager({
 
   const handleStartReplacement = () => {
     setShowAddModal(true);
+    setCurrentStep(0);
     setSelectedFrom(null);
     setSelectedTo(null);
     setSelectedItem(null);
+  };
+
+  const handleCloseModal = () => {
+    setShowAddModal(false);
+    setCurrentStep(0);
+    setSelectedFrom(null);
+    setSelectedTo(null);
+    setSelectedItem(null);
+  };
+
+  const handleSelectFrom = (categoryKey: string) => {
+    setSelectedFrom(categoryKey);
+    setCurrentStep(1);
+  };
+
+  const handleSelectTo = (categoryKey: string) => {
+    setSelectedTo(categoryKey);
+    setCurrentStep(2);
+  };
+
+  const handleSelectItem = (itemId: number) => {
+    setSelectedItem(itemId);
+  };
+
+  const handleGoBack = () => {
+    if (currentStep === 2) {
+      setSelectedItem(null);
+      setCurrentStep(1);
+    } else if (currentStep === 1) {
+      setSelectedTo(null);
+      setCurrentStep(0);
+    }
   };
 
   const handleConfirmReplacement = () => {
@@ -117,13 +154,9 @@ export function ReplacementManager({
     };
 
     onAddReplacement(newReplacement);
-    setShowAddModal(false);
-    setSelectedFrom(null);
-    setSelectedTo(null);
-    setSelectedItem(null);
+    handleCloseModal();
   };
 
-  // Check if a category has already been replaced
   const isCategoryReplaced = (categoryKey: string) => {
     return replacements.some((r) => r.from === categoryKey);
   };
@@ -131,7 +164,7 @@ export function ReplacementManager({
   if (disabled) {
     return (
       <Card className="p-4 bg-carbon-50 border-carbon-200">
-        <p className="text-carbon-500 text-center">Configura el almuerzo primero para ver reemplazos</p>
+        <p className="text-carbon-500 text-center">Configura el almuerzo primero</p>
       </Card>
     );
   }
@@ -141,15 +174,15 @@ export function ReplacementManager({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-bold text-carbon-900">Reemplazos Gratuitos</h3>
-          <p className="text-sm text-carbon-500">¿No quieres algo? Cámbialo por otro elemento</p>
+          <h3 className="font-bold text-carbon-900">Cambios</h3>
+          <p className="text-sm text-carbon-500">¿No quieres algo? Cámbialo</p>
         </div>
         {replacements.length < replaceableCategories.length - 1 && (
           <Button
             variant="outline"
             size="sm"
             onClick={handleStartReplacement}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 min-h-[44px]"
           >
             <Plus className="w-4 h-4" />
             Agregar
@@ -163,103 +196,137 @@ export function ReplacementManager({
           {replacements.map((replacement) => (
             <Card
               key={replacement.id}
-              className="p-3 bg-emerald-50 border-emerald-200 flex items-center justify-between"
+              className="p-3 bg-emerald-50 border-emerald-200"
             >
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">{CATEGORY_ICONS[replacement.from]}</span>
-                  <span className="text-carbon-500 line-through text-sm">{replacement.fromName}</span>
-                </div>
-                <ArrowRight className="w-4 h-4 text-emerald-600" />
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">{CATEGORY_ICONS[replacement.to]}</span>
-                  <div>
-                    <span className="font-semibold text-carbon-900">{replacement.itemName}</span>
-                    <span className="text-xs text-emerald-600 block">+ {replacement.toName} extra</span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 flex-1">
+                  <span className="text-xl">{CATEGORY_ICONS[replacement.from]}</span>
+                  <ArrowRight className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                  <div className="min-w-0 flex-1">
+                    <span className="font-semibold text-carbon-900 text-sm block truncate">
+                      {replacement.itemName}
+                    </span>
+                    <span className="text-xs text-emerald-600 block">
+                      Extra {replacement.toName}
+                    </span>
                   </div>
                 </div>
+                <button
+                  onClick={() => onRemoveReplacement(replacement.id)}
+                  className="p-3 text-carbon-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-colors flex-shrink-0 ml-2"
+                  aria-label="Eliminar cambio"
+                >
+                  <X className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                onClick={() => onRemoveReplacement(replacement.id)}
-                className="p-2 text-carbon-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
             </Card>
           ))}
         </div>
       )}
 
-      {/* Available replacements hint */}
+      {/* Empty state */}
       {replacements.length === 0 && replaceableCategories.length > 0 && (
-        <div className="p-4 bg-sage-50 rounded-xl border border-dashed border-sage-300">
-          <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-sage-600 mt-0.5" />
+        <button
+          onClick={handleStartReplacement}
+          className="w-full p-4 bg-sage-50 rounded-xl border-2 border-dashed border-sage-300 hover:border-sage-400 hover:bg-sage-100 transition-all text-left"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm">
+              <Plus className="w-6 h-6 text-sage-600" />
+            </div>
             <div>
-              <p className="text-sm font-medium text-carbon-700">¿No te gusta algo del menú?</p>
-              <p className="text-sm text-carbon-500 mt-1">
-                Puedes reemplazar cualquier elemento por otro del mismo menú sin costo adicional.
-              </p>
-              <div className="flex flex-wrap gap-2 mt-3">
-                {replaceableCategories.slice(0, 3).map((cat) => (
-                  <span
-                    key={cat.key}
-                    className={cn(
-                      "text-xs px-2 py-1 rounded-full",
-                      isCategoryReplaced(cat.key)
-                        ? "bg-emerald-100 text-emerald-700"
-                        : "bg-white text-carbon-600 border border-sage-200"
-                    )}
-                  >
-                    {cat.icon} {cat.name}
-                  </span>
-                ))}
-                {replaceableCategories.length > 3 && (
-                  <span className="text-xs px-2 py-1 rounded-full bg-white text-carbon-600 border border-sage-200">
-                    +{replaceableCategories.length - 3} más
-                  </span>
-                )}
-              </div>
+              <p className="font-medium text-carbon-800">Agregar cambio</p>
+              <p className="text-sm text-carbon-500">Sin costo adicional</p>
             </div>
           </div>
-        </div>
+        </button>
       )}
 
-      {/* Add Replacement Modal */}
+      {/* Bottom Sheet Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-          <Card className="w-full max-w-lg max-h-[90vh] overflow-hidden">
-            <div className="p-4 border-b border-sage-200">
-              <div className="flex items-center justify-between">
-                <h3 className="font-bold text-lg text-carbon-900">Nuevo Reemplazo</h3>
-                <button
-                  onClick={() => setShowAddModal(false)}
-                  className="p-2 text-carbon-400 hover:text-carbon-600 hover:bg-sage-100 rounded-lg"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-              <p className="text-sm text-carbon-500 mt-1">
-                Selecciona qué no quieres y por qué lo quieres cambiar
-              </p>
+        <div 
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
+          onClick={handleCloseModal}
+        >
+          {/* Backdrop */}
+          <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
+          
+          {/* Sheet */}
+          <div 
+            className="relative w-full sm:w-full sm:max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[85vh] flex flex-col animate-slide-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Handle bar */}
+            <div className="flex justify-center pt-3 pb-1">
+              <div className="w-12 h-1.5 bg-carbon-300 rounded-full" />
             </div>
 
-            <div className="p-4 space-y-4 overflow-y-auto max-h-[60vh]">
+            {/* Header */}
+            <div className="px-4 pb-4 border-b border-carbon-100">
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-lg text-carbon-900">
+                  {currentStep === 0 && '¿Qué quitamos?'}
+                  {currentStep === 1 && '¿Qué agregamos?'}
+                  {currentStep === 2 && 'Elige el item'}
+                </h3>
+                <button
+                  onClick={handleCloseModal}
+                  className="p-2 text-carbon-400 hover:text-carbon-600 hover:bg-carbon-100 rounded-xl"
+                  aria-label="Cerrar"
+                >
+                  <X className="w-6 h-6" />
+                </button>
+              </div>
+              
+              {/* Progress steps */}
+              <div className="flex items-center gap-2 mt-4">
+                {STEPS.map((step, index) => (
+                  <div key={step.id} className="flex items-center gap-2 flex-1">
+                    <div className={cn(
+                      "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors",
+                      index < currentStep 
+                        ? "bg-emerald-500 text-white"
+                        : index === currentStep 
+                          ? "bg-sage-600 text-white"
+                          : "bg-carbon-100 text-carbon-400"
+                    )}>
+                      {index < currentStep ? (
+                        <Check className="w-4 h-4" />
+                      ) : (
+                        index + 1
+                      )}
+                    </div>
+                    {index < STEPS.length - 1 && (
+                      <div className={cn(
+                        "flex-1 h-1 rounded-full transition-colors",
+                        index < currentStep ? "bg-emerald-500" : "bg-carbon-200"
+                      )} />
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Content */}
+            <div className="flex-1 overflow-y-auto p-4">
               {/* Step 1: Select what to replace */}
-              {!selectedFrom && (
+              {currentStep === 0 && (
                 <div className="space-y-3">
-                  <p className="font-medium text-carbon-700">¿Qué no quieres?</p>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid gap-3">
                     {replaceableCategories
                       .filter((cat) => !isCategoryReplaced(cat.key))
                       .map((cat) => (
                         <button
                           key={cat.key}
-                          onClick={() => setSelectedFrom(cat.key)}
-                          className="p-3 rounded-xl border-2 border-sage-200 bg-white hover:border-sage-400 hover:bg-sage-50 transition-all text-left"
+                          onClick={() => handleSelectFrom(cat.key)}
+                          className="flex items-center gap-4 p-4 rounded-2xl border-2 border-carbon-200 bg-white hover:border-sage-400 hover:bg-sage-50 active:scale-[0.98] transition-all text-left min-h-[72px]"
                         >
-                          <span className="text-2xl block mb-1">{cat.icon}</span>
-                          <span className="font-medium text-carbon-900">{cat.name}</span>
+                          <span className="text-3xl">{cat.icon}</span>
+                          <div className="flex-1">
+                            <span className="font-semibold text-carbon-900 text-lg block">{cat.name}</span>
+                            <span className="text-sm text-carbon-500">Quitar del menú</span>
+                          </div>
+                          <ArrowRight className="w-6 h-6 text-carbon-300" />
                         </button>
                       ))}
                   </div>
@@ -267,117 +334,106 @@ export function ReplacementManager({
               )}
 
               {/* Step 2: Select what to replace with */}
-              {selectedFrom && !selectedTo && (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-carbon-500">
+              {currentStep === 1 && (
+                <div className="space-y-4">
+                  {/* Current selection */}
+                  <div className="flex items-center gap-2 p-3 bg-carbon-50 rounded-xl">
                     <button
-                      onClick={() => setSelectedFrom(null)}
-                      className="text-sage-600 hover:underline"
+                      onClick={handleGoBack}
+                      className="p-2 text-sage-600 hover:bg-sage-100 rounded-lg"
                     >
-                      ← Volver
+                      <ArrowLeft className="w-5 h-5" />
                     </button>
-                    <span>|</span>
-                    <span>
-                      No quiero: <strong>{CATEGORY_NAMES[selectedFrom]}</strong>
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{CATEGORY_ICONS[selectedFrom!]}</span>
+                      <span className="text-carbon-400 line-through">{CATEGORY_NAMES[selectedFrom!]}</span>
+                    </div>
                   </div>
-                  <p className="font-medium text-carbon-700">¿Por qué lo quieres cambiar?</p>
+
                   {availableTargets.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-2">
+                    <div className="grid gap-3">
                       {availableTargets.map((cat) => (
                         <button
                           key={cat.key}
-                          onClick={() => setSelectedTo(cat.key)}
-                          className="p-3 rounded-xl border-2 border-sage-200 bg-white hover:border-sage-400 hover:bg-sage-50 transition-all text-left"
+                          onClick={() => handleSelectTo(cat.key)}
+                          className="flex items-center gap-4 p-4 rounded-2xl border-2 border-carbon-200 bg-white hover:border-sage-400 hover:bg-sage-50 active:scale-[0.98] transition-all text-left min-h-[72px]"
                         >
-                          <span className="text-2xl block mb-1">{cat.icon}</span>
-                          <span className="font-medium text-carbon-900">{cat.name}</span>
+                          <span className="text-3xl">{cat.icon}</span>
+                          <div className="flex-1">
+                            <span className="font-semibold text-carbon-900 text-lg block">{cat.name}</span>
+                            <span className="text-sm text-carbon-500">Agregar extra</span>
+                          </div>
+                          <ArrowRight className="w-6 h-6 text-carbon-300" />
                         </button>
                       ))}
                     </div>
                   ) : (
-                    <div className="p-4 bg-amber-50 rounded-xl border border-amber-200">
-                      <p className="text-amber-700 text-sm">
-                        No hay más opciones disponibles para reemplazar.
-                      </p>
+                    <div className="p-6 bg-amber-50 rounded-2xl border-2 border-amber-200 text-center">
+                      <p className="text-amber-700 font-medium">No hay más opciones</p>
+                      <p className="text-amber-600 text-sm mt-1">Todas las categorías están en uso</p>
                     </div>
                   )}
                 </div>
               )}
 
               {/* Step 3: Select specific item */}
-              {selectedFrom && selectedTo && !selectedItem && (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-carbon-500">
-                    <button
-                      onClick={() => setSelectedTo(null)}
-                      className="text-sage-600 hover:underline"
-                    >
-                      ← Volver
-                    </button>
-                    <span>|</span>
-                    <span>
-                      No quiero: <strong>{CATEGORY_NAMES[selectedFrom]}</strong> → Quiero:{" "}
-                      <strong>{CATEGORY_NAMES[selectedTo]}</strong>
-                    </span>
-                  </div>
-                  <p className="font-medium text-carbon-700">Selecciona el {CATEGORY_NAMES[selectedTo]}:</p>
-                  <div className="space-y-2">
-                    {targetItems.map((item) => (
-                      <button
-                        key={item.id}
-                        onClick={() => setSelectedItem(item.id)}
-                        className="w-full p-4 rounded-xl border-2 border-sage-200 bg-white hover:border-sage-400 hover:bg-sage-50 transition-all text-left flex items-center justify-between"
-                      >
-                        <span className="font-semibold text-carbon-900">{item.name}</span>
-                        <span className="text-sm text-sage-600">Opción {targetItems.indexOf(item) + 1}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Confirmation */}
-              {selectedFrom && selectedTo && selectedItem && (
+              {currentStep === 2 && (
                 <div className="space-y-4">
-                  <div className="flex items-center gap-2 text-sm text-carbon-500">
+                  {/* Current selections */}
+                  <div className="flex items-center gap-2 p-3 bg-carbon-50 rounded-xl">
                     <button
-                      onClick={() => setSelectedItem(null)}
-                      className="text-sage-600 hover:underline"
+                      onClick={handleGoBack}
+                      className="p-2 text-sage-600 hover:bg-sage-100 rounded-lg"
                     >
-                      ← Volver
+                      <ArrowLeft className="w-5 h-5" />
                     </button>
-                  </div>
-                  
-                  <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
-                    <p className="font-medium text-carbon-900 mb-3">Confirmar reemplazo:</p>
-                    <div className="flex items-center gap-3">
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl">{CATEGORY_ICONS[selectedFrom]}</span>
-                        <span className="text-carbon-500 line-through">{CATEGORY_NAMES[selectedFrom]}</span>
-                      </div>
-                      <ArrowRight className="w-5 h-5 text-emerald-600" />
-                      <div className="flex items-center gap-2">
-                        <span className="text-2xl">{CATEGORY_ICONS[selectedTo]}</span>
-                        <span className="font-bold text-carbon-900">
-                          {targetItems.find((i) => i.id === selectedItem)?.name}
-                        </span>
-                      </div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl">{CATEGORY_ICONS[selectedFrom!]}</span>
+                      <ArrowRight className="w-4 h-4 text-carbon-400" />
+                      <span className="text-xl">{CATEGORY_ICONS[selectedTo!]}</span>
                     </div>
                   </div>
 
-                  <Button
-                    variant="primary"
-                    fullWidth
-                    onClick={handleConfirmReplacement}
-                    className="min-h-[48px]"
-                  >
-                    Confirmar Reemplazo
-                  </Button>
+                  <div className="space-y-3">
+                    {targetItems.map((item) => (
+                      <button
+                        key={item.id}
+                        onClick={() => handleSelectItem(item.id)}
+                        className={cn(
+                          "w-full p-4 rounded-2xl border-2 transition-all text-left min-h-[72px] flex items-center justify-between",
+                          selectedItem === item.id
+                            ? "border-emerald-500 bg-emerald-50"
+                            : "border-carbon-200 bg-white hover:border-sage-400 hover:bg-sage-50 active:scale-[0.98]"
+                        )}
+                      >
+                        <span className="font-semibold text-carbon-900 text-lg">{item.name}</span>
+                        {selectedItem === item.id && (
+                          <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
+                            <Check className="w-5 h-5 text-white" />
+                          </div>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Confirm button */}
+                  {selectedItem && (
+                    <div className="pt-4">
+                      <Button
+                        variant="primary"
+                        fullWidth
+                        onClick={handleConfirmReplacement}
+                        className="min-h-[56px] text-lg"
+                      >
+                        <Check className="w-5 h-5 mr-2" />
+                        Confirmar Cambio
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
-          </Card>
+          </div>
         </div>
       )}
     </div>
