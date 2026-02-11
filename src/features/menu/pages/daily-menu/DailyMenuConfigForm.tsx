@@ -295,40 +295,13 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
           </div>
           
           {/* Price calculation explanation */}
-          <div className="bg-sage-50 p-4 rounded-lg border border-sage-200">
-            <h4 className="text-sm font-semibold text-carbon-800 mb-2">
-              ¿Cómo se calcula el precio del almuerzo?
-            </h4>
-            <div className="text-sm text-carbon-600 space-y-2">
-              <p>
-                <strong className="text-carbon-800">Precio final = Margen Base + Precio de la Proteína</strong>
-              </p>
-              <div className="space-y-1 text-xs">
-                <div className="flex items-center justify-between py-1 px-2 bg-white rounded border border-sage-100">
-                  <span>Margen Base (mismo para todas las proteínas)</span>
-                  <span className="font-semibold">${formState.basePrice.toLocaleString()}</span>
-                </div>
-                <div className="flex items-center justify-between py-1 px-2 bg-white rounded border border-sage-100">
-                  <span>+ Precio de cada proteína (configurado en inventario)</span>
-                  <span className="font-semibold text-sage-600">Variable</span>
-                </div>
-                <div className="flex items-center justify-between py-1 px-2 bg-sage-100 rounded border border-sage-200 mt-2">
-                  <span className="font-medium">Ejemplo: Pollo a $6,000</span>
-                  <span className="font-bold text-carbon-900">
-                    ${formState.basePrice.toLocaleString()} + $6,000 = ${(formState.basePrice + 6000).toLocaleString()}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between py-1 px-2 bg-sage-100 rounded border border-sage-200">
-                  <span className="font-medium">Ejemplo: Res a $7,000</span>
-                  <span className="font-bold text-carbon-900">
-                    ${formState.basePrice.toLocaleString()} + $7,000 = ${(formState.basePrice + 7000).toLocaleString()}
-                  </span>
-                </div>
-              </div>
-              <p className="text-xs text-carbon-500 mt-2">
-                Configura el precio de cada proteína en el módulo de <strong>Gestión de Inventario</strong>.
-              </p>
-            </div>
+          <div className="bg-sage-50 p-3 rounded-lg border border-sage-200 text-xs text-carbon-600">
+            <p className="font-medium text-carbon-800 mb-1">
+              Precio = ${formState.basePrice.toLocaleString()} + Proteína
+            </p>
+            <p className="text-carbon-500">
+              Ej: Pollo $6,000 → Total ${(formState.basePrice + 6000).toLocaleString()}
+            </p>
           </div>
         </div>
 
