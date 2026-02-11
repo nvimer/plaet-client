@@ -139,10 +139,9 @@ export function OrderCreatePage() {
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
 
-  // Daily Menu Prices
+  // Daily Menu Prices - basePrice is now the margin added to protein price
   const dailyMenuPrices = useMemo(() => ({
-    basePrice: dailyMenuData?.basePrice || 10000,
-    premiumPrice: dailyMenuData?.premiumProteinPrice || 11000,
+    basePrice: dailyMenuData?.basePrice || 4000, // Base margin (e.g., $4,000)
     isConfigured: !!dailyMenuData,
   }), [dailyMenuData]);
 
@@ -196,7 +195,6 @@ export function OrderCreatePage() {
         drinkOptions: [] as Array<{ id: number; name: string }>,
         dessertOptions: [] as Array<{ id: number; name: string }>,
         basePrice: dailyMenuPrices.basePrice,
-        premiumPrice: dailyMenuPrices.premiumPrice,
         isConfigured: false,
       };
     }
@@ -215,20 +213,18 @@ export function OrderCreatePage() {
       dessertOptions: dailyMenuData.dessertOptions || [],
       riceOption, // NEW: Add rice
       basePrice: dailyMenuData.basePrice || dailyMenuPrices.basePrice,
-      premiumPrice: dailyMenuData.premiumProteinPrice || dailyMenuPrices.premiumPrice,
       isConfigured: true,
     };
   }, [dailyMenuData, dailyMenuPrices]);
 
-  // NEW: Calcular precio base del almuerzo según proteína seleccionada
-  const lunchBasePrice = useMemo(() => {
+  // NEW: Calcular precio del almuerzo = basePrice (margen) + precio individual de la proteína
+  const lunchPrice = useMemo(() => {
     if (!selectedProtein) return 0;
     
-    // Si la proteína tiene un precio mayor al base, usar el precio de la proteína
-    // Esto asume que las proteínas premium tienen precios individuales mayores
-    const isPremium = selectedProtein.price > dailyMenuPrices.basePrice;
-    
-    return isPremium ? selectedProtein.price : dailyMenuPrices.basePrice;
+    // El precio del almuerzo es: margen base + precio individual de la proteína
+    // Ejemplo: $4,000 (base) + $6,000 (pollo) = $10,000
+    // Ejemplo: $4,000 (base) + $7,000 (res) = $11,000
+    return dailyMenuPrices.basePrice + selectedProtein.price;
   }, [selectedProtein, dailyMenuPrices]);
 
   // Calcular total del pedido actual
@@ -236,7 +232,7 @@ export function OrderCreatePage() {
     let total = 0;
     
     // Precio del almuerzo base
-    total += lunchBasePrice;
+    total += lunchPrice;
     
     // Extras adicionales (fuera de los reemplazos gratuitos)
     additionals.forEach((item) => {
@@ -249,7 +245,7 @@ export function OrderCreatePage() {
     });
     
     return total;
-  }, [lunchBasePrice, additionals, looseItems]);
+  }, [lunchPrice, additionals, looseItems]);
 
   // Calcular total de la mesa
   const tableTotal = useMemo(() => {
@@ -840,7 +836,6 @@ export function OrderCreatePage() {
                     drinkOptions={dailyMenuDisplay.drinkOptions}
                     dessertOptions={dailyMenuDisplay.dessertOptions}
                     basePrice={dailyMenuDisplay.basePrice}
-                    premiumPrice={dailyMenuDisplay.premiumPrice}
                   />
                 )}
               </Card>
@@ -850,15 +845,12 @@ export function OrderCreatePage() {
                 <div className="flex items-center justify-between p-4 bg-sage-50 rounded-xl border border-sage-200">
                   <div className="flex items-center gap-2">
                     <Receipt className="w-5 h-5 text-sage-600" />
-                    <span className="text-sm font-medium text-carbon-700">Precios del día:</span>
+                    <span className="text-sm font-medium text-carbon-700">Margen base del almuerzo:</span>
                   </div>
-                  <div className="flex gap-4 text-sm">
+                  <div className="text-sm">
                     <span className="text-carbon-600">
-                      Base: <strong className="text-carbon-900">${dailyMenuPrices.basePrice.toLocaleString()}</strong>
-                    </span>
-                    <span className="text-carbon-400">|</span>
-                    <span className="text-carbon-600">
-                      Premium: <strong className="text-carbon-900">${dailyMenuPrices.premiumPrice.toLocaleString()}</strong>
+                      <strong className="text-carbon-900">${dailyMenuPrices.basePrice.toLocaleString()}</strong>
+                      <span className="text-carbon-400 ml-2">(se suma al precio de la proteína)</span>
                     </span>
                   </div>
                 </div>
@@ -969,7 +961,7 @@ export function OrderCreatePage() {
                     {/* Price display */}
                     <div className="text-right">
                       <p className="text-2xl font-bold text-sage-700">
-                        ${lunchBasePrice.toLocaleString()}
+                        ${lunchPrice.toLocaleString()}
                       </p>
                       <p className="text-xs text-carbon-500">Precio del almuerzo</p>
                     </div>

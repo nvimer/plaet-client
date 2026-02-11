@@ -98,7 +98,6 @@ export interface DailyMenuSectionProps {
   drinkOptions: MenuOption[];
   dessertOptions?: MenuOption[];
   basePrice?: number;
-  premiumPrice?: number;
   className?: string;
 }
 
@@ -123,10 +122,9 @@ export function DailyMenuSection({
   drinkOptions,
   dessertOptions,
   basePrice,
-  premiumPrice,
   className,
 }: DailyMenuSectionProps) {
-  const hasPrices = basePrice || premiumPrice;
+  const hasPrices = !!basePrice;
 
   return (
     <Card className={cn("overflow-hidden shadow-lg", className)}>
@@ -146,18 +144,13 @@ export function DailyMenuSection({
 
         {hasPrices && (
           <div className="flex gap-3 mt-3">
-            {basePrice && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/20 text-white text-sm font-semibold">
-                <Check className="w-3 h-3" />
-                Base: ${basePrice.toLocaleString()}
-              </span>
-            )}
-            {premiumPrice && (
-              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-400/30 text-white text-sm font-semibold">
-                <Sparkles className="w-3 h-3" />
-                Premium: ${premiumPrice.toLocaleString()}
-              </span>
-            )}
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/20 text-white text-sm font-semibold">
+              <Check className="w-3 h-3" />
+              Margen Base: ${basePrice?.toLocaleString()}
+            </span>
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-400/30 text-white text-xs font-medium">
+              + Precio de proteína
+            </span>
           </div>
         )}
       </div>

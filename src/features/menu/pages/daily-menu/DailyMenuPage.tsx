@@ -67,12 +67,12 @@ function InfoCard({ menu }: { menu: DailyMenu | null | undefined }) {
           <div className="p-3 bg-sage-50 rounded-lg">
             <div className="text-xs text-carbon-500 mb-1">Precios del Almuerzo</div>
             <div className="flex justify-between text-sm">
-              <span className="text-carbon-600">Base (Pollo/Cerdo):</span>
+              <span className="text-carbon-600">Margen Base:</span>
               <span className="font-semibold text-carbon-900">${menu?.basePrice?.toLocaleString()}</span>
             </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-carbon-600">Premium (Res/Pescado):</span>
-              <span className="font-semibold text-carbon-900">${menu?.premiumProteinPrice?.toLocaleString()}</span>
+            <div className="flex justify-between text-xs text-carbon-400 mt-1">
+              <span>+ Precio de proteína (en inventario)</span>
+              <span>Variable</span>
             </div>
           </div>
 
@@ -166,7 +166,8 @@ function HelpCard() {
         <li>Elige hasta 2 opciones para Sopas, Principios, Ensaladas, Extras, Jugos</li>
         <li>Selecciona todas las proteínas que estarán disponibles hoy</li>
         <li>El postre es opcional - actívalo si deseas incluirlo</li>
-        <li>Configura los precios base y premium</li>
+        <li>Configura el margen base para todos los almuerzos</li>
+        <li>El precio de cada proteína se configura en el inventario</li>
         <li>Guarda los cambios</li>
       </ol>
     </Card>

@@ -15,7 +15,6 @@ interface DailyMenuConfigFormProps {
 
 interface FormState {
   basePrice: number;
-  premiumProteinPrice: number;
   soupCategoryId: number | null;
   principleCategoryId: number | null;
   proteinCategoryId: number | null;
@@ -41,8 +40,7 @@ interface FormState {
 }
 
 const defaultPrices = {
-  basePrice: 10000,
-  premiumProteinPrice: 11000,
+  basePrice: 4000,
 };
 
 // Default category names that should be auto-selected
@@ -69,7 +67,6 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
 
   const [formState, setFormState] = useState<FormState>({
     basePrice: initialData?.basePrice || defaultPrices.basePrice,
-    premiumProteinPrice: initialData?.premiumProteinPrice || defaultPrices.premiumProteinPrice,
     soupCategoryId: initialData?.soupCategory?.id || null,
     principleCategoryId: initialData?.principleCategory?.id || null,
     proteinCategoryId: initialData?.proteinCategory?.id || null,
@@ -121,7 +118,6 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
     if (initialData) {
       setFormState({
         basePrice: initialData.basePrice || defaultPrices.basePrice,
-        premiumProteinPrice: initialData.premiumProteinPrice || defaultPrices.premiumProteinPrice,
         soupCategoryId: initialData.soupCategory?.id || null,
         principleCategoryId: initialData.principleCategory?.id || null,
         proteinCategoryId: initialData.proteinCategory?.id || null,
@@ -153,7 +149,6 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
     try {
       const data: UpdateDailyMenuData = {
         basePrice: formState.basePrice,
-        premiumProteinPrice: formState.premiumProteinPrice,
         soupCategoryId: formState.soupCategoryId,
         principleCategoryId: formState.principleCategoryId,
         proteinCategoryId: formState.proteinCategoryId,
@@ -235,7 +230,7 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
       </div>
 
       <div className="space-y-6">
-        {/* Prices Section - Card-based with presets */}
+        {/* Prices Section - Margen Base Configuration */}
         <div className="space-y-4">
           <h3 className="text-sm font-semibold text-carbon-800 flex items-center gap-2">
             <span className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center text-xs font-bold">
@@ -244,130 +239,96 @@ export function DailyMenuConfigForm({ initialData, onSuccess }: DailyMenuConfigF
             Precios del Almuerzo
           </h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Base Price Card */}
-            <div className={cn(
-              "relative p-4 rounded-xl border-2 transition-all",
-              "bg-gradient-to-br from-sage-50 to-white",
-              "border-sage-200 hover:border-sage-300"
-            )}>
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sage-100 text-sage-700 text-xs font-medium">
-                    <span className="w-1.5 h-1.5 rounded-full bg-sage-500" />
-                    Base
-                  </span>
-                  <p className="text-xs text-carbon-500 mt-1.5">Pollo • Cerdo</p>
-                </div>
-                <div className="text-right">
-                  <span className="text-2xl font-bold text-carbon-900">
-                    ${formState.basePrice.toLocaleString()}
-                  </span>
-                </div>
+          {/* Margen Base Card */}
+          <div className={cn(
+            "relative p-4 rounded-xl border-2 transition-all",
+            "bg-gradient-to-br from-sage-50 to-white",
+            "border-sage-200 hover:border-sage-300"
+          )}>
+            <div className="flex items-start justify-between mb-3">
+              <div>
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sage-100 text-sage-700 text-xs font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-sage-500" />
+                  Margen Base
+                </span>
+                <p className="text-xs text-carbon-500 mt-1.5">
+                  Base del precio para todos los almuerzos
+                </p>
               </div>
-              
-              {/* Quick presets */}
-              <div className="flex gap-2 mb-3">
-                {[9000, 10000, 11000].map((price) => (
-                  <button
-                    key={price}
-                    type="button"
-                    onClick={() => setFormState(prev => ({ ...prev, basePrice: price }))}
-                    className={cn(
-                      "flex-1 py-2 px-1 rounded-lg text-xs font-medium transition-all",
-                      formState.basePrice === price
-                        ? "bg-sage-500 text-white shadow-md"
-                        : "bg-white border border-carbon-200 text-carbon-600 hover:border-sage-300"
-                    )}
-                  >
-                    ${(price / 1000).toFixed(0)}k
-                  </button>
-                ))}
-              </div>
-              
-              {/* Custom input */}
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-carbon-400 text-sm">$</span>
-                <input
-                  type="number"
-                  value={formState.basePrice}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormState({ ...formState, basePrice: Number(e.target.value) })}
-                  className="w-full pl-7 pr-3 py-2.5 border border-carbon-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sage-500 text-sm font-medium"
-                  placeholder="Precio personalizado"
-                />
-              </div>
-            </div>
-
-            {/* Premium Price Card */}
-            <div className={cn(
-              "relative p-4 rounded-xl border-2 transition-all",
-              "bg-gradient-to-br from-amber-50 to-white",
-              "border-amber-200 hover:border-amber-300"
-            )}>
-              <div className="absolute -top-2 -right-2">
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-400 text-white text-xs font-bold shadow-sm">
-                  +${(formState.premiumProteinPrice - formState.basePrice).toLocaleString()}
+              <div className="text-right">
+                <span className="text-2xl font-bold text-carbon-900">
+                  ${formState.basePrice.toLocaleString()}
                 </span>
               </div>
-              
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-100 text-amber-700 text-xs font-medium">
-                    <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                    Premium
-                  </span>
-                  <p className="text-xs text-carbon-500 mt-1.5">Res • Pescado</p>
-                </div>
-                <div className="text-right">
-                  <span className="text-2xl font-bold text-carbon-900">
-                    ${formState.premiumProteinPrice.toLocaleString()}
-                  </span>
-                </div>
-              </div>
-              
-              {/* Quick presets */}
-              <div className="flex gap-2 mb-3">
-                {[10000, 11000, 12000, 13000].map((price) => (
-                  <button
-                    key={price}
-                    type="button"
-                    onClick={() => setFormState(prev => ({ ...prev, premiumProteinPrice: price }))}
-                    className={cn(
-                      "flex-1 py-2 px-1 rounded-lg text-xs font-medium transition-all",
-                      formState.premiumProteinPrice === price
-                        ? "bg-amber-500 text-white shadow-md"
-                        : "bg-white border border-carbon-200 text-carbon-600 hover:border-amber-300"
-                    )}
-                  >
-                    ${(price / 1000).toFixed(0)}k
-                  </button>
-                ))}
-              </div>
-              
-              {/* Custom input */}
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-carbon-400 text-sm">$</span>
-                <input
-                  type="number"
-                  value={formState.premiumProteinPrice}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormState({ ...formState, premiumProteinPrice: Number(e.target.value) })}
-                  className="w-full pl-7 pr-3 py-2.5 border border-carbon-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm font-medium"
-                  placeholder="Precio personalizado"
-                />
-              </div>
+            </div>
+            
+            {/* Quick presets */}
+            <div className="flex gap-2 mb-3">
+              {[3000, 4000, 5000].map((price) => (
+                <button
+                  key={price}
+                  type="button"
+                  onClick={() => setFormState(prev => ({ ...prev, basePrice: price }))}
+                  className={cn(
+                    "flex-1 py-2 px-1 rounded-lg text-xs font-medium transition-all",
+                    formState.basePrice === price
+                      ? "bg-sage-500 text-white shadow-md"
+                      : "bg-white border border-carbon-200 text-carbon-600 hover:border-sage-300"
+                  )}
+                >
+                  ${(price / 1000).toFixed(0)}k
+                </button>
+              ))}
+            </div>
+            
+            {/* Custom input */}
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-carbon-400 text-sm">$</span>
+              <input
+                type="number"
+                value={formState.basePrice}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFormState({ ...formState, basePrice: Number(e.target.value) })}
+                className="w-full pl-7 pr-3 py-2.5 border border-carbon-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sage-500 text-sm font-medium"
+                placeholder="Precio personalizado"
+              />
             </div>
           </div>
           
-          {/* Price difference indicator */}
-          <div className="flex items-center justify-center gap-4 text-xs text-carbon-500 bg-carbon-50 p-3 rounded-lg">
-            <span>Diferencia entre niveles:</span>
-            <span className="font-semibold text-carbon-700">
-              +${(formState.premiumProteinPrice - formState.basePrice).toLocaleString()}
-            </span>
-            <span className="text-carbon-400">|</span>
-            <span className="text-carbon-600">
-              {((formState.premiumProteinPrice / formState.basePrice - 1) * 100).toFixed(0)}% más
-            </span>
+          {/* Price calculation explanation */}
+          <div className="bg-sage-50 p-4 rounded-lg border border-sage-200">
+            <h4 className="text-sm font-semibold text-carbon-800 mb-2">
+              ¿Cómo se calcula el precio del almuerzo?
+            </h4>
+            <div className="text-sm text-carbon-600 space-y-2">
+              <p>
+                <strong className="text-carbon-800">Precio final = Margen Base + Precio de la Proteína</strong>
+              </p>
+              <div className="space-y-1 text-xs">
+                <div className="flex items-center justify-between py-1 px-2 bg-white rounded border border-sage-100">
+                  <span>Margen Base (mismo para todas las proteínas)</span>
+                  <span className="font-semibold">${formState.basePrice.toLocaleString()}</span>
+                </div>
+                <div className="flex items-center justify-between py-1 px-2 bg-white rounded border border-sage-100">
+                  <span>+ Precio de cada proteína (configurado en inventario)</span>
+                  <span className="font-semibold text-sage-600">Variable</span>
+                </div>
+                <div className="flex items-center justify-between py-1 px-2 bg-sage-100 rounded border border-sage-200 mt-2">
+                  <span className="font-medium">Ejemplo: Pollo a $6,000</span>
+                  <span className="font-bold text-carbon-900">
+                    ${formState.basePrice.toLocaleString()} + $6,000 = ${(formState.basePrice + 6000).toLocaleString()}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between py-1 px-2 bg-sage-100 rounded border border-sage-200">
+                  <span className="font-medium">Ejemplo: Res a $7,000</span>
+                  <span className="font-bold text-carbon-900">
+                    ${formState.basePrice.toLocaleString()} + $7,000 = ${(formState.basePrice + 7000).toLocaleString()}
+                  </span>
+                </div>
+              </div>
+              <p className="text-xs text-carbon-500 mt-2">
+                Configura el precio de cada proteína en el módulo de <strong>Gestión de Inventario</strong>.
+              </p>
+            </div>
           </div>
         </div>
 
