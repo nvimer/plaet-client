@@ -1,10 +1,22 @@
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
-import { Button, FilterBar, FilterSelect, ActiveFilterChips } from "@/components";
+import {
+  Button,
+  FilterBar,
+  FilterSelect,
+  ActiveFilterChips,
+} from "@/components";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
-import { FolderOpen, Grid3x3, Plus, UtensilsCrossed, AlertTriangle, Package } from "lucide-react";
+import {
+  FolderOpen,
+  Grid3x3,
+  Plus,
+  UtensilsCrossed,
+  AlertTriangle,
+  Package,
+} from "lucide-react";
 import type { AxiosErrorWithResponse } from "@/types/common";
 import { MenuSectionToolbar, CardGrid } from "../components";
 import {
@@ -15,12 +27,17 @@ import {
 } from "../categories";
 import {
   MenuItemCard,
-  useItems,
   useDeleteItem,
   useLowStockItems,
   useOutOfStockItems,
+  useItemsPagination,
 } from "../items";
-import { ROUTES, getCategoryEditRoute, getMenuItemEditRoute } from "@/app/routes";
+import { Pagination } from "@/components/ui/Pagination";
+import {
+  ROUTES,
+  getCategoryEditRoute,
+  getMenuItemEditRoute,
+} from "@/app/routes";
 import { cn } from "@/utils/cn";
 
 type Tab = "categories" | "items";
@@ -63,10 +80,24 @@ export function MenuPage() {
 
   const sortedCategories = useMemo(
     () => [...(categories ?? [])].sort((a, b) => a.order - b.order),
-    [categories]
+    [categories],
   );
 
-  const { data: items, isLoading: loadingItems } = useItems();
+  const {
+    items: paginationData,
+    isLoading: loadingItems,
+    page,
+    limit,
+    totalItems,
+    totalPages,
+    setPage,
+    setLimit,
+  } = useItemsPagination();
+
+  const items = useMemo(
+    () => paginationData?.data || [],
+    [paginationData?.data],
+  );
   const { mutate: deleteItem } = useDeleteItem();
 
   const { data: lowStockItems } = useLowStockItems();
@@ -74,13 +105,17 @@ export function MenuPage() {
 
   const categoryNameById = useMemo(() => {
     const map: Record<number, string> = {};
-    categories?.forEach((c) => { map[c.id] = c.name; });
+    categories?.forEach((c) => {
+      map[c.id] = c.name;
+    });
     return map;
   }, [categories]);
 
   const countByCategory = useMemo(() => {
     const map: Record<number, number> = {};
-    items?.forEach((i) => { map[i.categoryId] = (map[i.categoryId] ?? 0) + 1; });
+    items?.forEach((i) => {
+      map[i.categoryId] = (map[i.categoryId] ?? 0) + 1;
+    });
     return map;
   }, [items]);
 
@@ -97,7 +132,9 @@ export function MenuPage() {
     deleteCategory(id, {
       onSuccess: () => toast.success("Categoría eliminada"),
       onError: (e: AxiosErrorWithResponse) =>
-        toast.error("Error al eliminar", { description: e.response?.data?.message ?? e.message }),
+        toast.error("Error al eliminar", {
+          description: e.response?.data?.message ?? e.message,
+        }),
     });
   };
 
@@ -114,13 +151,17 @@ export function MenuPage() {
             {
               onSuccess: () => toast.success("Orden actualizado"),
               onError: (e: AxiosErrorWithResponse) =>
-                toast.error("Error al reordenar", { description: e.response?.data?.message ?? e.message }),
-            }
+                toast.error("Error al reordenar", {
+                  description: e.response?.data?.message ?? e.message,
+                }),
+            },
           );
         },
         onError: (e: AxiosErrorWithResponse) =>
-          toast.error("Error al reordenar", { description: e.response?.data?.message ?? e.message }),
-      }
+          toast.error("Error al reordenar", {
+            description: e.response?.data?.message ?? e.message,
+          }),
+      },
     );
   };
 
@@ -137,13 +178,17 @@ export function MenuPage() {
             {
               onSuccess: () => toast.success("Orden actualizado"),
               onError: (e: AxiosErrorWithResponse) =>
-                toast.error("Error al reordenar", { description: e.response?.data?.message ?? e.message }),
-            }
+                toast.error("Error al reordenar", {
+                  description: e.response?.data?.message ?? e.message,
+                }),
+            },
           );
         },
         onError: (e: AxiosErrorWithResponse) =>
-          toast.error("Error al reordenar", { description: e.response?.data?.message ?? e.message }),
-      }
+          toast.error("Error al reordenar", {
+            description: e.response?.data?.message ?? e.message,
+          }),
+      },
     );
   };
 
@@ -153,7 +198,9 @@ export function MenuPage() {
     deleteItem(id, {
       onSuccess: () => toast.success("Producto eliminado"),
       onError: (e: AxiosErrorWithResponse) =>
-        toast.error("Error al eliminar", { description: e.response?.data?.message ?? e.message }),
+        toast.error("Error al eliminar", {
+          description: e.response?.data?.message ?? e.message,
+        }),
     });
   };
 
@@ -173,7 +220,7 @@ export function MenuPage() {
           <div
             className={cn(
               "flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 min-h-[44px] touch-manipulation",
-              "bg-white border-sage-200 text-carbon-700"
+              "bg-white border-sage-200 text-carbon-700",
             )}
           >
             <Grid3x3 className="w-5 h-5 text-sage-600 flex-shrink-0" />
@@ -184,7 +231,7 @@ export function MenuPage() {
           <div
             className={cn(
               "flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 min-h-[44px] touch-manipulation",
-              "bg-white border-sage-200 text-carbon-700"
+              "bg-white border-sage-200 text-carbon-700",
             )}
           >
             <FolderOpen className="w-5 h-5 text-sage-600 flex-shrink-0" />
@@ -200,7 +247,7 @@ export function MenuPage() {
         <div
           className={cn(
             "flex flex-wrap items-center justify-between gap-3 px-4 py-3 rounded-xl border-2 min-h-[44px]",
-            "bg-amber-50/80 border-amber-200 text-amber-900"
+            "bg-amber-50/80 border-amber-200 text-amber-900",
           )}
         >
           <div className="flex flex-wrap items-center gap-4">
@@ -234,7 +281,7 @@ export function MenuPage() {
         aria-label="Sección del menú"
         className={cn(
           "inline-flex p-1.5 rounded-2xl border-2 border-sage-200 bg-sage-50/50",
-          "min-h-[48px] touch-manipulation"
+          "min-h-[48px] touch-manipulation",
         )}
       >
         <button
@@ -247,7 +294,7 @@ export function MenuPage() {
             "inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium min-h-[44px] transition-all duration-200",
             activeTab === "items"
               ? "bg-white text-sage-800 shadow-sm border border-sage-200"
-              : "text-carbon-600 hover:text-carbon-800 hover:bg-sage-100/50"
+              : "text-carbon-600 hover:text-carbon-800 hover:bg-sage-100/50",
           )}
         >
           <UtensilsCrossed className="w-5 h-5 flex-shrink-0" />
@@ -255,7 +302,9 @@ export function MenuPage() {
           <span
             className={cn(
               "ml-1 px-2 py-0.5 rounded-full text-xs font-semibold",
-              activeTab === "items" ? "bg-sage-100 text-sage-700" : "bg-sage-200/80 text-carbon-600"
+              activeTab === "items"
+                ? "bg-sage-100 text-sage-700"
+                : "bg-sage-200/80 text-carbon-600",
             )}
           >
             {items?.length ?? 0}
@@ -271,7 +320,7 @@ export function MenuPage() {
             "inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium min-h-[44px] transition-all duration-200",
             activeTab === "categories"
               ? "bg-white text-sage-800 shadow-sm border border-sage-200"
-              : "text-carbon-600 hover:text-carbon-800 hover:bg-sage-100/50"
+              : "text-carbon-600 hover:text-carbon-800 hover:bg-sage-100/50",
           )}
         >
           <FolderOpen className="w-5 h-5 flex-shrink-0" />
@@ -279,7 +328,9 @@ export function MenuPage() {
           <span
             className={cn(
               "ml-1 px-2 py-0.5 rounded-full text-xs font-semibold",
-              activeTab === "categories" ? "bg-sage-100 text-sage-700" : "bg-sage-200/80 text-carbon-600"
+              activeTab === "categories"
+                ? "bg-sage-100 text-sage-700"
+                : "bg-sage-200/80 text-carbon-600",
             )}
           >
             {categories?.length ?? 0}
@@ -295,7 +346,7 @@ export function MenuPage() {
         hidden={activeTab !== "items"}
         className={cn(
           "rounded-2xl border-2 border-sage-200 bg-white shadow-sm overflow-hidden",
-          "focus:outline-none"
+          "focus:outline-none",
         )}
       >
         <div className="p-6 sm:p-8 space-y-4">
@@ -311,7 +362,10 @@ export function MenuPage() {
               label="Categoría"
               value={filterCategory}
               onChange={handleFilterChange}
-              options={(categories ?? []).map((c) => ({ value: String(c.id), label: c.name }))}
+              options={(categories ?? []).map((c) => ({
+                value: String(c.id),
+                label: c.name,
+              }))}
               placeholder="Todas las categorías"
               aria-label="Filtrar por categoría"
               className="max-w-xs"
@@ -324,19 +378,30 @@ export function MenuPage() {
                 {
                   key: "category",
                   label: "Categoría",
-                  value: categoryNameById[Number(filterCategory)] ?? `#${filterCategory}`,
+                  value:
+                    categoryNameById[Number(filterCategory)] ??
+                    `#${filterCategory}`,
                 },
               ]}
               resultCount={filteredItems?.length ?? 0}
-              resultLabel={(filteredItems?.length ?? 0) === 1 ? "producto" : "productos"}
-              onClearFilter={(key) => { if (key === "category") handleFilterChange(""); }}
+              resultLabel={
+                (filteredItems?.length ?? 0) === 1 ? "producto" : "productos"
+              }
+              onClearFilter={(key) => {
+                if (key === "category") handleFilterChange("");
+              }}
               onClearAll={() => handleFilterChange("")}
             />
           )}
 
           {loadingItems ? (
             <>
-              <Skeleton variant="text" width={180} height={24} className="mb-5" />
+              <Skeleton
+                variant="text"
+                width={180}
+                height={24}
+                className="mb-5"
+              />
               <CardGrid>
                 {[...Array(6)].map((_, i) => (
                   <Skeleton key={i} variant="card" />
@@ -346,27 +411,53 @@ export function MenuPage() {
           ) : !filteredItems?.length ? (
             <EmptyState
               icon={<Grid3x3 />}
-              title={filterCategory ? "No hay productos en esta categoría" : "No hay productos"}
-              description={filterCategory ? "Cambia el filtro o crea un producto aquí" : "Crea tu primer producto del menú"}
-              actionLabel={!filterCategory ? "Crear primer producto" : undefined}
+              title={
+                filterCategory
+                  ? "No hay productos en esta categoría"
+                  : "No hay productos"
+              }
+              description={
+                filterCategory
+                  ? "Cambia el filtro o crea un producto aquí"
+                  : "Crea tu primer producto del menú"
+              }
+              actionLabel={
+                !filterCategory ? "Crear primer producto" : undefined
+              }
               onAction={!filterCategory ? handleCreateItem : undefined}
             />
           ) : (
-            <CardGrid>
-              {filteredItems.map((item) => (
-                <MenuItemCard
-                  key={item.id}
-                  item={item}
-                  categoryName={categoryNameById[item.categoryId]}
-                  onEdit={handleEditItem}
-                  onDelete={handleDeleteItem}
+            <>
+              <CardGrid>
+                {filteredItems.map((item) => (
+                  <MenuItemCard
+                    key={item.id}
+                    item={item}
+                    categoryName={categoryNameById[item.categoryId]}
+                    onEdit={handleEditItem}
+                    onDelete={handleDeleteItem}
+                  />
+                ))}
+              </CardGrid>
+
+              {/* Pagination */}
+              {(totalItems ?? 0) > 0 && (
+                <Pagination
+                  currentPage={page}
+                  totalPages={totalPages}
+                  totalItems={totalItems}
+                  itemsPerPage={limit}
+                  onPageChange={setPage}
+                  onItemsPerPageChange={setLimit}
+                  isLoading={loadingItems}
                 />
-              ))}
-            </CardGrid>
+              )}
+            </>
           )}
         </div>
       </section>
 
+      {/* Panel de categorías */}
       <section
         id="panel-categorias"
         role="tabpanel"
@@ -374,31 +465,28 @@ export function MenuPage() {
         hidden={activeTab !== "categories"}
         className={cn(
           "rounded-2xl border-2 border-sage-200 bg-white shadow-sm overflow-hidden",
-          "focus:outline-none"
+          "focus:outline-none",
         )}
       >
-        <div className="p-6 sm:p-8">
+        <div className="p-6 sm:p-8 space-y-4">
           <MenuSectionToolbar
-            countLabel={`${categories?.length ?? 0} ${(categories?.length ?? 0) === 1 ? "categoría" : "categorías"}`}
+            countLabel={`${sortedCategories.length} ${sortedCategories.length === 1 ? "categoría" : "categorías"}`}
             primaryLabel="Nueva categoría"
             onPrimaryAction={handleCreateCategory}
             primaryIcon={<Plus className="w-5 h-5" />}
           />
 
           {loadingCategories ? (
-            <>
-              <Skeleton variant="text" width={160} height={24} className="mb-6" />
-              <CardGrid>
-                {[...Array(6)].map((_, i) => (
-                  <Skeleton key={i} variant="card" />
-                ))}
-              </CardGrid>
-            </>
-          ) : !categories?.length ? (
+            <CardGrid>
+              {[...Array(4)].map((_, i) => (
+                <Skeleton key={i} variant="card" />
+              ))}
+            </CardGrid>
+          ) : !sortedCategories.length ? (
             <EmptyState
               icon={<FolderOpen />}
               title="No hay categorías"
-              description="Crea tu primera categoría para organizar el menú"
+              description="Crea tu primera categoría para organizar tu menú"
               actionLabel="Crear primera categoría"
               onAction={handleCreateCategory}
             />

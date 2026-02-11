@@ -7,12 +7,9 @@
 
 import { Navigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useAuth } from "@/hooks/useEnhancedAuth";
-import { Lock, ShieldX } from "lucide-react";
+import { useAuth, useUser } from "@/hooks/useEnhancedAuth";
+import { ShieldX } from "lucide-react";
 
-/**
- * Protected Route Component Props
- */
 interface ProtectedRouteProps {
   children: React.ReactNode;
   redirectTo?: string;
@@ -21,9 +18,6 @@ interface ProtectedRouteProps {
   requiredPermission?: string;
 }
 
-/**
- * Loading Spinner Component
- */
 const LoadingSpinner = () => (
   <div className="min-h-screen bg-sage-50 flex items-center justify-center">
     <motion.div
@@ -34,9 +28,6 @@ const LoadingSpinner = () => (
   </div>
 );
 
-/**
- * Access Denied Component
- */
 const AccessDenied = ({
   message,
   onBack,
@@ -80,83 +71,55 @@ const AccessDenied = ({
   </div>
 );
 
-/**
- * Protected Route Component
- */
 export default function ProtectedRoute({
   children,
   redirectTo = "/login",
-  fallback,
   requiredRole,
   requiredPermission,
 }: ProtectedRouteProps) {
   const location = useLocation();
-  const { user, isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+  const { hasRole, hasPermission } = useUser();
 
-  // Show loading spinner while checking authentication
   if (isLoading) {
     return <LoadingSpinner />;
   }
 
-  // If user is not authenticated, redirect to login
   if (!isAuthenticated) {
     return (
       <Navigate to={redirectTo} state={{ from: location.pathname }} replace />
     );
   }
 
-  // Check role-based access
-  if (requiredRole) {
-    const hasRole = user?.roles?.some(
-      (role: any) => role.name === requiredRole,
+  if (requiredRole && !hasRole(requiredRole)) {
+    return (
+      <AccessDenied
+        message={`Se requiere el rol "${requiredRole}" para acceder a esta página.`}
+        onBack={() => window.history.back()}
+      />
     );
-    if (!hasRole) {
-      return (
-        <AccessDenied
-          message={`Se requiere el rol "${requiredRole}" para acceder a esta página.`}
-          onBack={() => window.history.back()}
-        />
-      );
-    }
   }
 
-  // Check permission-based access
-  if (requiredPermission) {
-    const hasPermission = user?.roles?.some((role: any) =>
-      role.permissions?.some(
-        (perm: any) => perm.permission?.name === requiredPermission,
-      ),
+  if (requiredPermission && !hasPermission(requiredPermission)) {
+    return (
+      <AccessDenied
+        message={`No tienes los permisos necesarios para acceder a esta página.`}
+        onBack={() => window.history.back()}
+      />
     );
-
-    if (!hasPermission) {
-      return (
-        <AccessDenied
-          message={`No tienes los permisos necesarios para acceder a esta página.`}
-          onBack={() => window.history.back()}
-        />
-      );
-    }
   }
 
-  // User is authenticated and has required permissions
   return <>{children}</>;
 }
 
-/**
- * Props for withAuth HOC
- */
-interface WithAuthProps {
-  children: React.ReactNode;
-  fallback?: React.ReactNode;
+interface WithAuthOptions {
   redirectTo?: string;
+  fallback?: React.ReactNode;
 }
 
-/**
- * HOC for wrapping components that require authentication
- */
 export function withAuth<P extends object>(
   Component: React.ComponentType<P>,
-  options?: { redirectTo?: string; fallback?: React.ReactNode },
+  options?: WithAuthOptions,
 ) {
   return function AuthenticatedComponent(props: P) {
     return (
@@ -170,54 +133,38 @@ export function withAuth<P extends object>(
   };
 }
 
-/**
- * Props for withRole HOC
- */
-interface WithRoleProps {
-  children: React.ReactNode;
-  requiredRole: string;
+interface WithRoleOptions {
   fallback?: React.ReactNode;
 }
 
-/**
- * HOC for components that require specific role
- */
 export function withRole<P extends object>(
   Component: React.ComponentType<P>,
   requiredRole: string,
-  fallback?: React.ReactNode,
+  options?: WithRoleOptions,
 ) {
   return function RoleProtectedComponent(props: P) {
     return (
-      <ProtectedRoute requiredRole={requiredRole} fallback={fallback}>
+      <ProtectedRoute requiredRole={requiredRole} fallback={options?.fallback}>
         <Component {...props} />
       </ProtectedRoute>
     );
   };
 }
 
-/**
- * Props for withPermission HOC
- */
-interface WithPermissionProps {
-  children: React.ReactNode;
-  requiredPermission: string;
+interface WithPermissionOptions {
   fallback?: React.ReactNode;
 }
 
-/**
- * HOC for components that require specific permission
- */
 export function withPermission<P extends object>(
   Component: React.ComponentType<P>,
   requiredPermission: string,
-  fallback?: React.ReactNode,
+  options?: WithPermissionOptions,
 ) {
   return function PermissionProtectedComponent(props: P) {
     return (
       <ProtectedRoute
         requiredPermission={requiredPermission}
-        fallback={fallback}
+        fallback={options?.fallback}
       >
         <Component {...props} />
       </ProtectedRoute>

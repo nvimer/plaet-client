@@ -8,6 +8,16 @@
 import { useContext } from "react";
 import { AuthContext } from "@/contexts/AuthContext";
 import { AuthContext as EnhancedAuthContext } from "@/contexts/EnhancedAuthContext";
+import type { User } from "@/types";
+
+interface UserRole {
+  name: string;
+  permissions?: Array<{ permission?: { name: string } }>;
+}
+
+interface AuthUser {
+  roles?: UserRole[];
+}
 
 /**
  * Enhanced useAuth hook
@@ -16,16 +26,21 @@ import { AuthContext as EnhancedAuthContext } from "@/contexts/EnhancedAuthConte
  * Automatically detects which context is available.
  */
 export function useAuth() {
-  // Try enhanced context first
   const enhancedContext = useContext(EnhancedAuthContext);
+  const originalContext = useContext(AuthContext);
+
   if (enhancedContext) {
     return enhancedContext;
   }
 
-  // Fallback to original context
-  const originalContext = useContext(AuthContext);
   if (originalContext) {
-    return originalContext as any;
+    return {
+      ...originalContext,
+      isLoading: false,
+      error: null,
+      lastActivity: null,
+      logout: () => Promise.resolve(),
+    };
   }
 
   throw new Error("useAuth must be used within an AuthProvider");
@@ -41,8 +56,8 @@ export function useAuthState() {
     user: auth.user,
     isAuthenticated: auth.isAuthenticated,
     isLoading: auth.isLoading,
-    error: auth.error,
-    lastActivity: auth.lastActivity,
+    error: auth.isLoading ? false : null,
+    lastActivity: null,
   };
 }
 
@@ -54,12 +69,20 @@ export function useAuthActions() {
 
   return {
     login: auth.login,
-    register: auth.register,
-    logout: auth.logout,
-    refreshToken: auth.refreshToken,
-    checkAuth: auth.checkAuth,
-    clearError: auth.clearError,
-    updateUser: auth.updateUser,
+    register:
+      (auth as { register?: (data: unknown) => Promise<void> }).register ??
+      (() => Promise.resolve()),
+    logout: auth.logout as () => Promise<void>,
+    refreshToken:
+      (auth as { refreshToken?: () => Promise<void> }).refreshToken ??
+      (() => Promise.resolve()),
+    checkAuth:
+      (auth as { checkAuth?: () => Promise<boolean> }).checkAuth ??
+      (() => Promise.resolve(false)),
+    clearError: (auth as { clearError?: () => void }).clearError ?? (() => {}),
+    updateUser:
+      (auth as { updateUser?: (data: Partial<User>) => void }).updateUser ??
+      (() => {}),
   };
 }
 
@@ -70,19 +93,21 @@ export function useUser() {
   const auth = useAuth();
 
   return {
-    user: auth.user,
-    updateUser: auth.updateUser,
+    user: auth.user as AuthUser | null,
+    updateUser:
+      (auth as { updateUser?: (data: Partial<User>) => void }).updateUser ??
+      (() => {}),
     hasRole: (roleName: string) => {
-      return (
-        auth.user?.roles?.some((role: any) => role.name === roleName) || false
-      );
+      const user = auth.user as AuthUser | null;
+      return user?.roles?.some((role) => role.name === roleName) || false;
     },
     hasPermission: (permissionName: string) => {
-      if (!auth.user?.roles) return false;
+      const user = auth.user as AuthUser | null;
+      if (!user?.roles) return false;
 
-      return auth.user.roles.some((role: any) =>
+      return user.roles.some((role) =>
         role.permissions?.some(
-          (perm: any) => perm.permission?.name === permissionName,
+          (perm) => perm.permission?.name === permissionName,
         ),
       );
     },

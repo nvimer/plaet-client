@@ -18,8 +18,11 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { Button, Input } from "@/components";
-import { useAuth } from "@/hooks/useEnhancedAuth";
-import { registerSchema, type RegisterFormData } from "../schemas/authSchemas";
+import { useAuthActions } from "@/hooks/useEnhancedAuth";
+import {
+  registerSchema,
+  type RegisterFormData,
+} from "@/features/auth/schemas/authSchemas";
 import { z } from "zod";
 
 /**
@@ -27,7 +30,7 @@ import { z } from "zod";
  */
 export default function RegisterForm() {
   // Hooks
-  const { register } = useAuth();
+  const { register } = useAuthActions();
   const navigate = useNavigate();
 
   // Form state
@@ -53,11 +56,11 @@ export default function RegisterForm() {
    */
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    setFormData((prev: RegisterFormData) => ({ ...prev, [name]: value }));
 
     // Clear validation error for this field
     if (validationErrors[name]) {
-      setValidationErrors((prev) => {
+      setValidationErrors((prev: Record<string, string>) => {
         const newErrors = { ...prev };
         delete newErrors[name];
         return newErrors;
@@ -110,8 +113,8 @@ export default function RegisterForm() {
           type: "success",
         },
       });
-    } catch (error: any) {
-      console.error("Registration error:", error);
+    } catch {
+      console.error("Registration error");
       // Error is handled in the context
     } finally {
       setIsLoading(false);

@@ -215,7 +215,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     }, TOKEN_REFRESH_INTERVAL);
 
-    setRefreshInterval(interval as any);
+    setRefreshInterval(interval as number | null);
   }, [refreshInterval, setError]);
 
   /**
@@ -246,16 +246,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         } else {
           throw new Error("Failed to fetch user profile");
         }
-      } catch (error: any) {
+      } catch (error: unknown) {
         const errorMessage =
-          error.response?.data?.message ||
-          error.response?.data?.error ||
-          error.message ||
-          "Error al iniciar sesión. Verifica tus credenciales.";
+          error instanceof Error && "response" in error
+            ? (
+                error as {
+                  response?: {
+                    data?: {
+                      message?: string;
+                      error?: string;
+                      errorCode?: string;
+                    };
+                  };
+                }
+              ).response?.data?.message ||
+              (error as { response?: { data?: { error?: string } } }).response
+                ?.data?.error ||
+              error.message
+            : "Error al iniciar sesión. Verifica tus credenciales.";
 
         setError({
           message: errorMessage,
-          code: error.response?.data?.errorCode || "LOGIN_FAILED",
+          code:
+            error instanceof Error && "response" in error
+              ? (error as { response?: { data?: { errorCode?: string } } })
+                  .response?.data?.errorCode || "LOGIN_FAILED"
+              : "LOGIN_FAILED",
         });
         throw error;
       } finally {
@@ -282,15 +298,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             "Registro exitoso. Por favor verifica tu correo electrónico.",
           code: "EMAIL_VERIFICATION_REQUIRED",
         });
-      } catch (error: any) {
+      } catch (error: unknown) {
         const errorMessage =
-          error.response?.data?.message ||
-          error.message ||
-          "Error al registrar usuario. Inténtalo nuevamente.";
+          error instanceof Error && "response" in error
+            ? (error as { response?: { data?: { message?: string } } }).response
+                ?.data?.message || error.message
+            : "Error al registrar usuario. Inténtalo nuevamente.";
 
         setError({
           message: errorMessage,
-          code: error.response?.data?.errorCode || "REGISTER_FAILED",
+          code:
+            error instanceof Error && "response" in error
+              ? (error as { response?: { data?: { errorCode?: string } } })
+                  .response?.data?.errorCode || "REGISTER_FAILED"
+              : "REGISTER_FAILED",
         });
         throw error;
       } finally {
