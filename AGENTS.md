@@ -204,11 +204,24 @@ Example:
 
 ### Git Workflow
 
-**Branch naming:**
+**IMPORTANT: All branches must be created from `develop`**
 
-- `feat/[module]-[feature]` - New features
-- `fix/[module]-[issue]` - Bug fixes
-- `refactor/[module]-[change]` - Refactoring
+**Branch Strategy:**
+- `main` - Production-ready code only
+- `develop` - Integration branch for all features
+- `feat/[module]-[feature]` - New features (from develop)
+- `fix/[module]-[issue]` - Bug fixes (from develop)
+- `refactor/[module]-[change]` - Refactoring (from develop)
+
+**Workflow:**
+1. Always checkout `develop` first: `git checkout develop`
+2. Pull latest changes: `git pull origin develop`
+3. Create feature branch: `git checkout -b feat/module-feature`
+4. Make changes and commit
+5. Push branch: `git push origin feat/module-feature`
+6. Create PR to merge into `develop`
+7. After review, merge to `develop`
+8. Periodically merge `develop` into `main` for releases
 
 **Commits (Conventional):**
 
@@ -278,6 +291,23 @@ export const useAuth = () => {
   return context;
 };
 ```
+
+## Stock Management Module
+
+**Simplified Model (Feb 2025):**
+- Removed `initialStock` field from database
+- Using only `stockQuantity` as single source of truth
+- `stockQuantity` represents current inventory level
+- No distinction between "initial" and "current" stock
+
+**Inventory Types:**
+- `UNLIMITED` - No stock tracking (stockQuantity is null)
+- `TRACKED` - Stock tracking enabled (stockQuantity required)
+
+**Key Files:**
+- Service: `src/features/menu/items/services/stockApi.ts`
+- Hooks: `src/features/menu/items/hooks/useStockManagement.ts`
+- Pages: `StockManagementPage.tsx`, `MenuItemCreatePage.tsx`, `MenuItemEditPage.tsx`
 
 ## Prepared Hooks (Future Use)
 
@@ -412,15 +442,21 @@ Located at `/menu/daily` - Category-based daily menu configuration for POS.
 **Categories:**
 - Sopas (Soups) - 2 options
 - Principios (Principles) - 2 options  
-- Proteínas (Proteins) - 2-3 options
+- Proteínas (Proteins) - All available from category (checkbox selection)
 - Jugos (Drinks) - 2 options
 - Extras - 2 options
 - Arroz (Rice) - Always included
-- Ensaladas (Salads) - Always included
+- Ensaladas (Salads) - 2 options (optional)
+- Postres (Desserts) - 2 options (optional)
+
+**Important Changes (Feb 2025):**
+- **Protein storage changed**: From `proteinOption1Id/2Id/3Id` to `proteinIds[]` array
+- **Stock field simplified**: Removed `initialStock`, using only `stockQuantity`
+- **All branches must be created from `develop`**, not main
 
 **API Endpoints:**
 - `GET /daily-menu/current` - Get today's menu with full item details
-- `PUT /daily-menu` - Update menu configuration
+- `PUT /daily-menu` - Update menu configuration (sends `allProteinIds: number[]`)
 - `GET /menu/items/by-category/:id` - Get items by category
 
 **Key Files:**
@@ -445,6 +481,7 @@ await updateMenu.mutateAsync({
   premiumProteinPrice: 11000,
   soupCategoryId: 1,
   soupOptions: { option1Id: 101, option2Id: 102 },
+  allProteinIds: [1, 2, 3, 4], // Array of selected protein IDs
   // ... other options
 });
 ```
