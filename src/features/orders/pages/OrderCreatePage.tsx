@@ -12,7 +12,6 @@ import { toast } from "sonner";
 import {
   DailyMenuSection,
   ProteinSelector,
-  PlateCustomizer,
   MenuItemSelector,
   ReplacementManager,
   type Replacement,
@@ -40,19 +39,6 @@ interface ProteinOption {
   categoryName?: string;
 }
 
-interface Substitution {
-  from: "soup" | "principle" | "salad" | "additional";
-  to: "soup" | "principle" | "salad" | "additional";
-  quantity: number;
-}
-
-interface AdditionalItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-}
-
 interface LooseItem {
   id: number;
   name: string;
@@ -69,15 +55,12 @@ interface LunchSelection {
   protein: ProteinOption | null;
   rice: MenuOption | null;
   replacements: Replacement[];
-  additionalItems: AdditionalItem[];
 }
 
 interface TableOrder {
   id: string;
   protein: ProteinOption | null;
   lunch: LunchSelection | null;
-  substitutions: Substitution[];
-  additionals: AdditionalItem[];
   looseItems: LooseItem[];
   total: number;
   notes?: string;
@@ -118,8 +101,6 @@ export function OrderCreatePage() {
   
   // Estado del pedido actual
   const [selectedProtein, setSelectedProtein] = useState<ProteinOption | null>(null);
-  const [substitutions, setSubstitutions] = useState<Substitution[]>([]);
-  const [additionals, setAdditionals] = useState<AdditionalItem[]>([]);
   const [looseItems, setLooseItems] = useState<LooseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showDailyMenu, setShowDailyMenu] = useState(false);
@@ -160,19 +141,6 @@ export function OrderCreatePage() {
       categoryName: dailyMenuData.proteinCategory?.name,
     }));
   }, [dailyMenuData]);
-
-  // Get available components/extras from menu items
-  const availableComponents = useMemo(() => {
-    if (!menuItems) return [];
-    return menuItems
-      .filter((item) => item.isAvailable && item.isExtra)
-      .map((item) => ({
-        id: item.id,
-        name: item.name,
-        price: Number(item.price),
-        type: "additional" as const,
-      }));
-  }, [menuItems]);
 
   const filteredLooseItems = useMemo(() => {
     if (!menuItems) return [];
@@ -234,18 +202,13 @@ export function OrderCreatePage() {
     // Precio del almuerzo base
     total += lunchPrice;
     
-    // Extras adicionales (fuera de los reemplazos gratuitos)
-    additionals.forEach((item) => {
-      total += item.price * item.quantity;
-    });
-    
     // Productos sueltos
     looseItems.forEach((item) => {
       total += item.price * item.quantity;
     });
     
     return total;
-  }, [lunchPrice, additionals, looseItems]);
+  }, [lunchPrice, looseItems]);
 
   // Calcular total de la mesa
   const tableTotal = useMemo(() => {
@@ -288,42 +251,6 @@ export function OrderCreatePage() {
 
   const hasError = (field: string) => {
     return validationErrors.some(e => e.field === field) && touchedFields.has(field);
-  };
-
-  // Customization handlers
-  const handleAddSubstitution = (from: Substitution["from"], to: Substitution["to"]) => {
-    setSubstitutions((prev) => [...prev, { from, to, quantity: 1 }]);
-  };
-
-  const handleRemoveSubstitution = (index: number) => {
-    setSubstitutions((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleAddAdditional = (component: Omit<AdditionalItem, "quantity">) => {
-    const existing = additionals.find((a) => a.id === component.id);
-    if (existing) {
-      setAdditionals((prev) =>
-        prev.map((a) =>
-          a.id === component.id ? { ...a, quantity: a.quantity + 1 } : a
-        )
-      );
-    } else {
-      setAdditionals((prev) => [...prev, { ...component, quantity: 1 }]);
-    }
-  };
-
-  const handleUpdateAdditionalQuantity = (id: number, quantity: number) => {
-    if (quantity <= 0) {
-      setAdditionals((prev) => prev.filter((a) => a.id !== id));
-    } else {
-      setAdditionals((prev) =>
-        prev.map((a) => (a.id === id ? { ...a, quantity } : a))
-      );
-    }
-  };
-
-  const handleRemoveAdditional = (id: number) => {
-    setAdditionals((prev) => prev.filter((a) => a.id !== id));
   };
 
   const handleAddLooseItem = (item: { id: number; name: string; price: number }) => {
@@ -399,15 +326,12 @@ export function OrderCreatePage() {
       protein: selectedProtein,
       rice: selectedRice || dailyMenuDisplay.riceOption || null,
       replacements: [...replacements],
-      additionalItems: [...additionals],
     } : null;
 
     const newOrder: TableOrder = {
       id: Date.now().toString(),
       protein: selectedProtein,
       lunch: lunchSelection,
-      substitutions: [...substitutions],
-      additionals: [...additionals],
       looseItems: [...looseItems],
       total: currentOrderTotal,
       notes: buildOrderNotes(),
@@ -439,8 +363,6 @@ export function OrderCreatePage() {
     setSelectedExtra(null);
     setSelectedRice(null);
     setReplacements([]);
-    setSubstitutions([]);
-    setAdditionals([]);
     setLooseItems([]);
     setOrderNotes("");
     setCurrentOrderIndex(null);
@@ -464,8 +386,6 @@ export function OrderCreatePage() {
       setReplacements([...order.lunch.replacements]);
     }
     
-    setSubstitutions([...order.substitutions]);
-    setAdditionals([...order.additionals]);
     setLooseItems([...order.looseItems]);
     setOrderNotes(order.notes || "");
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -528,15 +448,6 @@ export function OrderCreatePage() {
           notes: `Almuerzo: ${order.protein.name}${order.notes ? ` - ${order.notes}` : ""}`,
         });
       }
-
-      order.additionals.forEach((item) => {
-        items.push({
-          menuItemId: item.id,
-          quantity: item.quantity,
-          priceAtOrder: item.price,
-          notes: `Adicional: ${item.name}`,
-        });
-      });
 
       order.looseItems.forEach((item) => {
         items.push({
@@ -1026,20 +937,6 @@ export function OrderCreatePage() {
                 </Card>
               )}
 
-              {/* Personalización del plato - Extras adicionales con costo */}
-              {selectedProtein && (
-                <PlateCustomizer
-                  substitutions={substitutions}
-                  additionals={additionals}
-                  onAddSubstitution={handleAddSubstitution}
-                  onRemoveSubstitution={handleRemoveSubstitution}
-                  onAddAdditional={handleAddAdditional}
-                  onUpdateAdditionalQuantity={handleUpdateAdditionalQuantity}
-                  onRemoveAdditional={handleRemoveAdditional}
-                  availableComponents={availableComponents}
-                />
-              )}
-
               {/* Productos sueltos */}
               <Card variant="elevated" className="p-6 rounded-2xl">
                 <div className="flex items-center gap-3 mb-4">
@@ -1256,16 +1153,6 @@ export function OrderCreatePage() {
                         
                         {/* Detalles del pedido */}
                         <div className="flex flex-wrap gap-2 text-xs">
-                          {order.substitutions.length > 0 && (
-                            <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-medium">
-                              {order.substitutions.length} sust.
-                            </span>
-                          )}
-                          {order.additionals.length > 0 && (
-                            <span className="px-2 py-1 bg-emerald-100 text-emerald-700 rounded-full font-medium">
-                              {order.additionals.reduce((sum, a) => sum + a.quantity, 0)} adic.
-                            </span>
-                          )}
                           {order.looseItems.length > 0 && (
                             <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full font-medium">
                               {order.looseItems.reduce((sum, i) => sum + i.quantity, 0)} extras
@@ -1410,11 +1297,6 @@ export function OrderCreatePage() {
                     )}
                     
                     <div className="ml-10 space-y-1 text-sm text-carbon-600">
-                      {order.additionals.length > 0 && (
-                        <p>Extras adicionales: {order.additionals.map(a => 
-                          `${a.name} (x${a.quantity})`
-                        ).join(", ")}</p>
-                      )}
                       {order.looseItems.length > 0 && (
                         <p>Productos sueltos: {order.looseItems.map(i => 
                           `${i.name} (x${i.quantity})`
