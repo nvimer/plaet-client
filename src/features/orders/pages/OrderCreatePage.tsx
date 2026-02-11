@@ -106,7 +106,7 @@ export function OrderCreatePage() {
   const [showDailyMenu, setShowDailyMenu] = useState(false);
   const [orderNotes, setOrderNotes] = useState("");
   
-  // NEW: Estado para selección de elementos del almuerzo
+  // NEW: Lunch item selection state
   const [selectedSoup, setSelectedSoup] = useState<MenuOption | null>(null);
   const [selectedPrinciple, setSelectedPrinciple] = useState<MenuOption | null>(null);
   const [selectedSalad, setSelectedSalad] = useState<MenuOption | null>(null);
@@ -185,13 +185,13 @@ export function OrderCreatePage() {
     };
   }, [dailyMenuData, dailyMenuPrices]);
 
-  // NEW: Calcular precio del almuerzo = basePrice (margen) + precio individual de la proteína
+  // NEW: Calculate lunch price = basePrice (margin) + individual protein price
   const lunchPrice = useMemo(() => {
     if (!selectedProtein) return 0;
     
-    // El precio del almuerzo es: margen base + precio individual de la proteína
-    // Ejemplo: $4,000 (base) + $6,000 (pollo) = $10,000
-    // Ejemplo: $4,000 (base) + $7,000 (res) = $11,000
+    // Lunch price = base margin + individual protein price
+    // Example: $4,000 (base) + $6,000 (chicken) = $10,000
+    // Example: $4,000 (base) + $7,000 (beef) = $11,000
     return dailyMenuPrices.basePrice + selectedProtein.price;
   }, [selectedProtein, dailyMenuPrices]);
 
@@ -525,7 +525,7 @@ export function OrderCreatePage() {
     }
   };
 
-  // Cancelar edición
+  // Cancel edit
   const handleCancelEdit = () => {
     clearCurrentOrder();
     toast.info("Edición cancelada");
@@ -661,7 +661,7 @@ export function OrderCreatePage() {
     );
   }
 
-  // Determinar título y acciones
+  // Determine title and actions
   const getOrderFormTitle = () => {
     if (selectedOrderType === OrderType.DINE_IN) {
       return `Mesa ${selectedTable}`;

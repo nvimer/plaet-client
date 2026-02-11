@@ -34,9 +34,9 @@ export interface OrderItem {
   menuItemId?: number;
   menuItem?: MenuItem; // Puede venir poblado o no
   quantity: number;
-  priceAtOrder: number; // Precio al momento del pedido (Decimal → number)
-  notes?: string; // Notas especiales (ej: "sin cebolla")
-  isFreeSubstitution: boolean; // Si es sustitución gratuita
+  priceAtOrder: number; // Price at order time (Decimal → number)
+  notes?: string; // Special notes (e.g., "no onion")
+  isFreeSubstitution: boolean; // Whether it's a free substitution
   createdAt: string;
   updatedAt: string;
 }
@@ -50,7 +50,7 @@ export interface Payment {
   orderId?: string;
   method: PaymentMethod;
   amount: number; // Decimal → number
-  transactionRef?: string; // Referencia de transacción (para Nequi, etc.)
+  transactionRef?: string; // Transaction reference (for Nequi, etc.)
   createdAt: string;
 }
 
@@ -63,7 +63,7 @@ export interface Order {
   tableId?: number;
   table?: Table; // Puede venir poblada o no
   waiterId: string;
-  waiter?: User; // Usuario (mesero) que tomó el pedido
+  waiter?: User; // User (waiter) who took the order
   customerId?: string;
   customer?: Customer; // Cliente (si aplica)
   status: OrderStatus;

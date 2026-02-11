@@ -124,13 +124,13 @@ export function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
   if (exact) return exact.items;
 
   // Dynamic routes: match by prefix
-  // /tables/123 -> Mesas > Gestionar mesa
+  // /tables/123 -> Tables > Manage table
   // /tables/123/edit -> not used (we don't have edit for tables)
-  // /orders/123 -> Pedidos > Pedido #123
-  // /orders/123/edit -> Pedidos > Pedido #123 > Editar
-  // /menu/items/123/edit -> Menú > Productos > Editar
-  // /menu/categories/123/edit -> Menú > Categorías > Editar
-  // /users/123/edit -> Usuarios > Editar usuario
+  // /orders/123 -> Orders > Order #123
+  // /orders/123/edit -> Orders > Order #123 > Edit
+  // /menu/items/123/edit -> Menu > Products > Edit
+  // /menu/categories/123/edit -> Menu > Categories > Edit
+  // /users/123/edit -> Users > Edit user
 
   const segments = normalized.split("/").filter(Boolean);
 
