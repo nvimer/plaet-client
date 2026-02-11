@@ -119,7 +119,7 @@ export function MenuItemEditPage() {
       console.log(`Field ${key}:`, value, `(type: ${typeof value})`);
 
       if (
-        (key === "initialStock" || key === "lowStockAlert") &&
+        (key === "stockQuantity" || key === "lowStockAlert") &&
         typeof value === "number" &&
         (Number.isNaN(value) || !Number.isFinite(value))
       ) {
