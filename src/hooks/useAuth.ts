@@ -1,7 +1,7 @@
 /**
  * CUSTOM HOOK: useAuth
  * 
- * Hook personalizado para acceder al AuthContext fácilmente.
+ * Hook personalizado para acceder al EnhancedAuthContext fácilmente.
  * 
  * En lugar de:
  *   const context = useContext(AuthContext)
@@ -12,12 +12,12 @@
  */
 
 import { useContext } from 'react'
-import { AuthContext } from '@/contexts/AuthContext'
+import { AuthContext } from '@/contexts/EnhancedAuthContext'
 
 /**
  * Hook useAuth
  * 
- * Facilita el acceso al contexto de autenticación.
+ * Facilita el acceso al contexto de autenticación mejorado.
  * 
  * @returns Datos y funciones de autenticación
  * @throws Error si se usa fuera del AuthProvider
