@@ -878,16 +878,128 @@ export function OrderCreatePage() {
                     />
                   )}
 
-                  {/* Mensaje cuando todo está auto-seleccionado */}
+                  {/* Visualización moderna del menú auto-configurado */}
                   {dailyMenuDisplay.soupOptions.length <= 1 &&
                    dailyMenuDisplay.principleOptions.length <= 1 &&
                    dailyMenuDisplay.saladOptions.length <= 1 &&
                    dailyMenuDisplay.drinkOptions.length <= 1 &&
                    dailyMenuDisplay.extraOptions.length <= 1 && (
-                    <div className="p-4 bg-sage-50 rounded-xl border border-sage-200">
-                      <p className="text-sm text-carbon-600 text-center">
-                        Menú del día configurado automáticamente
-                      </p>
+                    <div className="bg-gradient-to-br from-sage-50 via-white to-amber-50 rounded-2xl border border-sage-200 overflow-hidden">
+                      <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-4 py-3">
+                        <h4 className="text-white font-semibold text-sm flex items-center gap-2">
+                          <span className="text-lg">🍽️</span>
+                          Menú del Día
+                        </h4>
+                      </div>
+                      <div className="p-4 space-y-3">
+                        {/* Sopa */}
+                        {dailyMenuDisplay.soupOptions.length === 1 && (
+                          <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-amber-100 shadow-sm">
+                            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-xl">
+                              🍲
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-xs text-amber-600 font-medium uppercase tracking-wider">Sopa</p>
+                              <p className="text-carbon-900 font-semibold">{dailyMenuDisplay.soupOptions[0].name}</p>
+                            </div>
+                            <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                              <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Principio */}
+                        {dailyMenuDisplay.principleOptions.length === 1 && (
+                          <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-emerald-100 shadow-sm">
+                            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-xl">
+                              🥔
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-xs text-emerald-600 font-medium uppercase tracking-wider">Principio</p>
+                              <p className="text-carbon-900 font-semibold">{dailyMenuDisplay.principleOptions[0].name}</p>
+                            </div>
+                            <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                              <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Ensalada */}
+                        {dailyMenuDisplay.saladOptions.length === 1 && (
+                          <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-sage-100 shadow-sm">
+                            <div className="w-10 h-10 rounded-xl bg-sage-100 flex items-center justify-center text-xl">
+                              🥗
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-xs text-sage-600 font-medium uppercase tracking-wider">Ensalada</p>
+                              <p className="text-carbon-900 font-semibold">{dailyMenuDisplay.saladOptions[0].name}</p>
+                            </div>
+                            <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                              <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Jugo */}
+                        {dailyMenuDisplay.drinkOptions.length === 1 && (
+                          <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-blue-100 shadow-sm">
+                            <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-xl">
+                              🥤
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-xs text-blue-600 font-medium uppercase tracking-wider">Jugo</p>
+                              <p className="text-carbon-900 font-semibold">{dailyMenuDisplay.drinkOptions[0].name}</p>
+                            </div>
+                            <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                              <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Extra */}
+                        {dailyMenuDisplay.extraOptions.length === 1 && (
+                          <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-purple-100 shadow-sm">
+                            <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-xl">
+                              🍌
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-xs text-purple-600 font-medium uppercase tracking-wider">Extra</p>
+                              <p className="text-carbon-900 font-semibold">{dailyMenuDisplay.extraOptions[0].name}</p>
+                            </div>
+                            <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                              <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Arroz */}
+                        {dailyMenuDisplay.riceOption && (
+                          <div className="flex items-center gap-3 p-3 bg-gradient-to-r from-amber-50 to-white rounded-xl border border-amber-200 shadow-sm">
+                            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-xl">
+                              🍚
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-xs text-amber-700 font-medium uppercase tracking-wider">Arroz incluido</p>
+                              <p className="text-carbon-900 font-semibold">{dailyMenuDisplay.riceOption.name}</p>
+                            </div>
+                            <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                              <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            </div>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>
