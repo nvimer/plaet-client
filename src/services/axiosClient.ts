@@ -2,16 +2,16 @@
  * AXIOS CLIENT CONFIGURATION
  *
  * Production-ready Axios instance with security best practices:
- * - Automatic token authentication
+ * - Automatic token authentication via httpOnly cookies
  * - Secure error handling
- * - CORS handling
- * - Production/Development environment detection
+ * - Retry logic for network errors
+ * - Queue management during token refresh
  */
+
 import type { InternalAxiosRequestConfig } from "axios";
 import axios, { AxiosError } from "axios";
 import { API_URL, API_TIMEOUT } from "../config/constants";
 
-// Create Axios instance with secure configuration
 export const axiosClient = axios.create({
   baseURL: API_URL,
   timeout: API_TIMEOUT,
@@ -19,25 +19,40 @@ export const axiosClient = axios.create({
     "Content-Type": "application/json",
     Accept: "application/json",
   },
-  withCredentials: true, // Enable credentials for CORS
+  withCredentials: true,
 });
+
+const RETRY_DELAY = 1000;
+const MAX_RETRIES = 3;
+
+let isRefreshing = false;
+let failedRequestsQueue: Array<{
+  resolve: (token: string) => void;
+  reject: (error: Error) => void;
+}> = [];
+
+/**
+ * Process queued requests after token refresh
+ */
+const processQueue = (error: Error | null, token?: string): void => {
+  failedRequestsQueue.forEach((request) => {
+    if (error) {
+      request.reject(error);
+    } else {
+      request.resolve(token || "");
+    }
+  });
+  failedRequestsQueue = [];
+};
 
 /**
  * REQUEST INTERCEPTOR
- *
- * Security: Cookies are automatically sent with withCredentials: true
- * No need to manually add Authorization header
  */
 axiosClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    // Tokens are automatically sent via httpOnly cookies
-    // No need to manually add Authorization header
-
-    // Add request timestamp for debugging (dev only)
     if (import.meta.env.DEV) {
       console.log(`[API] ${config.method?.toUpperCase()} ${config.url}`);
     }
-
     return config;
   },
   (error) => {
@@ -48,94 +63,168 @@ axiosClient.interceptors.request.use(
 
 /**
  * RESPONSE INTERCEPTOR
- *
- * Security: Handles errors globally and prevents sensitive data leaks.
- * Automatically redirects to login on 401.
  */
 axiosClient.interceptors.response.use(
   (response) => {
-    // Log successful responses in development
     if (import.meta.env.DEV) {
       console.log(`[API] ${response.config.url} -> ${response.status}`);
     }
     return response;
   },
-  (error: AxiosError) => {
-    // Secure error handling - don't expose internal details in production
+  async (error: AxiosError) => {
+    const originalRequest = error.config;
+
+    if (!originalRequest) {
+      return Promise.reject(error);
+    }
+
+    const url = originalRequest.url || "unknown";
+
+    if (import.meta.env.DEV) {
+      console.error(
+        `[API Error] ${url} ->`,
+        error.response?.status || "Network Error",
+      );
+    }
 
     if (error.response) {
       const status = error.response.status;
-      const url = error.config?.url || "unknown";
-
-      // Log error without exposing sensitive data
-      if (import.meta.env.DEV) {
-        console.error(`[API Error] ${url} -> ${status}`);
-      }
 
       switch (status) {
-        case 401:
-          // Unauthorized - Clear auth and redirect to login
-          console.warn("[API] Unauthorized - Clearing auth state");
-          localStorage.removeItem("user");
+        case 401: {
+          console.warn("[API] Unauthorized - Token may be expired");
 
-          // Redirect to login if in browser
-          if (
-            typeof window !== "undefined" &&
-            !window.location.pathname.includes("/login")
-          ) {
-            // Only redirect if not already on login page
-            window.location.href = "/login";
+          if (!isRefreshing) {
+            isRefreshing = true;
+
+            try {
+              await axios.post(`${API_URL}/auth/refresh-token`, undefined, {
+                withCredentials: true,
+              });
+
+              console.log("[API] Token refreshed successfully");
+              processQueue(null);
+              return axiosClient(originalRequest);
+            } catch (refreshError) {
+              console.error("[API] Token refresh failed:", refreshError);
+              processQueue(refreshError as Error);
+              removeUserFromStorage();
+
+              if (
+                typeof window !== "undefined" &&
+                !window.location.pathname.includes("/login")
+              ) {
+                window.location.href = "/login";
+              }
+
+              return Promise.reject(refreshError);
+            } finally {
+              isRefreshing = false;
+            }
           }
-          break;
 
-        case 403:
-          // Forbidden - User doesn't have permission
-          console.warn("[API] Forbidden access");
-          break;
+          return new Promise((resolve, reject) => {
+            failedRequestsQueue.push({
+              resolve: (token: string) => {
+                originalRequest.headers.Authorization = `Bearer ${token}`;
+                resolve(axiosClient(originalRequest));
+              },
+              reject: (err: Error) => {
+                reject(err);
+              },
+            });
+          });
+        }
 
-        case 404:
-          // Not Found - Resource doesn't exist
+        case 403: {
+          console.warn("[API] Forbidden - Insufficient permissions");
+          break;
+        }
+
+        case 404: {
           if (import.meta.env.DEV) {
             console.warn(`[API] Resource not found: ${url}`);
           }
           break;
+        }
 
-        case 422:
-          // Validation Error - Show form validation
+        case 422: {
           if (import.meta.env.DEV) {
-            console.warn(`[API] Validation error:`, error.response.data);
+            console.warn("[API] Validation error:", error.response.data);
           }
           break;
+        }
 
-        case 429:
-          // Rate Limited
-          console.warn("[API] Rate limited - Too many requests");
+        case 423: {
+          const message =
+            (error.response.data as { message?: string })?.message ||
+            "Tu cuenta está bloqueada. Contacta al soporte.";
+          console.warn(`[API] Account locked: ${message}`);
           break;
+        }
+
+        case 429: {
+          const retryAfter = error.response.headers["retry-after"];
+          const seconds = retryAfter ? parseInt(retryAfter, 10) : 60;
+          console.warn(`[API] Rate limited. Retry after ${seconds} seconds`);
+          break;
+        }
 
         case 500:
         case 502:
         case 503:
-        case 504:
-          // Server Errors - Generic message for security
+        case 504: {
           console.error("[API] Server error occurred");
           break;
+        }
 
-        default:
-          // Other errors
+        default: {
           if (import.meta.env.DEV) {
             console.error(`[API] Error ${status}:`, error.response.data);
           }
+        }
       }
     } else if (error.request) {
-      // Network error - No response received
       console.error("[API] Network error - No response from server");
+
+      if ((error.request as { retried?: boolean }).retried) {
+        return Promise.reject(error);
+      }
+
+      const retryCount =
+        (originalRequest as { _retryCount?: number })._retryCount || 0;
+
+      if (retryCount < MAX_RETRIES) {
+        (originalRequest as { _retryCount?: number })._retryCount =
+          retryCount + 1;
+
+        console.log(
+          `[API] Retrying request (${retryCount + 1}/${MAX_RETRIES})...`,
+        );
+
+        await new Promise((resolve) =>
+          setTimeout(resolve, RETRY_DELAY * (retryCount + 1)),
+        );
+
+        return axiosClient(originalRequest);
+      }
     } else {
-      // Request setup error
       console.error("[API] Request error:", error.message);
     }
 
     return Promise.reject(error);
   },
 );
+
+/**
+ * Remove user from localStorage helper
+ */
+const removeUserFromStorage = (): void => {
+  try {
+    localStorage.removeItem("user");
+  } catch {
+    console.error("Failed to remove user from localStorage");
+  }
+};
 
 export default axiosClient;

@@ -2,9 +2,6 @@ import { TouchableCard } from "@/components";
 import { cn } from "@/utils/cn";
 import { Beef, Fish, Drumstick, AlertCircle } from "lucide-react";
 
-/**
- * Protein option data structure
- */
 export interface ProteinOption {
   id: number;
   name: string;
@@ -42,13 +39,6 @@ export function ProteinSelector({
   const minPrice = Math.min(...lunchPrices);
   const maxPrice = Math.max(...lunchPrices);
 
-  const getPriceIndicator = (proteinPrice: number) => {
-    const total = basePrice + proteinPrice;
-    if (total === minPrice && minPrice !== maxPrice) return { symbol: "○", label: "Más económica", color: "text-emerald-600", bg: "bg-emerald-50 border-emerald-200" };
-    if (total === maxPrice && minPrice !== maxPrice) return { symbol: "↑", label: "+Costosa", color: "text-amber-600", bg: "bg-amber-50 border-amber-200" };
-    return { symbol: "○", label: "Estándar", color: "text-carbon-500", bg: "bg-carbon-50 border-carbon-200" };
-  };
-
   return (
     <div className={cn("space-y-4", className)}>
       {/* Header with total lunch price */}
@@ -74,7 +64,8 @@ export function ProteinSelector({
         {availableProteins.map((protein) => {
           const isSelected = selectedProteinId === protein.id;
           const totalPrice = basePrice + protein.price;
-          const indicator = getPriceIndicator(protein.price);
+          const priceDiff = totalPrice - minPrice;
+          const isHigherPrice = totalPrice > minPrice;
           const Icon = iconMap[protein.icon || "other"];
 
           return (
@@ -88,7 +79,9 @@ export function ProteinSelector({
                 "relative overflow-hidden transition-all duration-300",
                 isSelected
                   ? "bg-sage-50 border-2 border-sage-500 shadow-md ring-2 ring-sage-200"
-                  : "bg-white border-2 border-sage-200 hover:border-sage-400 hover:shadow-lg"
+                  : isHigherPrice
+                    ? "bg-gradient-to-br from-white to-amber-50 border-2 border-amber-300 hover:border-amber-400 hover:shadow-lg"
+                    : "bg-white border-2 border-sage-200 hover:border-sage-400 hover:shadow-lg"
               )}
             >
               <div className="flex items-center gap-3 p-3">
@@ -98,7 +91,9 @@ export function ProteinSelector({
                     "flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors",
                     isSelected
                       ? "bg-sage-200 text-sage-800"
-                      : "bg-sage-50 text-sage-600"
+                      : isHigherPrice
+                        ? "bg-amber-100 text-amber-700"
+                        : "bg-sage-50 text-sage-600"
                   )}
                 >
                   <Icon className={cn("w-6 h-6 transition-transform", isSelected && "scale-110")} />
@@ -111,13 +106,15 @@ export function ProteinSelector({
                   </h4>
                   
                   <div className="flex items-center gap-2 mt-1">
-                    <span className="text-lg font-black text-carbon-900">
+                    <span className={cn("text-lg font-black", isHigherPrice ? "text-amber-700" : "text-carbon-900")}>
                       ${totalPrice.toLocaleString("es-CO")}
                     </span>
                     
-                    <span className={cn("text-xs font-semibold px-2 py-0.5 rounded-full border", indicator.bg, indicator.color)}>
-                      {indicator.symbol} {indicator.label}
-                    </span>
+                    {priceDiff > 0 && (
+                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 border border-amber-200 text-amber-700">
+                        +${priceDiff.toLocaleString("es-CO")}
+                      </span>
+                    )}
                   </div>
                 </div>
 
@@ -131,6 +128,11 @@ export function ProteinSelector({
                 )}
               </div>
 
+              {/* Higher price accent */}
+              {isHigherPrice && !isSelected && (
+                <div className="absolute top-0 right-0 w-0 h-0 border-l-[20px] border-l-transparent border-t-[20px] border-t-amber-400" />
+              )}
+
               {/* Unavailable overlay */}
               {!protein.isAvailable && (
                 <div className="absolute inset-0 bg-white/70 flex flex-col items-center justify-center rounded-2xl backdrop-blur-sm">
@@ -141,18 +143,6 @@ export function ProteinSelector({
             </TouchableCard>
           );
         })}
-      </div>
-
-      {/* Legend */}
-      <div className="flex items-center justify-center gap-6 text-xs text-carbon-500 bg-carbon-50 py-2 rounded-lg">
-        <span className="flex items-center gap-1">
-          <span className="w-4 h-4 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center text-[10px] font-bold">○</span>
-          Más económica
-        </span>
-        <span className="flex items-center gap-1">
-          <span className="w-4 h-4 rounded-full bg-amber-50 border border-amber-200 text-amber-600 flex items-center justify-center text-[10px] font-bold">↑</span>
-          +Costosa
-        </span>
       </div>
     </div>
   );
