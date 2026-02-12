@@ -77,7 +77,7 @@ const saveUserToStorage = (user: User): void => {
   try {
     localStorage.setItem("user", JSON.stringify(user));
   } catch {
-    logger.error("Failed to save user to localStorage");
+    console.error("Failed to save user to localStorage");
   }
 };
 
@@ -108,9 +108,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     lastActivity: null,
   });
 
-  const [refreshInterval, setRefreshIntervalState] = useState<number | null>(
-    null,
-  );
   const refreshIntervalRef = useRef<number | null>(null);
 
   /**
@@ -191,12 +188,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         saveUserToStorage(userWithRoles);
         return userWithRoles;
       } catch {
-        logger.warn("Could not fetch user roles");
+        console.warn("Could not fetch user roles");
         saveUserToStorage(userData);
         return userData;
       }
     } catch {
-      logger.error("Failed to fetch user profile");
+      console.error("Failed to fetch user profile");
       return null;
     }
   }, []);
@@ -212,9 +209,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const interval = window.setInterval(async () => {
       try {
         await authApi.refreshToken();
-        logger.info("Token refreshed successfully");
+        console.info("Token refreshed successfully");
       } catch {
-        logger.error("Failed to refresh token");
+        console.error("Failed to refresh token");
         updateState({
           user: null,
           isAuthenticated: false,
@@ -229,7 +226,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, TOKEN_REFRESH_INTERVAL);
 
     refreshIntervalRef.current = interval;
-    setRefreshIntervalState(interval);
   }, [updateState]);
 
   /**
@@ -343,7 +339,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await authApi.logout();
     } catch {
-      logger.error("Error calling logout API");
+      console.error("Error calling logout API");
     } finally {
       updateState({
         user: null,
@@ -357,11 +353,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (refreshIntervalRef.current) {
         clearInterval(refreshIntervalRef.current);
         refreshIntervalRef.current = null;
-        setRefreshIntervalState(null);
       }
 
       setLoading(false);
-      logger.info("User logged out successfully");
+      console.info("User logged out successfully");
     }
   }, [updateState, setLoading]);
 
@@ -371,9 +366,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshToken = useCallback(async (): Promise<void> => {
     try {
       await authApi.refreshToken();
-      logger.info("Token refreshed manually");
+      console.info("Token refreshed manually");
     } catch {
-      logger.error("Manual token refresh failed");
+      console.error("Manual token refresh failed");
       setError({
         message:
           "Error al refrescar la sesión. Por favor inicia sesión nuevamente.",
@@ -411,7 +406,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       return false;
     } catch {
-      logger.error("Auth check failed");
+      console.error("Auth check failed");
       updateState({
         user: null,
         isAuthenticated: false,
@@ -473,7 +468,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             });
           }
         } catch {
-          logger.error("Failed to initialize auth");
+          console.error("Failed to initialize auth");
           updateState({
             user: null,
             isAuthenticated: false,
