@@ -799,6 +799,40 @@ export function OrderCreatePage() {
                 </div>
               )}
 
+              {/* Adiciones Rápidas - Los más populares */}
+              <Card variant="elevated" className="p-4 rounded-xl bg-gradient-to-br from-amber-50 to-white border-amber-200">
+                <div className="flex items-center gap-2 mb-3">
+                  <Sparkles className="w-4 h-4 text-amber-600" />
+                  <h3 className="text-sm font-bold text-carbon-900">Adiciones Rápidas</h3>
+                </div>
+
+                <div className="flex flex-wrap gap-2">
+                  {popularProducts.map((product) => (
+                    <button
+                      key={product.id}
+                      onClick={() => {
+                        const existing = looseItems.find((i) => i.id === product.id);
+                        if (existing) {
+                          handleUpdateLooseItemQuantity(product.id, existing.quantity + 1);
+                        } else {
+                          handleAddLooseItem({
+                            id: product.id,
+                            name: product.name,
+                            price: product.price,
+                          });
+                        }
+                        toast.success(`${product.name} agregado`);
+                      }}
+                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white border border-amber-200 hover:border-amber-400 hover:bg-amber-50 transition-all active:scale-95"
+                    >
+                      <Plus className="w-3.5 h-3.5 text-amber-600" />
+                      <span className="text-xs font-medium text-carbon-800">{product.name}</span>
+                      <span className="text-xs font-bold text-amber-600">${product.price.toLocaleString()}</span>
+                    </button>
+                  ))}
+                </div>
+              </Card>
+
               {/* Configuración del Almuerzo - Selectores condicionales */}
               <Card variant="elevated" className="p-6 rounded-2xl">
                 <div className="flex items-center gap-3 mb-6">
@@ -1128,45 +1162,6 @@ export function OrderCreatePage() {
                   />
                 </Card>
               )}
-
-              {/* Adiciones Rápidas - Los más populares */}
-              <Card variant="elevated" className="p-6 rounded-2xl bg-gradient-to-br from-amber-50 to-white border-amber-200">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-600 flex items-center justify-center">
-                    <Sparkles className="w-6 h-6" />
-                  </div>
-                  <div>
-                    <h3 className="text-lg font-bold text-carbon-900">Adiciones Rápidas</h3>
-                    <p className="text-sm text-carbon-500">Los más pedidos del día</p>
-                  </div>
-                </div>
-
-                {/* Acciones rápidas */}
-                <div className="flex flex-wrap gap-2">
-                  {popularProducts.map((product) => (
-                    <button
-                      key={product.id}
-                      onClick={() => {
-                        const existing = looseItems.find((i) => i.id === product.id);
-                        if (existing) {
-                          handleUpdateLooseItemQuantity(product.id, existing.quantity + 1);
-                        } else {
-                          handleAddLooseItem({
-                            id: product.id,
-                            name: product.name,
-                            price: product.price,
-                          });
-                        }
-                        toast.success(`${product.name} agregado`);
-                      }}
-                      className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white border-2 border-amber-200 hover:border-amber-400 hover:bg-amber-50 transition-all active:scale-95"
-                    >
-                      <Plus className="w-4 h-4 text-amber-600" />
-                      <span className="font-medium text-carbon-800">{product.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </Card>
 
               {/* Productos sueltos */}
               <Card variant="elevated" className="p-6 rounded-2xl">
