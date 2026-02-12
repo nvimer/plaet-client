@@ -1030,17 +1030,45 @@ export function OrderCreatePage() {
                       />
                       
                       {/* Current order price display */}
-                      {selectedProtein && lunchPrice > 0 && (
-                        <div className="mt-4 p-4 bg-gradient-to-r from-sage-100 to-sage-50 rounded-xl border-2 border-sage-200">
-                          <div className="flex items-center justify-between">
+                      {selectedProtein && (
+                        <div className="mt-4 space-y-3">
+                          {/* Base lunch price */}
+                          <div className="flex items-center justify-between p-3 bg-sage-50 rounded-xl">
                             <div>
-                              <p className="text-sm text-sage-700 font-medium">Precio del almuerzo</p>
-                              <p className="text-xs text-sage-500">Con {selectedProtein.name}</p>
+                              <p className="text-sm text-sage-700 font-medium">Almuerzo con {selectedProtein.name}</p>
+                              <p className="text-xs text-sage-500">Precio base</p>
                             </div>
-                            <p className="text-2xl font-black text-sage-700">
+                            <p className="text-lg font-bold text-sage-700">
                               ${lunchPrice.toLocaleString()}
                             </p>
                           </div>
+                          
+                          {/* Loose items summary */}
+                          {looseItems.length > 0 && (
+                            <div className="space-y-2">
+                              {looseItems.map((item) => (
+                                <div key={item.id} className="flex items-center justify-between p-2 bg-purple-50 rounded-lg">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-purple-600 font-medium">{item.quantity}x</span>
+                                    <span className="text-carbon-700">{item.name}</span>
+                                  </div>
+                                  <p className="text-purple-700 font-semibold">
+                                    +${(item.price * item.quantity).toLocaleString()}
+                                  </p>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+                          
+                          {/* Total */}
+                          {looseItems.length > 0 && (
+                            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-sage-600 to-sage-500 rounded-xl text-white">
+                              <p className="font-bold">Total</p>
+                              <p className="text-2xl font-black">
+                                ${currentOrderTotal.toLocaleString()}
+                              </p>
+                            </div>
+                          )}
                         </div>
                       )}
                       

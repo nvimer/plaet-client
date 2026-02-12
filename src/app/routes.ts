@@ -47,9 +47,11 @@ export const ROUTES = {
 
   // Profile
   PROFILE: "/profile",
+  CHANGE_PASSWORD: "/profile/change-password",
 
   // Auth
   VERIFY_EMAIL: "/verify-email",
+  LOCKOUT: "/lockout",
 } as const;
 
 /**

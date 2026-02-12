@@ -6,6 +6,8 @@ import {
   ForgotPasswordPage,
   ResetPasswordPage,
   VerifyEmailPage,
+  AccountLockoutPage,
+  ChangePasswordPage,
 } from "./features/auth";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { DashboardLayout } from "./layouts/DashboardLayout";
@@ -97,6 +99,8 @@ const App = () => {
         />
         {/* Public Route: Verify Email */}
         <Route path="/verify-email" element={<VerifyEmailPage />} />
+        {/* Public Route: Account Lockout */}
+        <Route path="/lockout" element={<AccountLockoutPage />} />
 
         {/* ============= PROTECTED ROUTES ============== */}
         {/* Dashboard (Home) */}
@@ -330,6 +334,18 @@ const App = () => {
             <PrivateRoute>
               <FullScreenLayout>
                 <ProfilePage />
+              </FullScreenLayout>
+            </PrivateRoute>
+          }
+        />
+
+        {/* Change Password (All authenticated users) */}
+        <Route
+          path={ROUTES.CHANGE_PASSWORD}
+          element={
+            <PrivateRoute>
+              <FullScreenLayout>
+                <ChangePasswordPage />
               </FullScreenLayout>
             </PrivateRoute>
           }

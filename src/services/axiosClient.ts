@@ -156,11 +156,30 @@ axiosClient.interceptors.response.use(
         }
 
         case 423: {
-          const message =
-            (error.response.data as { message?: string })?.message ||
-            "Tu cuenta está bloqueada. Contacta al soporte.";
+          const responseData = error.response?.data as {
+            message?: string;
+            lockedUntil?: string;
+          };
+          const message = responseData?.message || "Tu cuenta está bloqueada.";
+          const lockedUntil = responseData?.lockedUntil;
+
           console.warn(`[API] Account locked: ${message}`);
-          break;
+
+          if (
+            typeof window !== "undefined" &&
+            !window.location.pathname.includes("/lockout")
+          ) {
+            const params = new URLSearchParams();
+            if (lockedUntil) {
+              params.set(
+                "expiresAt",
+                new Date(lockedUntil).getTime().toString(),
+              );
+            }
+            window.location.href = `/lockout?${params.toString()}`;
+          }
+
+          return Promise.reject(error);
         }
 
         case 429: {

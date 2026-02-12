@@ -18,6 +18,8 @@ export { default as LoginPage } from "./pages/LoginPage";
 export { default as ForgotPasswordPage } from "./pages/ForgotPasswordPage";
 export { default as ResetPasswordPage } from "./pages/ResetPasswordPage";
 export { default as VerifyEmailPage } from "./pages/VerifyEmailPage";
+export { default as AccountLockoutPage } from "./pages/AccountLockoutPage";
+export { default as ChangePasswordPage } from "./pages/ChangePasswordPage";
 
 // Types
 export type { AuthError } from "../../contexts/EnhancedAuthContext";

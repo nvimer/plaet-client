@@ -46,10 +46,6 @@ export function ProteinSelector({
       })()
     : null;
 
-  const selectedProteinDiff = selectedProteinTotal !== null && selectedProteinTotal > minPrice
-    ? selectedProteinTotal - minPrice
-    : 0;
-
   return (
     <div className={cn("space-y-4", className)}>
       {/* Header with total lunch price */}
@@ -66,11 +62,6 @@ export function ProteinSelector({
                 : `$${minPrice.toLocaleString("es-CO")}${minPrice !== maxPrice ? ` - $${maxPrice.toLocaleString("es-CO")}` : ''}`
               }
             </p>
-            {selectedProteinTotal && selectedProteinDiff > 0 && (
-              <p className="text-sm text-sage-200">
-                +${selectedProteinDiff.toLocaleString("es-CO")}
-              </p>
-            )}
           </div>
         </div>
       </div>
@@ -80,7 +71,6 @@ export function ProteinSelector({
         {availableProteins.map((protein) => {
           const isSelected = selectedProteinId === protein.id;
           const totalPrice = basePrice + protein.price;
-          const priceDiff = totalPrice - minPrice;
           const isHigherPrice = totalPrice > minPrice;
           const Icon = iconMap[protein.icon || "other"];
 
@@ -121,17 +111,9 @@ export function ProteinSelector({
                     {protein.name}
                   </h4>
                   
-                  <div className="flex items-center gap-2 mt-1">
-                    <span className={cn("text-lg font-black", isHigherPrice ? "text-amber-700" : "text-carbon-900")}>
-                      ${totalPrice.toLocaleString("es-CO")}
-                    </span>
-                    
-                    {priceDiff > 0 && (
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 border border-amber-200 text-amber-700">
-                        +${priceDiff.toLocaleString("es-CO")}
-                      </span>
-                    )}
-                  </div>
+                  <span className={cn("text-lg font-black", isHigherPrice ? "text-amber-700" : "text-carbon-900")}>
+                    ${totalPrice.toLocaleString("es-CO")}
+                  </span>
                 </div>
 
                 {/* Selection indicator */}
