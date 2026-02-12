@@ -8,3 +8,4 @@ export { ProteinSelector } from "./ProteinSelector";
 export { OrderSummary } from "./OrderSummary";
 export { MenuItemSelector } from "./MenuItemSelector";
 export { ReplacementManager, type Replacement } from "./ReplacementManager";
+export { FixedOrderSummaryBar } from "./FixedOrderSummaryBar";

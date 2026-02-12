@@ -14,6 +14,7 @@ import {
   ProteinSelector,
   MenuItemSelector,
   ReplacementManager,
+  FixedOrderSummaryBar,
   type Replacement,
 } from "../components";
 import { TableSelector } from "@/features/tables";
@@ -554,6 +555,13 @@ export function OrderCreatePage() {
     clearCurrentOrder();
   };
 
+  const scrollToOrder = () => {
+    const orderSection = document.getElementById("current-order");
+    if (orderSection) {
+      orderSection.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
   // Loading state
   if (tablesLoading || itemsLoading || menuLoading) {
     return (
@@ -704,9 +712,9 @@ export function OrderCreatePage() {
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
             
             {/* LEFT: Formulario de pedido actual */}
-            <div className="xl:col-span-7 space-y-6">
+            <div className="xl:col-span-7 space-y-6 pb-32">
               {/* Header del pedido actual */}
-              <Card variant="elevated" className="overflow-hidden rounded-2xl">
+              <Card variant="elevated" id="current-order" className="overflow-hidden rounded-2xl">
                 <div className={cn(
                   "px-6 py-4 flex items-center justify-between",
                   currentOrderIndex !== null 
@@ -1440,6 +1448,14 @@ export function OrderCreatePage() {
           </div>
         </div>
       </SidebarLayout>
+
+      {/* Fixed Order Summary Bar */}
+      <FixedOrderSummaryBar
+        looseItems={looseItems}
+        total={currentOrderTotal}
+        onOrder={() => handleAddOrderToTable()}
+        scrollToOrder={scrollToOrder}
+      />
 
       {/* Summary Modal */}
       {showSummaryModal && (
