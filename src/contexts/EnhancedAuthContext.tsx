@@ -148,20 +148,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   /**
    * Update user data
    */
-  const updateUser = useCallback((userData: Partial<User>) => {
-    setState((prev) => {
-      if (!prev.user) return prev;
-
-      const updatedUser = { ...prev.user, ...userData };
+  const updateUser = useCallback(
+    (userData: Partial<User>) => {
+      const updatedUser = { ...state.user, ...userData } as User;
+      updateState({ user: updatedUser });
       saveUserToStorage(updatedUser);
-
-      return {
-        ...prev,
-        user: updatedUser,
-        lastActivity: new Date(),
-      };
-    });
-  }, []);
+    },
+    [state.user, updateState],
+  );
 
   /**
    * Fetch user with roles and permissions
@@ -175,17 +169,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return userData;
       }
 
-      // Token validation - if profile data doesn't match token, it's invalid
-      const currentToken =
-        localStorage.getItem("accessToken") ||
-        (document.cookie.match(/(^|;)\s*accessToken=([^;]*)/) || [])[1];
-
-      if (!currentToken || currentToken.length < 10) {
-        throw new Error("TOKEN_INVALID");
-      }
-
-      console.log("[FETCH_USER] Token appears valid, fetching user profile");
-
       try {
         const { usersApi } = await import("@/services");
         const rolesResponse = await usersApi.getUserWithRolesAndPermissions(
@@ -198,22 +181,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
 
         saveUserToStorage(userWithRoles);
-        console.log("[FETCH_USER] User roles fetched successfully");
         return userWithRoles;
       } catch (rolesError) {
-        console.warn("[FETCH_USER] Could not fetch user roles");
-        const axiosError = rolesError as { response?: { status?: number } };
-        if (
-          axiosError.response?.status === 401 ||
-          axiosError.response?.status === 403
-        ) {
-          throw rolesError;
-        }
+        // Don't propagate 401/403 from roles API - user is still authenticated
+        console.warn("Could not fetch user roles");
         saveUserToStorage(userData);
         return userData;
       }
     } catch (error) {
-      console.error("[FETCH_USER] Failed to fetch user profile");
+      console.error("Failed to fetch user profile");
 
       const axiosError = error as {
         response?: { status?: number };
@@ -222,13 +198,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       // If it's a 401, the token is invalid
       if (axiosError.response?.status === 401) {
-        console.error(
-          "[FETCH_USER] Token validation failed - 401 Unauthorized",
-        );
         throw error;
       }
 
-      // Let other errors pass through for general error handling
       return null;
     }
   }, []);
@@ -276,54 +248,44 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         await authApi.login(credentials);
 
+        // Fetch complete user data with roles after successful login
         const userWithRoles = await fetchUserWithRoles();
 
         if (userWithRoles) {
           updateState({
             user: userWithRoles,
             isAuthenticated: true,
+            isLoading: false,
             error: null,
             lastActivity: new Date(),
           });
           setupTokenRefresh();
         } else {
-          throw new Error("Failed to fetch user profile");
+          throw new Error("Failed to fetch user profile after login");
         }
       } catch (error: unknown) {
         const errorMessage =
           error instanceof Error && "response" in error
-            ? (
-                error as {
-                  response?: {
-                    data?: {
-                      message?: string;
-                      error?: string;
-                      errorCode?: string;
-                    };
-                  };
-                }
-              ).response?.data?.message ||
-              (error as { response?: { data?: { error?: string } } }).response
-                ?.data?.error ||
-              error.message
+            ? (error as { response?: { data?: { message?: string } } }).response
+                ?.data?.message || error.message
             : "Error al iniciar sesión. Verifica tus credenciales.";
-
-        const errorCode =
-          error instanceof Error && "response" in error
-            ? (error as { response?: { data?: { errorCode?: string } } })
-                .response?.data?.errorCode || "LOGIN_FAILED"
-            : "LOGIN_FAILED";
 
         setError({
           message: errorMessage,
-          code: errorCode,
         });
         throw error;
       } finally {
         setLoading(false);
       }
     },
-    [fetchUserWithRoles, setupTokenRefresh, setLoading, clearError, setError],
+    [
+      fetchUserWithRoles,
+      setupTokenRefresh,
+      setLoading,
+      clearError,
+      setError,
+      updateState,
+    ],
   );
 
   /**
@@ -340,7 +302,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setError({
           message:
             "Registro exitoso. Por favor verifica tu correo electrónico.",
-          code: "EMAIL_VERIFICATION_REQUIRED",
         });
       } catch (error: unknown) {
         const errorMessage =
@@ -349,15 +310,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 ?.data?.message || error.message
             : "Error al registrar usuario. Inténtalo nuevamente.";
 
-        const errorCode =
-          error instanceof Error && "response" in error
-            ? (error as { response?: { data?: { errorCode?: string } } })
-                .response?.data?.errorCode || "REGISTER_FAILED"
-            : "REGISTER_FAILED";
-
         setError({
           message: errorMessage,
-          code: errorCode,
         });
         throw error;
       } finally {
@@ -403,32 +357,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshToken = useCallback(async (): Promise<void> => {
     try {
       await authApi.refreshToken();
-      console.info("Token refreshed manually");
-    } catch {
-      console.error("Manual token refresh failed");
-      setError({
-        message:
-          "Error al refrescar la sesión. Por favor inicia sesión nuevamente.",
-        code: "TOKEN_REFRESH_FAILED",
-      });
+      console.info("Token refreshed successfully");
+    } catch (error) {
+      console.error("Failed to refresh token:", error);
+      throw error;
     }
-  }, [setError]);
+  }, []);
 
   /**
    * Check authentication status with timeout
    */
   const checkAuth = useCallback(async (): Promise<boolean> => {
     try {
-      console.log("[CHECK] Starting auth check...");
       const result = await Promise.race([
         fetchUserWithRoles(),
         createTimeoutPromise(AUTH_CHECK_TIMEOUT),
       ]);
 
-      console.log("[CHECK] fetchUserWithRoles result:", result);
-
       if (result) {
-        console.log("[CHECK] Auth check successful");
         updateState({
           user: result,
           isAuthenticated: true,
@@ -439,35 +385,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return true;
       }
 
-      console.log(
-        "[CHECK] fetchUserWithRoles returned null, checking error conditions...",
-      );
+      updateState({
+        user: null,
+        isAuthenticated: false,
+        error: null,
+        lastActivity: new Date(),
+      });
+      return false;
+    } catch (error) {
+      console.error("Auth check failed");
 
       const axiosError = error as {
         response?: { status?: number };
         code?: string;
-        message?: string;
       };
       const storedUser = getUserFromStorage();
-
-      console.log("[CHECK] Error details:", {
-        status: axiosError.response?.status,
-        code: axiosError.code,
-        hasStoredUser: !!storedUser,
-      });
 
       let errorType: "AUTH" | "NETWORK";
 
       if (
         axiosError.response?.status === 401 ||
-        axiosError.code === "AUTH_REFRESH_FAILED" ||
-        (storedUser && !result)
+        axiosError.code === "AUTH_REFRESH_FAILED"
       ) {
         errorType = "AUTH";
-        console.log("[CHECK] Detected AUTH error");
+      } else if (storedUser) {
+        errorType = "AUTH";
       } else {
         errorType = "NETWORK";
-        console.log("[CHECK] Detected NETWORK error");
       }
 
       updateState({
@@ -486,22 +430,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       removeUserFromStorage();
       return false;
-    } catch (error) {
-      console.error("[CHECK] Unexpected error in checkAuth:", error);
-
-      updateState({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: {
-          type: "NETWORK",
-          message: "Error inesperado al verificar sesión.",
-          code: "UNEXPECTED_ERROR",
-        },
-        lastActivity: new Date(),
-      });
-      removeUserFromStorage();
-      return false;
     }
   }, [fetchUserWithRoles, setupTokenRefresh, updateState]);
 
@@ -514,19 +442,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const storedUser = getUserFromStorage();
     if (storedUser) {
-      const success = await checkAuth();
-      if (!success) {
-        const userStill = getUserFromStorage();
-        if (userStill) {
-          return;
-        }
+      try {
+        await checkAuth();
+      } catch {
+        // Error already handled in checkAuth
       }
     } else {
       updateState({
         user: null,
         isAuthenticated: false,
         isLoading: false,
-        error: null,
+        error: {
+          type: "AUTH",
+          message: "No hay sesión activa. Por favor inicia sesión.",
+          code: "NO_SESSION",
+        },
         lastActivity: new Date(),
       });
     }
@@ -555,39 +485,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               lastActivity: new Date(),
             });
           }
-        } catch (error) {
+        } catch {
           console.error("Failed to initialize auth");
-          const axiosError = error as {
-            response?: { status?: number };
-            code?: string;
-          };
-          const storedUserCheck = getUserFromStorage();
-
-          let errorType: "AUTH" | "NETWORK";
-
-          if (
-            axiosError.response?.status === 401 ||
-            axiosError.code === "AUTH_REFRESH_FAILED"
-          ) {
-            errorType = "AUTH";
-          } else if (storedUserCheck) {
-            errorType = "AUTH";
-          } else {
-            errorType = "NETWORK";
-          }
-
           updateState({
             user: null,
             isAuthenticated: false,
             isLoading: false,
-            error: {
-              type: errorType,
-              message:
-                errorType === "AUTH"
-                  ? "Tu sesión ha terminado. Por favor inicia sesión nuevamente."
-                  : "No se pudo conectar con el servidor. Verifica tu conexión.",
-              code: "INIT_AUTH_FAILED",
-            },
+            error: null,
             lastActivity: new Date(),
           });
           removeUserFromStorage();
@@ -644,8 +548,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 /**
- * Export the context
+ * Auth Context
  */
-export const AuthContext = createContext<AuthContextType | undefined>(
-  undefined,
-);
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export default AuthContext;
+export { AuthContext };

@@ -147,7 +147,11 @@ export function PrivateRoute({ children }: PrivateRouteProps) {
 
   const handleRetry = async () => {
     setShowTimeout(false);
-    await retryAuth();
+    try {
+      await retryAuth();
+    } catch {
+      // Error handled by auth context, will show error screen
+    }
   };
 
   const handleGoToLogin = () => {
