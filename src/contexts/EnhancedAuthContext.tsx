@@ -2,7 +2,7 @@
  * ENHANCED AUTH CONTEXT
  *
  * Enhanced authentication context with token refresh,
- * error handling, and proper state management.
+ * error handling, proper state management, and timeout protection.
  */
 
 import {
@@ -11,6 +11,7 @@ import {
   useEffect,
   useCallback,
   useMemo,
+  useRef,
 } from "react";
 import type { ReactNode } from "react";
 import type { User, LoginInput, RegisterInput } from "@/types";
@@ -26,7 +27,7 @@ export interface AuthError {
 }
 
 /**
- * Enhanced authentication state
+ * Authentication state
  */
 interface AuthState {
   user: User | null;
@@ -40,26 +41,21 @@ interface AuthState {
  * Authentication context interface
  */
 interface AuthContextType extends AuthState {
-  // Authentication actions
   login: (credentials: LoginInput) => Promise<void>;
   register: (userData: RegisterInput) => Promise<void>;
   logout: () => Promise<void>;
-
-  // Token management
   refreshToken: () => Promise<void>;
   checkAuth: () => Promise<boolean>;
-
-  // Error handling
   clearError: () => void;
-
-  // User state
   updateUser: (userData: Partial<User>) => void;
+  retryAuth: () => Promise<void>;
 }
 
 /**
- * Token management utilities
+ * Constants
  */
-const TOKEN_REFRESH_INTERVAL = 14 * 60 * 1000; // 14 minutes
+const TOKEN_REFRESH_INTERVAL = 14 * 60 * 1000;
+const AUTH_CHECK_TIMEOUT = 10000;
 
 /**
  * Get user from localStorage safely
@@ -81,7 +77,7 @@ const saveUserToStorage = (user: User): void => {
   try {
     localStorage.setItem("user", JSON.stringify(user));
   } catch {
-    console.error("Failed to save user to localStorage");
+    logger.error("Failed to save user to localStorage");
   }
 };
 
@@ -93,10 +89,17 @@ const removeUserFromStorage = (): void => {
 };
 
 /**
+ * Create timeout promise
+ */
+const createTimeoutPromise = (ms: number): Promise<never> =>
+  new Promise((_, reject) =>
+    setTimeout(() => reject(new Error("Timeout")), ms),
+  );
+
+/**
  * Enhanced AuthProvider
  */
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Authentication state
   const [state, setState] = useState<AuthState>({
     user: null,
     isAuthenticated: false,
@@ -105,8 +108,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     lastActivity: null,
   });
 
-  // Token refresh interval
-  const [refreshInterval, setRefreshInterval] = useState<number | null>(null);
+  const [refreshInterval, setRefreshIntervalState] = useState<number | null>(
+    null,
+  );
+  const refreshIntervalRef = useRef<number | null>(null);
 
   /**
    * Update state helper
@@ -118,23 +123,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   /**
    * Set loading state
    */
-  const setLoading = useCallback((isLoading: boolean) => {
-    updateState({ isLoading });
-  }, []);
+  const setLoading = useCallback(
+    (isLoading: boolean) => {
+      updateState({ isLoading });
+    },
+    [updateState],
+  );
 
   /**
    * Set error state
    */
-  const setError = useCallback((error: AuthError | null) => {
-    updateState({ error, lastActivity: new Date() });
-  }, []);
+  const setError = useCallback(
+    (error: AuthError | null) => {
+      updateState({ error, lastActivity: new Date() });
+    },
+    [updateState],
+  );
 
   /**
    * Clear error state
    */
   const clearError = useCallback(() => {
     updateState({ error: null });
-  }, []);
+  }, [updateState]);
 
   /**
    * Update user data
@@ -166,7 +177,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return userData;
       }
 
-      // Try to get roles and permissions
       try {
         const { usersApi } = await import("@/services");
         const rolesResponse = await usersApi.getUserWithRolesAndPermissions(
@@ -180,13 +190,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         saveUserToStorage(userWithRoles);
         return userWithRoles;
-      } catch (error) {
-        console.warn("Could not fetch user roles:", error);
+      } catch {
+        logger.warn("Could not fetch user roles");
         saveUserToStorage(userData);
         return userData;
       }
-    } catch (error) {
-      console.error("Failed to fetch user profile:", error);
+    } catch {
+      logger.error("Failed to fetch user profile");
       return null;
     }
   }, []);
@@ -195,28 +205,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    * Setup automatic token refresh
    */
   const setupTokenRefresh = useCallback(() => {
-    // Clear existing interval
-    if (refreshInterval) {
-      clearInterval(refreshInterval);
+    if (refreshIntervalRef.current) {
+      clearInterval(refreshIntervalRef.current);
     }
 
-    // Setup new interval
     const interval = window.setInterval(async () => {
       try {
         await authApi.refreshToken();
-        console.log("Token refreshed successfully");
-      } catch (error) {
-        console.error("Failed to refresh token:", error);
-        // If refresh fails, user may need to login again
-        setError({
-          message: "Sesión expirada. Por favor inicia sesión nuevamente.",
-          code: "TOKEN_REFRESH_FAILED",
+        logger.info("Token refreshed successfully");
+      } catch {
+        logger.error("Failed to refresh token");
+        updateState({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          error: {
+            message: "Sesión expirada. Por favor inicia sesión nuevamente.",
+            code: "TOKEN_REFRESH_FAILED",
+          },
         });
+        removeUserFromStorage();
       }
     }, TOKEN_REFRESH_INTERVAL);
 
-    setRefreshInterval(interval as number | null);
-  }, [refreshInterval, setError]);
+    refreshIntervalRef.current = interval;
+    setRefreshIntervalState(interval);
+  }, [updateState]);
 
   /**
    * Login function
@@ -227,10 +241,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       clearError();
 
       try {
-        // Call login API
         await authApi.login(credentials);
 
-        // Tokens are handled via httpOnly cookies
         const userWithRoles = await fetchUserWithRoles();
 
         if (userWithRoles) {
@@ -240,8 +252,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             error: null,
             lastActivity: new Date(),
           });
-
-          // Setup token refresh
           setupTokenRefresh();
         } else {
           throw new Error("Failed to fetch user profile");
@@ -265,20 +275,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               error.message
             : "Error al iniciar sesión. Verifica tus credenciales.";
 
+        const errorCode =
+          error instanceof Error && "response" in error
+            ? (error as { response?: { data?: { errorCode?: string } } })
+                .response?.data?.errorCode || "LOGIN_FAILED"
+            : "LOGIN_FAILED";
+
         setError({
           message: errorMessage,
-          code:
-            error instanceof Error && "response" in error
-              ? (error as { response?: { data?: { errorCode?: string } } })
-                  .response?.data?.errorCode || "LOGIN_FAILED"
-              : "LOGIN_FAILED",
+          code: errorCode,
         });
         throw error;
       } finally {
         setLoading(false);
       }
     },
-    [fetchUserWithRoles, setupTokenRefresh],
+    [fetchUserWithRoles, setupTokenRefresh, setLoading, clearError, setError],
   );
 
   /**
@@ -292,7 +304,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         await authApi.register(userData);
 
-        // Registration successful but needs email verification
         setError({
           message:
             "Registro exitoso. Por favor verifica tu correo electrónico.",
@@ -305,20 +316,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 ?.data?.message || error.message
             : "Error al registrar usuario. Inténtalo nuevamente.";
 
+        const errorCode =
+          error instanceof Error && "response" in error
+            ? (error as { response?: { data?: { errorCode?: string } } })
+                .response?.data?.errorCode || "REGISTER_FAILED"
+            : "REGISTER_FAILED";
+
         setError({
           message: errorMessage,
-          code:
-            error instanceof Error && "response" in error
-              ? (error as { response?: { data?: { errorCode?: string } } })
-                  .response?.data?.errorCode || "REGISTER_FAILED"
-              : "REGISTER_FAILED",
+          code: errorCode,
         });
         throw error;
       } finally {
         setLoading(false);
       }
     },
-    [],
+    [setLoading, clearError, setError],
   );
 
   /**
@@ -328,12 +341,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setLoading(true);
 
     try {
-      // Call logout API
       await authApi.logout();
-    } catch (error) {
-      console.error("Error calling logout API:", error);
+    } catch {
+      logger.error("Error calling logout API");
     } finally {
-      // Clear local state and storage
       updateState({
         user: null,
         isAuthenticated: false,
@@ -343,16 +354,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       removeUserFromStorage();
 
-      // Clear token refresh interval
-      if (refreshInterval) {
-        clearInterval(refreshInterval);
-        setRefreshInterval(null);
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
+        refreshIntervalRef.current = null;
+        setRefreshIntervalState(null);
       }
 
       setLoading(false);
-      console.log("User logged out successfully");
+      logger.info("User logged out successfully");
     }
-  }, [refreshInterval]);
+  }, [updateState, setLoading]);
 
   /**
    * Refresh token function
@@ -360,9 +371,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshToken = useCallback(async (): Promise<void> => {
     try {
       await authApi.refreshToken();
-      console.log("Token refreshed manually");
-    } catch (error) {
-      console.error("Manual token refresh failed:", error);
+      logger.info("Token refreshed manually");
+    } catch {
+      logger.error("Manual token refresh failed");
       setError({
         message:
           "Error al refrescar la sesión. Por favor inicia sesión nuevamente.",
@@ -372,44 +383,71 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [setError]);
 
   /**
-   * Check authentication status
+   * Check authentication status with timeout
    */
   const checkAuth = useCallback(async (): Promise<boolean> => {
     try {
-      const user = await fetchUserWithRoles();
+      const result = await Promise.race([
+        fetchUserWithRoles(),
+        createTimeoutPromise(AUTH_CHECK_TIMEOUT),
+      ]);
 
-      if (user) {
+      if (result) {
         updateState({
-          user,
+          user: result,
           isAuthenticated: true,
           error: null,
           lastActivity: new Date(),
         });
         setupTokenRefresh();
         return true;
-      } else {
-        updateState({
-          user: null,
-          isAuthenticated: false,
-          error: null,
-          lastActivity: new Date(),
-        });
-        return false;
       }
-    } catch (error) {
-      console.error("Auth check failed:", error);
+
       updateState({
         user: null,
         isAuthenticated: false,
+        error: null,
+        lastActivity: new Date(),
+      });
+      return false;
+    } catch {
+      logger.error("Auth check failed");
+      updateState({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
         error: {
-          message: "Error al verificar sesión",
+          message:
+            "Error al verificar sesión. Por favor inicia sesión nuevamente.",
           code: "AUTH_CHECK_FAILED",
         },
         lastActivity: new Date(),
       });
+      removeUserFromStorage();
       return false;
     }
-  }, [fetchUserWithRoles, setupTokenRefresh]);
+  }, [fetchUserWithRoles, setupTokenRefresh, updateState]);
+
+  /**
+   * Retry authentication manually
+   */
+  const retryAuth = useCallback(async (): Promise<void> => {
+    clearError();
+    setLoading(true);
+
+    const storedUser = getUserFromStorage();
+    if (storedUser) {
+      await checkAuth();
+    } else {
+      updateState({
+        user: null,
+        isAuthenticated: false,
+        isLoading: false,
+        error: null,
+        lastActivity: new Date(),
+      });
+    }
+  }, [clearError, setLoading, checkAuth, updateState]);
 
   /**
    * Initialize authentication on mount
@@ -420,9 +458,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (storedUser) {
         try {
-          await checkAuth();
-        } catch (error) {
-          console.error("Failed to initialize auth:", error);
+          const result = await Promise.race([
+            checkAuth(),
+            createTimeoutPromise(AUTH_CHECK_TIMEOUT),
+          ]);
+
+          if (!result) {
+            updateState({
+              user: null,
+              isAuthenticated: false,
+              isLoading: false,
+              error: null,
+              lastActivity: new Date(),
+            });
+          }
+        } catch {
+          logger.error("Failed to initialize auth");
           updateState({
             user: null,
             isAuthenticated: false,
@@ -430,6 +481,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             error: null,
             lastActivity: new Date(),
           });
+          removeUserFromStorage();
         }
       } else {
         updateState({
@@ -444,13 +496,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     initializeAuth();
 
-    // Cleanup on unmount
     return () => {
-      if (refreshInterval) {
-        window.clearInterval(refreshInterval);
+      if (refreshIntervalRef.current) {
+        clearInterval(refreshIntervalRef.current);
       }
     };
-  }, []);
+  }, [checkAuth, updateState]);
 
   /**
    * Context value memoized
@@ -465,6 +516,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       checkAuth,
       clearError,
       updateUser,
+      retryAuth,
     }),
     [
       state,
@@ -475,6 +527,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       checkAuth,
       clearError,
       updateUser,
+      retryAuth,
     ],
   );
 
