@@ -188,13 +188,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         saveUserToStorage(userWithRoles);
         return userWithRoles;
-      } catch {
+      } catch (rolesError) {
+        const axiosError = rolesError as { response?: { status?: number } };
+        if (
+          axiosError.response?.status === 401 ||
+          axiosError.response?.status === 403
+        ) {
+          throw rolesError;
+        }
         console.warn("Could not fetch user roles");
         saveUserToStorage(userData);
         return userData;
       }
-    } catch {
-      console.error("Failed to fetch user profile");
+    } catch (error) {
+      const axiosError = error as { response?: { status?: number } };
+      if (
+        axiosError.response?.status === 401 ||
+        axiosError.response?.status === 403
+      ) {
+        throw error;
+      }
+      console.warn("Network error fetching user profile");
       return null;
     }
   }, []);
@@ -412,8 +426,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("Auth check failed");
 
       const axiosError = error as { response?: { status?: number } };
-      const errorType =
-        axiosError.response?.status === 401 ? "AUTH" : "NETWORK";
+      const storedUser = getUserFromStorage();
+
+      let errorType: "AUTH" | "NETWORK";
+
+      if (axiosError.response?.status === 401) {
+        errorType = "AUTH";
+      } else if (storedUser) {
+        errorType = "AUTH";
+      } else {
+        errorType = "NETWORK";
+      }
 
       updateState({
         user: null,
@@ -443,7 +466,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const storedUser = getUserFromStorage();
     if (storedUser) {
-      await checkAuth();
+      const success = await checkAuth();
+      if (!success) {
+        const userStill = getUserFromStorage();
+        if (userStill) {
+          return;
+        }
+      }
     } else {
       updateState({
         user: null,
