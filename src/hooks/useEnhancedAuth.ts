@@ -40,6 +40,7 @@ export function useAuth() {
       error: null,
       lastActivity: null,
       logout: () => Promise.resolve(),
+      retryAuth: () => Promise.resolve(),
     };
   }
 
