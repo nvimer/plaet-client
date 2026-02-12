@@ -84,9 +84,9 @@ function ErrorPage(): React.ReactNode {
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="w-24 h-24 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-6"
+            className="w-24 h-24 rounded-full bg-error-100 flex items-center justify-center mx-auto mb-6"
           >
-            <AlertTriangle className="w-12 h-12 text-red-600" />
+            <AlertTriangle className="w-12 h-12 text-error-600" />
           </motion.div>
 
           <div className="bg-carbon-50 rounded-xl p-4 mb-6">

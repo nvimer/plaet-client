@@ -54,7 +54,7 @@ export default function OfflineIndicator({
           exit={{ opacity: 0, y: position === "top" ? -20 : 20 }}
           className={`fixed ${position === "top" ? "top-0" : "bottom-0"} left-0 right-0 z-50`}
         >
-          <div className="bg-green-500 text-white px-4 py-3 flex items-center justify-center gap-2">
+          <div className="bg-success-500 text-white px-4 py-3 flex items-center justify-center gap-2">
             <CheckCircle className="w-5 h-5" />
             <span className="font-medium">Conexión restaurada</span>
           </div>
@@ -66,7 +66,7 @@ export default function OfflineIndicator({
           exit={{ opacity: 0, y: position === "top" ? -50 : 50 }}
           className={`fixed ${position === "top" ? "top-0" : "bottom-0"} left-0 right-0 z-50`}
         >
-          <div className="bg-red-500 text-white px-4 py-3">
+          <div className="bg-error-500 text-white px-4 py-3">
             <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
                 <WifiOff className="w-5 h-5 flex-shrink-0" />

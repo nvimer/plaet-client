@@ -21,8 +21,9 @@ import { authApi, profileApi } from "@/services";
  * Authentication error types
  */
 export interface AuthError {
-  code?: string;
+  type?: "AUTH" | "NETWORK" | "TIMEOUT" | null;
   message: string;
+  code?: string;
   field?: string;
 }
 
@@ -217,7 +218,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           isAuthenticated: false,
           isLoading: false,
           error: {
-            message: "Sesión expirada. Por favor inicia sesión nuevamente.",
+            type: "AUTH",
+            message:
+              "Tu sesión ha terminado. Por favor inicia sesión nuevamente.",
             code: "TOKEN_REFRESH_FAILED",
           },
         });
@@ -405,15 +408,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         lastActivity: new Date(),
       });
       return false;
-    } catch {
+    } catch (error) {
       console.error("Auth check failed");
+
+      const axiosError = error as { response?: { status?: number } };
+      const errorType =
+        axiosError.response?.status === 401 ? "AUTH" : "NETWORK";
+
       updateState({
         user: null,
         isAuthenticated: false,
         isLoading: false,
         error: {
+          type: errorType,
           message:
-            "Error al verificar sesión. Por favor inicia sesión nuevamente.",
+            errorType === "AUTH"
+              ? "Tu sesión ha terminado. Por favor inicia sesión nuevamente."
+              : "No se pudo conectar con el servidor. Verifica tu conexión.",
           code: "AUTH_CHECK_FAILED",
         },
         lastActivity: new Date(),

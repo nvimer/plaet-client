@@ -146,7 +146,7 @@ export default function AccountLockoutPage() {
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="w-24 h-24 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-6"
+            className="w-24 h-24 rounded-full bg-warning-100 flex items-center justify-center mx-auto mb-6"
           >
             <Lock className="w-12 h-12 text-amber-600" />
           </motion.div>

@@ -98,11 +98,11 @@ export default function ChangePasswordPage() {
   const passwordStrength = getPasswordStrength(newPassword);
   const strengthLabels = ["Muy débil", "Débil", "Regular", "Buena", "Fuerte"];
   const strengthColors = [
-    "bg-red-500",
-    "bg-orange-500",
-    "bg-yellow-500",
-    "bg-lime-500",
-    "bg-green-500",
+    "bg-error-500",
+    "bg-warning-500",
+    "bg-warning-400",
+    "bg-success-400",
+    "bg-success-500",
   ];
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -229,7 +229,7 @@ export default function ChangePasswordPage() {
                 </button>
               </div>
               {errors.currentPassword && (
-                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
+                <p className="mt-1 text-sm text-error-500 flex items-center gap-1">
                   <AlertCircle className="w-4 h-4" />
                   {errors.currentPassword}
                 </p>
@@ -292,7 +292,7 @@ export default function ChangePasswordPage() {
                     <span
                       className={
                         passwordStrength >= 4
-                          ? "text-green-600"
+                          ? "text-success-600"
                           : passwordStrength >= 3
                             ? "text-lime-600"
                             : passwordStrength >= 2
@@ -307,7 +307,7 @@ export default function ChangePasswordPage() {
               )}
 
               {errors.newPassword && (
-                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
+                <p className="mt-1 text-sm text-error-500 flex items-center gap-1">
                   <AlertCircle className="w-4 h-4" />
                   {errors.newPassword}
                 </p>
@@ -351,13 +351,13 @@ export default function ChangePasswordPage() {
                 </button>
               </div>
               {confirmPassword && newPassword === confirmPassword && (
-                <p className="mt-1 text-sm text-green-500 flex items-center gap-1">
+                <p className="mt-1 text-sm text-success-500 flex items-center gap-1">
                   <CheckCircle className="w-4 h-4" />
                   Las contraseñas coinciden
                 </p>
               )}
               {errors.confirmPassword && (
-                <p className="mt-1 text-sm text-red-500 flex items-center gap-1">
+                <p className="mt-1 text-sm text-error-500 flex items-center gap-1">
                   <AlertCircle className="w-4 h-4" />
                   {errors.confirmPassword}
                 </p>
@@ -373,7 +373,7 @@ export default function ChangePasswordPage() {
                   <CheckCircle
                     className={`w-3 h-3 ${
                       newPassword.length >= 12
-                        ? "text-green-500"
+                        ? "text-success-500"
                         : "text-carbon-300"
                     }`}
                   />
@@ -383,7 +383,7 @@ export default function ChangePasswordPage() {
                   <CheckCircle
                     className={`w-3 h-3 ${
                       /[A-Z]/.test(newPassword)
-                        ? "text-green-500"
+                        ? "text-success-500"
                         : "text-carbon-300"
                     }`}
                   />
@@ -393,7 +393,7 @@ export default function ChangePasswordPage() {
                   <CheckCircle
                     className={`w-3 h-3 ${
                       /[a-z]/.test(newPassword)
-                        ? "text-green-500"
+                        ? "text-success-500"
                         : "text-carbon-300"
                     }`}
                   />
@@ -403,7 +403,7 @@ export default function ChangePasswordPage() {
                   <CheckCircle
                     className={`w-3 h-3 ${
                       /[0-9]/.test(newPassword)
-                        ? "text-green-500"
+                        ? "text-success-500"
                         : "text-carbon-300"
                     }`}
                   />
@@ -413,7 +413,7 @@ export default function ChangePasswordPage() {
                   <CheckCircle
                     className={`w-3 h-3 ${
                       /[!@#$%^&*(),.?":{}|<>]/.test(newPassword)
-                        ? "text-green-500"
+                        ? "text-success-500"
                         : "text-carbon-300"
                     }`}
                   />

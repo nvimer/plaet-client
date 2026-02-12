@@ -149,12 +149,12 @@ export default function SessionTimeoutWarning({
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="bg-white rounded-2xl shadow-2xl max-w-md w-full mx-4 overflow-hidden"
+          className="glass-light rounded-[2rem] shadow-soft-xl max-w-md w-full mx-4 overflow-hidden"
         >
-          <div className="bg-amber-50 px-6 py-4 border-b border-amber-100">
+          <div className="bg-warning-50 px-6 py-4 border-b border-warning-100">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-amber-100 flex items-center justify-center">
-                <AlertTriangle className="w-5 h-5 text-amber-600" />
+              <div className="w-10 h-10 rounded-full bg-warning-100 flex items-center justify-center">
+                <AlertTriangle className="w-5 h-5 text-warning-600" />
               </div>
               <div>
                 <h3 className="font-semibold text-carbon-900">
@@ -169,7 +169,7 @@ export default function SessionTimeoutWarning({
 
           <div className="p-6">
             <div className="flex items-center justify-center gap-2 mb-6">
-              <Clock className="w-6 h-6 text-amber-600" />
+              <Clock className="w-6 h-6 text-warning-600" />
               <span className="text-4xl font-mono font-bold text-carbon-900">
                 {formatTime(remainingSeconds)}
               </span>

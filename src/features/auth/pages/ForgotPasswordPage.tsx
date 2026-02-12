@@ -111,9 +111,9 @@ export default function ForgotPasswordPage() {
                 initial={{ scale: 0, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ duration: 0.6, delay: 0.3 }}
-                className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-6"
+                className="w-20 h-20 rounded-full bg-success-100 flex items-center justify-center mb-6"
               >
-                <CheckCircle className="w-10 h-10 text-green-600" />
+                <CheckCircle className="w-10 h-10 text-success-600" />
               </motion.div>
 
               <p className="text-carbon-600 text-center">

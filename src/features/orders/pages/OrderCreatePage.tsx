@@ -119,7 +119,6 @@ export function OrderCreatePage() {
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
-  const [isQuickOrder, setIsQuickOrder] = useState(false);
 
   // Quick order popular products (hardcoded initially, could come from API)
   const popularProducts = [
@@ -307,10 +306,6 @@ export function OrderCreatePage() {
     } else {
       setLooseItems((prev) => prev.map((i) => (i.id === id ? { ...i, quantity } : i)));
     }
-  };
-
-  const handleRemoveLooseItem = (id: number) => {
-    setLooseItems((prev) => prev.filter((i) => i.id !== id));
   };
 
   // NEW: Build detailed order notes with lunch selections
@@ -1134,29 +1129,16 @@ export function OrderCreatePage() {
                 </Card>
               )}
 
-              {/* Pedido Rápido - Para productos individuales sin almuerzo */}
+              {/* Adiciones Rápidas - Los más populares */}
               <Card variant="elevated" className="p-6 rounded-2xl bg-gradient-to-br from-amber-50 to-white border-amber-200">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-600 flex items-center justify-center">
-                      <ShoppingBag className="w-6 h-6" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-carbon-900">Pedido Rápido</h3>
-                      <p className="text-sm text-carbon-500">Productos sin almuerzo ejecutivo</p>
-                    </div>
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-600 flex items-center justify-center">
+                    <Sparkles className="w-6 h-6" />
                   </div>
-                  <button
-                    onClick={() => setIsQuickOrder(!isQuickOrder)}
-                    className={cn(
-                      "px-4 py-2 rounded-xl font-semibold text-sm transition-all",
-                      isQuickOrder
-                        ? "bg-amber-500 text-white"
-                        : "bg-white border-2 border-amber-300 text-amber-700"
-                    )}
-                  >
-                    {isQuickOrder ? "Activado" : "Activar"}
-                  </button>
+                  <div>
+                    <h3 className="text-lg font-bold text-carbon-900">Adiciones Rápidas</h3>
+                    <p className="text-sm text-carbon-500">Los más pedidos del día</p>
+                  </div>
                 </div>
 
                 {/* Acciones rápidas */}
@@ -1193,12 +1175,8 @@ export function OrderCreatePage() {
                     <Sparkles className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-carbon-900">
-                      {isQuickOrder ? "Buscar Producto" : "Productos Individuales"}
-                    </h3>
-                    <p className="text-sm text-carbon-500">
-                      {isQuickOrder ? "Busca y agrega cualquier producto" : "Agrega productos extras"}
-                    </p>
+                    <h3 className="text-lg font-bold text-carbon-900">Buscar Producto</h3>
+                    <p className="text-sm text-carbon-500">Agrega cualquier producto</p>
                   </div>
                 </div>
                 
