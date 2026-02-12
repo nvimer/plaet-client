@@ -119,6 +119,17 @@ export function OrderCreatePage() {
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
+  const [isQuickOrder, setIsQuickOrder] = useState(false);
+
+  // Quick order popular products (hardcoded initially, could come from API)
+  const popularProducts = [
+    { id: 9991, name: "Huevo", price: 2000 },
+    { id: 9992, name: "Gaseosa", price: 3500 },
+    { id: 9993, name: "Papas", price: 3000 },
+    { id: 9994, name: "Yuca", price: 2500 },
+    { id: 9995, name: "Plátano", price: 2000 },
+    { id: 9996, name: "Sopa", price: 5000 },
+  ];
 
   // Daily Menu Prices - basePrice is now the margin added to protein price
   const dailyMenuPrices = useMemo(() => ({
@@ -1123,6 +1134,58 @@ export function OrderCreatePage() {
                 </Card>
               )}
 
+              {/* Pedido Rápido - Para productos individuales sin almuerzo */}
+              <Card variant="elevated" className="p-6 rounded-2xl bg-gradient-to-br from-amber-50 to-white border-amber-200">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-600 flex items-center justify-center">
+                      <ShoppingBag className="w-6 h-6" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-carbon-900">Pedido Rápido</h3>
+                      <p className="text-sm text-carbon-500">Productos sin almuerzo ejecutivo</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsQuickOrder(!isQuickOrder)}
+                    className={cn(
+                      "px-4 py-2 rounded-xl font-semibold text-sm transition-all",
+                      isQuickOrder
+                        ? "bg-amber-500 text-white"
+                        : "bg-white border-2 border-amber-300 text-amber-700"
+                    )}
+                  >
+                    {isQuickOrder ? "Activado" : "Activar"}
+                  </button>
+                </div>
+
+                {/* Acciones rápidas */}
+                <div className="flex flex-wrap gap-2">
+                  {popularProducts.map((product) => (
+                    <button
+                      key={product.id}
+                      onClick={() => {
+                        const existing = looseItems.find((i) => i.id === product.id);
+                        if (existing) {
+                          handleUpdateLooseItemQuantity(product.id, existing.quantity + 1);
+                        } else {
+                          handleAddLooseItem({
+                            id: product.id,
+                            name: product.name,
+                            price: product.price,
+                          });
+                        }
+                        toast.success(`${product.name} agregado`);
+                      }}
+                      className="flex items-center gap-2 px-4 py-3 rounded-xl bg-white border-2 border-amber-200 hover:border-amber-400 hover:bg-amber-50 transition-all active:scale-95"
+                    >
+                      <Plus className="w-4 h-4 text-amber-600" />
+                      <span className="font-medium text-carbon-800">{product.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </Card>
+
               {/* Productos sueltos */}
               <Card variant="elevated" className="p-6 rounded-2xl">
                 <div className="flex items-center gap-3 mb-4">
@@ -1130,8 +1193,12 @@ export function OrderCreatePage() {
                     <Sparkles className="w-6 h-6" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-carbon-900">Productos Individuales</h3>
-                    <p className="text-sm text-carbon-500">Agrega productos extras</p>
+                    <h3 className="text-lg font-bold text-carbon-900">
+                      {isQuickOrder ? "Buscar Producto" : "Productos Individuales"}
+                    </h3>
+                    <p className="text-sm text-carbon-500">
+                      {isQuickOrder ? "Busca y agrega cualquier producto" : "Agrega productos extras"}
+                    </p>
                   </div>
                 </div>
                 
@@ -1148,8 +1215,8 @@ export function OrderCreatePage() {
                 </div>
 
                 {filteredLooseItems.length > 0 && (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4">
-                    {filteredLooseItems.slice(0, 6).map((item) => (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4 max-h-96 overflow-y-auto scroll-smooth">
+                    {filteredLooseItems.map((item) => (
                       <button
                         key={item.id}
                         onClick={() =>
@@ -1170,50 +1237,6 @@ export function OrderCreatePage() {
                   </div>
                 )}
 
-                {looseItems.length > 0 && (
-                  <div className="space-y-3">
-                    <p className="text-sm font-semibold text-carbon-700 flex items-center gap-2">
-                      <Check className="w-4 h-4 text-emerald-500" />
-                      Agregados ({looseItems.reduce((sum, i) => sum + i.quantity, 0)})
-                    </p>
-                    {looseItems.map((item) => (
-                      <div
-                        key={item.id}
-                        className="flex items-center justify-between p-4 bg-sage-50 rounded-xl border border-sage-200"
-                      >
-                        <div className="flex-1 min-w-0">
-                          <p className="font-medium text-carbon-900 truncate">{item.name}</p>
-                          <p className="text-sm text-sage-700">
-                            ${item.price.toLocaleString("es-CO")} c/u
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-2 ml-4">
-                          <button
-                            onClick={() => handleUpdateLooseItemQuantity(item.id, item.quantity - 1)}
-                            className="p-3 rounded-xl bg-white border-2 border-sage-200 text-carbon-700 hover:bg-sage-100 hover:border-sage-300 transition-all active:scale-95"
-                          >
-                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                            </svg>
-                          </button>
-                          <span className="w-10 text-center font-bold text-carbon-900 text-lg">{item.quantity}</span>
-                          <button
-                            onClick={() => handleUpdateLooseItemQuantity(item.id, item.quantity + 1)}
-                            className="p-3 rounded-xl bg-white border-2 border-sage-200 text-carbon-700 hover:bg-sage-100 hover:border-sage-300 transition-all active:scale-95"
-                          >
-                            <Plus className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => handleRemoveLooseItem(item.id)}
-                            className="p-3 rounded-xl text-carbon-400 hover:text-rose-500 hover:bg-rose-50 ml-2 transition-all active:scale-95"
-                          >
-                            <Trash2 className="w-5 h-5" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </Card>
 
               {/* Notas del pedido */}

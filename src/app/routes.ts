@@ -52,6 +52,7 @@ export const ROUTES = {
   // Auth
   VERIFY_EMAIL: "/verify-email",
   LOCKOUT: "/lockout",
+  ERROR: "/error",
 } as const;
 
 /**
