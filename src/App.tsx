@@ -5,6 +5,7 @@ import {
   RegisterForm,
   ForgotPasswordPage,
   ResetPasswordPage,
+  VerifyEmailPage,
 } from "./features/auth";
 import { PrivateRoute } from "./components/PrivateRoute";
 import { DashboardLayout } from "./layouts/DashboardLayout";
@@ -94,6 +95,8 @@ const App = () => {
             )
           }
         />
+        {/* Public Route: Verify Email */}
+        <Route path="/verify-email" element={<VerifyEmailPage />} />
 
         {/* ============= PROTECTED ROUTES ============== */}
         {/* Dashboard (Home) */}

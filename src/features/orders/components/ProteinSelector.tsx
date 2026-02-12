@@ -39,10 +39,21 @@ export function ProteinSelector({
   const minPrice = Math.min(...lunchPrices);
   const maxPrice = Math.max(...lunchPrices);
 
+  const selectedProteinTotal = selectedProteinId 
+    ? (() => {
+        const protein = availableProteins.find(p => p.id === selectedProteinId);
+        return protein ? basePrice + protein.price : null;
+      })()
+    : null;
+
+  const selectedProteinDiff = selectedProteinTotal !== null && selectedProteinTotal > minPrice
+    ? selectedProteinTotal - minPrice
+    : 0;
+
   return (
     <div className={cn("space-y-4", className)}>
       {/* Header with total lunch price */}
-      <div className="bg-gradient-to-r from-sage-600 to-sage-500 rounded-2xl p-4 text-white">
+      <div className="bg-gradient-to-r from-sage-600 to-sage-500 rounded-2xl p-4 text-white transition-all duration-500">
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-bold">Precio del Almuerzo</h3>
@@ -50,11 +61,16 @@ export function ProteinSelector({
           </div>
           <div className="text-right">
             <p className="text-3xl font-black">
-              ${minPrice.toLocaleString("es-CO")}
-              {minPrice !== maxPrice && (
-                <span className="text-lg font-medium text-sage-200"> - ${maxPrice.toLocaleString("es-CO")}</span>
-              )}
+              {selectedProteinTotal 
+                ? `$${selectedProteinTotal.toLocaleString("es-CO")}`
+                : `$${minPrice.toLocaleString("es-CO")}${minPrice !== maxPrice ? ` - $${maxPrice.toLocaleString("es-CO")}` : ''}`
+              }
             </p>
+            {selectedProteinTotal && selectedProteinDiff > 0 && (
+              <p className="text-sm text-sage-200">
+                +${selectedProteinDiff.toLocaleString("es-CO")}
+              </p>
+            )}
           </div>
         </div>
       </div>

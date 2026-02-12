@@ -1,9 +1,9 @@
 /**
  * APPLICATION ROUTES
- * 
+ *
  * Centralized route definitions for the application.
  * This ensures type safety and easy refactoring.
- * 
+ *
  * All routes follow the pattern: /feature/action
  * - List views: /feature
  * - Create: /feature/new
@@ -47,6 +47,9 @@ export const ROUTES = {
 
   // Profile
   PROFILE: "/profile",
+
+  // Auth
+  VERIFY_EMAIL: "/verify-email",
 } as const;
 
 /**

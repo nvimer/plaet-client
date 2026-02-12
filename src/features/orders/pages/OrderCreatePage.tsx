@@ -1028,6 +1028,22 @@ export function OrderCreatePage() {
                         onSelect={setSelectedProtein}
                         basePrice={dailyMenuPrices.basePrice}
                       />
+                      
+                      {/* Current order price display */}
+                      {selectedProtein && lunchPrice > 0 && (
+                        <div className="mt-4 p-4 bg-gradient-to-r from-sage-100 to-sage-50 rounded-xl border-2 border-sage-200">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm text-sage-700 font-medium">Precio del almuerzo</p>
+                              <p className="text-xs text-sage-500">Con {selectedProtein.name}</p>
+                            </div>
+                            <p className="text-2xl font-black text-sage-700">
+                              ${lunchPrice.toLocaleString()}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+                      
                       {hasError("protein") && (
                         <p className="text-rose-600 text-sm mt-2 flex items-center gap-1">
                           <AlertCircle className="w-4 h-4" />
