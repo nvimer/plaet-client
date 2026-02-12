@@ -1008,24 +1008,15 @@ export function OrderCreatePage() {
               {/* Selector de proteína */}
               <Card variant="elevated" className="p-6 rounded-2xl">
                 <div className={cn(hasError("protein") && "rounded-xl border-2 border-rose-300 p-2 -m-2")}>
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-100 to-rose-200 text-rose-600 flex items-center justify-center">
-                        <span className="text-2xl">🥩</span>
-                      </div>
-                      <div>
-                        <h3 className="text-lg font-bold text-carbon-900">Selecciona la Proteína</h3>
-                        <p className="text-sm text-carbon-500">
-                          El precio del almuerzo varía según la proteína
-                        </p>
-                      </div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-rose-100 to-rose-200 text-rose-600 flex items-center justify-center">
+                      <span className="text-2xl">🥩</span>
                     </div>
-                    {/* Price display */}
-                    <div className="text-right">
-                      <p className="text-2xl font-bold text-sage-700">
-                        ${lunchPrice.toLocaleString()}
+                    <div>
+                      <h3 className="text-lg font-bold text-carbon-900">Seleccionar Proteína</h3>
+                      <p className="text-sm text-carbon-500">
+                        Elige la proteína para tu almuerzo
                       </p>
-                      <p className="text-xs text-carbon-500">Precio del almuerzo</p>
                     </div>
                   </div>
 
