@@ -1,6 +1,6 @@
 import { TouchableCard } from "@/components";
 import { cn } from "@/utils/cn";
-import { Beef, Fish, Drumstick, AlertCircle } from "lucide-react";
+import { Beef, Fish, Drumstick, AlertCircle, Check } from "lucide-react";
 
 export interface ProteinOption {
   id: number;
@@ -77,14 +77,20 @@ export function ProteinSelector({
           return (
             <TouchableCard
               key={protein.id}
-              onPress={() => onSelect(protein)}
+              onPress={() => {
+                if (isSelected) {
+                  onSelect(null as any);
+                } else {
+                  onSelect(protein);
+                }
+              }}
               size="medium"
               hapticFeedback
               selected={isSelected}
               className={cn(
                 "relative overflow-hidden transition-all duration-300",
                 isSelected
-                  ? "bg-sage-50 border-2 border-sage-500 shadow-md ring-2 ring-sage-200"
+                  ? "bg-gradient-to-br from-sage-100 to-sage-50 border-2 border-sage-500 shadow-lg ring-4 ring-sage-200/50"
                   : isHigherPrice
                     ? "bg-gradient-to-br from-white to-amber-50 border-2 border-amber-300 hover:border-amber-400 hover:shadow-lg"
                     : "bg-white border-2 border-sage-200 hover:border-sage-400 hover:shadow-lg"
@@ -96,7 +102,7 @@ export function ProteinSelector({
                   className={cn(
                     "flex-shrink-0 w-12 h-12 rounded-xl flex items-center justify-center transition-colors",
                     isSelected
-                      ? "bg-sage-200 text-sage-800"
+                      ? "bg-sage-500 text-white shadow-md"
                       : isHigherPrice
                         ? "bg-amber-100 text-amber-700"
                         : "bg-sage-50 text-sage-600"
@@ -117,14 +123,25 @@ export function ProteinSelector({
                 </div>
 
                 {/* Selection indicator */}
-                {isSelected && (
-                  <div className="flex-shrink-0 w-7 h-7 rounded-full bg-sage-500 flex items-center justify-center shadow-sm">
-                    <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                {isSelected ? (
+                  <div className="flex-shrink-0 w-8 h-8 rounded-full bg-sage-500 flex items-center justify-center shadow-lg ring-2 ring-white">
+                    <svg className="w-5 h-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                     </svg>
                   </div>
+                ) : isHigherPrice && (
+                  <div className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-100 flex items-center justify-center">
+                    <span className="text-xs font-bold text-amber-600">+</span>
+                  </div>
                 )}
               </div>
+
+              {/* Selected badge */}
+              {isSelected && (
+                <div className="absolute -top-1 -right-1 w-6 h-6 rounded-full bg-sage-500 flex items-center justify-center shadow-md">
+                  <Check className="w-4 h-4 text-white" />
+                </div>
+              )}
 
               {/* Higher price accent */}
               {isHigherPrice && !isSelected && (
