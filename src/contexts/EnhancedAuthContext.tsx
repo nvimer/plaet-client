@@ -425,12 +425,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     } catch (error) {
       console.error("Auth check failed");
 
-      const axiosError = error as { response?: { status?: number } };
+      const axiosError = error as {
+        response?: { status?: number };
+        code?: string;
+      };
       const storedUser = getUserFromStorage();
 
       let errorType: "AUTH" | "NETWORK";
 
-      if (axiosError.response?.status === 401) {
+      if (
+        axiosError.response?.status === 401 ||
+        axiosError.code === "AUTH_REFRESH_FAILED"
+      ) {
         errorType = "AUTH";
       } else if (storedUser) {
         errorType = "AUTH";

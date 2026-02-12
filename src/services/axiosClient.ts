@@ -26,24 +26,6 @@ const RETRY_DELAY = 1000;
 const MAX_RETRIES = 3;
 
 let isRefreshing = false;
-let failedRequestsQueue: Array<{
-  resolve: (token: string) => void;
-  reject: (error: Error) => void;
-}> = [];
-
-/**
- * Process queued requests after token refresh
- */
-const processQueue = (error: Error | null, token?: string): void => {
-  failedRequestsQueue.forEach((request) => {
-    if (error) {
-      request.reject(error);
-    } else {
-      request.resolve(token || "");
-    }
-  });
-  failedRequestsQueue = [];
-};
 
 /**
  * REQUEST INTERCEPTOR
@@ -92,6 +74,19 @@ axiosClient.interceptors.response.use(
 
       switch (status) {
         case 401: {
+          const isRefreshEndpoint = originalRequest.url?.includes(
+            "/auth/refresh-token",
+          );
+
+          if (isRefreshEndpoint) {
+            console.warn(
+              "[API] Refresh token itself is invalid - closing session",
+            );
+            const authError = new Error("REFRESH_TOKEN_INVALID");
+            (authError as { code?: string }).code = "AUTH_REFRESH_FAILED";
+            throw authError;
+          }
+
           console.warn("[API] Unauthorized - Token may be expired");
 
           if (!isRefreshing) {
@@ -103,36 +98,21 @@ axiosClient.interceptors.response.use(
               });
 
               console.log("[API] Token refreshed successfully");
-              processQueue(null);
+              isRefreshing = false;
               return axiosClient(originalRequest);
             } catch (refreshError) {
               console.error("[API] Token refresh failed:", refreshError);
-              processQueue(refreshError as Error);
-              removeUserFromStorage();
-
-              if (
-                typeof window !== "undefined" &&
-                !window.location.pathname.includes("/login")
-              ) {
-                window.location.href = "/login";
-              }
-
-              return Promise.reject(refreshError);
-            } finally {
               isRefreshing = false;
+              const authError = new Error("TOKEN_REFRESH_FAILED");
+              (authError as { code?: string }).code = "AUTH_REFRESH_FAILED";
+              throw authError;
             }
           }
 
           return new Promise((resolve, reject) => {
-            failedRequestsQueue.push({
-              resolve: (token: string) => {
-                originalRequest.headers.Authorization = `Bearer ${token}`;
-                resolve(axiosClient(originalRequest));
-              },
-              reject: (err: Error) => {
-                reject(err);
-              },
-            });
+            const authError = new Error("AUTH_REFRESH_IN_PROGRESS");
+            (authError as { code?: string }).code = "AUTH_REFRESH_FAILED";
+            reject(authError);
           });
         }
 
@@ -234,16 +214,5 @@ axiosClient.interceptors.response.use(
     return Promise.reject(error);
   },
 );
-
-/**
- * Remove user from localStorage helper
- */
-const removeUserFromStorage = (): void => {
-  try {
-    localStorage.removeItem("user");
-  } catch {
-    console.error("Failed to remove user from localStorage");
-  }
-};
 
 export default axiosClient;
