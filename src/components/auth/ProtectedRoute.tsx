@@ -135,18 +135,34 @@ export default function ProtectedRoute({
   const [showTimeout, setShowTimeout] = useState(false);
 
   useEffect(() => {
+    console.log("[PRIVATE_ROUTE] Render state:", {
+      isLoading,
+      isAuthenticated,
+      errorType: error?.type,
+      errorCode: error?.code,
+      showTimeout,
+    });
+  });
+
+  useEffect(() => {
     if (isLoading) {
+      console.log("[PRIVATE_ROUTE] isLoading changed:", isLoading);
       const timer = setTimeout(() => {
         if (isLoading) {
+          console.log("[PRIVATE_ROUTE] Timeout reached, showing error screen");
           setShowTimeout(true);
         }
       }, LOADING_TIMEOUT);
 
       return () => clearTimeout(timer);
+    } else {
+      console.log("[PRIVATE_ROUTE] isLoading changed:", isLoading);
+      setShowTimeout(false);
     }
   }, [isLoading]);
 
   const handleRetry = async () => {
+    console.log("[PRIVATE_ROUTE] Retry button clicked");
     setShowTimeout(false);
     await retryAuth();
   };
