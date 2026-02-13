@@ -216,19 +216,25 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.error("[FETCH_USER] Failed to fetch user profile");
 
       const axiosError = error as {
-        response?: { status?: number };
+        response?: { status?: number; data?: { errorCode?: string } };
         code?: string;
       };
 
-      // If it's a 401, the token is invalid
-      if (axiosError.response?.status === 401) {
-        console.error(
-          "[FETCH_USER] Token validation failed - 401 Unauthorized",
-        );
+      console.log(`[FETCH_USER] Error details:`, {
+        status: axiosError.response?.status,
+        errorCode: axiosError.response?.data?.errorCode,
+        code: axiosError.code,
+      });
+
+      if (
+        axiosError.response?.status === 401 ||
+        axiosError.code === "AUTH_REFRESH_FAILED"
+      ) {
+        console.error(`[FETCH_USER] Auth error detected - propagating`);
         throw error;
       }
 
-      // Let other errors pass through for general error handling
+      console.log(`[FETCH_USER] Returning null for non-auth error`);
       return null;
     }
   }, []);
@@ -439,35 +445,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return true;
       }
 
-      console.log(
-        "[CHECK] fetchUserWithRoles returned null, checking error conditions...",
-      );
+      console.log("[CHECK] fetchUserWithRoles returned null");
+
+      updateState({
+        user: null,
+        isAuthenticated: false,
+        error: null,
+        lastActivity: new Date(),
+      });
+      return false;
+    } catch (error) {
+      console.error("[CHECK] Auth check failed with error:", error);
 
       const axiosError = error as {
-        response?: { status?: number };
+        response?: { status?: number; data?: { errorCode?: string } };
         code?: string;
-        message?: string;
       };
-      const storedUser = getUserFromStorage();
 
-      console.log("[CHECK] Error details:", {
+      console.log("[CHECK] Caught error details:", {
         status: axiosError.response?.status,
+        errorCode: axiosError.response?.data?.errorCode,
         code: axiosError.code,
-        hasStoredUser: !!storedUser,
       });
 
       let errorType: "AUTH" | "NETWORK";
 
       if (
         axiosError.response?.status === 401 ||
-        axiosError.code === "AUTH_REFRESH_FAILED" ||
-        (storedUser && !result)
+        axiosError.code === "AUTH_REFRESH_FAILED"
       ) {
         errorType = "AUTH";
-        console.log("[CHECK] Detected AUTH error");
+        console.log("[CHECK] Classified as AUTH error");
       } else {
         errorType = "NETWORK";
-        console.log("[CHECK] Detected NETWORK error");
+        console.log("[CHECK] Classified as NETWORK error");
       }
 
       updateState({
@@ -481,22 +492,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
               ? "Tu sesión ha terminado. Por favor inicia sesión nuevamente."
               : "No se pudo conectar con el servidor. Verifica tu conexión.",
           code: "AUTH_CHECK_FAILED",
-        },
-        lastActivity: new Date(),
-      });
-      removeUserFromStorage();
-      return false;
-    } catch (error) {
-      console.error("[CHECK] Unexpected error in checkAuth:", error);
-
-      updateState({
-        user: null,
-        isAuthenticated: false,
-        isLoading: false,
-        error: {
-          type: "NETWORK",
-          message: "Error inesperado al verificar sesión.",
-          code: "UNEXPECTED_ERROR",
         },
         lastActivity: new Date(),
       });
@@ -537,62 +532,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    */
   useEffect(() => {
     const initializeAuth = async () => {
+      console.log("[INIT] Starting auth initialization...");
       const storedUser = getUserFromStorage();
+      console.log("[INIT] Has stored user:", !!storedUser);
 
       if (storedUser) {
         try {
+          console.log("[INIT] Calling checkAuth...");
           const result = await Promise.race([
             checkAuth(),
             createTimeoutPromise(AUTH_CHECK_TIMEOUT),
           ]);
+          console.log("[INIT] checkAuth result:", result);
 
           if (!result) {
-            updateState({
-              user: null,
-              isAuthenticated: false,
-              isLoading: false,
-              error: null,
-              lastActivity: new Date(),
-            });
+            console.log("[INIT] checkAuth returned false");
           }
-        } catch (error) {
-          console.error("Failed to initialize auth");
-          const axiosError = error as {
-            response?: { status?: number };
-            code?: string;
-          };
-          const storedUserCheck = getUserFromStorage();
-
-          let errorType: "AUTH" | "NETWORK";
-
-          if (
-            axiosError.response?.status === 401 ||
-            axiosError.code === "AUTH_REFRESH_FAILED"
-          ) {
-            errorType = "AUTH";
-          } else if (storedUserCheck) {
-            errorType = "AUTH";
-          } else {
-            errorType = "NETWORK";
-          }
-
-          updateState({
-            user: null,
-            isAuthenticated: false,
-            isLoading: false,
-            error: {
-              type: errorType,
-              message:
-                errorType === "AUTH"
-                  ? "Tu sesión ha terminado. Por favor inicia sesión nuevamente."
-                  : "No se pudo conectar con el servidor. Verifica tu conexión.",
-              code: "INIT_AUTH_FAILED",
-            },
-            lastActivity: new Date(),
-          });
-          removeUserFromStorage();
+        } catch (initError) {
+          console.error("[INIT] Error during initialization:", initError);
         }
       } else {
+        console.log("[INIT] No stored user, setting not authenticated");
         updateState({
           user: null,
           isAuthenticated: false,

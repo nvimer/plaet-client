@@ -74,37 +74,47 @@ axiosClient.interceptors.response.use(
 
       switch (status) {
         case 401: {
+          console.log(`[AXIOS INTERCEPTOR] 401 received for ${url}`);
+          console.log(`[AXIOS INTERCEPTOR] Error data:`, error.response?.data);
+
           const isRefreshEndpoint = originalRequest.url?.includes(
             "/auth/refresh-token",
           );
 
           if (isRefreshEndpoint) {
             console.warn(
-              "[API] Refresh token itself is invalid - closing session",
+              "[AXIOS INTERCEPTOR] Refresh token itself is invalid - closing session",
             );
             const authError = new Error("REFRESH_TOKEN_INVALID");
             (authError as { code?: string }).code = "AUTH_REFRESH_FAILED";
             throw authError;
           }
 
-          console.warn("[API] Unauthorized - Token may be expired");
+          console.warn(
+            "[AXIOS INTERCEPTOR] Unauthorized - Token may be expired",
+          );
 
           if (!isRefreshing) {
             isRefreshing = true;
 
             try {
+              console.log("[AXIOS INTERCEPTOR] Attempting token refresh...");
               await axios.post(`${API_URL}/auth/refresh-token`, undefined, {
                 withCredentials: true,
               });
 
-              console.log("[API] Token refreshed successfully");
+              console.log("[AXIOS INTERCEPTOR] Token refreshed successfully");
               isRefreshing = false;
               return axiosClient(originalRequest);
             } catch (refreshError) {
-              console.error("[API] Token refresh failed:", refreshError);
+              console.error(
+                "[AXIOS INTERCEPTOR] Token refresh failed:",
+                refreshError,
+              );
               isRefreshing = false;
               const authError = new Error("TOKEN_REFRESH_FAILED");
               (authError as { code?: string }).code = "AUTH_REFRESH_FAILED";
+              console.log("[AXIOS INTERCEPTOR] Throwing AUTH_REFRESH_FAILED");
               throw authError;
             }
           }
