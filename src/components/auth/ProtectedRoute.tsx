@@ -7,10 +7,10 @@
  */
 
 import { useState, useEffect } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { useAuth, useUser } from "@/hooks/useEnhancedAuth";
-import { ShieldX, WifiOff, RefreshCw } from "lucide-react";
+import { ShieldX, WifiOff, RefreshCw, LogOut } from "lucide-react";
 import type { ReactNode } from "react";
 
 interface ProtectedRouteProps {
@@ -123,6 +123,47 @@ const AccessDenied = ({
   </div>
 );
 
+const SessionExpiredScreen = ({ onGoToLogin }: { onGoToLogin: () => void }) => (
+  <div className="min-h-screen bg-sage-50 flex items-center justify-center p-6">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="max-w-md w-full"
+    >
+      <div className="glass-light rounded-[2rem] p-10 shadow-soft-xl text-center">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ duration: 0.6 }}
+          className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-6"
+        >
+          <LogOut className="w-10 h-10 text-red-600" />
+        </motion.div>
+
+        <h1 className="text-2xl font-bold text-carbon-900 mb-4">
+          Tu sesión ha terminado
+        </h1>
+
+        <p className="text-carbon-600 mb-6">
+          Por seguridad, tu sesión ha expirado. Por favor inicia sesión
+          nuevamente.
+        </p>
+
+        <motion.button
+          onClick={onGoToLogin}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="inline-flex items-center gap-2 px-6 py-3 bg-sage-green-600 text-white font-semibold rounded-xl hover:bg-sage-green-700 transition-colors"
+        >
+          <LogOut className="w-5 h-5" />
+          Ir al inicio de sesión
+        </motion.button>
+      </div>
+    </motion.div>
+  </div>
+);
+
 export default function ProtectedRoute({
   children,
   redirectTo = "/login",
@@ -130,9 +171,17 @@ export default function ProtectedRoute({
   requiredPermission,
 }: ProtectedRouteProps) {
   const location = useLocation();
+  const navigate = useNavigate();
   const { isAuthenticated, isLoading, error, retryAuth } = useAuth();
   const { hasRole, hasPermission } = useUser();
   const [showTimeout, setShowTimeout] = useState(false);
+
+  const handleGoToLogin = () => {
+    console.log("[PRIVATE_ROUTE] Cleaning storage and redirecting to login");
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    navigate("/login", { state: { from: location.pathname } });
+  };
 
   useEffect(() => {
     console.log("[PRIVATE_ROUTE] Render state:", {
@@ -166,6 +215,16 @@ export default function ProtectedRoute({
     setShowTimeout(false);
     await retryAuth();
   };
+
+  // Detectar sesión expirada, limpiar storage y mostrar pantalla específica
+  if (error?.type === "AUTH") {
+    console.log(
+      "[PRIVATE_ROUTE] Session expired detected, cleaning storage and showing SessionExpiredScreen",
+    );
+    localStorage.removeItem("user");
+    localStorage.removeItem("token");
+    return <SessionExpiredScreen onGoToLogin={handleGoToLogin} />;
+  }
 
   if (isLoading && showTimeout) {
     return (
