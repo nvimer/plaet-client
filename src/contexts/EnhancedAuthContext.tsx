@@ -171,20 +171,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const profileResponse = await profileApi.getMyProfile();
       const userData = profileResponse.data;
 
-      if (!userData.id) {
-        return userData;
+      if (!userData || !userData.id) {
+        console.warn("[FETCH_USER] No user data received from profile API");
+        return null;
       }
 
-      // Token validation - if profile data doesn't match token, it's invalid
-      const currentToken =
-        localStorage.getItem("accessToken") ||
-        (document.cookie.match(/(^|;)\s*accessToken=([^;]*)/) || [])[1];
-
-      if (!currentToken || currentToken.length < 10) {
-        throw new Error("TOKEN_INVALID");
-      }
-
-      console.log("[FETCH_USER] Token appears valid, fetching user profile");
+      console.log("[FETCH_USER] Profile data received, fetching user roles");
 
       try {
         const { usersApi } = await import("@/services");
@@ -202,10 +194,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return userWithRoles;
       } catch (rolesError) {
         console.warn("[FETCH_USER] Could not fetch user roles");
-        const axiosError = rolesError as { response?: { status?: number } };
+        const axiosError = rolesError as {
+          response?: { status?: number; data?: { errorCode?: string } };
+          code?: string;
+          message?: string;
+        };
         if (
           axiosError.response?.status === 401 ||
-          axiosError.response?.status === 403
+          axiosError.response?.status === 403 ||
+          axiosError.code === "AUTH_REFRESH_FAILED"
         ) {
           throw rolesError;
         }
@@ -218,23 +215,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const axiosError = error as {
         response?: { status?: number; data?: { errorCode?: string } };
         code?: string;
+        message?: string;
       };
 
-      console.log(`[FETCH_USER] Error details:`, {
+      console.log("[FETCH_USER] Error details:", {
         status: axiosError.response?.status,
         errorCode: axiosError.response?.data?.errorCode,
         code: axiosError.code,
+        message: axiosError.message || (error as Error)?.message,
+        error: error,
       });
 
       if (
         axiosError.response?.status === 401 ||
         axiosError.code === "AUTH_REFRESH_FAILED"
       ) {
-        console.error(`[FETCH_USER] Auth error detected - propagating`);
+        console.error("[FETCH_USER] Auth error detected - propagating");
         throw error;
       }
 
-      console.log(`[FETCH_USER] Returning null for non-auth error`);
+      console.log("[FETCH_USER] Returning null for non-auth error");
       return null;
     }
   }, []);
@@ -434,25 +434,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       console.log("[CHECK] fetchUserWithRoles result:", result);
 
       if (result) {
-        console.log("[CHECK] Auth check successful");
+        console.log("[CHECK] Auth check successful - setting isLoading: false");
         updateState({
           user: result,
           isAuthenticated: true,
+          isLoading: false,
           error: null,
           lastActivity: new Date(),
         });
         setupTokenRefresh();
+        console.log("[CHECK] Auth state updated successfully, returning true");
         return true;
       }
 
-      console.log("[CHECK] fetchUserWithRoles returned null");
+      console.log(
+        "[CHECK] fetchUserWithRoles returned null - setting isLoading: false",
+      );
 
       updateState({
         user: null,
         isAuthenticated: false,
+        isLoading: false,
         error: null,
         lastActivity: new Date(),
       });
+      console.log(
+        "[CHECK] Auth state updated for null result, returning false",
+      );
       return false;
     } catch (error) {
       console.error("[CHECK] Auth check failed with error:", error);
@@ -504,24 +512,48 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    * Retry authentication manually
    */
   const retryAuth = useCallback(async (): Promise<void> => {
+    console.log("[RETRY_AUTH] Starting manual retry...");
     clearError();
     setLoading(true);
 
-    const storedUser = getUserFromStorage();
-    if (storedUser) {
-      const success = await checkAuth();
-      if (!success) {
-        const userStill = getUserFromStorage();
-        if (userStill) {
-          return;
+    try {
+      const storedUser = getUserFromStorage();
+      console.log("[RETRY_AUTH] Has stored user:", !!storedUser);
+
+      if (storedUser) {
+        console.log("[RETRY_AUTH] Calling checkAuth...");
+        const success = await checkAuth();
+        console.log("[RETRY_AUTH] checkAuth result:", success);
+
+        if (!success) {
+          console.log("[RETRY_AUTH] checkAuth returned false");
+          const userStill = getUserFromStorage();
+          if (userStill) {
+            console.log("[RETRY_AUTH] User still in storage, keeping state");
+            return;
+          }
         }
+      } else {
+        console.log("[RETRY_AUTH] No stored user, clearing auth state");
+        updateState({
+          user: null,
+          isAuthenticated: false,
+          isLoading: false,
+          error: null,
+          lastActivity: new Date(),
+        });
       }
-    } else {
+    } catch (error) {
+      console.error("[RETRY_AUTH] Error during retry:", error);
       updateState({
         user: null,
         isAuthenticated: false,
         isLoading: false,
-        error: null,
+        error: {
+          type: "NETWORK",
+          message: "Error al reintentar la autenticación",
+          code: "RETRY_FAILED",
+        },
         lastActivity: new Date(),
       });
     }

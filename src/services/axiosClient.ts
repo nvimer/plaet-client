@@ -26,6 +26,22 @@ const RETRY_DELAY = 1000;
 const MAX_RETRIES = 3;
 
 let isRefreshing = false;
+let failedQueue: Array<{
+  resolve: (value: unknown) => void;
+  reject: (reason?: unknown) => void;
+  config: InternalAxiosRequestConfig;
+}> = [];
+
+const processQueue = (error: Error | null): void => {
+  failedQueue.forEach((prom) => {
+    if (error) {
+      prom.reject(error);
+    } else {
+      prom.resolve(axiosClient(prom.config));
+    }
+  });
+  failedQueue = [];
+};
 
 /**
  * REQUEST INTERCEPTOR
@@ -85,6 +101,7 @@ axiosClient.interceptors.response.use(
             console.warn(
               "[AXIOS INTERCEPTOR] Refresh token itself is invalid - closing session",
             );
+            processQueue(new Error("REFRESH_TOKEN_INVALID"));
             const authError = new Error("REFRESH_TOKEN_INVALID");
             (authError as { code?: string }).code = "AUTH_REFRESH_FAILED";
             throw authError;
@@ -105,6 +122,7 @@ axiosClient.interceptors.response.use(
 
               console.log("[AXIOS INTERCEPTOR] Token refreshed successfully");
               isRefreshing = false;
+              processQueue(null);
               return axiosClient(originalRequest);
             } catch (refreshError) {
               console.error(
@@ -114,15 +132,18 @@ axiosClient.interceptors.response.use(
               isRefreshing = false;
               const authError = new Error("TOKEN_REFRESH_FAILED");
               (authError as { code?: string }).code = "AUTH_REFRESH_FAILED";
+              processQueue(authError);
               console.log("[AXIOS INTERCEPTOR] Throwing AUTH_REFRESH_FAILED");
               throw authError;
             }
           }
 
           return new Promise((resolve, reject) => {
-            const authError = new Error("AUTH_REFRESH_IN_PROGRESS");
-            (authError as { code?: string }).code = "AUTH_REFRESH_FAILED";
-            reject(authError);
+            failedQueue.push({
+              resolve,
+              reject,
+              config: originalRequest,
+            });
           });
         }
 

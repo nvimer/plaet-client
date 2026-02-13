@@ -80,7 +80,7 @@ export interface User {
 
 /**
  *  User with roles and permissions
- * 
+ *
  * Structure matches backend AuthenticatedUser type
  */
 export interface UserWithRolesAndPermissions extends User {
@@ -116,18 +116,17 @@ export interface LoginInput {
 /**
  * Respuesta del login
  * Lo que devuelve POST /auth/login (estructura real de tu API)
+ * Nota: Los tokens se envían en cookies httpOnly, no en el body
  */
 export interface AuthResponse {
   success: boolean;
   message: string;
   data: {
-    access: {
-      token: string;
-      expires: string;
-    };
-    refresh: {
-      token: string;
-      expires: string;
+    user: {
+      id: string;
+      email: string;
+      firstName: string;
+      lastName: string;
     };
   };
 }
