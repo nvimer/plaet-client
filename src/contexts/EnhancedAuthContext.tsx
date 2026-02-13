@@ -375,9 +375,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ]);
 
       if (result) {
+        console.log("[CHECK] Auth successful - setting isLoading: false");
         updateState({
           user: result,
           isAuthenticated: true,
+          isLoading: false,
           error: null,
           lastActivity: new Date(),
         });
@@ -385,9 +387,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return true;
       }
 
+      console.log("[CHECK] No user data - setting isLoading: false");
       updateState({
         user: null,
         isAuthenticated: false,
+        isLoading: false,
         error: null,
         lastActivity: new Date(),
       });

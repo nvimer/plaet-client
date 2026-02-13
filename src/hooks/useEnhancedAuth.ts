@@ -6,8 +6,7 @@
  */
 
 import { useContext } from "react";
-import { AuthContext } from "@/contexts/AuthContext";
-import { AuthContext as EnhancedAuthContext } from "@/contexts/EnhancedAuthContext";
+import { AuthContext } from "@/contexts/EnhancedAuthContext";
 import type { User } from "@/types";
 
 interface UserRole {
@@ -23,28 +22,15 @@ interface AuthUser {
  * Enhanced useAuth hook
  *
  * Provides access to authentication state and functions.
- * Automatically detects which context is available.
  */
 export function useAuth() {
-  const enhancedContext = useContext(EnhancedAuthContext);
-  const originalContext = useContext(AuthContext);
+  const context = useContext(AuthContext);
 
-  if (enhancedContext) {
-    return enhancedContext;
+  if (!context) {
+    throw new Error("useAuth must be used within an AuthProvider");
   }
 
-  if (originalContext) {
-    return {
-      ...originalContext,
-      isLoading: false,
-      error: null,
-      lastActivity: null,
-      logout: () => Promise.resolve(),
-      retryAuth: () => Promise.resolve(),
-    };
-  }
-
-  throw new Error("useAuth must be used within an AuthProvider");
+  return context;
 }
 
 /**
