@@ -477,7 +477,7 @@ export function OrderCreatePage() {
       };
       const items: OrderItemInput[] = [];
       
-      if (order.protein) {
+      if (order.protein && order.protein.id > 0) {
         items.push({
           menuItemId: order.protein.id,
           quantity: 1,
@@ -487,13 +487,20 @@ export function OrderCreatePage() {
       }
 
       order.looseItems.forEach((item) => {
-        items.push({
-          menuItemId: item.id,
-          quantity: item.quantity,
-          priceAtOrder: item.price,
-          notes: item.name,
-        });
+        if (item.id > 0) {
+          items.push({
+            menuItemId: item.id,
+            quantity: item.quantity,
+            priceAtOrder: item.price,
+            notes: item.name,
+          });
+        }
       });
+
+      if (items.length === 0) {
+        toast.error("El pedido no tiene items válidos");
+        return;
+      }
 
       const promise = new Promise((resolve, reject) => {
         createOrder(

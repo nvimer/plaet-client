@@ -1,6 +1,11 @@
 /**
- * TIPOS DE PEDIDO (ORDER)
- * Basados en los modelos Order y OrderItem de Prisma
+ * ORDER TYPES
+ * Based on Prisma Order and OrderItem models
+ */
+
+/**
+ * Customer
+ * Synced with: model Customer in Prisma
  */
 
 import { OrderStatus, OrderType, PaymentMethod } from "./enums";
@@ -25,14 +30,14 @@ export interface Customer {
 }
 
 /**
- * Item de un pedido
- * Sincronizado con: model OrderItem en Prisma
+ * Order item
+ * Synced with: model OrderItem in Prisma
  */
 export interface OrderItem {
   id: number;
   orderId: string;
   menuItemId?: number;
-  menuItem?: MenuItem; // Puede venir poblado o no
+  menuItem?: MenuItem; // May or may not be populated
   quantity: number;
   priceAtOrder: number; // Price at order time (Decimal → number)
   notes?: string; // Special notes (e.g., "no onion")
@@ -42,8 +47,8 @@ export interface OrderItem {
 }
 
 /**
- * Pago de un pedido
- * Sincronizado con: model Payment en Prisma
+ * Payment
+ * Synced with: model Payment in Prisma
  */
 export interface Payment {
   id: string;
@@ -55,33 +60,33 @@ export interface Payment {
 }
 
 /**
- * Pedido completo
- * Sincronizado con: model Order en Prisma
+ * Complete order
+ * Synced with: model Order in Prisma
  */
 export interface Order {
   id: string;
   tableId?: number;
-  table?: Table; // Puede venir poblada o no
+  table?: Table; // May or may not be populated
   waiterId: string;
   waiter?: User; // User (waiter) who took the order
   customerId?: string;
-  customer?: Customer; // Cliente (si aplica)
+  customer?: Customer; // Customer (if applicable)
   status: OrderStatus;
   type: OrderType;
   totalAmount: number; // Decimal → number
   notes?: string;
-  whatsappOrderId?: string; // ID de pedido de WhatsApp (si aplica)
-  items?: OrderItem[]; // Items del pedido
-  payments?: Payment[]; // Pagos del pedido
+  whatsappOrderId?: string; // WhatsApp order ID (if applicable)
+  items?: OrderItem[]; // Order items
+  payments?: Payment[]; // Order payments
   createdAt: string;
   updatedAt: string;
 }
 
 /**
- * Datos para crear un item de pedido
+ * Order item creation input
  */
 export interface CreateOrderItemInput {
-  menuItemId?: number;
+  menuItemId: number;
   quantity: number;
   priceAtOrder: number;
   notes?: string;
@@ -89,8 +94,8 @@ export interface CreateOrderItemInput {
 }
 
 /**
- * Datos para crear un pedido
- * Usado en POST /orders (cuando se implemente)
+ * Order creation input
+ * Used in POST /orders
  */
 export interface CreateOrderInput {
   tableId?: number;
@@ -101,8 +106,8 @@ export interface CreateOrderInput {
 }
 
 /**
- * Datos para actualizar un pedido
- * Usado en PATCH /orders/:id (cuando se implemente)
+ * Order update input
+ * Used in PATCH /orders/:id
  */
 export interface UpdateOrderInput {
   tableId?: number;
@@ -113,14 +118,14 @@ export interface UpdateOrderInput {
 }
 
 /**
- * Datos para actualizar solo el estado de un pedido
+ * Order status update input
  */
 export interface UpdateOrderStatusInput {
   status: OrderStatus;
 }
 
 /**
- * Datos para agregar un pago
+ * Payment creation input
  */
 export interface CreatePaymentInput {
   orderId: string;
