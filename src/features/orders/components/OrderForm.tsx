@@ -528,109 +528,116 @@ export function OrderForm({
       {/* Loose products search & selection */}
       <Card variant="elevated" className="p-6 rounded-2xl">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600 flex items-center justify-center">
-            <Search className="w-5 h-5" />
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 text-purple-600 flex items-center justify-center">
+            <Sparkles className="w-6 h-6" />
           </div>
           <div>
-            <h4 className="font-bold text-carbon-900">Buscar Producto</h4>
-            <p className="text-xs text-carbon-500">Agregar producto individual</p>
+            <h3 className="text-lg font-bold text-carbon-900">Buscar Producto</h3>
+            <p className="text-sm text-carbon-500">
+              {selectedProtein ? "Agregar extra al almuerzo" : "Agregar producto individual"}
+            </p>
           </div>
         </div>
         
-        <div className="space-y-4">
+        {/* Added products with quantity controls - shown first */}
+        {looseItems.length > 0 && (
+          <div className="mb-4 p-4 bg-sage-50 rounded-xl border border-sage-200">
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-sm font-semibold text-carbon-700">
+                Productos ({looseItems.reduce((sum, i) => sum + i.quantity, 0)})
+              </p>
+              <p className="text-sm font-bold text-sage-700">
+                +${looseItems.reduce((sum, i) => sum + (i.price * i.quantity), 0).toLocaleString()}
+              </p>
+            </div>
+            <div className="space-y-2">
+              {looseItems.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between p-2 bg-white rounded-lg border border-sage-100"
+                >
+                  <div className="flex items-center gap-2 flex-1 min-w-0">
+                    <span className="text-sm font-medium text-carbon-800 truncate">{item.name}</span>
+                    <span className="text-xs text-sage-600">${item.price.toLocaleString()}</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => handleUpdateLooseItemQuantity(item.id, item.quantity - 1)}
+                      className="w-8 h-8 rounded-lg bg-sage-100 text-sage-700 hover:bg-sage-200 flex items-center justify-center transition-colors"
+                    >
+                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                      </svg>
+                    </button>
+                    <span className="w-8 text-center font-bold text-carbon-900">{item.quantity}</span>
+                    <button
+                      onClick={() => handleUpdateLooseItemQuantity(item.id, item.quantity + 1)}
+                      className="w-8 h-8 rounded-lg bg-sage-100 text-sage-700 hover:bg-sage-200 flex items-center justify-center transition-colors"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Search input with icon */}
+        <div className="relative mb-4">
+          <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-carbon-400 w-5 h-5" />
           <Input
-            placeholder="Buscar productos..."
+            type="text"
+            placeholder="Buscar producto..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            icon={<Search className="w-5 h-5" />}
+            className="pl-12 py-3"
+            fullWidth
           />
-          
-          {searchTerm && filteredLooseItems.length > 0 && (
-            <div className="space-y-2 max-h-48 overflow-y-auto">
-              {filteredLooseItems.slice(0, 10).map((item) => {
-                const existing = looseItems.find((i) => i.id === item.id);
-                return (
-                  <button
-                    key={item.id}
-                    onClick={() => handleAddLooseItem({ id: item.id, name: item.name, price: parseFloat(item.price) })}
-                    className={cn(
-                      "w-full p-3 rounded-xl border-2 transition-all duration-200 flex items-center justify-between",
-                      existing
-                        ? "border-amber-400 bg-amber-50"
-                        : "border-sage-200 bg-white hover:border-amber-300 hover:bg-amber-50/50"
-                    )}
-                  >
-                    <div className="text-left">
-                      <p className="font-semibold text-carbon-900">{item.name}</p>
-                      <p className="text-sm text-carbon-500">${parseFloat(item.price).toLocaleString()}</p>
-                    </div>
-                    {existing ? (
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleUpdateLooseItemQuantity(item.id, existing.quantity - 1);
-                          }}
-                          className="w-8 h-8 rounded-lg bg-amber-200 text-amber-700 flex items-center justify-center hover:bg-amber-300"
-                        >
-                          -
-                        </button>
-                        <span className="w-8 text-center font-semibold">{existing.quantity}</span>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleUpdateLooseItemQuantity(item.id, existing.quantity + 1);
-                          }}
-                          className="w-8 h-8 rounded-lg bg-amber-200 text-amber-700 flex items-center justify-center hover:bg-amber-300"
-                        >
-                          +
-                        </button>
-                      </div>
-                    ) : (
-                      <Plus className="w-5 h-5 text-sage-400" />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-          
-          {searchTerm && filteredLooseItems.length === 0 && (
-            <p className="text-center text-carbon-500 py-4">No se encontraron productos</p>
-          )}
-          
-          {/* Selected loose items */}
-          {looseItems.length > 0 && (
-            <div className="border-t border-sage-200 pt-4">
-              <h5 className="font-semibold text-carbon-900 mb-3">Productos agregados:</h5>
-              <div className="space-y-2">
-                {looseItems.map((item) => (
-                  <div key={item.id} className="flex items-center justify-between p-3 bg-amber-50 rounded-xl border border-amber-200">
-                    <div>
-                      <p className="font-semibold text-carbon-900">{item.name}</p>
-                      <p className="text-sm text-carbon-500">${item.price.toLocaleString()} c/u</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => handleUpdateLooseItemQuantity(item.id, item.quantity - 1)}
-                        className="w-8 h-8 rounded-lg bg-amber-200 text-amber-700 flex items-center justify-center hover:bg-amber-300"
-                      >
-                        -
-                      </button>
-                      <span className="w-8 text-center font-semibold">{item.quantity}</span>
-                      <button
-                        onClick={() => handleUpdateLooseItemQuantity(item.id, item.quantity + 1)}
-                        className="w-8 h-8 rounded-lg bg-amber-200 text-amber-700 flex items-center justify-center hover:bg-amber-300"
-                      >
-                        +
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
         </div>
+
+        {/* Products grid - show all or filtered */}
+        {filteredLooseItems.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-4 max-h-96 overflow-y-auto scroll-smooth">
+            {filteredLooseItems.map((item) => {
+              const addedItem = looseItems.find((i) => i.id === item.id);
+              return (
+                <button
+                  key={item.id}
+                  onClick={() =>
+                    handleAddLooseItem({
+                      id: item.id,
+                      name: item.name,
+                      price: Number(item.price),
+                    })
+                  }
+                  className={cn(
+                    "group relative p-4 rounded-xl border-2 transition-all text-left min-h-[80px]",
+                    addedItem
+                      ? "border-sage-500 bg-sage-50"
+                      : "border-sage-200 bg-white hover:border-sage-400 hover:bg-sage-50"
+                  )}
+                >
+                  {addedItem && (
+                    <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-sage-500 flex items-center justify-center shadow-md">
+                      <span className="text-xs font-bold text-white">{addedItem.quantity}</span>
+                    </div>
+                  )}
+                  <p className={cn("font-medium text-sm line-clamp-2 group-hover:text-sage-700 transition-colors", addedItem ? "text-sage-900" : "text-carbon-900")}>
+                    {item.name}
+                  </p>
+                  <p className={cn("font-bold mt-1", addedItem ? "text-sage-700" : "text-sage-700")}>
+                    ${Number(item.price).toLocaleString("es-CO")}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+        )}
+        
+        {searchTerm && filteredLooseItems.length === 0 && (
+          <p className="text-center text-carbon-500 py-4">No se encontraron productos</p>
+        )}
       </Card>
 
       {/* Order notes */}
