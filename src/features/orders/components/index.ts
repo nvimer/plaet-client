@@ -9,3 +9,6 @@ export { OrderSummary } from "./OrderSummary";
 export { MenuItemSelector } from "./MenuItemSelector";
 export { ReplacementManager, type Replacement } from "./ReplacementManager";
 export { FixedOrderSummaryBar } from "./FixedOrderSummaryBar";
+export { OrderForm } from "./OrderForm";
+export { OrdersListPanel } from "./OrdersListPanel";
+export { OrderSummaryModal } from "./OrderSummaryModal";
