@@ -24,54 +24,14 @@ import {
   Sparkles, ChefHat, AlertCircle, Receipt, Clock
 } from "lucide-react";
 import { cn } from "@/utils/cn";
-
-// Types
-interface MenuOption {
-  id: number;
-  name: string;
-}
-
-interface ProteinOption {
-  id: number;
-  name: string;
-  price: number;
-  icon?: "beef" | "fish" | "chicken" | "pork" | "other";
-  isAvailable: boolean;
-  categoryName?: string;
-}
-
-interface LooseItem {
-  id: number;
-  name: string;
-  price: number;
-  quantity: number;
-}
-
-interface LunchSelection {
-  soup: MenuOption | null;
-  principle: MenuOption | null;
-  salad: MenuOption | null;
-  drink: MenuOption | null;
-  extra: MenuOption | null;
-  protein: ProteinOption | null;
-  rice: MenuOption | null;
-  replacements: Replacement[];
-}
-
-interface TableOrder {
-  id: string;
-  protein: ProteinOption | null;
-  lunch: LunchSelection | null;
-  looseItems: LooseItem[];
-  total: number;
-  notes?: string;
-  createdAt: number;
-}
-
-interface ValidationError {
-  field: string;
-  message: string;
-}
+import type {
+  MenuOption,
+  ProteinOption,
+  LooseItem,
+  LunchSelection,
+  TableOrder,
+  ValidationError,
+} from "../types/orderBuilder";
 
 /**
  * OrderCreatePage - Improved Edition
