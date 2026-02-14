@@ -511,17 +511,17 @@ export function OrderForm({
       {/* Replacement manager */}
       <Card variant="elevated" className="p-6 rounded-2xl">
         <ReplacementManager
-          selectedItems={{
-            soup: selectedSoup,
-            principle: selectedPrinciple,
-            salad: selectedSalad,
-            drink: selectedDrink,
-            extra: selectedExtra,
-            rice: selectedRice,
+          availableItems={{
+            soup: selectedSoup ? [selectedSoup] : [],
+            principle: selectedPrinciple ? [selectedPrinciple] : [],
+            salad: selectedSalad ? [selectedSalad] : [],
+            drink: selectedDrink ? [selectedDrink] : [],
+            extra: selectedExtra ? [selectedExtra] : [],
+            rice: selectedRice ? [selectedRice] : [],
           }}
           replacements={replacements}
-          onReplacementsChange={setReplacements}
-          availableItems={filteredLooseItems}
+          onAddReplacement={(replacement) => setReplacements([...replacements, replacement])}
+          onRemoveReplacement={(id) => setReplacements(replacements.filter(r => r.id !== id))}
         />
       </Card>
 
