@@ -94,13 +94,13 @@ export function OrderCreatePage() {
   const tables = tablesData?.tables || [];
   const availableTables = tables.filter((t) => t.status === "AVAILABLE");
 
-  // Estado del tipo de pedido y mesa
+  // Order type and table state
   const [selectedOrderType, setSelectedOrderType] = useState<OrderType | null>(null);
   const [selectedTable, setSelectedTable] = useState<number | null>(null);
   const [tableOrders, setTableOrders] = useState<TableOrder[]>([]);
   const [currentOrderIndex, setCurrentOrderIndex] = useState<number | null>(null);
-  
-  // Estado del pedido actual
+
+  // Current order state
   const [selectedProtein, setSelectedProtein] = useState<ProteinOption | null>(null);
   const [looseItems, setLooseItems] = useState<LooseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -206,7 +206,7 @@ export function OrderCreatePage() {
     return dailyMenuPrices.basePrice + selectedProtein.price;
   }, [selectedProtein, dailyMenuPrices]);
 
-  // Calcular total del pedido actual
+  // Calculate current order total
   const currentOrderTotal = useMemo(() => {
     let total = 0;
     
@@ -221,7 +221,7 @@ export function OrderCreatePage() {
     return total;
   }, [lunchPrice, looseItems]);
 
-  // Calcular total de la mesa
+  // Calculate table total
   const tableTotal = useMemo(() => {
     return tableOrders.reduce((sum, order) => sum + order.total, 0);
   }, [tableOrders]);
@@ -313,36 +313,38 @@ export function OrderCreatePage() {
     }
   };
 
-  // NEW: Build detailed order notes with lunch selections
+  // Build compact order notes for kitchen display (< 200 chars)
   const buildOrderNotes = (): string => {
-    const parts: string[] = [];
+    if (!selectedProtein) return orderNotes || "";
     
-    if (selectedProtein) {
-      parts.push(`Almuerzo Ejecutivo:`);
-      parts.push(`• Arroz: ${selectedRice?.name || dailyMenuDisplay.riceOption?.name || 'Arroz del día'}`);
-      parts.push(`• Sopa: ${selectedSoup?.name || 'No seleccionada'}`);
-      parts.push(`• Principio: ${selectedPrinciple?.name || 'No seleccionado'}`);
-      parts.push(`• Ensalada: ${selectedSalad?.name || 'No seleccionada'}`);
-      parts.push(`• Jugo: ${selectedDrink?.name || 'No seleccionado'}`);
-      parts.push(`• Extra: ${selectedExtra?.name || 'No seleccionado'}`);
-      parts.push(`• Proteína: ${selectedProtein.name}`);
-      
-      if (replacements.length > 0) {
-        parts.push(`\nReemplazos:`);
-        replacements.forEach(r => {
-          parts.push(`• No ${r.fromName} → ${r.itemName} (${r.toName})`);
-        });
-      }
+    const components = [
+      selectedRice?.name || dailyMenuDisplay.riceOption?.name,
+      selectedSoup?.name,
+      selectedPrinciple?.name,
+      selectedSalad?.name,
+      selectedDrink?.name,
+      selectedExtra?.name,
+    ].filter(Boolean);
+    
+    let note = `Lunch: ${selectedProtein.name}`;
+    
+    if (components.length > 0) {
+      note += ` + ${components.join(", ")}`;
+    }
+    
+    if (replacements.length > 0) {
+      const replText = replacements.map(r => `${r.fromName}→${r.itemName}`).join(", ");
+      note += ` | Swap: ${replText}`;
     }
     
     if (orderNotes) {
-      parts.push(`\nNotas: ${orderNotes}`);
+      note += ` | Note: ${orderNotes}`;
     }
     
-    return parts.join('\n');
+    return note;
   };
 
-  // Agregar pedido a la mesa
+  // Add order to table
   const handleAddOrderToTable = () => {
     setTouchedFields(new Set(["protein", "soup", "principle", "salad", "drink", "extra"]));
     const errors = validateOrder();
@@ -390,7 +392,7 @@ export function OrderCreatePage() {
     setTouchedFields(new Set());
   };
 
-  // Limpiar pedido actual
+  // Clear current order
   const clearCurrentOrder = () => {
     setSelectedProtein(null);
     setSelectedSoup(null);
@@ -406,7 +408,7 @@ export function OrderCreatePage() {
     setSearchTerm("");
   };
 
-  // Editar pedido existente
+  // Edit existing order
   const handleEditOrder = (index: number) => {
     const order = tableOrders[index];
     setCurrentOrderIndex(index);
@@ -428,7 +430,7 @@ export function OrderCreatePage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Eliminar pedido
+  // Delete order
   const handleRemoveOrder = (index: number) => {
     setTableOrders((prev) => prev.filter((_, i) => i !== index));
     if (currentOrderIndex === index) {
@@ -437,7 +439,7 @@ export function OrderCreatePage() {
     toast.success("Pedido eliminado");
   };
 
-  // Duplicar pedido
+  // Duplicate order
   const handleDuplicateOrder = (index: number) => {
     const order = tableOrders[index];
     const duplicatedOrder: TableOrder = {
@@ -449,7 +451,7 @@ export function OrderCreatePage() {
     toast.success("Pedido duplicado");
   };
 
-  // Mostrar resumen antes de confirmar
+  // Show summary before confirming
   const handleShowSummary = () => {
     if (tableOrders.length === 0) {
       toast.error("No hay pedidos para confirmar");
@@ -458,7 +460,7 @@ export function OrderCreatePage() {
     setShowSummaryModal(true);
   };
 
-  // Confirmar todos los pedidos de la mesa
+  // Confirm all table orders
   const handleConfirmTableOrders = async () => {
     if (!selectedTable && selectedOrderType === OrderType.DINE_IN) {
       toast.error("Selecciona una mesa primero");
@@ -549,12 +551,12 @@ export function OrderCreatePage() {
     toast.info("Edición cancelada");
   };
 
-  // Handler para seleccionar tipo de pedido
+  // Handler for selecting order type
   const handleSelectOrderType = (type: OrderType) => {
     setSelectedOrderType(type);
   };
 
-  // Handler para volver a seleccionar tipo de pedido
+  // Handler to go back to order type selection
   const handleBackToOrderType = () => {
     setSelectedOrderType(null);
     setSelectedTable(null);
@@ -590,7 +592,7 @@ export function OrderCreatePage() {
     );
   }
 
-  // Paso 1: Seleccionar tipo de pedido
+  // Step 1: Select order type
   if (!selectedOrderType) {
     return (
       <SidebarLayout
@@ -601,7 +603,7 @@ export function OrderCreatePage() {
       >
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* Aquí (DINE_IN) */}
+            {/* DINE_IN section */}
             <button
               onClick={() => handleSelectOrderType(OrderType.DINE_IN)}
               className="group flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-sage-200 bg-white hover:border-sage-400 hover:shadow-soft-lg transition-all duration-300 min-h-[200px]"
@@ -642,7 +644,7 @@ export function OrderCreatePage() {
     );
   }
 
-  // Paso 2: Si es DINE_IN y no hay mesa seleccionada, mostrar selector de mesa
+  // Step 2: If DINE_IN and no table selected, show table selector
   if (selectedOrderType === OrderType.DINE_IN && !selectedTable) {
     return (
       <SidebarLayout
@@ -718,7 +720,7 @@ export function OrderCreatePage() {
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 xl:grid-cols-12 gap-6">
             
-            {/* LEFT: Formulario de pedido actual */}
+            {/* LEFT: Current order form */}
             <div className="xl:col-span-7 space-y-6 pb-32">
               {/* Header del pedido actual */}
               <Card variant="elevated" id="current-order" className="overflow-hidden rounded-2xl">
@@ -763,7 +765,7 @@ export function OrderCreatePage() {
                 </div>
               </Card>
 
-              {/* Menú del día colapsable */}
+              {/* Collapsible daily menu */}
               <Card variant="elevated" className="overflow-hidden rounded-2xl">
                 <button
                   onClick={() => setShowDailyMenu(!showDailyMenu)}
@@ -818,7 +820,7 @@ export function OrderCreatePage() {
                 </div>
               )}
 
-              {/* Configuración del Almuerzo - Selectores condicionales */}
+              {/* Lunch configuration - Conditional selectors */}
               <Card variant="elevated" className="p-6 rounded-2xl">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-600 flex items-center justify-center">
@@ -903,7 +905,7 @@ export function OrderCreatePage() {
                     />
                   )}
 
-                  {/* Visualización moderna del menú auto-configurado */}
+                  {/* Modern auto-configured menu display */}
                   {dailyMenuDisplay.soupOptions.length <= 1 &&
                    dailyMenuDisplay.principleOptions.length <= 1 &&
                    dailyMenuDisplay.saladOptions.length <= 1 &&
@@ -1030,7 +1032,7 @@ export function OrderCreatePage() {
                 </div>
               </Card>
 
-              {/* Selector de proteína */}
+              {/* Protein selector */}
               <Card variant="elevated" className="p-6 rounded-2xl">
                 <div className={cn(hasError("protein") && "rounded-xl border-2 border-rose-300 p-2 -m-2")}>
                   <div className="flex items-center gap-3 mb-4">
@@ -1129,7 +1131,7 @@ export function OrderCreatePage() {
                 </div>
               </Card>
 
-              {/* Adiciones Rápidas - Solo cuando hay proteína seleccionada */}
+              {/* Quick add-ons - Only when protein is selected */}
               {selectedProtein && (
                 <Card variant="elevated" className="p-4 rounded-xl bg-gradient-to-br from-amber-50 to-white border-amber-200">
                   <div className="flex items-center gap-2 mb-3">
@@ -1294,7 +1296,7 @@ export function OrderCreatePage() {
 
               </Card>
 
-              {/* Notas del pedido */}
+              {/* Order notes */}
               <div className="space-y-2">
                 <label className="text-sm font-semibold text-carbon-700 flex items-center gap-2">
                   <Clock className="w-4 h-4" />
@@ -1310,7 +1312,7 @@ export function OrderCreatePage() {
                 />
               </div>
 
-              {/* Botón agregar/actualizar */}
+              {/* Add/update button */}
               <Button
                 variant="primary"
                 size="lg"
@@ -1327,7 +1329,7 @@ export function OrderCreatePage() {
               </Button>
             </div>
 
-            {/* RIGHT: Lista de pedidos */}
+            {/* RIGHT: Orders list */}
             <div className="xl:col-span-5">
               <Card variant="elevated" className="overflow-hidden rounded-2xl sticky top-4">
                 <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-6 py-4">
@@ -1415,7 +1417,7 @@ export function OrderCreatePage() {
                           </div>
                         </div>
                         
-                        {/* Detalles del pedido */}
+                        {/* Order details */}
                         <div className="flex flex-wrap gap-2 text-xs">
                           {order.looseItems.length > 0 && (
                             <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full font-medium">
@@ -1433,7 +1435,7 @@ export function OrderCreatePage() {
                   )}
                 </div>
 
-                {/* Botón confirmar */}
+                {/* Confirm button */}
                 {tableOrders.length > 0 && (
                   <div className="p-4 border-t border-sage-200 bg-sage-50">
                     <Button
