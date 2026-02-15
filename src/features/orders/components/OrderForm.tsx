@@ -469,38 +469,68 @@ export function OrderForm({
 
       {/* Quick add-ons - Only when protein is selected */}
       {selectedProtein && (
-        <Card variant="elevated" className="p-6 rounded-2xl">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-600 flex items-center justify-center">
-              <ShoppingBag className="w-5 h-5" />
+        <Card variant="elevated" className="p-5 rounded-2xl">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-100 to-amber-200 text-amber-600 flex items-center justify-center">
+              <ShoppingBag className="w-4 h-4" />
             </div>
             <div>
-              <h4 className="font-bold text-carbon-900">Adiciones Rápidas</h4>
-              <p className="text-xs text-carbon-500">Agrega extras al almuerzo</p>
+              <h4 className="text-sm font-bold text-carbon-900">Adiciones Rápidas</h4>
+              <p className="text-xs text-carbon-500">Extras al almuerzo</p>
             </div>
           </div>
           
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div className="flex flex-wrap gap-2">
             {popularProducts.map((product) => {
               const existing = looseItems.find((i) => i.id === product.id);
+              
+              // Category colors for each product
+              const getProductStyles = (productId: number, isSelected: boolean) => {
+                const baseStyles = "flex items-center gap-1.5 px-3 py-2 rounded-lg border transition-all duration-200 active:scale-95";
+                
+                if (isSelected) {
+                  return cn(baseStyles, "bg-sage-100 border-sage-400 text-sage-800");
+                }
+                
+                // Colors by product type
+                switch (productId) {
+                  case 9991: // Huevo
+                    return cn(baseStyles, "bg-white border-amber-200 hover:border-amber-400 hover:bg-amber-50");
+                  case 9992: // Gaseosa
+                    return cn(baseStyles, "bg-white border-blue-200 hover:border-blue-400 hover:bg-blue-50");
+                  case 9993: // Papas
+                    return cn(baseStyles, "bg-white border-yellow-200 hover:border-yellow-400 hover:bg-yellow-50");
+                  case 9994: // Yuca
+                    return cn(baseStyles, "bg-white border-orange-200 hover:border-orange-400 hover:bg-orange-50");
+                  case 9995: // Plátano
+                    return cn(baseStyles, "bg-white border-green-200 hover:border-green-400 hover:bg-green-50");
+                  case 9996: // Sopa
+                    return cn(baseStyles, "bg-white border-red-200 hover:border-red-400 hover:bg-red-50");
+                  default:
+                    return cn(baseStyles, "bg-white border-sage-200 hover:border-sage-400 hover:bg-sage-50");
+                }
+              };
+              
               return (
                 <button
                   key={product.id}
                   onClick={() => handleAddLooseItem(product)}
-                  className={cn(
-                    "p-3 rounded-xl border-2 transition-all duration-200 text-left",
-                    existing
-                      ? "border-amber-400 bg-amber-50"
-                      : "border-sage-200 bg-white hover:border-amber-300 hover:bg-amber-50/50"
-                  )}
+                  className={getProductStyles(product.id, !!existing)}
                 >
-                  <p className="font-semibold text-carbon-900 text-sm">{product.name}</p>
-                  <p className="text-xs text-carbon-500">${product.price.toLocaleString()}</p>
-                  {existing && (
-                    <span className="inline-block mt-1 px-2 py-0.5 bg-amber-400 text-white text-xs rounded-full">
+                  {existing ? (
+                    <span className="w-5 h-5 rounded-full bg-sage-500 text-white flex items-center justify-center text-xs font-bold">
                       {existing.quantity}
                     </span>
+                  ) : (
+                    <Plus className="w-3.5 h-3.5 text-sage-600" />
                   )}
+                  <span className="text-xs font-medium text-carbon-800">{product.name}</span>
+                  <span className={cn(
+                    "text-xs font-bold",
+                    existing ? "text-sage-700" : "text-amber-600"
+                  )}>
+                    ${product.price.toLocaleString()}
+                  </span>
                 </button>
               );
             })}
