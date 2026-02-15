@@ -19,11 +19,14 @@ export {
   FilterPills,
   ActiveFilterChips,
   FilterSearch,
+  DateFilter,
 } from "./filters";
 export type {
   FilterSelectOption,
   FilterPillOption,
   ActiveFilterChipItem,
+  DateFilterType,
+  DateRange,
 } from "./filters";
 
 // Route Components

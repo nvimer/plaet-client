@@ -1,11 +1,16 @@
 import { OrderStatus, OrderType } from "@/types";
-import { FilterBar, FilterPills, FilterSelect, ActiveFilterChips } from "@/components";
+import { FilterBar, FilterPills, FilterSelect, ActiveFilterChips, DateFilter } from "@/components";
+import type { DateFilterType, DateRange } from "@/components";
 
 interface OrderFiltersProps {
   statusFilter: OrderStatus | "ALL";
   typeFilter: OrderType | "ALL";
+  dateFilter: DateFilterType;
+  customDateRange?: DateRange;
   onStatusChange: (status: OrderStatus | "ALL") => void;
   onTypeChange: (type: OrderType | "ALL") => void;
+  onDateChange: (date: DateFilterType) => void;
+  onCustomDateRangeChange?: (range: DateRange) => void;
   onClearFilter: (key: string) => void;
   onClearAll: () => void;
   counts: {
@@ -43,14 +48,20 @@ const TYPE_LABELS: Record<string, string> = {
 /**
  * OrderFilters Component
  *
- * Filtros unificados con diseño consistente (FilterBar, FilterPills, ActiveFilterChips).
+ * Filtros unificados con diseño consistente (FilterBar, FilterPills, ActiveFilterChips, DateFilter).
  * Touch-friendly y responsive.
+ * 
+ * Enhanced with date filtering support for better order management.
  */
 export function OrderFilters({
   statusFilter,
   typeFilter,
+  dateFilter,
+  customDateRange,
   onStatusChange,
   onTypeChange,
+  onDateChange,
+  onCustomDateRangeChange,
   onClearFilter,
   onClearAll,
   counts,
@@ -74,17 +85,46 @@ export function OrderFilters({
     { value: OrderType.WHATSAPP, label: "WhatsApp" },
   ];
 
-  const hasActiveFilters = statusFilter !== "ALL" || typeFilter !== "ALL";
+  const hasActiveFilters = statusFilter !== "ALL" || typeFilter !== "ALL" || dateFilter !== "TODAY";
 
   const activeChips = [
     ...(statusFilter !== "ALL" ? [{ key: "status", label: "Estado", value: STATUS_LABELS[statusFilter] }] : []),
     ...(typeFilter !== "ALL" ? [{ key: "type", label: "Tipo", value: TYPE_LABELS[typeFilter] }] : []),
+    ...(dateFilter !== "TODAY" ? [{ key: "date", label: "Fecha", value: getDateLabel(dateFilter, customDateRange) }] : []),
   ];
+
+  function getDateLabel(dateFilter: DateFilterType, customRange?: DateRange): string {
+    switch (dateFilter) {
+      case "TODAY":
+        return "Hoy";
+      case "YESTERDAY":
+        return "Ayer";
+      case "WEEK":
+        return "Últimos 7 días";
+      case "CUSTOM":
+        if (customRange) {
+          return `${new Date(customRange.start).toLocaleDateString("es-CO")} - ${new Date(customRange.end).toLocaleDateString("es-CO")}`;
+        }
+        return "Personalizado";
+      default:
+        return "Hoy";
+    }
+  }
 
   return (
     <div className="space-y-4">
       <FilterBar>
         <div className="flex flex-wrap items-end gap-4 [&>div]:min-w-0">
+          {/* Date Filter - New */}
+          <div className="flex-shrink-0 w-full sm:w-auto min-w-0">
+            <DateFilter
+              value={dateFilter}
+              onChange={onDateChange}
+              customRange={customDateRange}
+              onCustomRangeChange={onCustomDateRangeChange}
+            />
+          </div>
+          
           <div className="flex-shrink-0 w-full sm:w-auto min-w-0">
             <FilterPills
               label="Estado"

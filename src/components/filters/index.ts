@@ -6,3 +6,5 @@ export type { FilterPillOption } from "./FilterPills";
 export { ActiveFilterChips } from "./ActiveFilterChips";
 export type { ActiveFilterChipItem } from "./ActiveFilterChips";
 export { FilterSearch } from "./FilterSearch";
+export { DateFilter } from "./DateFilter";
+export type { DateFilterType, DateRange } from "./DateFilter";

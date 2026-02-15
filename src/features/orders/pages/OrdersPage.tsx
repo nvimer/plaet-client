@@ -3,6 +3,7 @@ import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { useOrders } from "../hooks";
 import { Button, Skeleton, EmptyState, Card } from "@/components";
+import type { DateFilterType, DateRange } from "@/components";
 import {
   CheckCircle,
   Clock,
@@ -28,6 +29,41 @@ const isToday = (dateString: string): boolean => {
 };
 
 /**
+ * Helper: Check if order date is yesterday
+ */
+const isYesterday = (dateString: string): boolean => {
+  const date = new Date(dateString);
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  return (
+    date.getDate() === yesterday.getDate() &&
+    date.getMonth() === yesterday.getMonth() &&
+    date.getFullYear() === yesterday.getFullYear()
+  );
+};
+
+/**
+ * Helper: Check if order date is within last 7 days
+ */
+const isWithinLastWeek = (dateString: string): boolean => {
+  const date = new Date(dateString);
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  return date >= weekAgo;
+};
+
+/**
+ * Helper: Check if order is within custom date range
+ */
+const isWithinDateRange = (dateString: string, range: DateRange): boolean => {
+  const date = new Date(dateString);
+  const start = new Date(range.start);
+  const end = new Date(range.end);
+  end.setHours(23, 59, 59, 999); // Include the full end day
+  return date >= start && date <= end;
+};
+
+/**
  * Helper: Check if order counts as a sale
  * Only PAID or DELIVERED orders count as sales
  */
@@ -40,6 +76,7 @@ const isSaleOrder = (order: Order): boolean => {
  *
  * Gestión de pedidos con diseño actualizado: filtros unificados,
  * grid de tarjetas, y estados mejorados.
+ * Enhanced with date filtering and wait time display.
  */
 export function OrdersPage() {
   const navigate = useNavigate();
@@ -47,6 +84,8 @@ export function OrdersPage() {
   // ============ STATE =============
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "ALL">("ALL");
   const [typeFilter, setTypeFilter] = useState<OrderType | "ALL">("ALL");
+  const [dateFilter, setDateFilter] = useState<DateFilterType>("TODAY");
+  const [customDateRange, setCustomDateRange] = useState<DateRange | undefined>(undefined);
 
   // ============== QUERIES ===============
   const { data: orders, isLoading, error } = useOrders();
@@ -57,9 +96,27 @@ export function OrdersPage() {
     return orders.filter((order) => {
       const matchesStatus = statusFilter === "ALL" || order.status === statusFilter;
       const matchesType = typeFilter === "ALL" || order.type === typeFilter;
-      return matchesStatus && matchesType;
+      
+      // Date filtering
+      let matchesDate = true;
+      switch (dateFilter) {
+        case "TODAY":
+          matchesDate = isToday(order.createdAt);
+          break;
+        case "YESTERDAY":
+          matchesDate = isYesterday(order.createdAt);
+          break;
+        case "WEEK":
+          matchesDate = isWithinLastWeek(order.createdAt);
+          break;
+        case "CUSTOM":
+          matchesDate = customDateRange ? isWithinDateRange(order.createdAt, customDateRange) : true;
+          break;
+      }
+      
+      return matchesStatus && matchesType && matchesDate;
     });
-  }, [orders, statusFilter, typeFilter]);
+  }, [orders, statusFilter, typeFilter, dateFilter, customDateRange]);
 
   const counts = useMemo(() => ({
     all: orders?.length || 0,
@@ -79,7 +136,7 @@ export function OrdersPage() {
       .reduce((sum, o) => sum + o.totalAmount, 0);
   }, [orders]);
 
-  const hasActiveFilters = statusFilter !== "ALL" || typeFilter !== "ALL";
+  const hasActiveFilters = statusFilter !== "ALL" || typeFilter !== "ALL" || dateFilter !== "TODAY";
 
   // ============= HANDLERS ===============
   const handleViewDetail = (orderId: string) => {
@@ -93,11 +150,14 @@ export function OrdersPage() {
   const handleClearFilter = (key: string) => {
     if (key === "status") setStatusFilter("ALL");
     if (key === "type") setTypeFilter("ALL");
+    if (key === "date") setDateFilter("TODAY");
   };
 
   const handleClearAll = () => {
     setStatusFilter("ALL");
     setTypeFilter("ALL");
+    setDateFilter("TODAY");
+    setCustomDateRange(undefined);
   };
 
   // ============ LOADING STATE ===========
@@ -217,8 +277,12 @@ export function OrdersPage() {
         <OrderFilters
           statusFilter={statusFilter}
           typeFilter={typeFilter}
+          dateFilter={dateFilter}
+          customDateRange={customDateRange}
           onStatusChange={setStatusFilter}
           onTypeChange={setTypeFilter}
+          onDateChange={setDateFilter}
+          onCustomDateRangeChange={setCustomDateRange}
           onClearFilter={handleClearFilter}
           onClearAll={handleClearAll}
           counts={counts}
