@@ -484,51 +484,26 @@ export function OrderForm({
             {popularProducts.map((product) => {
               const existing = looseItems.find((i) => i.id === product.id);
               
-              // Category colors for each product
-              const getProductStyles = (productId: number, isSelected: boolean) => {
-                const baseStyles = "flex items-center gap-1.5 px-3 py-2 rounded-lg border transition-all duration-200 active:scale-95";
-                
-                if (isSelected) {
-                  return cn(baseStyles, "bg-sage-100 border-sage-400 text-sage-800");
-                }
-                
-                // Colors by product type
-                switch (productId) {
-                  case 9991: // Huevo
-                    return cn(baseStyles, "bg-white border-amber-200 hover:border-amber-400 hover:bg-amber-50");
-                  case 9992: // Gaseosa
-                    return cn(baseStyles, "bg-white border-blue-200 hover:border-blue-400 hover:bg-blue-50");
-                  case 9993: // Papas
-                    return cn(baseStyles, "bg-white border-yellow-200 hover:border-yellow-400 hover:bg-yellow-50");
-                  case 9994: // Yuca
-                    return cn(baseStyles, "bg-white border-orange-200 hover:border-orange-400 hover:bg-orange-50");
-                  case 9995: // Plátano
-                    return cn(baseStyles, "bg-white border-green-200 hover:border-green-400 hover:bg-green-50");
-                  case 9996: // Sopa
-                    return cn(baseStyles, "bg-white border-red-200 hover:border-red-400 hover:bg-red-50");
-                  default:
-                    return cn(baseStyles, "bg-white border-sage-200 hover:border-sage-400 hover:bg-sage-50");
-                }
-              };
-              
               return (
                 <button
                   key={product.id}
                   onClick={() => handleAddLooseItem(product)}
-                  className={getProductStyles(product.id, !!existing)}
+                  className={cn(
+                    "flex items-center gap-1.5 px-3 py-2 rounded-lg border transition-all duration-200 active:scale-95",
+                    existing
+                      ? "bg-sage-50 border-sage-400 text-sage-800 shadow-sm"
+                      : "bg-white border-carbon-200 hover:border-sage-400 hover:bg-sage-50/50"
+                  )}
                 >
                   {existing ? (
-                    <span className="w-5 h-5 rounded-full bg-sage-500 text-white flex items-center justify-center text-xs font-bold">
+                    <span className="w-5 h-5 rounded-full bg-sage-600 text-white flex items-center justify-center text-xs font-bold">
                       {existing.quantity}
                     </span>
                   ) : (
-                    <Plus className="w-3.5 h-3.5 text-sage-600" />
+                    <Plus className="w-3.5 h-3.5 text-sage-500" />
                   )}
                   <span className="text-xs font-medium text-carbon-800">{product.name}</span>
-                  <span className={cn(
-                    "text-xs font-bold",
-                    existing ? "text-sage-700" : "text-amber-600"
-                  )}>
+                  <span className="text-xs font-semibold text-carbon-500">
                     ${product.price.toLocaleString()}
                   </span>
                 </button>
