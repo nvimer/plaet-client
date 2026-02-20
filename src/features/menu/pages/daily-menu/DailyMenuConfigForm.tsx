@@ -367,25 +367,10 @@ export function DailyMenuConfigForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Soup Section - Pre-selected category */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-carbon-700">
-                Sopas del Día
-              </label>
-              <span className="text-xs text-sage-600 bg-sage-100 px-2 py-1 rounded-full">
-                Categoría pre-seleccionada
-              </span>
-            </div>
-            {formState.soupCategoryId && categories && (
-              <div className="p-3 bg-sage-50 rounded-lg border border-sage-200">
-                <span className="text-sm font-medium text-carbon-800">
-                  {categories.find((c) => c.id === formState.soupCategoryId)
-                    ?.name || "Sopas"}
-                </span>
-                <p className="text-xs text-carbon-500 mt-1">
-                  Selecciona las opciones disponibles:
-                </p>
-              </div>
-            )}
+            <label className="block text-sm font-medium text-carbon-700">
+              Sopas
+            </label>
+
             {formState.soupCategoryId ? (
               <div className="space-y-2 pl-4 border-l-2 border-sage-200">
                 <FilterSelect
@@ -421,26 +406,10 @@ export function DailyMenuConfigForm({
 
           {/* Principle Section - Pre-selected category */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-carbon-700">
-                Principios del Día
-              </label>
-              <span className="text-xs text-sage-600 bg-sage-100 px-2 py-1 rounded-full">
-                Categoría pre-seleccionada
-              </span>
-            </div>
-            {formState.principleCategoryId && categories && (
-              <div className="p-3 bg-sage-50 rounded-lg border border-sage-200">
-                <span className="text-sm font-medium text-carbon-800">
-                  {categories.find(
-                    (c) => c.id === formState.principleCategoryId,
-                  )?.name || "Principios"}
-                </span>
-                <p className="text-xs text-carbon-500 mt-1">
-                  Selecciona las opciones disponibles:
-                </p>
-              </div>
-            )}
+            <label className="block text-sm font-medium text-carbon-700">
+              Principios
+            </label>
+
             {formState.principleCategoryId ? (
               <div className="space-y-2 pl-4 border-l-2 border-sage-200">
                 <FilterSelect
@@ -476,25 +445,10 @@ export function DailyMenuConfigForm({
 
           {/* Salad Section - Pre-selected category */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-carbon-700">
-                Ensaladas del Día
-              </label>
-              <span className="text-xs text-sage-600 bg-sage-100 px-2 py-1 rounded-full">
-                Categoría pre-seleccionada
-              </span>
-            </div>
-            {formState.saladCategoryId && categories && (
-              <div className="p-3 bg-sage-50 rounded-lg border border-sage-200">
-                <span className="text-sm font-medium text-carbon-800">
-                  {categories.find((c) => c.id === formState.saladCategoryId)
-                    ?.name || "Ensaladas"}
-                </span>
-                <p className="text-xs text-carbon-500 mt-1">
-                  Selecciona las opciones disponibles:
-                </p>
-              </div>
-            )}
+            <label className="block text-sm font-medium text-carbon-700">
+              Ensaladas
+            </label>
+
             {formState.saladCategoryId ? (
               <div className="space-y-2 pl-4 border-l-2 border-sage-200">
                 <FilterSelect
@@ -530,25 +484,10 @@ export function DailyMenuConfigForm({
 
           {/* Extra Section - Pre-selected category */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-carbon-700">
-                Extras del Día
-              </label>
-              <span className="text-xs text-sage-600 bg-sage-100 px-2 py-1 rounded-full">
-                Categoría pre-seleccionada
-              </span>
-            </div>
-            {formState.extraCategoryId && categories && (
-              <div className="p-3 bg-sage-50 rounded-lg border border-sage-200">
-                <span className="text-sm font-medium text-carbon-800">
-                  {categories.find((c) => c.id === formState.extraCategoryId)
-                    ?.name || "Extras"}
-                </span>
-                <p className="text-xs text-carbon-500 mt-1">
-                  Selecciona las opciones disponibles:
-                </p>
-              </div>
-            )}
+            <label className="block text-sm font-medium text-carbon-700">
+              Extras
+            </label>
+
             {formState.extraCategoryId ? (
               <div className="space-y-2 pl-4 border-l-2 border-sage-200">
                 <FilterSelect
@@ -584,25 +523,10 @@ export function DailyMenuConfigForm({
 
           {/* Drink Section - Pre-selected category */}
           <div className="space-y-3 md:col-span-2">
-            <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-carbon-700">
-                Bebidas del Día
-              </label>
-              <span className="text-xs text-sage-600 bg-sage-100 px-2 py-1 rounded-full">
-                Categoría pre-seleccionada
-              </span>
-            </div>
-            {formState.drinkCategoryId && categories && (
-              <div className="p-3 bg-sage-50 rounded-lg border border-sage-200">
-                <span className="text-sm font-medium text-carbon-800">
-                  {categories.find((c) => c.id === formState.drinkCategoryId)
-                    ?.name || "Jugos"}
-                </span>
-                <p className="text-xs text-carbon-500 mt-1">
-                  Selecciona las opciones disponibles:
-                </p>
-              </div>
-            )}
+            <label className="block text-sm font-medium text-carbon-700">
+              Bebidas (Jugos)
+            </label>
+
             {formState.drinkCategoryId ? (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-4 border-l-2 border-sage-200">
                 <FilterSelect
@@ -638,25 +562,10 @@ export function DailyMenuConfigForm({
 
           {/* Protein Section - All proteins available */}
           <div className="space-y-3 md:col-span-2">
-            <div className="flex items-center justify-between">
-              <label className="block text-sm font-medium text-carbon-700">
-                Proteínas Disponibles
-              </label>
-              <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
-                Todas las disponibles en inventario
-              </span>
-            </div>
-            {formState.proteinCategoryId && categories && (
-              <div className="p-3 bg-sage-50 rounded-lg border border-sage-200">
-                <span className="text-sm font-medium text-carbon-800">
-                  {categories.find((c) => c.id === formState.proteinCategoryId)
-                    ?.name || "Proteínas"}
-                </span>
-                <p className="text-xs text-carbon-500 mt-1">
-                  Selecciona todas las proteínas que estarán disponibles hoy:
-                </p>
-              </div>
-            )}
+            <label className="block text-sm font-medium text-carbon-700">
+              Proteínas Disponibles
+            </label>
+
             {formState.proteinCategoryId ? (
               <div className="pl-4 border-l-2 border-sage-200">
                 {proteinItems.isLoading ? (
@@ -720,7 +629,7 @@ export function DailyMenuConfigForm({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <label className="block text-sm font-medium text-carbon-700">
-                  Postres del Día
+                  Postres
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -743,27 +652,10 @@ export function DailyMenuConfigForm({
                   </span>
                 </label>
               </div>
-              {formState.includeDessert && (
-                <span className="text-xs text-sage-600 bg-sage-100 px-2 py-1 rounded-full">
-                  Opcional
-                </span>
-              )}
             </div>
 
             {formState.includeDessert && (
               <>
-                {formState.dessertCategoryId && categories && (
-                  <div className="p-3 bg-sage-50 rounded-lg border border-sage-200">
-                    <span className="text-sm font-medium text-carbon-800">
-                      {categories.find(
-                        (c) => c.id === formState.dessertCategoryId,
-                      )?.name || "Postres"}
-                    </span>
-                    <p className="text-xs text-carbon-500 mt-1">
-                      Selecciona las opciones disponibles:
-                    </p>
-                  </div>
-                )}
                 {formState.dessertCategoryId ? (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-4 border-l-2 border-sage-200">
                     <FilterSelect
