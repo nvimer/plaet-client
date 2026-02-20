@@ -11,10 +11,12 @@ export const useExpenses = (startDate?: string, endDate?: string) => {
   const queryClient = useQueryClient();
 
   // Fetch expenses list
-  const { data: expenses = [], isLoading, error } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["expenses", { startDate, endDate }],
     queryFn: () => expensesApi.getExpenses(startDate, endDate),
   });
+
+  const expenses = Array.isArray(data) ? data : [];
 
   // Create expense mutation
   const createExpenseMutation = useMutation({

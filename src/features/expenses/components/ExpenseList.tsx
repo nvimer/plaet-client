@@ -21,7 +21,7 @@ export const ExpenseList: React.FC = () => {
     );
   }
 
-  if (expenses.length === 0) {
+  if (!Array.isArray(expenses) || expenses.length === 0) {
     return (
       <div className="bg-white rounded-3xl border border-dashed border-sage-200 p-12 flex flex-col items-center justify-center text-center space-y-4">
         <div className="w-16 h-16 bg-sage-50 rounded-full flex items-center justify-center text-sage-300">

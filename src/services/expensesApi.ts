@@ -1,5 +1,5 @@
 import { axiosClient } from "./axiosClient";
-import type { Expense, CreateExpenseDTO } from "../types";
+import type { Expense, CreateExpenseDTO, ApiResponse } from "../types";
 
 /**
  * EXPENSES API - Client
@@ -7,15 +7,15 @@ import type { Expense, CreateExpenseDTO } from "../types";
  */
 
 export const createExpense = async (dto: CreateExpenseDTO): Promise<Expense> => {
-  const { data } = await axiosClient.post("/expenses", dto);
-  return data;
+  const { data } = await axiosClient.post<ApiResponse<Expense>>("/expenses", dto);
+  return data.data;
 };
 
 export const getExpenses = async (startDate?: string, endDate?: string): Promise<Expense[]> => {
-  const { data } = await axiosClient.get("/expenses", {
+  const { data } = await axiosClient.get<ApiResponse<Expense[]>>("/expenses", {
     params: { startDate, endDate },
   });
-  return data;
+  return data.data || [];
 };
 
 export const deleteExpense = async (id: string): Promise<void> => {
