@@ -18,7 +18,7 @@ export interface TopProduct {
 }
 
 export interface DailyAnalytics {
-  salesSummary: SalesSummary;
-  topProducts: TopProduct[];
+  salesSummary?: SalesSummary;
+  topProducts?: TopProduct[];
   netBalance: number;
 }

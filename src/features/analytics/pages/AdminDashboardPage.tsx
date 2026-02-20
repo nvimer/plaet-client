@@ -77,7 +77,14 @@ export const AdminDashboardPage: React.FC = () => {
             <h3 className="text-lg font-bold text-carbon-900">Ventas por Método de Pago</h3>
             <p className="text-sm text-carbon-500 font-medium">Distribución de ingresos en el día</p>
           </div>
-          {dailySummary && <SalesOverviewChart data={dailySummary.salesSummary.byPaymentMethod} />}
+          {dailySummary?.salesSummary && (
+            <SalesOverviewChart data={dailySummary.salesSummary.byPaymentMethod} />
+          )}
+          {!dailySummary?.salesSummary && !isLoading && (
+            <div className="h-[300px] flex items-center justify-center text-carbon-400 italic">
+              Sin datos de ventas para este día
+            </div>
+          )}
         </div>
 
         {/* Top Selling Products */}

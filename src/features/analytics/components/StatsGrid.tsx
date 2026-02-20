@@ -12,30 +12,35 @@ interface StatsGridProps {
  * KPI cards for the main dashboard metrics.
  */
 export const StatsGrid: React.FC<StatsGridProps> = ({ data }) => {
+  const totalSales = data.salesSummary?.totalSales || 0;
+  const orderCount = data.salesSummary?.orderCount || 0;
+  const netBalance = data.netBalance || 0;
+  const totalExpenses = totalSales - netBalance;
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
       <StatCard
         title="Ventas Totales"
-        value={`$${data.salesSummary.totalSales.toLocaleString()}`}
+        value={`$${totalSales.toLocaleString()}`}
         icon={TrendingUp}
         trend={{ value: 12, isUp: true }} // Mock trend for UX
         variant="success"
       />
       <StatCard
         title="Pedidos"
-        value={data.salesSummary.orderCount.toString()}
+        value={orderCount.toString()}
         icon={ShoppingBag}
         variant="primary"
       />
       <StatCard
         title="Balance Neto"
-        value={`$${data.netBalance.toLocaleString()}`}
+        value={`$${netBalance.toLocaleString()}`}
         icon={Wallet}
         variant="info"
       />
       <StatCard
         title="Gastos Registrados"
-        value={`$${(data.salesSummary.totalSales - data.netBalance).toLocaleString()}`}
+        value={`$${totalExpenses.toLocaleString()}`}
         icon={Receipt}
         variant="warning"
       />
