@@ -1,6 +1,5 @@
 import { PaymentMethod } from "./enums";
 
-// Daily analytics types for dashboard
 export interface SalesSummary {
   totalSales: number;
   orderCount: number;

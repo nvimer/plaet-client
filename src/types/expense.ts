@@ -5,8 +5,6 @@ export interface Expense {
   category: string;
   date: string;
   registeredById: string;
-  
-  // Relation
   registeredBy?: { name: string };
 }
 

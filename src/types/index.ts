@@ -8,85 +8,79 @@
  */
 
 // Common types
-export * from "./common";
+export type {
+  ApiResponse,
+  ApiError,
+  PaginationParams,
+  PaginatedResponse,
+  LoadingState,
+  ApiErrorResponse,
+  AxiosErrorWithResponse,
+} from "./common";
+export { isApiErrorResponse } from "./common";
 
-// Enums (se exportan con `export *` para poder usarlos como valores)
+// Enums (exported as values)
 export * from "./enums";
 
 // Domain types
-export type { User, UserProfile } from "./user";
-export type { Table } from "./table";
-export type { MenuItem, Category, Product } from "./menu";
-export type { Order, OrderItem } from "./order";
+export type {
+  User,
+  Profile,
+  Role,
+  UserRole,
+  Permission,
+  UserWithRolesAndPermissions,
+  RegisterInput,
+  LoginInput,
+  AuthResponse,
+  UpdateUserInput,
+  ProfileMeResponse,
+} from "./user";
+export type {
+  Table,
+  CreateTableInput,
+  UpdateTableInput,
+  UpdateTableStatusInput,
+  TableFilters,
+  ActiveFilterChip,
+  FilterConfig,
+} from "./table";
+export type {
+  MenuItem,
+  MenuCategory,
+  CreateMenuCategoryInput,
+  UpdateMenuCategoryInput,
+  CreateMenuItemInput,
+  UpdateMenuItemInput,
+  AddStockInput,
+  RemoveStockInput,
+  StockHistoryEntry,
+  DailyStockResetInput,
+  InventoryTypeInput,
+} from "./menu";
+export { InventoryType } from "./menu";
+export type {
+  Order,
+  OrderItem,
+  Customer,
+  Payment,
+  CreateOrderInput,
+  CreateOrderItemInput,
+  UpdateOrderInput,
+  UpdateOrderStatusInput,
+  CreatePaymentInput,
+} from "./order";
 
 // Analytics types
-export interface SalesSummary {
-  totalSales: number;
-  orderCount: number;
-  byPaymentMethod: {
-    method: import("./enums").PaymentMethod;
-    amount: number;
-    count: number;
-  }[];
-}
-
-export interface TopProduct {
-  id: string;
-  name: string;
-  quantity: number;
-  totalRevenue: number;
-}
-
-export interface DailyAnalytics {
-  salesSummary: SalesSummary;
-  topProducts: TopProduct[];
-  netBalance: number;
-}
+export type { SalesSummary, TopProduct, DailyAnalytics } from "./analytics";
 
 // Cash Closure types
-export enum CashClosureStatus {
-  OPEN = "OPEN",
-  CLOSED = "CLOSED",
-}
-
-export interface CashClosure {
-  id: string;
-  openedById: string;
-  closedById?: string;
-  openingDate: string;
-  closingDate?: string;
-  openingBalance: number;
-  expectedBalance: number;
-  actualBalance?: number;
-  difference?: number;
-  status: CashClosureStatus;
-  notes?: string;
-  openedBy?: { name: string };
-  closedBy?: { name: string };
-}
-
-export interface CreateCashClosureDTO {
-  openingBalance: number;
-}
-
-export interface CloseCashClosureDTO {
-  actualBalance: number;
-  notes?: string;
-}
+export type {
+  CashClosure,
+  CreateCashClosureDTO,
+  CloseCashClosureDTO,
+} from "./cash-closure";
+export { CashClosureStatus } from "./cash-closure";
 
 // Expense types
-export interface Expense {
-  id: string;
-  amount: number;
-  description: string;
-  category: string;
-  date: string;
-  registeredById: string;
-  registeredBy?: { name: string };
-}
-
-export interface CreateExpenseDTO {
-  amount: number;
-  description: string;
-  category: string;
-}
+export type { Expense, CreateExpenseDTO } from "./expense";

@@ -9,14 +9,12 @@ export interface CashClosure {
   closedById?: string;
   openingDate: string;
   closingDate?: string;
-  openingBalance: number; // Base de caja
-  expectedBalance: number; // Calculado por el sistema
-  actualBalance?: number; // Ingresado por el usuario al cerrar
-  difference?: number; // Sobrante/Faltante
+  openingBalance: number;
+  expectedBalance: number;
+  actualBalance?: number;
+  difference?: number;
   status: CashClosureStatus;
   notes?: string;
-  
-  // Relations (opcionales para el frontend)
   openedBy?: { name: string };
   closedBy?: { name: string };
 }
