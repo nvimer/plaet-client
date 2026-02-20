@@ -18,6 +18,9 @@ export const ROUTES = {
 
   // Dashboard
   DASHBOARD: "/dashboard",
+  ADMIN_DASHBOARD: "/admin/dashboard",
+  CASH_CLOSURE: "/admin/cash-closure",
+  EXPENSES: "/admin/expenses",
 
   // Orders - Full page routes (no modals)
   ORDERS: "/orders",

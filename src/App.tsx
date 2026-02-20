@@ -38,6 +38,9 @@ import {
   UserEditPage,
   ProfilePage,
 } from "./features/users/pages";
+import { AdminDashboardPage } from "./features/analytics/pages/AdminDashboardPage";
+import { CashClosurePage } from "./features/cash-closure/pages/CashClosurePage";
+import { ExpensesPage } from "./features/expenses/pages/ExpensesPage";
 import { RoleProtectedRoute } from "./components/RoleProtectedRoute";
 import { RoleName } from "./types";
 import { ROUTES } from "./app/routes";
@@ -116,6 +119,50 @@ const App = () => {
                   <DashboardLayout>
                     <DashboardPage />
                   </DashboardLayout>
+                </PrivateRoute>
+              }
+            />
+
+            {/* Admin - Dashboard/Analytics (Admin only) */}
+            <Route
+              path={ROUTES.ADMIN_DASHBOARD}
+              element={
+                <PrivateRoute>
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
+                    <DashboardLayout>
+                      <AdminDashboardPage />
+                    </DashboardLayout>
+                  </RoleProtectedRoute>
+                </PrivateRoute>
+              }
+            />
+
+            {/* Admin - Cash Closure (Admin and Cashier) */}
+            <Route
+              path={ROUTES.CASH_CLOSURE}
+              element={
+                <PrivateRoute>
+                  <RoleProtectedRoute
+                    allowedRoles={[RoleName.ADMIN, RoleName.CASHIER]}
+                  >
+                    <DashboardLayout>
+                      <CashClosurePage />
+                    </DashboardLayout>
+                  </RoleProtectedRoute>
+                </PrivateRoute>
+              }
+            />
+
+            {/* Admin - Expenses (Admin only) */}
+            <Route
+              path={ROUTES.EXPENSES}
+              element={
+                <PrivateRoute>
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
+                    <DashboardLayout>
+                      <ExpensesPage />
+                    </DashboardLayout>
+                  </RoleProtectedRoute>
                 </PrivateRoute>
               }
             />

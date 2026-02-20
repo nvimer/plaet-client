@@ -15,6 +15,10 @@ import {
   Grid3x3,
   Plus,
   ChevronRight,
+  BarChart3,
+  Wallet,
+  Receipt,
+  Settings,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { ROUTES } from "@/app/routes";
@@ -95,6 +99,32 @@ const baseNavigationItems: NavItem[] = [
         path: ROUTES.ORDER_CREATE,
         name: "Nuevo Pedido",
         icon: Plus,
+      },
+    ],
+  },
+  {
+    path: "/admin",
+    name: "Administración",
+    icon: Settings,
+    description: "Contabilidad y reportes",
+    children: [
+      {
+        type: "link",
+        path: ROUTES.ADMIN_DASHBOARD,
+        name: "Estadísticas",
+        icon: BarChart3,
+      },
+      {
+        type: "link",
+        path: ROUTES.CASH_CLOSURE,
+        name: "Cuadre de Caja",
+        icon: Wallet,
+      },
+      {
+        type: "link",
+        path: ROUTES.EXPENSES,
+        name: "Gastos",
+        icon: Receipt,
       },
     ],
   },
@@ -195,16 +225,17 @@ export function Sidebar() {
       },
     ];
 
-    // Insert Menu item at position 2 (after Mesas)
+    // Insert Menu item at position 2 (after Tables)
     const items: NavItem[] = [
       baseNavigationItems[0], // Dashboard
-      baseNavigationItems[1], // Mesas
+      baseNavigationItems[1], // Tables
       {
         ...menuNavItem,
         children: menuChildren,
       },
-      baseNavigationItems[2], // Pedidos
-      baseNavigationItems[3], // Usuarios
+      baseNavigationItems[2], // Orders
+      baseNavigationItems[3], // Administration
+      baseNavigationItems[4], // Users
     ];
 
     return items;

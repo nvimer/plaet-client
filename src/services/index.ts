@@ -18,3 +18,6 @@ export * as dailyMenuApi from "./dailyMenuApi";
 export * as usersApi from "./usersApi";
 export * as rolesApi from "./rolesApi";
 export * as permissionsApi from "./permissionsApi";
+export * as analyticsApi from "./analyticsApi";
+export * as cashClosureApi from "./cashClosureApi";
+export * as expensesApi from "./expensesApi";
