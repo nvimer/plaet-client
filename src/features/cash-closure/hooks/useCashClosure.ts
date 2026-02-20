@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { cashClosureApi } from "@/services";
-import type { CreateCashClosureDTO, CloseCashClosureDTO } from "@/types";
+import type { CreateCashClosureDTO, CloseCashClosureDTO, AxiosErrorWithResponse } from "@/types";
 import { toast } from "sonner";
 
 /**
@@ -24,7 +24,7 @@ export const useCashClosure = () => {
       queryClient.invalidateQueries({ queryKey: ["cash-closure"] });
       toast.success("Turno abierto exitosamente");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosErrorWithResponse) => {
       toast.error(error?.response?.data?.message || "Error al abrir el turno");
     },
   });
@@ -37,7 +37,7 @@ export const useCashClosure = () => {
       queryClient.invalidateQueries({ queryKey: ["cash-closure"] });
       toast.success("Turno cerrado exitosamente");
     },
-    onError: (error: any) => {
+    onError: (error: AxiosErrorWithResponse) => {
       toast.error(error?.response?.data?.message || "Error al cerrar el turno");
     },
   });

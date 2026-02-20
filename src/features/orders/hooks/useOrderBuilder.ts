@@ -196,7 +196,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       .map(item => ({
         id: item.id,
         name: item.name,
-        price: parseFloat(item.price)
+        price: parseFloat(String(item.price || 0)) || 0
       }));
   }, [menuItems, dailyMenuData]);
 

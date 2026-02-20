@@ -15,8 +15,8 @@ export const useAnalytics = (date: string = new Date().toISOString().split("T")[
 
   // Fetch top products ranking
   const topProductsQuery = useQuery({
-    queryKey: ["analytics", "top-products"],
-    queryFn: () => analyticsApi.getTopProducts(5),
+    queryKey: ["analytics", "top-products", date],
+    queryFn: () => analyticsApi.getTopProducts(5, date),
     staleTime: 1000 * 60 * 30, // 30 minutes
   });
 
