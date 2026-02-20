@@ -3,7 +3,7 @@ import { BaseModal } from "@/components/ui/BaseModal/BaseModal";
 import { Button } from "@/components/ui/Button/Button";
 import { Input } from "@/components/ui/Input/Input";
 import { useCashClosure } from "../hooks/useCashClosure";
-import { CashClosure } from "@/types";
+import type { CashClosure } from "@/types";
 
 interface CloseShiftModalProps {
   isOpen: boolean;

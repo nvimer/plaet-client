@@ -9,7 +9,7 @@ import {
   ResponsiveContainer,
   Cell,
 } from "recharts";
-import { SalesSummary } from "@/types";
+import type { SalesSummary } from "@/types";
 
 interface SalesOverviewChartProps {
   data: SalesSummary["byPaymentMethod"];
