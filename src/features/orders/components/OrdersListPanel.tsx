@@ -59,14 +59,16 @@ export function OrdersListPanel({
         </div>
       </div>
 
-      <div className="p-4 space-y-3 max-h-[60vh] lg:max-h-[calc(100vh-400px)] overflow-y-auto">
+      <div className="p-3 sm:p-4 space-y-2 sm:space-y-3 max-h-[60vh] lg:max-h-[calc(100vh-400px)] overflow-y-auto">
         {orders.length === 0 ? (
-          <div className="text-center py-12 px-4">
-            <div className="w-16 h-16 rounded-2xl bg-sage-100 text-sage-400 flex items-center justify-center mx-auto mb-4">
-              <ShoppingBag className="w-8 h-8" />
+          <div className="text-center py-8 sm:py-12 px-4">
+            <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-sage-100 text-sage-400 flex items-center justify-center mx-auto mb-3 sm:mb-4">
+              <ShoppingBag className="w-6 h-6 sm:w-8 sm:h-8" />
             </div>
-            <p className="text-carbon-700 font-medium">No hay pedidos</p>
-            <p className="text-sm text-carbon-500 mt-1">
+            <p className="text-carbon-700 font-medium text-sm sm:text-base">
+              No hay pedidos
+            </p>
+            <p className="text-xs sm:text-sm text-carbon-500 mt-1">
               Agrega el primer pedido
             </p>
           </div>
@@ -75,41 +77,41 @@ export function OrdersListPanel({
             <div
               key={order.id}
               className={cn(
-                "p-4 rounded-xl border-2 transition-all duration-200",
+                "p-3 sm:p-4 rounded-xl border-2 transition-all duration-200",
                 currentOrderIndex === index
                   ? "border-amber-400 bg-amber-50 shadow-md"
                   : "border-sage-200 bg-white hover:border-sage-300 hover:shadow-sm",
               )}
             >
-              <div className="flex items-start justify-between mb-3">
-                <div className="flex items-center gap-3">
-                  <span className="w-10 h-10 rounded-xl bg-gradient-to-br from-sage-100 to-sage-200 text-sage-700 flex items-center justify-center font-bold text-base">
+              <div className="flex items-start justify-between mb-2 sm:mb-3">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <span className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-gradient-to-br from-sage-100 to-sage-200 text-sage-700 flex items-center justify-center font-bold text-xs sm:text-base">
                     {index + 1}
                   </span>
                   <div>
-                    <p className="font-bold text-carbon-900 text-base">
+                    <p className="font-bold text-carbon-900 text-sm sm:text-base">
                       {order.protein ? order.protein.name : "Productos sueltos"}
                     </p>
-                    <p className="text-sm text-sage-700 font-semibold">
+                    <p className="text-xs sm:text-sm text-sage-700 font-semibold">
                       ${order.total.toLocaleString("es-CO")}
                     </p>
                   </div>
                 </div>
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-0 sm:gap-1">
                   <button
                     onClick={() => onEdit(index)}
-                    className="p-3 text-carbon-400 hover:text-sage-600 hover:bg-sage-100 rounded-xl transition-colors"
+                    className="p-2 sm:p-3 text-carbon-400 hover:text-sage-600 hover:bg-sage-100 rounded-lg sm:rounded-xl transition-colors"
                     title="Editar"
                   >
-                    <Edit2 className="w-5 h-5" />
+                    <Edit2 className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                   <button
                     onClick={() => onDuplicate(index)}
-                    className="p-3 text-carbon-400 hover:text-sage-600 hover:bg-sage-100 rounded-xl transition-colors"
+                    className="p-2 sm:p-3 text-carbon-400 hover:text-sage-600 hover:bg-sage-100 rounded-lg sm:rounded-xl transition-colors"
                     title="Duplicar"
                   >
                     <svg
-                      className="w-5 h-5"
+                      className="w-4 h-4 sm:w-5 sm:h-5"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -124,24 +126,24 @@ export function OrdersListPanel({
                   </button>
                   <button
                     onClick={() => onRemove(index)}
-                    className="p-3 text-carbon-400 hover:text-rose-500 hover:bg-rose-50 rounded-xl transition-colors"
+                    className="p-2 sm:p-3 text-carbon-400 hover:text-rose-500 hover:bg-rose-50 rounded-lg sm:rounded-xl transition-colors"
                     title="Eliminar"
                   >
-                    <Trash2 className="w-5 h-5" />
+                    <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
                   </button>
                 </div>
               </div>
 
               {/* Order details */}
-              <div className="flex flex-wrap gap-2 text-xs">
+              <div className="flex flex-wrap gap-1.5 sm:gap-2 text-[10px] sm:text-xs ml-10 sm:ml-13">
                 {order.looseItems.length > 0 && (
-                  <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full font-medium">
+                  <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded-full font-medium">
                     {order.looseItems.reduce((sum, i) => sum + i.quantity, 0)}{" "}
                     extras
                   </span>
                 )}
                 {order.notes && (
-                  <span className="px-2 py-1 bg-amber-100 text-amber-700 rounded-full font-medium italic w-full mt-1 truncate">
+                  <span className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded-full font-medium italic truncate max-w-[150px] sm:max-w-none">
                     Nota: {order.notes}
                   </span>
                 )}

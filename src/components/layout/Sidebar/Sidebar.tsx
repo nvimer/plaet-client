@@ -12,7 +12,6 @@ import {
   PanelLeftClose,
   PanelLeft,
   X,
-  FolderOpen,
   Grid3x3,
   Plus,
   ChevronRight,
@@ -84,7 +83,12 @@ const baseNavigationItems: NavItem[] = [
     icon: ShoppingCart,
     description: "Gestionar pedidos",
     children: [
-      { type: "link", path: ROUTES.ORDERS, name: "Todos los pedidos", icon: ShoppingCart },
+      {
+        type: "link",
+        path: ROUTES.ORDERS,
+        name: "Todos los pedidos",
+        icon: ShoppingCart,
+      },
       { type: "link", path: ROUTES.KITCHEN, name: "Cocina", icon: ChefHat },
       {
         type: "link",
@@ -204,7 +208,7 @@ export function Sidebar() {
     ];
 
     return items;
-  }, [categories]);
+  }, []);
 
   const handleNavClick = () => {
     if (isMobile) {
@@ -239,7 +243,10 @@ export function Sidebar() {
   }, []);
 
   // Flyout handlers
-  const handleMouseEnterCollapsed = (itemPath: string, hasChildren: boolean) => {
+  const handleMouseEnterCollapsed = (
+    itemPath: string,
+    hasChildren: boolean,
+  ) => {
     if (isCollapsed && !isMobile && hasChildren) {
       if (flyoutTimeoutRef.current) {
         clearTimeout(flyoutTimeoutRef.current);
@@ -290,7 +297,7 @@ export function Sidebar() {
           isCollapsed && !isMobile && "w-16",
           !isCollapsed && !isMobile && "w-72",
           isMobile && "w-72 -translate-x-full shadow-2xl",
-          isMobile && isMobileOpen && "translate-x-0"
+          isMobile && isMobileOpen && "translate-x-0",
         )}
       >
         {/* Header */}
@@ -299,7 +306,7 @@ export function Sidebar() {
             "h-16 flex items-center border-b border-sage-200/60",
             isCollapsed && !isMobile
               ? "justify-center px-2"
-              : "justify-between px-4"
+              : "justify-between px-4",
           )}
         >
           <Link
@@ -313,13 +320,13 @@ export function Sidebar() {
                 "flex items-center justify-center flex-shrink-0",
                 "group-hover:scale-105 group-hover:shadow-lg",
                 "transition-all duration-200",
-                isCollapsed && !isMobile ? "w-10 h-10" : "w-9 h-9"
+                isCollapsed && !isMobile ? "w-10 h-10" : "w-9 h-9",
               )}
             >
               <Home
                 className={cn(
                   "text-white",
-                  isCollapsed && !isMobile ? "w-5 h-5" : "w-4 h-4"
+                  isCollapsed && !isMobile ? "w-5 h-5" : "w-4 h-4",
                 )}
               />
             </div>
@@ -337,7 +344,7 @@ export function Sidebar() {
                   onClick={toggleCollapsed}
                   className={cn(
                     "p-2 rounded-xl transition-all duration-200",
-                    "text-sage-400 hover:text-sage-600 hover:bg-sage-100"
+                    "text-sage-400 hover:text-sage-600 hover:bg-sage-100",
                   )}
                   aria-label="Contraer barra lateral"
                 >
@@ -365,7 +372,7 @@ export function Sidebar() {
               className={cn(
                 "w-full p-2 rounded-xl transition-all duration-200",
                 "text-sage-400 hover:text-sage-600 hover:bg-sage-100",
-                "flex items-center justify-center"
+                "flex items-center justify-center",
               )}
               aria-label="Expandir barra lateral"
             >
@@ -378,7 +385,7 @@ export function Sidebar() {
         <nav
           className={cn(
             "flex-1 overflow-y-auto py-4 space-y-1",
-            isCollapsed && !isMobile ? "px-2" : "px-3"
+            isCollapsed && !isMobile ? "px-2" : "px-3",
           )}
         >
           {navigationItems.map((navItem) => {
@@ -420,7 +427,7 @@ export function Sidebar() {
                       : "gap-3 px-3 py-2.5",
                     isItemActive
                       ? "bg-sage-100 text-sage-700 shadow-sm"
-                      : "text-carbon-600 hover:bg-sage-50 hover:text-carbon-800"
+                      : "text-carbon-600 hover:bg-sage-50 hover:text-carbon-800",
                   )}
                 >
                   <div className="relative">
@@ -428,7 +435,9 @@ export function Sidebar() {
                       className={cn(
                         "flex-shrink-0 transition-colors",
                         isItemActive ? "text-sage-600" : "text-carbon-400",
-                        isCollapsed && !isMobile ? "w-5 h-5" : "w-[18px] h-[18px]"
+                        isCollapsed && !isMobile
+                          ? "w-5 h-5"
+                          : "w-[18px] h-[18px]",
                       )}
                     />
                     {/* Submenu indicator dot when collapsed */}
@@ -453,7 +462,7 @@ export function Sidebar() {
                     <ChevronRight
                       className={cn(
                         "w-4 h-4 transition-transform duration-200 text-carbon-400",
-                        isExpanded && "rotate-90"
+                        isExpanded && "rotate-90",
                       )}
                     />
                   )}
@@ -482,15 +491,17 @@ export function Sidebar() {
                               onClick={() => toggleExpandedNested(child.key)}
                               className={cn(
                                 "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 text-left text-sm",
-                                "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700"
+                                "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700",
                               )}
                             >
                               <ExpandIcon className="w-4 h-4 flex-shrink-0 text-carbon-400" />
-                              <span className="truncate flex-1">{child.name}</span>
+                              <span className="truncate flex-1">
+                                {child.name}
+                              </span>
                               <ChevronRight
                                 className={cn(
                                   "w-4 h-4 text-carbon-400 transition-transform duration-200",
-                                  isNestedExpanded && "rotate-90"
+                                  isNestedExpanded && "rotate-90",
                                 )}
                               />
                             </button>
@@ -508,11 +519,13 @@ export function Sidebar() {
                                         "flex items-center gap-2 px-2 py-1.5 rounded-lg transition-all duration-200 text-sm",
                                         isSubActive
                                           ? "bg-sage-100/80 text-sage-700 font-medium"
-                                          : "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700"
+                                          : "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700",
                                       )}
                                     >
                                       <SubIcon className="w-3.5 h-3.5 flex-shrink-0 text-carbon-400" />
-                                      <span className="truncate">{sub.name}</span>
+                                      <span className="truncate">
+                                        {sub.name}
+                                      </span>
                                     </Link>
                                   );
                                 })}
@@ -536,13 +549,15 @@ export function Sidebar() {
                             "text-sm",
                             isChildActive
                               ? "bg-sage-100/80 text-sage-700 font-medium"
-                              : "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700"
+                              : "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700",
                           )}
                         >
                           <ChildIcon
                             className={cn(
                               "w-4 h-4 flex-shrink-0 transition-colors",
-                              isChildActive ? "text-sage-500" : "text-carbon-400"
+                              isChildActive
+                                ? "text-sage-500"
+                                : "text-carbon-400",
                             )}
                           />
                           <span className="truncate flex-1">{child.name}</span>
@@ -567,7 +582,7 @@ export function Sidebar() {
                       "absolute left-full top-0 ml-2 z-50",
                       "min-w-[200px] py-2 px-2",
                       "bg-white rounded-xl shadow-lg border border-sage-200",
-                      "animate-in fade-in slide-in-from-left-2 duration-200"
+                      "animate-in fade-in slide-in-from-left-2 duration-200",
                     )}
                   >
                     <div className="text-xs font-semibold text-carbon-400 uppercase tracking-wide px-3 py-2">
@@ -585,18 +600,18 @@ export function Sidebar() {
                         }
 
                         if (child.type === "expandable") {
-                          const isNestedExpanded = expandedNested.has(child.key);
+                          const isNestedExpanded = expandedNested.has(
+                            child.key,
+                          );
                           const ExpandIcon = child.icon;
                           return (
                             <div key={child.key}>
                               <button
                                 type="button"
-                                onClick={() =>
-                                  toggleExpandedNested(child.key)
-                                }
+                                onClick={() => toggleExpandedNested(child.key)}
                                 className={cn(
                                   "w-full flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 text-left text-sm",
-                                  "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700"
+                                  "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700",
                                 )}
                               >
                                 <ExpandIcon className="w-4 h-4 flex-shrink-0 text-carbon-400" />
@@ -606,7 +621,7 @@ export function Sidebar() {
                                 <ChevronRight
                                   className={cn(
                                     "w-4 h-4 text-carbon-400 transition-transform duration-200",
-                                    isNestedExpanded && "rotate-90"
+                                    isNestedExpanded && "rotate-90",
                                   )}
                                 />
                               </button>
@@ -625,7 +640,7 @@ export function Sidebar() {
                                             "flex items-center gap-2 px-2 py-1.5 rounded-lg transition-all duration-200 text-sm",
                                             isSubActive
                                               ? "bg-sage-100/80 text-sage-700 font-medium"
-                                              : "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700"
+                                              : "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700",
                                           )}
                                         >
                                           <SubIcon className="w-3.5 h-3.5 flex-shrink-0 text-carbon-400" />
@@ -655,7 +670,7 @@ export function Sidebar() {
                               "text-sm",
                               isChildActive
                                 ? "bg-sage-100/80 text-sage-700 font-medium"
-                                : "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700"
+                                : "text-carbon-500 hover:bg-sage-50 hover:text-carbon-700",
                             )}
                           >
                             <ChildIcon
@@ -663,7 +678,7 @@ export function Sidebar() {
                                 "w-4 h-4 flex-shrink-0",
                                 isChildActive
                                   ? "text-sage-500"
-                                  : "text-carbon-400"
+                                  : "text-carbon-400",
                               )}
                             />
                             <span className="truncate flex-1">
@@ -689,7 +704,7 @@ export function Sidebar() {
         <div
           className={cn(
             "border-t border-sage-200/60",
-            isCollapsed && !isMobile ? "p-2" : "p-4"
+            isCollapsed && !isMobile ? "p-2" : "p-4",
           )}
         >
           {(!isCollapsed || isMobile) && (
@@ -716,7 +731,7 @@ export function Sidebar() {
             "shadow-lg border border-sage-200/60",
             "text-sage-600 hover:bg-white hover:shadow-xl",
             "transition-all duration-200",
-            "active:scale-95"
+            "active:scale-95",
           )}
           aria-label="Abrir menú"
         >

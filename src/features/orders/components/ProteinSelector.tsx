@@ -82,7 +82,7 @@ export function ProteinSelector({
               key={protein.id}
               onPress={() => {
                 if (isSelected) {
-                  onSelect(null as any);
+                  onSelect(null as unknown as ProteinOption);
                 } else {
                   onSelect(protein);
                 }
