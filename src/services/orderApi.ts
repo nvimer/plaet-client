@@ -210,18 +210,40 @@ export const updateBatchOrderStatus = async (batchData: BatchStatusUpdateInput) 
 };
 
 /**
- * GET /orders/kitchen
+ * GET /orders
  *
- * Get orders for kitchen view with status filtering
+ * Get orders for kitchen view using existing endpoint with status filtering
+ * Makes multiple calls to fetch orders with different statuses
  *
- * @param status - Status filter (comma-separated)
- * @returns Orders for kitchen
+ * @param status - Status filter (currently not used, fetches all kitchen statuses)
+ * @returns Orders for kitchen (PENDING, IN_KITCHEN, READY)
  */
-export const getKitchenOrders = async (status?: string) => {
-  const { data } = await axiosClient.get<ApiResponse<Order[]>>("/orders/kitchen", {
-    params: { status },
-  });
-  return data;
+export const getKitchenOrders = async (_status?: string) => {
+  // Fetch orders with each status in parallel
+  const [pendingResponse, inKitchenResponse, readyResponse] = await Promise.all([
+    axiosClient.get<PaginatedResponse<Order>>("/orders", {
+      params: { status: OrderStatus.PENDING, limit: 100 },
+    }),
+    axiosClient.get<PaginatedResponse<Order>>("/orders", {
+      params: { status: OrderStatus.IN_KITCHEN, limit: 100 },
+    }),
+    axiosClient.get<PaginatedResponse<Order>>("/orders", {
+      params: { status: OrderStatus.READY, limit: 100 },
+    }),
+  ]);
+
+  // Combine all orders
+  const allOrders = [
+    ...pendingResponse.data.data,
+    ...inKitchenResponse.data.data,
+    ...readyResponse.data.data,
+  ];
+
+  return { 
+    success: true, 
+    data: allOrders,
+    message: "Orders retrieved successfully"
+  };
 };
 
 /**
