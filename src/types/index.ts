@@ -18,6 +18,75 @@ export * from "./user";
 export * from "./table";
 export * from "./menu";
 export * from "./order";
-export * from "./analytics";
-export * from "./cash-closure";
-export * from "./expense";
+
+// Analytics types
+export interface SalesSummary {
+  totalSales: number;
+  orderCount: number;
+  byPaymentMethod: {
+    method: import("./enums").PaymentMethod;
+    amount: number;
+    count: number;
+  }[];
+}
+
+export interface TopProduct {
+  id: string;
+  name: string;
+  quantity: number;
+  totalRevenue: number;
+}
+
+export interface DailyAnalytics {
+  salesSummary: SalesSummary;
+  topProducts: TopProduct[];
+  netBalance: number;
+}
+
+// Cash Closure types
+export enum CashClosureStatus {
+  OPEN = "OPEN",
+  CLOSED = "CLOSED",
+}
+
+export interface CashClosure {
+  id: string;
+  openedById: string;
+  closedById?: string;
+  openingDate: string;
+  closingDate?: string;
+  openingBalance: number;
+  expectedBalance: number;
+  actualBalance?: number;
+  difference?: number;
+  status: CashClosureStatus;
+  notes?: string;
+  openedBy?: { name: string };
+  closedBy?: { name: string };
+}
+
+export interface CreateCashClosureDTO {
+  openingBalance: number;
+}
+
+export interface CloseCashClosureDTO {
+  actualBalance: number;
+  notes?: string;
+}
+
+// Expense types
+export interface Expense {
+  id: string;
+  amount: number;
+  description: string;
+  category: string;
+  date: string;
+  registeredById: string;
+  registeredBy?: { name: string };
+}
+
+export interface CreateExpenseDTO {
+  amount: number;
+  description: string;
+  category: string;
+}
