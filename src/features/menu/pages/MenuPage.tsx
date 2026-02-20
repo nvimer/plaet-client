@@ -13,7 +13,6 @@ import {
   FolderOpen,
   Grid3x3,
   Plus,
-  UtensilsCrossed,
   AlertTriangle,
   Package,
 } from "lucide-react";
@@ -21,9 +20,7 @@ import type { AxiosErrorWithResponse } from "@/types/common";
 import { MenuSectionToolbar, CardGrid } from "../components";
 import {
   useCategories,
-  useDeleteCategory,
-  useUpdateCategory,
-  CategoryCard,
+  
 } from "../categories";
 import {
   MenuItemCard,
@@ -35,31 +32,19 @@ import {
 import { Pagination } from "@/components/ui/Pagination";
 import {
   ROUTES,
-  getCategoryEditRoute,
+  
   getMenuItemEditRoute,
 } from "@/app/routes";
 import { cn } from "@/utils/cn";
 
-type Tab = "categories" | "items";
-
-/**
- * MenuPage Component
- *
- * Gestión de menú con diseño actual: header con estadísticas,
- * pestañas tipo segmented control, alertas compactas y panel de contenido.
- */
 export function MenuPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [activeTab, setActiveTab] = useState<Tab>("items");
   const [filterCategory, setFilterCategory] = useState<string>("");
 
   useEffect(() => {
-    const tabParam = searchParams.get("tab");
     const categoryParam = searchParams.get("category");
-    if (tabParam === "categories") setActiveTab("categories");
-    else if (categoryParam) {
-      setActiveTab("items");
+    if (categoryParam) {
       setFilterCategory(categoryParam);
     }
   }, [searchParams]);
@@ -69,20 +54,9 @@ export function MenuPage() {
     setSearchParams(value ? { category: value } : {});
   };
 
-  const handleTabChange = (tab: Tab) => {
-    setActiveTab(tab);
-    setSearchParams(tab === "categories" ? { tab: "categories" } : {});
-  };
-
-  const { data: categories, isLoading: loadingCategories } = useCategories();
-  const { mutate: deleteCategory } = useDeleteCategory();
-  const { mutate: updateCategory } = useUpdateCategory();
-
-  const sortedCategories = useMemo(
-    () => [...(categories ?? [])].sort((a, b) => a.order - b.order),
-    [categories],
-  );
-
+  const { data: categories } = useCategories();
+    
+  
   const {
     items: paginationData,
     isLoading: loadingItems,
@@ -111,101 +85,27 @@ export function MenuPage() {
     return map;
   }, [categories]);
 
-  const countByCategory = useMemo(() => {
-    const map: Record<number, number> = {};
-    items?.forEach((i) => {
-      map[i.categoryId] = (map[i.categoryId] ?? 0) + 1;
-    });
-    return map;
-  }, [items]);
-
+  
   const filteredItems = filterCategory
     ? items?.filter((item) => String(item.categoryId) === filterCategory)
     : items;
 
-  const hasStockAlerts =
-    (outOfStockItems?.length ?? 0) > 0 || (lowStockItems?.length ?? 0) > 0;
-
-  const handleCreateCategory = () => navigate(ROUTES.MENU_CATEGORY_CREATE);
-  const handleEditCategory = (id: number) => navigate(getCategoryEditRoute(id));
-  const handleDeleteCategory = (id: number) => {
-    deleteCategory(id, {
-      onSuccess: () => toast.success("Categoría eliminada"),
-      onError: (e: AxiosErrorWithResponse) =>
-        toast.error("Error al eliminar", {
-          description: e.response?.data?.message ?? e.message,
-        }),
-    });
-  };
-
-  const handleMoveCategoryUp = (index: number) => {
-    if (index <= 0) return;
-    const current = sortedCategories[index];
-    const prev = sortedCategories[index - 1];
-    updateCategory(
-      { id: current.id, order: prev.order },
-      {
-        onSuccess: () => {
-          updateCategory(
-            { id: prev.id, order: current.order },
-            {
-              onSuccess: () => toast.success("Orden actualizado"),
-              onError: (e: AxiosErrorWithResponse) =>
-                toast.error("Error al reordenar", {
-                  description: e.response?.data?.message ?? e.message,
-                }),
-            },
-          );
-        },
+      const hasStockAlerts =
+        (outOfStockItems?.length ?? 0) > 0 || (lowStockItems?.length ?? 0) > 0;
+  
+    const handleCreateItem = () => navigate(ROUTES.MENU_ITEM_CREATE);
+    const handleEditItem = (id: number) => navigate(getMenuItemEditRoute(id));
+    const handleDeleteItem = (id: number) => {
+      deleteItem(id, {
+        onSuccess: () => toast.success("Producto eliminado"),
         onError: (e: AxiosErrorWithResponse) =>
-          toast.error("Error al reordenar", {
+          toast.error("Error al eliminar", {
             description: e.response?.data?.message ?? e.message,
           }),
-      },
-    );
-  };
-
-  const handleMoveCategoryDown = (index: number) => {
-    if (index < 0 || index >= sortedCategories.length - 1) return;
-    const current = sortedCategories[index];
-    const next = sortedCategories[index + 1];
-    updateCategory(
-      { id: current.id, order: next.order },
-      {
-        onSuccess: () => {
-          updateCategory(
-            { id: next.id, order: current.order },
-            {
-              onSuccess: () => toast.success("Orden actualizado"),
-              onError: (e: AxiosErrorWithResponse) =>
-                toast.error("Error al reordenar", {
-                  description: e.response?.data?.message ?? e.message,
-                }),
-            },
-          );
-        },
-        onError: (e: AxiosErrorWithResponse) =>
-          toast.error("Error al reordenar", {
-            description: e.response?.data?.message ?? e.message,
-          }),
-      },
-    );
-  };
-
-  const handleCreateItem = () => navigate(ROUTES.MENU_ITEM_CREATE);
-  const handleEditItem = (id: number) => navigate(getMenuItemEditRoute(id));
-  const handleDeleteItem = (id: number) => {
-    deleteItem(id, {
-      onSuccess: () => toast.success("Producto eliminado"),
-      onError: (e: AxiosErrorWithResponse) =>
-        toast.error("Error al eliminar", {
-          description: e.response?.data?.message ?? e.message,
-        }),
-    });
-  };
-
-  return (
-    <div className="space-y-6">
+      });
+    };
+  
+    return (    <div className="space-y-6">
       {/* Header con estadísticas */}
       <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
@@ -275,81 +175,10 @@ export function MenuPage() {
         </div>
       )}
 
-      {/* Tabs tipo segmented control */}
-      <div
-        role="tablist"
-        aria-label="Sección del menú"
-        className={cn(
-          "inline-flex p-1.5 rounded-2xl border-2 border-sage-200 bg-sage-50/50",
-          "min-h-[48px] touch-manipulation",
-        )}
-      >
-        <button
-          role="tab"
-          aria-selected={activeTab === "items"}
-          aria-controls="panel-productos"
-          id="tab-productos"
-          onClick={() => handleTabChange("items")}
-          className={cn(
-            "inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium min-h-[44px] transition-all duration-200",
-            activeTab === "items"
-              ? "bg-white text-sage-800 shadow-sm border border-sage-200"
-              : "text-carbon-600 hover:text-carbon-800 hover:bg-sage-100/50",
-          )}
-        >
-          <UtensilsCrossed className="w-5 h-5 flex-shrink-0" />
-          Productos
-          <span
-            className={cn(
-              "ml-1 px-2 py-0.5 rounded-full text-xs font-semibold",
-              activeTab === "items"
-                ? "bg-sage-100 text-sage-700"
-                : "bg-sage-200/80 text-carbon-600",
-            )}
-          >
-            {items?.length ?? 0}
-          </span>
-        </button>
-        <button
-          role="tab"
-          aria-selected={activeTab === "categories"}
-          aria-controls="panel-categorias"
-          id="tab-categorias"
-          onClick={() => handleTabChange("categories")}
-          className={cn(
-            "inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium min-h-[44px] transition-all duration-200",
-            activeTab === "categories"
-              ? "bg-white text-sage-800 shadow-sm border border-sage-200"
-              : "text-carbon-600 hover:text-carbon-800 hover:bg-sage-100/50",
-          )}
-        >
-          <FolderOpen className="w-5 h-5 flex-shrink-0" />
-          Categorías
-          <span
-            className={cn(
-              "ml-1 px-2 py-0.5 rounded-full text-xs font-semibold",
-              activeTab === "categories"
-                ? "bg-sage-100 text-sage-700"
-                : "bg-sage-200/80 text-carbon-600",
-            )}
-          >
-            {categories?.length ?? 0}
-          </span>
-        </button>
-      </div>
+      
 
       {/* Panel de contenido */}
-      <section
-        id="panel-productos"
-        role="tabpanel"
-        aria-labelledby="tab-productos"
-        hidden={activeTab !== "items"}
-        className={cn(
-          "rounded-2xl border-2 border-sage-200 bg-white shadow-sm overflow-hidden",
-          "focus:outline-none",
-        )}
-      >
-        <div className="p-6 sm:p-8 space-y-4">
+      <div className="rounded-2xl border-2 border-sage-200 bg-white shadow-sm overflow-hidden p-6 sm:p-8 space-y-4">
           <MenuSectionToolbar
             countLabel={`${filteredItems?.length ?? 0} ${(filteredItems?.length ?? 0) === 1 ? "producto" : "productos"}${filterCategory ? " en esta categoría" : ""}`}
             primaryLabel="Nuevo producto"
@@ -455,60 +284,6 @@ export function MenuPage() {
             </>
           )}
         </div>
-      </section>
-
-      {/* Panel de categorías */}
-      <section
-        id="panel-categorias"
-        role="tabpanel"
-        aria-labelledby="tab-categorias"
-        hidden={activeTab !== "categories"}
-        className={cn(
-          "rounded-2xl border-2 border-sage-200 bg-white shadow-sm overflow-hidden",
-          "focus:outline-none",
-        )}
-      >
-        <div className="p-6 sm:p-8 space-y-4">
-          <MenuSectionToolbar
-            countLabel={`${sortedCategories.length} ${sortedCategories.length === 1 ? "categoría" : "categorías"}`}
-            primaryLabel="Nueva categoría"
-            onPrimaryAction={handleCreateCategory}
-            primaryIcon={<Plus className="w-5 h-5" />}
-          />
-
-          {loadingCategories ? (
-            <CardGrid>
-              {[...Array(4)].map((_, i) => (
-                <Skeleton key={i} variant="card" />
-              ))}
-            </CardGrid>
-          ) : !sortedCategories.length ? (
-            <EmptyState
-              icon={<FolderOpen />}
-              title="No hay categorías"
-              description="Crea tu primera categoría para organizar tu menú"
-              actionLabel="Crear primera categoría"
-              onAction={handleCreateCategory}
-            />
-          ) : (
-            <CardGrid>
-              {sortedCategories.map((category, index) => (
-                <CategoryCard
-                  key={category.id}
-                  category={category}
-                  onEdit={handleEditCategory}
-                  onDelete={handleDeleteCategory}
-                  productCount={countByCategory[category.id]}
-                  onMoveUp={() => handleMoveCategoryUp(index)}
-                  onMoveDown={() => handleMoveCategoryDown(index)}
-                  canMoveUp={index > 0}
-                  canMoveDown={index < sortedCategories.length - 1}
-                />
-              ))}
-            </CardGrid>
-          )}
-        </div>
-      </section>
     </div>
   );
 }

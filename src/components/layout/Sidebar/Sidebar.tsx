@@ -154,36 +154,17 @@ export function Sidebar() {
     });
   };
 
-  // Build navigation items with dynamic categories
-  const navigationItems = useMemo(() => {
-    // Get first 5 categories sorted by order
-    const topCategories = (categories || [])
-      .slice()
-      .sort((a, b) => a.order - b.order)
-      .slice(0, 5);
-
-    // Build Menu children: Categorías is expandable with categories inside
-    const menuChildren: NavChild[] = [
-      {
-        type: "link",
-        path: ROUTES.MENU,
-        name: "Todos los productos",
-        icon: Grid3x3,
-      },
-      {
-        type: "expandable",
-        key: "menu-categories",
-        name: "Categorías",
-        icon: FolderOpen,
-        children: topCategories.map((cat) => ({
-          path: `${ROUTES.MENU}?category=${cat.id}`,
-          name: cat.name,
-          icon: Package,
-        })),
-      },
-      {
-        type: "link",
-        path: ROUTES.STOCK_MANAGEMENT,
+    // Build navigation items with dynamic categories
+    const navigationItems = useMemo(() => {
+      // Build Menu children          const menuChildren: NavChild[] = [
+            {
+              type: "link",
+              path: ROUTES.MENU,
+              name: "Todos los productos",
+              icon: Grid3x3,
+            },
+            {
+              type: "link",        path: ROUTES.STOCK_MANAGEMENT,
         name: "Inventario",
         icon: Package2,
         badge: "⚡",
