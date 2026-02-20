@@ -1,7 +1,7 @@
 import React from "react";
 import { StatCard } from "@/components/ui/StatCard/StatCard";
 import { TrendingUp, ShoppingBag, Wallet, Receipt } from "lucide-react";
-import { DailyAnalytics } from "@/types/analytics";
+import { DailyAnalytics } from "@/types";
 
 interface StatsGridProps {
   data: DailyAnalytics;

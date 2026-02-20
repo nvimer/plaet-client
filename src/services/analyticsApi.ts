@@ -1,5 +1,5 @@
 import { axiosClient } from "./axiosClient";
-import { DailyAnalytics } from "@/types/analytics";
+import { DailyAnalytics } from "@/types";
 
 /**
  * ANALYTICS API - Client

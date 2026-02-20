@@ -8,7 +8,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from "recharts";
-import { TopProduct } from "@/types/analytics";
+import { TopProduct } from "@/types";
 
 interface TopProductsChartProps {
   data: TopProduct[];

@@ -1,5 +1,5 @@
 import { axiosClient } from "./axiosClient";
-import { CashClosure, CreateCashClosureDTO, CloseCashClosureDTO } from "@/types/cash-closure";
+import { CashClosure, CreateCashClosureDTO, CloseCashClosureDTO } from "@/types";
 
 /**
  * CASH CLOSURE API - Client

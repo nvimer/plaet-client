@@ -1,5 +1,6 @@
 import { PaymentMethod } from "./enums";
 
+// Daily analytics types for dashboard
 export interface SalesSummary {
   totalSales: number;
   orderCount: number;
@@ -20,5 +21,5 @@ export interface TopProduct {
 export interface DailyAnalytics {
   salesSummary: SalesSummary;
   topProducts: TopProduct[];
-  netBalance: number; // Ventas - Gastos
+  netBalance: number;
 }

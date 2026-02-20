@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { cashClosureApi } from "@/services";
-import { CreateCashClosureDTO, CloseCashClosureDTO } from "@/types/cash-closure";
+import { CreateCashClosureDTO, CloseCashClosureDTO } from "@/types";
 import { toast } from "sonner";
 
 /**
