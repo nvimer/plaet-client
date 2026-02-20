@@ -18,7 +18,7 @@ interface TopProductsChartProps {
  * TOP PRODUCTS CHART
  * Horizontal bar chart showing most sold items.
  */
-export const TopProductsChart: React.FC<TopProductsChartProps> = ({ data }) => {
+export const TopProductsChart: React.FC<TopProductsChartProps> = ({ data = [] }) => {
   return (
     <div className="h-[300px] w-full">
       <ResponsiveContainer width="100%" height="100%">

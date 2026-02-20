@@ -18,7 +18,7 @@ interface TodaySalesChartProps {
  * TODAY SALES CHART
  * Smooth AreaChart showing sales trend throughout the day.
  */
-export const TodaySalesChart: React.FC<TodaySalesChartProps> = ({ orders }) => {
+export const TodaySalesChart: React.FC<TodaySalesChartProps> = ({ orders = [] }) => {
   // Aggregate sales by hour
   const hourlyData = Array.from({ length: 14 }, (_, i) => {
     const hour = i + 8; // From 8 AM to 9 PM

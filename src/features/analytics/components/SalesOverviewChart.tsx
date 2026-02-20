@@ -19,7 +19,7 @@ interface SalesOverviewChartProps {
  * SALES OVERVIEW CHART
  * Visualizes sales distribution by payment method.
  */
-export const SalesOverviewChart: React.FC<SalesOverviewChartProps> = ({ data }) => {
+export const SalesOverviewChart: React.FC<SalesOverviewChartProps> = ({ data = [] }) => {
   // Map payment methods to readable labels and colors
   const chartData = data.map((item) => ({
     name: item.method === "CASH" ? "Efectivo" : item.method === "NEQUI" ? "Nequi" : "Tiquetera",
