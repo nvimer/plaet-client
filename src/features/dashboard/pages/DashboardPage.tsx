@@ -221,7 +221,7 @@ export function DashboardPage() {
                   <span className="font-bold text-carbon-800">Menú del Día</span>
                 </div>
                 <ArrowRight className="w-4 h-4 text-carbon-400 group-hover:translate-x-1 transition-transform" />
-              </div>
+              </button>
             </div>
           </Card>
 
