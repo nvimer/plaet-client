@@ -22,26 +22,26 @@ export const StatsGrid: React.FC<StatsGridProps> = ({ data }) => {
       <StatCard
         title="Ventas Totales"
         value={`$${totalSales.toLocaleString()}`}
-        icon={TrendingUp}
+        icon={<TrendingUp />}
         trend={{ value: 12, isUp: true }} // Mock trend for UX
         variant="success"
       />
       <StatCard
         title="Pedidos"
         value={orderCount.toString()}
-        icon={ShoppingBag}
+        icon={<ShoppingBag />}
         variant="primary"
       />
       <StatCard
         title="Balance Neto"
         value={`$${netBalance.toLocaleString()}`}
-        icon={Wallet}
+        icon={<Wallet />}
         variant="info"
       />
       <StatCard
         title="Gastos Registrados"
         value={`$${totalExpenses.toLocaleString()}`}
-        icon={Receipt}
+        icon={<Receipt />}
         variant="warning"
       />
     </div>
