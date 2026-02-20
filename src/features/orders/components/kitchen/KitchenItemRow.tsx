@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import { Check } from "lucide-react";
 import { cn } from "@/utils/cn";
-import { isProteinCategory, isExtraCategory } from "./kitchenCategories";
+import { isProteinCategory, isExtraCategory, type KitchenCategoryConfig } from "./kitchenCategories";
 
 export interface KitchenItemRowProps {
   itemId: number;
@@ -11,6 +11,7 @@ export interface KitchenItemRowProps {
   categoryId?: number;
   isReady: boolean;
   onToggleReady: (itemId: number, ready: boolean) => void;
+  categoryConfig?: KitchenCategoryConfig;
 }
 
 export function KitchenItemRow({
@@ -21,9 +22,10 @@ export function KitchenItemRow({
   categoryId,
   isReady,
   onToggleReady,
+  categoryConfig,
 }: KitchenItemRowProps) {
-  const isProtein = isProteinCategory(categoryId);
-  const isExtra = isExtraCategory(categoryId);
+  const isProtein = isProteinCategory(categoryId, categoryConfig);
+  const isExtra = isExtraCategory(categoryId, categoryConfig);
   const isPreparable = isProtein || isExtra;
 
   const itemColor = useMemo(() => {

@@ -56,7 +56,10 @@ const TABS_CONFIG = [
   },
 ];
 
-export function KitchenKanban(_props: KitchenKanbanProps) {
+export function KitchenKanban({
+  proteinCategoryIds,
+  extraCategoryIds,
+}: KitchenKanbanProps) {
   const { data: allOrders, isLoading, error, refetch } = useKitchenOrders();
   const { mutate: updateStatus } = useUpdateOrderStatus();
 
@@ -204,6 +207,11 @@ export function KitchenKanban(_props: KitchenKanbanProps) {
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
   };
+
+  const categoryConfig = useMemo(() => ({
+    proteinCategoryIds: proteinCategoryIds || [],
+    extraCategoryIds: extraCategoryIds || [],
+  }), [proteinCategoryIds, extraCategoryIds]);
 
   if (isLoading) {
     return (
@@ -357,6 +365,7 @@ export function KitchenKanban(_props: KitchenKanbanProps) {
                   onToggleItemReady={handleToggleItemReady}
                   onStatusChange={handleStatusChange}
                   isMobile={false}
+                  categoryConfig={categoryConfig}
                 />
                 <KitchenColumn
                   id={OrderStatus.IN_KITCHEN}
@@ -368,6 +377,7 @@ export function KitchenKanban(_props: KitchenKanbanProps) {
                   onToggleItemReady={handleToggleItemReady}
                   onStatusChange={handleStatusChange}
                   isMobile={false}
+                  categoryConfig={categoryConfig}
                 />
                 <KitchenColumn
                   id={OrderStatus.READY}
@@ -379,6 +389,7 @@ export function KitchenKanban(_props: KitchenKanbanProps) {
                   onToggleItemReady={handleToggleItemReady}
                   onStatusChange={handleStatusChange}
                   isMobile={false}
+                  categoryConfig={categoryConfig}
                 />
               </div>
             </div>
@@ -393,7 +404,7 @@ export function KitchenKanban(_props: KitchenKanbanProps) {
             readyItemIds={readyItemIds}
             onToggleItemReady={handleToggleItemReady}
             onStatusChange={handleStatusChange}
-            isMobile={false}
+            categoryConfig={categoryConfig}
           />
         )}
       </DragOverlay>

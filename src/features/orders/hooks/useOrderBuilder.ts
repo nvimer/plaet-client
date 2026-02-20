@@ -202,7 +202,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
   // Daily Menu Prices
   const dailyMenuPrices = useMemo(() => ({
-    basePrice: dailyMenuData?.basePrice || 4000,
+    basePrice: dailyMenuData?.basePrice || 0,
     isConfigured: !!dailyMenuData,
   }), [dailyMenuData]);
 

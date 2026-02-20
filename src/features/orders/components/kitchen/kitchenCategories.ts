@@ -11,14 +11,14 @@
 
 export interface KitchenCategoryConfig {
   /** Category IDs for proteins (pollo, res, cerdo, pescado) */
-  proteinCategoryIds: number[];
+  proteinCategoryIds?: number[];
   /** Category IDs for extras (adicionales) */
-  extraCategoryIds: number[];
+  extraCategoryIds?: number[];
 }
 
 export const DEFAULT_KITCHEN_CATEGORIES: KitchenCategoryConfig = {
-  proteinCategoryIds: [2], // TODO: Adjust to match your protein category ID
-  extraCategoryIds: [6], // TODO: Adjust to match your extras category ID
+  proteinCategoryIds: [],
+  extraCategoryIds: [],
 };
 
 /**

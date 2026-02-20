@@ -7,7 +7,7 @@ import { cn } from "@/utils/cn";
 import { Card } from "@/components";
 import { OrderStatus, type Order } from "@/types";
 import { KitchenItemRow } from "./KitchenItemRow";
-import { isPreparableCategory } from "./kitchenCategories";
+import { isPreparableCategory, type KitchenCategoryConfig } from "./kitchenCategories";
 
 export interface KitchenOrderCardProps {
   order: Order;
@@ -15,6 +15,7 @@ export interface KitchenOrderCardProps {
   onToggleItemReady: (orderId: string, itemId: number, ready: boolean) => void;
   onStatusChange: (orderId: string, status: OrderStatus) => void;
   isMobile?: boolean;
+  categoryConfig?: KitchenCategoryConfig;
 }
 
 const SWIPE_THRESHOLD = 80;
@@ -25,6 +26,7 @@ export function KitchenOrderCard({
   onToggleItemReady,
   onStatusChange,
   isMobile = false,
+  categoryConfig,
 }: KitchenOrderCardProps) {
   const [translateX, setTranslateX] = useState(0);
   const [isSwiping, setIsSwiping] = useState(false);
@@ -195,10 +197,10 @@ export function KitchenOrderCard({
   const preparableItems = useMemo(() => {
     return (
       order.items?.filter((item) =>
-        isPreparableCategory(item.menuItem?.categoryId),
+        isPreparableCategory(item.menuItem?.categoryId, categoryConfig),
       ) || []
     );
-  }, [order.items]);
+  }, [order.items, categoryConfig]);
 
   const readyItems = useMemo(() => {
     return preparableItems.filter((item) => readyItemIds.includes(item.id));
@@ -297,6 +299,7 @@ export function KitchenOrderCard({
               categoryId={item.menuItem?.categoryId}
               isReady={readyItemIds.includes(item.id)}
               onToggleReady={handleToggleItemReady}
+              categoryConfig={categoryConfig}
             />
           ))}
         </div>

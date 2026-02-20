@@ -8,6 +8,8 @@ import { cn } from "@/utils/cn";
 import { type Order, OrderStatus } from "@/types";
 import { KitchenOrderCard } from "./KitchenOrderCard";
 
+import { isPreparableCategory, type KitchenCategoryConfig } from "./kitchenCategories";
+
 export interface KitchenColumnProps {
   id: string;
   title: string;
@@ -18,6 +20,7 @@ export interface KitchenColumnProps {
   onToggleItemReady: (orderId: string, itemId: number, ready: boolean) => void;
   onStatusChange: (orderId: string, status: OrderStatus) => void;
   isMobile?: boolean;
+  categoryConfig?: KitchenCategoryConfig;
 }
 
 export function KitchenColumn({
@@ -30,6 +33,7 @@ export function KitchenColumn({
   onToggleItemReady,
   onStatusChange,
   isMobile = false,
+  categoryConfig,
 }: KitchenColumnProps) {
   const { setNodeRef, isOver } = useDroppable({
     id,
@@ -72,6 +76,7 @@ export function KitchenColumn({
               onToggleItemReady={onToggleItemReady}
               onStatusChange={onStatusChange}
               isMobile={isMobile}
+              categoryConfig={categoryConfig}
             />
           ))}
         </SortableContext>
