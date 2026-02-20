@@ -14,10 +14,10 @@ export * from "./common";
 export * from "./enums";
 
 // Domain types
-export * from "./user";
-export * from "./table";
-export * from "./menu";
-export * from "./order";
+export type { User, UserProfile } from "./user";
+export type { Table } from "./table";
+export type { MenuItem, Category, Product } from "./menu";
+export type { Order, OrderItem } from "./order";
 
 // Analytics types
 export interface SalesSummary {

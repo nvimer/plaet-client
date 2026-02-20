@@ -1,5 +1,5 @@
 import { axiosClient } from "./axiosClient";
-import { Expense, CreateExpenseDTO } from "@/types";
+import { Expense, CreateExpenseDTO } from "../types";
 
 /**
  * EXPENSES API - Client
