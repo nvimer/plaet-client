@@ -6,28 +6,18 @@ import { analyticsApi } from "@/services";
  * Fetches dashboard statistics and performance data.
  */
 export const useAnalytics = (date: string = new Date().toISOString().split("T")[0]) => {
-  // Fetch daily sales and expenses summary
+  // Fetch daily sales, expenses and top products summary in a single call
   const dailySummaryQuery = useQuery({
     queryKey: ["analytics", "daily-summary", date],
     queryFn: () => analyticsApi.getDailySummary(date),
     staleTime: 1000 * 60 * 10, // 10 minutes
   });
 
-  // Fetch top products ranking
-  const topProductsQuery = useQuery({
-    queryKey: ["analytics", "top-products", date],
-    queryFn: () => analyticsApi.getTopProducts(5, date),
-    staleTime: 1000 * 60 * 30, // 30 minutes
-  });
-
   return {
     dailySummary: dailySummaryQuery.data,
-    topProducts: topProductsQuery.data,
-    isLoading: dailySummaryQuery.isLoading || topProductsQuery.isLoading,
-    isError: dailySummaryQuery.isError || topProductsQuery.isError,
-    refetch: () => {
-      dailySummaryQuery.refetch();
-      topProductsQuery.refetch();
-    }
+    topProducts: dailySummaryQuery.data?.topProducts || [],
+    isLoading: dailySummaryQuery.isLoading,
+    isError: dailySummaryQuery.isError,
+    refetch: dailySummaryQuery.refetch
   };
 };
