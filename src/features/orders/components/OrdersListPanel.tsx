@@ -32,7 +32,10 @@ export function OrdersListPanel({
   onShowSummary,
 }: OrdersListPanelProps) {
   return (
-    <Card variant="elevated" className="overflow-hidden rounded-2xl h-fit sticky top-6">
+    <Card
+      variant="elevated"
+      className="overflow-hidden rounded-2xl h-fit sticky top-6"
+    >
       {/* Header */}
       <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-4 py-5">
         <div className="flex items-center justify-between">
@@ -42,11 +45,9 @@ export function OrdersListPanel({
             </div>
             <div>
               <h2 className="text-white font-semibold text-xl">
-                {isDineIn ? 'Pedidos Mesa' : 'Pedidos'}
+                {isDineIn ? "Pedidos Mesa" : "Pedidos"}
               </h2>
-              <p className="text-sage-100 text-sm">
-                {orders.length} items
-              </p>
+              <p className="text-sage-100 text-sm">{orders.length} items</p>
             </div>
           </div>
           <div className="text-right">
@@ -58,14 +59,16 @@ export function OrdersListPanel({
         </div>
       </div>
 
-      <div className="p-4 space-y-3 max-h-[calc(100vh-400px)] overflow-y-auto">
+      <div className="p-4 space-y-3 max-h-[60vh] lg:max-h-[calc(100vh-400px)] overflow-y-auto">
         {orders.length === 0 ? (
           <div className="text-center py-12 px-4">
             <div className="w-16 h-16 rounded-2xl bg-sage-100 text-sage-400 flex items-center justify-center mx-auto mb-4">
               <ShoppingBag className="w-8 h-8" />
             </div>
             <p className="text-carbon-700 font-medium">No hay pedidos</p>
-            <p className="text-sm text-carbon-500 mt-1">Agrega el primer pedido</p>
+            <p className="text-sm text-carbon-500 mt-1">
+              Agrega el primer pedido
+            </p>
           </div>
         ) : (
           orders.map((order, index) => (
@@ -75,7 +78,7 @@ export function OrdersListPanel({
                 "p-4 rounded-xl border-2 transition-all duration-200",
                 currentOrderIndex === index
                   ? "border-amber-400 bg-amber-50 shadow-md"
-                  : "border-sage-200 bg-white hover:border-sage-300 hover:shadow-sm"
+                  : "border-sage-200 bg-white hover:border-sage-300 hover:shadow-sm",
               )}
             >
               <div className="flex items-start justify-between mb-3">
@@ -105,8 +108,18 @@ export function OrdersListPanel({
                     className="p-3 text-carbon-400 hover:text-sage-600 hover:bg-sage-100 rounded-xl transition-colors"
                     title="Duplicar"
                   >
-                    <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
+                      />
                     </svg>
                   </button>
                   <button
@@ -118,12 +131,13 @@ export function OrdersListPanel({
                   </button>
                 </div>
               </div>
-              
+
               {/* Order details */}
               <div className="flex flex-wrap gap-2 text-xs">
                 {order.looseItems.length > 0 && (
                   <span className="px-2 py-1 bg-purple-100 text-purple-700 rounded-full font-medium">
-                    {order.looseItems.reduce((sum, i) => sum + i.quantity, 0)} extras
+                    {order.looseItems.reduce((sum, i) => sum + i.quantity, 0)}{" "}
+                    extras
                   </span>
                 )}
                 {order.notes && (
@@ -150,7 +164,9 @@ export function OrdersListPanel({
           >
             <Receipt className="w-6 h-6 mr-2" />
             Ver Resumen
-            <span className="ml-2 opacity-90">(${tableTotal.toLocaleString("es-CO")})</span>
+            <span className="ml-2 opacity-90">
+              (${tableTotal.toLocaleString("es-CO")})
+            </span>
           </Button>
         </div>
       )}

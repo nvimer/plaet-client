@@ -3,7 +3,7 @@
  *
  * Modern card with prominent wait time, swipe actions support, and improved UX.
  * Touch-friendly design with clear visual hierarchy.
- * 
+ *
  * Key improvements:
  * - Large wait time display with urgency indicators
  * - Swipe actions support for mobile
@@ -108,27 +108,31 @@ const STATUS_CONFIG = {
 /**
  * Calculate wait time and format it
  */
-function getWaitTime(createdAt: string): { minutes: number; text: string; isUrgent: boolean } {
+function getWaitTime(createdAt: string): {
+  minutes: number;
+  text: string;
+  isUrgent: boolean;
+} {
   const created = new Date(createdAt);
   const now = new Date();
   const diffMs = now.getTime() - created.getTime();
   const diffMinutes = Math.floor(diffMs / 60000);
-  
+
   if (diffMinutes < 1) {
     return { minutes: 0, text: "Ahora", isUrgent: false };
   } else if (diffMinutes < 60) {
-    return { 
-      minutes: diffMinutes, 
-      text: `${diffMinutes}m`, 
-      isUrgent: diffMinutes > 20 
+    return {
+      minutes: diffMinutes,
+      text: `${diffMinutes}m`,
+      isUrgent: diffMinutes > 20,
     };
   } else {
     const hours = Math.floor(diffMinutes / 60);
     const mins = diffMinutes % 60;
-    return { 
-      minutes: diffMinutes, 
-      text: `${hours}h ${mins}m`, 
-      isUrgent: true 
+    return {
+      minutes: diffMinutes,
+      text: `${hours}h ${mins}m`,
+      isUrgent: true,
     };
   }
 }
@@ -138,30 +142,46 @@ function getWaitTime(createdAt: string): { minutes: number; text: string; isUrge
  */
 function getItemEmoji(itemName: string): string {
   const name = itemName.toLowerCase();
-  if (name.includes("pollo") || name.includes("carne") || name.includes("pescado") || name.includes("prote")) return "🍗";
+  if (
+    name.includes("pollo") ||
+    name.includes("carne") ||
+    name.includes("pescado") ||
+    name.includes("prote")
+  )
+    return "🍗";
   if (name.includes("arroz")) return "🍚";
   if (name.includes("sopa")) return "🍲";
   if (name.includes("ensalada")) return "🥗";
-  if (name.includes("jugo") || name.includes("bebida") || name.includes("gaseosa")) return "🥤";
+  if (
+    name.includes("jugo") ||
+    name.includes("bebida") ||
+    name.includes("gaseosa")
+  )
+    return "🥤";
   if (name.includes("papa") || name.includes("yuca")) return "🥔";
   if (name.includes("huevo")) return "🥚";
   if (name.includes("plátano")) return "🍌";
   return "🍽️";
 }
 
-export function OrderCard({ order, onViewDetail, compact = false }: OrderCardProps) {
+export function OrderCard({
+  order,
+  onViewDetail,
+  compact = false,
+}: OrderCardProps) {
   const { mutate: updateStatus, isPending } = useUpdateOrderStatus();
 
   const config = STATUS_CONFIG[order.status];
   const shortId = `#${order.id.slice(-6).toUpperCase()}`;
   const waitTime = getWaitTime(order.createdAt);
-  
+
   const createdTime = new Date(order.createdAt).toLocaleTimeString("es-CO", {
     hour: "2-digit",
     minute: "2-digit",
   });
 
-  const itemsCount = order.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
+  const itemsCount =
+    order.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
   const getNextStatus = (): {
     status: OrderStatus;
@@ -170,11 +190,23 @@ export function OrderCard({ order, onViewDetail, compact = false }: OrderCardPro
   } | null => {
     switch (order.status) {
       case OrderStatus.PENDING:
-        return { status: OrderStatus.IN_KITCHEN, label: "Enviar a Cocina", icon: ChefHat };
+        return {
+          status: OrderStatus.IN_KITCHEN,
+          label: "Enviar a Cocina",
+          icon: ChefHat,
+        };
       case OrderStatus.IN_KITCHEN:
-        return { status: OrderStatus.READY, label: "Marcar Listo", icon: CheckCircle };
+        return {
+          status: OrderStatus.READY,
+          label: "Marcar Listo",
+          icon: CheckCircle,
+        };
       case OrderStatus.READY:
-        return { status: OrderStatus.DELIVERED, label: "Entregar", icon: Truck };
+        return {
+          status: OrderStatus.DELIVERED,
+          label: "Entregar",
+          icon: Truck,
+        };
       default:
         return null;
     }
@@ -198,7 +230,7 @@ export function OrderCard({ order, onViewDetail, compact = false }: OrderCardPro
             description: error.response?.data?.message || error.message,
           });
         },
-      }
+      },
     );
   };
 
@@ -210,27 +242,33 @@ export function OrderCard({ order, onViewDetail, compact = false }: OrderCardPro
           "group flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-200",
           "bg-white hover:shadow-md hover:border-sage-200",
           config.border,
-          waitTime.isUrgent && "border-l-4 border-l-rose-500"
+          waitTime.isUrgent && "border-l-4 border-l-rose-500",
         )}
       >
         {/* Wait Time - Prominent */}
-        <div className={cn(
-          "flex-shrink-0 w-16 text-center",
-          waitTime.isUrgent ? "text-rose-600" : config.urgencyColor
-        )}>
+        <div
+          className={cn(
+            "flex-shrink-0 w-16 text-center",
+            waitTime.isUrgent ? "text-rose-600" : config.urgencyColor,
+          )}
+        >
           <div className="text-xl font-bold">{waitTime.text}</div>
           <div className="text-xs opacity-70">{createdTime}</div>
         </div>
 
         {/* Status Indicator */}
-        <div className={cn("w-2 h-12 rounded-full flex-shrink-0", config.accent)} />
+        <div
+          className={cn("w-2 h-12 rounded-full flex-shrink-0", config.accent)}
+        />
 
         {/* Info */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span className="font-bold text-carbon-900">{shortId}</span>
             {order.table && (
-              <span className="text-sm text-carbon-600">Mesa {order.table.number}</span>
+              <span className="text-sm text-carbon-600">
+                Mesa {order.table.number}
+              </span>
             )}
           </div>
           <div className="flex items-center gap-2 text-sm text-carbon-500">
@@ -251,7 +289,7 @@ export function OrderCard({ order, onViewDetail, compact = false }: OrderCardPro
               className={cn(
                 "p-2 rounded-lg transition-colors",
                 "bg-sage-100 text-sage-700 hover:bg-sage-200",
-                "min-w-[44px] min-h-[44px] flex items-center justify-center"
+                "min-w-[44px] min-h-[44px] flex items-center justify-center",
               )}
             >
               <nextStatus.icon className="w-5 h-5" />
@@ -277,7 +315,9 @@ export function OrderCard({ order, onViewDetail, compact = false }: OrderCardPro
         "hover:shadow-lg hover:border-sage-200",
         "active:scale-[0.99]",
         config.border,
-        waitTime.isUrgent && waitTime.minutes > 30 && "ring-2 ring-rose-200 ring-offset-2"
+        waitTime.isUrgent &&
+          waitTime.minutes > 30 &&
+          "ring-2 ring-rose-200 ring-offset-2",
       )}
     >
       {/* Status accent bar */}
@@ -297,28 +337,28 @@ export function OrderCard({ order, onViewDetail, compact = false }: OrderCardPro
           {/* Left: Wait Time (Prominent) */}
           <div className="flex-1 min-w-0">
             {/* Large Wait Time Display */}
-            <div className={cn(
-              "flex items-baseline gap-2 mb-2",
-              waitTime.isUrgent ? "text-rose-600" : config.urgencyColor
-            )}>
-              <Clock className={cn(
-                "w-5 h-5 flex-shrink-0",
-                waitTime.isUrgent && "animate-pulse"
-              )} />
+            <div
+              className={cn(
+                "flex items-baseline gap-2 mb-2",
+                waitTime.isUrgent ? "text-rose-600" : config.urgencyColor,
+              )}
+            >
+              <Clock
+                className={cn(
+                  "w-5 h-5 flex-shrink-0",
+                  waitTime.isUrgent && "animate-pulse",
+                )}
+              />
               <span className="text-3xl font-black tracking-tight">
                 {waitTime.text}
               </span>
-              <span className="text-sm font-medium opacity-70">
-                esperando
-              </span>
+              <span className="text-sm font-medium opacity-70">esperando</span>
             </div>
 
             {/* ID and Time */}
             <div className="flex items-center gap-3 mb-2">
               <h3 className="text-lg font-bold text-carbon-900">{shortId}</h3>
-              <span className="text-sm text-carbon-500">
-                {createdTime}
-              </span>
+              <span className="text-sm text-carbon-500">{createdTime}</span>
             </div>
 
             {/* Location & Waiter */}
@@ -350,10 +390,13 @@ export function OrderCard({ order, onViewDetail, compact = false }: OrderCardPro
         </div>
 
         {/* Items Preview with Emojis */}
-        <div className={cn("mb-5 p-4 rounded-xl border", config.bg, config.border)}>
+        <div
+          className={cn("mb-5 p-4 rounded-xl border", config.bg, config.border)}
+        >
           <div className="flex items-center justify-between mb-3">
             <p className="text-sm font-medium text-carbon-700">
-              <span className={cn("font-bold", config.text)}>{itemsCount}</span> productos
+              <span className={cn("font-bold", config.text)}>{itemsCount}</span>{" "}
+              productos
             </p>
             {waitTime.isUrgent && (
               <div className="flex items-center gap-1 text-xs text-rose-600">
@@ -362,11 +405,13 @@ export function OrderCard({ order, onViewDetail, compact = false }: OrderCardPro
               </div>
             )}
           </div>
-          
+
           <div className="space-y-2">
             {order.items?.slice(0, 3).map((item) => (
               <div key={item.id} className="flex items-center gap-2 text-sm">
-                <span className="text-lg">{getItemEmoji(item.menuItem?.name || "")}</span>
+                <span className="text-lg">
+                  {getItemEmoji(item.menuItem?.name || "")}
+                </span>
                 <span className="text-carbon-700 font-medium">
                   {item.quantity}x
                 </span>

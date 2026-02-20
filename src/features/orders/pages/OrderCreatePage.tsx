@@ -1,6 +1,6 @@
 /**
  * OrderCreatePage - Refactored Edition
- * 
+ *
  * Major refactoring:
  * - Extracted useOrderBuilder hook for state management
  * - Extracted OrderForm component for lunch configuration
@@ -24,15 +24,19 @@ import {
 } from "../components";
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
-import { 
-  Users, ArrowLeft, UtensilsCrossed, ShoppingBag, Bike,
-  Sparkles
+import {
+  Users,
+  ArrowLeft,
+  UtensilsCrossed,
+  ShoppingBag,
+  Bike,
+  Sparkles,
 } from "lucide-react";
 
 export function OrderCreatePage() {
   // Use the order builder hook for all state and logic
   const orderBuilder = useOrderBuilder();
-  
+
   const {
     isLoading,
     isPending,
@@ -102,37 +106,49 @@ export function OrderCreatePage() {
             {/* DINE_IN */}
             <button
               onClick={() => setSelectedOrderType(OrderType.DINE_IN)}
-              className="group flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-sage-200 bg-white hover:border-sage-400 hover:shadow-soft-lg transition-all duration-300 min-h-[200px]"
+              className="group flex flex-col items-center justify-center p-6 sm:p-8 rounded-2xl border-2 border-sage-200 bg-white hover:border-sage-400 hover:shadow-soft-lg transition-all duration-300 min-h-[160px] sm:min-h-[200px]"
             >
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-sage-100 to-sage-200 text-sage-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                <UtensilsCrossed className="w-10 h-10" />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-sage-100 to-sage-200 text-sage-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">
+                <UtensilsCrossed className="w-8 h-8 sm:w-10 sm:h-10" />
               </div>
-              <span className="text-xl font-bold text-carbon-900">Para Mesa</span>
-              <span className="text-sm text-carbon-500 mt-2">Comer en el restaurante</span>
+              <span className="text-lg sm:text-xl font-bold text-carbon-900">
+                Para Mesa
+              </span>
+              <span className="text-xs sm:text-sm text-carbon-500 mt-1 sm:mt-2">
+                Comer en el restaurante
+              </span>
             </button>
 
             {/* TAKE_OUT */}
             <button
               onClick={() => setSelectedOrderType(OrderType.TAKE_OUT)}
-              className="group flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-sage-200 bg-white hover:border-amber-400 hover:shadow-soft-lg transition-all duration-300 min-h-[200px]"
+              className="group flex flex-col items-center justify-center p-6 sm:p-8 rounded-2xl border-2 border-sage-200 bg-white hover:border-amber-400 hover:shadow-soft-lg transition-all duration-300 min-h-[160px] sm:min-h-[200px]"
             >
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                <ShoppingBag className="w-10 h-10" />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">
+                <ShoppingBag className="w-8 h-8 sm:w-10 sm:h-10" />
               </div>
-              <span className="text-xl font-bold text-carbon-900">Para Llevar</span>
-              <span className="text-sm text-carbon-500 mt-2">Recoger en local</span>
+              <span className="text-lg sm:text-xl font-bold text-carbon-900">
+                Para Llevar
+              </span>
+              <span className="text-xs sm:text-sm text-carbon-500 mt-1 sm:mt-2">
+                Recoger en local
+              </span>
             </button>
 
             {/* DELIVERY */}
             <button
               onClick={() => setSelectedOrderType(OrderType.DELIVERY)}
-              className="group flex flex-col items-center justify-center p-8 rounded-2xl border-2 border-sage-200 bg-white hover:border-blue-400 hover:shadow-soft-lg transition-all duration-300 min-h-[200px]"
+              className="group flex flex-col items-center justify-center p-6 sm:p-8 rounded-2xl border-2 border-sage-200 bg-white hover:border-blue-400 hover:shadow-soft-lg transition-all duration-300 min-h-[160px] sm:min-h-[200px]"
             >
-              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Bike className="w-10 h-10" />
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">
+                <Bike className="w-8 h-8 sm:w-10 sm:h-10" />
               </div>
-              <span className="text-xl font-bold text-carbon-900">Domicilio</span>
-              <span className="text-sm text-carbon-500 mt-2">Entrega a domicilio</span>
+              <span className="text-lg sm:text-xl font-bold text-carbon-900">
+                Domicilio
+              </span>
+              <span className="text-xs sm:text-sm text-carbon-500 mt-1 sm:mt-2">
+                Entrega a domicilio
+              </span>
             </button>
           </div>
         </div>
@@ -165,17 +181,23 @@ export function OrderCreatePage() {
                 <Users className="w-7 h-7" />
                 Seleccionar Mesa
               </h2>
-              <p className="text-sage-100 mt-2">Elige la mesa donde vas a tomar los pedidos</p>
+              <p className="text-sage-100 mt-2">
+                Elige la mesa donde vas a tomar los pedidos
+              </p>
             </div>
-            
+
             <div className="p-4 sm:p-8">
               {availableTables.length === 0 ? (
                 <div className="text-center py-12">
                   <div className="w-16 h-16 rounded-2xl bg-sage-100 text-sage-400 flex items-center justify-center mx-auto mb-4">
                     <Sparkles className="w-8 h-8" />
                   </div>
-                  <p className="text-carbon-700 font-medium">No hay mesas disponibles</p>
-                  <p className="text-sm text-carbon-500 mt-1">Todas las mesas están ocupadas</p>
+                  <p className="text-carbon-700 font-medium">
+                    No hay mesas disponibles
+                  </p>
+                  <p className="text-sm text-carbon-500 mt-1">
+                    Todas las mesas están ocupadas
+                  </p>
                 </div>
               ) : (
                 <TableSelector
@@ -197,9 +219,11 @@ export function OrderCreatePage() {
     <>
       <SidebarLayout
         title="Nuevo Pedido"
-        subtitle={selectedOrderType === OrderType.DINE_IN 
-          ? `Mesa ${selectedTable} - Configura los pedidos`
-          : "Configura los pedidos"}
+        subtitle={
+          selectedOrderType === OrderType.DINE_IN
+            ? `Mesa ${selectedTable} - Configura los pedidos`
+            : "Configura los pedidos"
+        }
         backRoute={ROUTES.ORDERS}
         fullWidth
         actions={
@@ -256,7 +280,9 @@ export function OrderCreatePage() {
                 filteredLooseItems={formProps.filteredLooseItems}
                 popularProducts={formProps.popularProducts}
                 handleAddLooseItem={formProps.handleAddLooseItem}
-                handleUpdateLooseItemQuantity={formProps.handleUpdateLooseItemQuantity}
+                handleUpdateLooseItemQuantity={
+                  formProps.handleUpdateLooseItemQuantity
+                }
                 orderNotes={formProps.orderNotes}
                 setOrderNotes={formProps.setOrderNotes}
                 validationErrors={formProps.validationErrors}
@@ -289,6 +315,8 @@ export function OrderCreatePage() {
       <FixedOrderSummaryBar
         looseItems={formProps.looseItems}
         total={formProps.currentOrderTotal}
+        hasProtein={!!formProps.selectedProtein}
+        currentProteinName={formProps.selectedProtein?.name}
         onOrder={() => formProps.handleAddOrderToTable()}
         scrollToOrder={scrollToOrder}
       />

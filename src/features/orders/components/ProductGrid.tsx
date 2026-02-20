@@ -15,17 +15,17 @@ export interface ProductGridProps {
 
 /**
  * ProductGrid Component
- * 
+ *
  * Visual grid of products optimized for touch interactions.
  * Similar to McDonald's kiosk interface - large, táctil, visual.
- * 
+ *
  * Features:
  * - Large touch targets
  * - Product images
  * - Clear pricing
  * - Visual selection state
  * - Quantity indicators
- * 
+ *
  * @example
  * ```tsx
  * <ProductGrid
@@ -107,9 +107,7 @@ export function ProductGrid({
 
               {/* Availability Badge */}
               {!product.isAvailable && (
-                <span className="text-xs text-red-500 mt-2">
-                  No disponible
-                </span>
+                <span className="text-xs text-red-500 mt-2">No disponible</span>
               )}
             </div>
           </TouchableCard>

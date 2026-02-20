@@ -68,7 +68,9 @@ const isWithinDateRange = (dateString: string, range: DateRange): boolean => {
  * Only PAID or DELIVERED orders count as sales
  */
 const isSaleOrder = (order: Order): boolean => {
-  return order.status === OrderStatus.PAID || order.status === OrderStatus.DELIVERED;
+  return (
+    order.status === OrderStatus.PAID || order.status === OrderStatus.DELIVERED
+  );
 };
 
 /**
@@ -85,7 +87,9 @@ export function OrdersPage() {
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "ALL">("ALL");
   const [typeFilter, setTypeFilter] = useState<OrderType | "ALL">("ALL");
   const [dateFilter, setDateFilter] = useState<DateFilterType>("TODAY");
-  const [customDateRange, setCustomDateRange] = useState<DateRange | undefined>(undefined);
+  const [customDateRange, setCustomDateRange] = useState<DateRange | undefined>(
+    undefined,
+  );
 
   // ============== QUERIES ===============
   const { data: orders, isLoading, error } = useOrders();
@@ -94,9 +98,10 @@ export function OrdersPage() {
   const filteredOrders = useMemo(() => {
     if (!orders) return [];
     return orders.filter((order) => {
-      const matchesStatus = statusFilter === "ALL" || order.status === statusFilter;
+      const matchesStatus =
+        statusFilter === "ALL" || order.status === statusFilter;
       const matchesType = typeFilter === "ALL" || order.type === typeFilter;
-      
+
       // Date filtering
       let matchesDate = true;
       switch (dateFilter) {
@@ -110,24 +115,35 @@ export function OrdersPage() {
           matchesDate = isWithinLastWeek(order.createdAt);
           break;
         case "CUSTOM":
-          matchesDate = customDateRange ? isWithinDateRange(order.createdAt, customDateRange) : true;
+          matchesDate = customDateRange
+            ? isWithinDateRange(order.createdAt, customDateRange)
+            : true;
           break;
       }
-      
+
       return matchesStatus && matchesType && matchesDate;
     });
   }, [orders, statusFilter, typeFilter, dateFilter, customDateRange]);
 
-  const counts = useMemo(() => ({
-    all: orders?.length || 0,
-    pending: orders?.filter((o) => o.status === OrderStatus.PENDING).length || 0,
-    inKitchen: orders?.filter((o) => o.status === OrderStatus.IN_KITCHEN).length || 0,
-    ready: orders?.filter((o) => o.status === OrderStatus.READY).length || 0,
-    delivered: orders?.filter((o) => o.status === OrderStatus.DELIVERED).length || 0,
-    paid: orders?.filter((o) => o.status === OrderStatus.PAID).length || 0,
-    sentToCashier: orders?.filter((o) => o.status === OrderStatus.SENT_TO_CASHIER).length || 0,
-    cancelled: orders?.filter((o) => o.status === OrderStatus.CANCELLED).length || 0,
-  }), [orders]);
+  const counts = useMemo(
+    () => ({
+      all: orders?.length || 0,
+      pending:
+        orders?.filter((o) => o.status === OrderStatus.PENDING).length || 0,
+      inKitchen:
+        orders?.filter((o) => o.status === OrderStatus.IN_KITCHEN).length || 0,
+      ready: orders?.filter((o) => o.status === OrderStatus.READY).length || 0,
+      delivered:
+        orders?.filter((o) => o.status === OrderStatus.DELIVERED).length || 0,
+      paid: orders?.filter((o) => o.status === OrderStatus.PAID).length || 0,
+      sentToCashier:
+        orders?.filter((o) => o.status === OrderStatus.SENT_TO_CASHIER)
+          .length || 0,
+      cancelled:
+        orders?.filter((o) => o.status === OrderStatus.CANCELLED).length || 0,
+    }),
+    [orders],
+  );
 
   const todayTotal = useMemo(() => {
     if (!orders) return 0;
@@ -136,7 +152,8 @@ export function OrdersPage() {
       .reduce((sum, o) => sum + o.totalAmount, 0);
   }, [orders]);
 
-  const hasActiveFilters = statusFilter !== "ALL" || typeFilter !== "ALL" || dateFilter !== "TODAY";
+  const hasActiveFilters =
+    statusFilter !== "ALL" || typeFilter !== "ALL" || dateFilter !== "TODAY";
 
   // ============= HANDLERS ===============
   const handleViewDetail = (orderId: string) => {
@@ -196,9 +213,17 @@ export function OrdersPage() {
             <div className="w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-rose-500">
               <ShoppingCart className="w-7 h-7" />
             </div>
-            <h2 className="text-lg font-semibold text-carbon-900 mb-2">Error al cargar pedidos</h2>
+            <h2 className="text-lg font-semibold text-carbon-900 mb-2">
+              Error al cargar pedidos
+            </h2>
             <p className="text-carbon-500 text-sm mb-6">{error.message}</p>
-            <Button variant="primary" size="lg" onClick={() => window.location.reload()} fullWidth className="min-h-[44px]">
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => window.location.reload()}
+              fullWidth
+              className="min-h-[44px]"
+            >
               Reintentar
             </Button>
           </div>
@@ -216,9 +241,16 @@ export function OrdersPage() {
           <h1 className="text-2xl sm:text-3xl font-semibold text-carbon-900 tracking-tight">
             Gestión de Pedidos
           </h1>
-          <p className="text-sm text-carbon-500 mt-1">Administra los pedidos del restaurante</p>
+          <p className="text-sm text-carbon-500 mt-1">
+            Administra los pedidos del restaurante
+          </p>
         </div>
-        <Button size="lg" variant="primary" onClick={handleCreateOrder} className="w-full sm:w-auto min-h-[44px]">
+        <Button
+          size="lg"
+          variant="primary"
+          onClick={handleCreateOrder}
+          className="w-full sm:w-auto min-h-[44px]"
+        >
           <Plus className="w-5 h-5 mr-2" />
           Nuevo Pedido
         </Button>
@@ -244,7 +276,9 @@ export function OrdersPage() {
             </div>
             <div>
               <p className="text-sm text-carbon-500">Pendientes</p>
-              <p className="text-xl font-bold text-carbon-900">{counts.pending}</p>
+              <p className="text-xl font-bold text-carbon-900">
+                {counts.pending}
+              </p>
             </div>
           </div>
         </div>
@@ -255,7 +289,9 @@ export function OrdersPage() {
             </div>
             <div>
               <p className="text-sm text-carbon-500">Listos</p>
-              <p className="text-xl font-bold text-carbon-900">{counts.ready}</p>
+              <p className="text-xl font-bold text-carbon-900">
+                {counts.ready}
+              </p>
             </div>
           </div>
         </div>
@@ -266,7 +302,9 @@ export function OrdersPage() {
             </div>
             <div>
               <p className="text-sm text-carbon-500">Ventas hoy</p>
-              <p className="text-xl font-bold text-sage-700">${todayTotal.toLocaleString("es-CO")}</p>
+              <p className="text-xl font-bold text-sage-700">
+                ${todayTotal.toLocaleString("es-CO")}
+              </p>
             </div>
           </div>
         </div>
@@ -292,7 +330,8 @@ export function OrdersPage() {
 
       {/* Result count */}
       <p className="text-sm font-medium text-carbon-600 mb-5">
-        {filteredOrders.length} {filteredOrders.length === 1 ? "pedido" : "pedidos"}
+        {filteredOrders.length}{" "}
+        {filteredOrders.length === 1 ? "pedido" : "pedidos"}
         {hasActiveFilters && " encontrados"}
       </p>
 
@@ -310,7 +349,11 @@ export function OrdersPage() {
       ) : (
         <EmptyState
           icon={<ShoppingCart />}
-          title={hasActiveFilters ? "No hay pedidos con estos filtros" : "No hay pedidos"}
+          title={
+            hasActiveFilters
+              ? "No hay pedidos con estos filtros"
+              : "No hay pedidos"
+          }
           description={
             hasActiveFilters
               ? "Ajusta los filtros para ver más resultados"

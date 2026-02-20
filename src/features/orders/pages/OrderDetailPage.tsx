@@ -19,13 +19,19 @@ import { toast } from "sonner";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { OrderStatusBadge } from "../components/OrderStatusBadge";
 import { OrderTypeBadge } from "../components/OrderTypeBadge";
-import { Button, Card, ConfirmDialog, Skeleton, EmptyState } from "@/components";
+import {
+  Button,
+  Card,
+  ConfirmDialog,
+  Skeleton,
+  EmptyState,
+} from "@/components";
 import { ROUTES } from "@/app/routes";
 import { useState } from "react";
 
 /**
  * OrderDetailPage Component
- * 
+ *
  * Full-screen page showing complete order details with actions.
  * Replaces the previous modal-based approach for better UX.
  */
@@ -77,8 +83,7 @@ export function OrderDetailPage() {
     minute: "2-digit",
   });
 
-  const paidAmount =
-    order.payments?.reduce((sum, p) => sum + p.amount, 0) || 0;
+  const paidAmount = order.payments?.reduce((sum, p) => sum + p.amount, 0) || 0;
   const remainingAmount = order.totalAmount - paidAmount;
 
   // Status actions
@@ -120,7 +125,7 @@ export function OrderDetailPage() {
   ];
 
   const availableActions = statusActions.filter((action) =>
-    action.from.includes(order.status)
+    action.from.includes(order.status),
   );
 
   // Handlers
@@ -136,7 +141,7 @@ export function OrderDetailPage() {
             description: error.response?.data?.message || error.message,
           });
         },
-      }
+      },
     );
   };
 
@@ -225,7 +230,7 @@ export function OrderDetailPage() {
                   <p className="font-semibold text-carbon-900 text-lg">
                     $
                     {(item.priceAtOrder * item.quantity).toLocaleString(
-                      "es-CO"
+                      "es-CO",
                     )}
                   </p>
                 </div>
@@ -234,7 +239,11 @@ export function OrderDetailPage() {
           </div>
 
           {/* Totals */}
-          <Card variant="elevated" padding="md" className="bg-gradient-to-r from-sage-green-50 to-sage-green-100">
+          <Card
+            variant="elevated"
+            padding="md"
+            className="bg-gradient-to-r from-sage-green-50 to-sage-green-100"
+          >
             <div className="space-y-2">
               <div className="flex justify-between text-carbon-700">
                 <span>Subtotal</span>

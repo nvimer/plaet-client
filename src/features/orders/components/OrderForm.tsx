@@ -4,25 +4,38 @@
  */
 
 import { Card, Input, Button } from "@/components";
-import { 
-  DailyMenuSection, 
-  ProteinSelector, 
+import {
+  DailyMenuSection,
+  ProteinSelector,
   MenuItemSelector,
   ReplacementManager,
-  type Replacement 
+  type Replacement,
 } from "./";
-import { 
-  Plus, X, ChevronDown, ChevronUp, ChefHat, 
-  UtensilsCrossed, Receipt, Sparkles, ShoppingBag, Search
+import {
+  Plus,
+  X,
+  ChevronDown,
+  ChevronUp,
+  ChefHat,
+  UtensilsCrossed,
+  Receipt,
+  Sparkles,
+  ShoppingBag,
+  Search,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
-import type { MenuOption, ProteinOption, LooseItem, ValidationError } from "../types/orderBuilder";
+import type {
+  MenuOption,
+  ProteinOption,
+  LooseItem,
+  ValidationError,
+} from "../types/orderBuilder";
 
 interface OrderFormProps {
   // Order state
   currentOrderIndex: number | null;
   tableOrdersLength: number;
-  
+
   // Daily menu state
   showDailyMenu: boolean;
   setShowDailyMenu: (show: boolean) => void;
@@ -41,7 +54,7 @@ interface OrderFormProps {
     basePrice: number;
     isConfigured: boolean;
   };
-  
+
   // Lunch selections
   selectedSoup: MenuOption | null;
   setSelectedSoup: (soup: MenuOption | null) => void;
@@ -54,37 +67,46 @@ interface OrderFormProps {
   selectedExtra: MenuOption | null;
   setSelectedExtra: (extra: MenuOption | null) => void;
   selectedRice: MenuOption | null;
-  
+
   // Protein
   proteins: ProteinOption[];
   selectedProtein: ProteinOption | null;
   setSelectedProtein: (protein: ProteinOption | null) => void;
-  
+
   // Replacements
   replacements: Replacement[];
   setReplacements: (replacements: Replacement[]) => void;
-  
+
   // Loose items
   looseItems: LooseItem[];
   searchTerm: string;
   setSearchTerm: (term: string) => void;
-  filteredLooseItems: Array<{ id: number; name: string; price: string; isAvailable: boolean }>;
+  filteredLooseItems: Array<{
+    id: number;
+    name: string;
+    price: string;
+    isAvailable: boolean;
+  }>;
   popularProducts: Array<{ id: number; name: string; price: number }>;
-  handleAddLooseItem: (item: { id: number; name: string; price: number }) => void;
+  handleAddLooseItem: (item: {
+    id: number;
+    name: string;
+    price: number;
+  }) => void;
   handleUpdateLooseItemQuantity: (id: number, quantity: number) => void;
-  
+
   // Order notes
   orderNotes: string;
   setOrderNotes: (notes: string) => void;
-  
+
   // Validation
   validationErrors: ValidationError[];
   hasError: (field: string) => boolean;
-  
+
   // Actions
   onAddToTable: () => void;
   onCancelEdit: () => void;
-  
+
   // Loading
   isLoading: boolean;
 }
@@ -140,36 +162,33 @@ export function OrderForm({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <Card 
-        variant="elevated" 
+      <Card
+        variant="elevated"
         className={cn(
           "overflow-hidden rounded-2xl",
-          currentOrderIndex !== null 
-            ? "bg-gradient-to-r from-amber-500 to-amber-400" 
-            : "bg-gradient-to-r from-sage-600 to-sage-500"
+          currentOrderIndex !== null
+            ? "bg-gradient-to-r from-amber-500 to-amber-400"
+            : "bg-gradient-to-r from-sage-600 to-sage-500",
         )}
       >
-        <div className="px-6 py-5 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className={cn(
-              "w-14 h-14 rounded-2xl flex items-center justify-center",
-              currentOrderIndex !== null ? "bg-white/20" : "bg-white/20"
-            )}>
+        <div className="px-4 py-4 sm:px-6 sm:py-5 flex items-center justify-between">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center bg-white/20">
               {currentOrderIndex !== null ? (
-                <Sparkles className="w-6 h-6 text-white" />
+                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               ) : (
-                <Plus className="w-6 h-6 text-white" />
+                <Plus className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               )}
             </div>
             <div>
-              <h2 className="text-white font-semibold text-lg">
-                {currentOrderIndex !== null 
-                  ? `Editando Pedido #${currentOrderIndex + 1}` 
+              <h2 className="text-white font-bold text-base sm:text-lg">
+                {currentOrderIndex !== null
+                  ? `Editando Pedido #${currentOrderIndex + 1}`
                   : `Nuevo Pedido #${tableOrdersLength + 1}`}
               </h2>
-              <p className="text-white/80 text-sm">
-                {currentOrderIndex !== null 
-                  ? "Modifica los detalles" 
+              <p className="text-white/80 text-xs sm:text-sm">
+                {currentOrderIndex !== null
+                  ? "Modifica los detalles"
                   : "Configura el pedido"}
               </p>
             </div>
@@ -177,9 +196,9 @@ export function OrderForm({
           {currentOrderIndex !== null && (
             <button
               onClick={onCancelEdit}
-              className="p-3 bg-white/20 hover:bg-white/30 rounded-xl text-white transition-colors"
+              className="p-2 sm:p-3 bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl text-white transition-colors"
             >
-              <X className="w-6 h-6" />
+              <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
           )}
         </div>
@@ -196,12 +215,13 @@ export function OrderForm({
               <ChefHat className="w-6 h-6 text-white" />
             </div>
             <div className="text-left">
-              <span className="text-white font-semibold block text-lg">Menú del Día</span>
+              <span className="text-white font-semibold block text-lg">
+                Menú del Día
+              </span>
               <span className="text-amber-100 text-sm hidden sm:inline">
-                {dailyMenuDisplay.isConfigured 
+                {dailyMenuDisplay.isConfigured
                   ? `${dailyMenuDisplay.soupOptions.length} sopas, ${dailyMenuDisplay.drinkOptions.length} bebidas`
-                  : "Usando configuración por defecto"
-                }
+                  : "Usando configuración por defecto"}
               </span>
             </div>
           </div>
@@ -229,12 +249,18 @@ export function OrderForm({
         <div className="flex items-center justify-between p-4 bg-sage-50 rounded-xl border border-sage-200">
           <div className="flex items-center gap-2">
             <Receipt className="w-5 h-5 text-sage-600" />
-            <span className="text-sm font-medium text-carbon-700">Margen base del almuerzo:</span>
+            <span className="text-sm font-medium text-carbon-700">
+              Margen base del almuerzo:
+            </span>
           </div>
           <div className="text-sm">
             <span className="text-carbon-600">
-              <strong className="text-carbon-900">${dailyMenuPrices.basePrice.toLocaleString()}</strong>
-              <span className="text-carbon-400 ml-2">(se suma al precio de la proteína)</span>
+              <strong className="text-carbon-900">
+                ${dailyMenuPrices.basePrice.toLocaleString()}
+              </strong>
+              <span className="text-carbon-400 ml-2">
+                (se suma al precio de la proteína)
+              </span>
             </span>
           </div>
         </div>
@@ -247,8 +273,12 @@ export function OrderForm({
             <UtensilsCrossed className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-carbon-900">Configurar Almuerzo</h3>
-            <p className="text-sm text-carbon-500">Selecciona los elementos del menú</p>
+            <h3 className="text-lg font-bold text-carbon-900">
+              Configurar Almuerzo
+            </h3>
+            <p className="text-sm text-carbon-500">
+              Selecciona los elementos del menú
+            </p>
           </div>
         </div>
 
@@ -261,7 +291,11 @@ export function OrderForm({
               selectedOption={selectedSoup}
               onSelect={setSelectedSoup}
               required={true}
-              error={hasError("soup") ? validationErrors.find(e => e.field === "soup")?.message : undefined}
+              error={
+                hasError("soup")
+                  ? validationErrors.find((e) => e.field === "soup")?.message
+                  : undefined
+              }
               icon="🍲"
               color="amber"
             />
@@ -275,7 +309,12 @@ export function OrderForm({
               selectedOption={selectedPrinciple}
               onSelect={setSelectedPrinciple}
               required={true}
-              error={hasError("principle") ? validationErrors.find(e => e.field === "principle")?.message : undefined}
+              error={
+                hasError("principle")
+                  ? validationErrors.find((e) => e.field === "principle")
+                      ?.message
+                  : undefined
+              }
               icon="🥔"
               color="emerald"
             />
@@ -289,7 +328,11 @@ export function OrderForm({
               selectedOption={selectedSalad}
               onSelect={setSelectedSalad}
               required={true}
-              error={hasError("salad") ? validationErrors.find(e => e.field === "salad")?.message : undefined}
+              error={
+                hasError("salad")
+                  ? validationErrors.find((e) => e.field === "salad")?.message
+                  : undefined
+              }
               icon="🥗"
               color="sage"
             />
@@ -303,7 +346,11 @@ export function OrderForm({
               selectedOption={selectedDrink}
               onSelect={setSelectedDrink}
               required={true}
-              error={hasError("drink") ? validationErrors.find(e => e.field === "drink")?.message : undefined}
+              error={
+                hasError("drink")
+                  ? validationErrors.find((e) => e.field === "drink")?.message
+                  : undefined
+              }
               icon="🥤"
               color="blue"
             />
@@ -317,7 +364,11 @@ export function OrderForm({
               selectedOption={selectedExtra}
               onSelect={setSelectedExtra}
               required={true}
-              error={hasError("extra") ? validationErrors.find(e => e.field === "extra")?.message : undefined}
+              error={
+                hasError("extra")
+                  ? validationErrors.find((e) => e.field === "extra")?.message
+                  : undefined
+              }
               icon="🍌"
               color="purple"
               showRiceInfo={true}
@@ -327,128 +378,212 @@ export function OrderForm({
 
           {/* Modern auto-configured menu display */}
           {dailyMenuDisplay.soupOptions.length <= 1 &&
-           dailyMenuDisplay.principleOptions.length <= 1 &&
-           dailyMenuDisplay.saladOptions.length <= 1 &&
-           dailyMenuDisplay.drinkOptions.length <= 1 &&
-           dailyMenuDisplay.extraOptions.length <= 1 && (
-            <div className="bg-gradient-to-br from-sage-50 via-white to-amber-50 rounded-2xl border border-sage-200 overflow-hidden">
-              <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-4 py-3">
-                <h4 className="text-white font-semibold text-sm flex items-center gap-2">
-                  <span className="text-lg">🍽️</span>
-                  Menú del Día
-                </h4>
+            dailyMenuDisplay.principleOptions.length <= 1 &&
+            dailyMenuDisplay.saladOptions.length <= 1 &&
+            dailyMenuDisplay.drinkOptions.length <= 1 &&
+            dailyMenuDisplay.extraOptions.length <= 1 && (
+              <div className="bg-gradient-to-br from-sage-50 via-white to-amber-50 rounded-2xl border border-sage-200 overflow-hidden">
+                <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-4 py-3">
+                  <h4 className="text-white font-semibold text-sm flex items-center gap-2">
+                    <span className="text-lg">🍽️</span>
+                    Menú del Día
+                  </h4>
+                </div>
+                <div className="p-4 space-y-3">
+                  {/* Soup */}
+                  {dailyMenuDisplay.soupOptions.length === 1 && (
+                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-amber-100 shadow-sm">
+                      <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-xl">
+                        🍲
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs text-amber-600 font-medium uppercase tracking-wider">
+                          Sopa
+                        </p>
+                        <p className="text-carbon-900 font-semibold">
+                          {dailyMenuDisplay.soupOptions[0].name}
+                        </p>
+                      </div>
+                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                        <svg
+                          className="w-4 h-4 text-emerald-600"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Principle */}
+                  {dailyMenuDisplay.principleOptions.length === 1 && (
+                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-emerald-100 shadow-sm">
+                      <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-xl">
+                        🥔
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs text-emerald-600 font-medium uppercase tracking-wider">
+                          Principio
+                        </p>
+                        <p className="text-carbon-900 font-semibold">
+                          {dailyMenuDisplay.principleOptions[0].name}
+                        </p>
+                      </div>
+                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                        <svg
+                          className="w-4 h-4 text-emerald-600"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Salad */}
+                  {dailyMenuDisplay.saladOptions.length === 1 && (
+                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-sage-100 shadow-sm">
+                      <div className="w-10 h-10 rounded-xl bg-sage-100 flex items-center justify-center text-xl">
+                        🥗
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs text-sage-600 font-medium uppercase tracking-wider">
+                          Ensalada
+                        </p>
+                        <p className="text-carbon-900 font-semibold">
+                          {dailyMenuDisplay.saladOptions[0].name}
+                        </p>
+                      </div>
+                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                        <svg
+                          className="w-4 h-4 text-emerald-600"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Drink */}
+                  {dailyMenuDisplay.drinkOptions.length === 1 && (
+                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-blue-100 shadow-sm">
+                      <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-xl">
+                        🥤
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs text-blue-600 font-medium uppercase tracking-wider">
+                          Jugo
+                        </p>
+                        <p className="text-carbon-900 font-semibold">
+                          {dailyMenuDisplay.drinkOptions[0].name}
+                        </p>
+                      </div>
+                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                        <svg
+                          className="w-4 h-4 text-emerald-600"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Extra */}
+                  {dailyMenuDisplay.extraOptions.length === 1 && (
+                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-purple-100 shadow-sm">
+                      <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-xl">
+                        🍌
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs text-purple-600 font-medium uppercase tracking-wider">
+                          Extra
+                        </p>
+                        <p className="text-carbon-900 font-semibold">
+                          {dailyMenuDisplay.extraOptions[0].name}
+                        </p>
+                      </div>
+                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                        <svg
+                          className="w-4 h-4 text-emerald-600"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Rice */}
+                  {dailyMenuDisplay.riceOption && (
+                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-amber-100 shadow-sm">
+                      <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-xl">
+                        🍚
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-xs text-amber-600 font-medium uppercase tracking-wider">
+                          Arroz
+                        </p>
+                        <p className="text-carbon-900 font-semibold">
+                          {dailyMenuDisplay.riceOption.name}
+                        </p>
+                      </div>
+                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                        <svg
+                          className="w-4 h-4 text-emerald-600"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div className="p-4 space-y-3">
-                {/* Soup */}
-                {dailyMenuDisplay.soupOptions.length === 1 && (
-                  <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-amber-100 shadow-sm">
-                    <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-xl">
-                      🍲
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-xs text-amber-600 font-medium uppercase tracking-wider">Sopa</p>
-                      <p className="text-carbon-900 font-semibold">{dailyMenuDisplay.soupOptions[0].name}</p>
-                    </div>
-                    <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
-                      <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
-                
-                {/* Principle */}
-                {dailyMenuDisplay.principleOptions.length === 1 && (
-                  <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-emerald-100 shadow-sm">
-                    <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-xl">
-                      🥔
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-xs text-emerald-600 font-medium uppercase tracking-wider">Principio</p>
-                      <p className="text-carbon-900 font-semibold">{dailyMenuDisplay.principleOptions[0].name}</p>
-                    </div>
-                    <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
-                      <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
-                
-                {/* Salad */}
-                {dailyMenuDisplay.saladOptions.length === 1 && (
-                  <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-sage-100 shadow-sm">
-                    <div className="w-10 h-10 rounded-xl bg-sage-100 flex items-center justify-center text-xl">
-                      🥗
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-xs text-sage-600 font-medium uppercase tracking-wider">Ensalada</p>
-                      <p className="text-carbon-900 font-semibold">{dailyMenuDisplay.saladOptions[0].name}</p>
-                    </div>
-                    <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
-                      <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
-                
-                {/* Drink */}
-                {dailyMenuDisplay.drinkOptions.length === 1 && (
-                  <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-blue-100 shadow-sm">
-                    <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-xl">
-                      🥤
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-xs text-blue-600 font-medium uppercase tracking-wider">Jugo</p>
-                      <p className="text-carbon-900 font-semibold">{dailyMenuDisplay.drinkOptions[0].name}</p>
-                    </div>
-                    <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
-                      <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
-                
-                {/* Extra */}
-                {dailyMenuDisplay.extraOptions.length === 1 && (
-                  <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-purple-100 shadow-sm">
-                    <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-xl">
-                      🍌
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-xs text-purple-600 font-medium uppercase tracking-wider">Extra</p>
-                      <p className="text-carbon-900 font-semibold">{dailyMenuDisplay.extraOptions[0].name}</p>
-                    </div>
-                    <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
-                      <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
-                
-                {/* Rice */}
-                {dailyMenuDisplay.riceOption && (
-                  <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-amber-100 shadow-sm">
-                    <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-xl">
-                      🍚
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-xs text-amber-600 font-medium uppercase tracking-wider">Arroz</p>
-                      <p className="text-carbon-900 font-semibold">{dailyMenuDisplay.riceOption.name}</p>
-                    </div>
-                    <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
-                      <svg className="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                      </svg>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
+            )}
         </div>
       </Card>
 
@@ -462,7 +597,7 @@ export function OrderForm({
         />
         {hasError("protein") && (
           <p className="mt-2 text-sm text-error-500">
-            {validationErrors.find(e => e.field === "protein")?.message}
+            {validationErrors.find((e) => e.field === "protein")?.message}
           </p>
         )}
       </Card>
@@ -475,15 +610,17 @@ export function OrderForm({
               <ShoppingBag className="w-4 h-4" />
             </div>
             <div>
-              <h4 className="text-sm font-bold text-carbon-900">Adiciones Rápidas</h4>
+              <h4 className="text-sm font-bold text-carbon-900">
+                Adiciones Rápidas
+              </h4>
               <p className="text-xs text-carbon-500">Extras al almuerzo</p>
             </div>
           </div>
-          
+
           <div className="flex flex-wrap gap-2">
             {popularProducts.map((product) => {
               const existing = looseItems.find((i) => i.id === product.id);
-              
+
               return (
                 <button
                   key={product.id}
@@ -492,7 +629,7 @@ export function OrderForm({
                     "flex items-center gap-1.5 px-3 py-2 rounded-lg border transition-all duration-200 active:scale-95",
                     existing
                       ? "bg-sage-50 border-sage-400 text-sage-800 shadow-sm"
-                      : "bg-white border-carbon-200 hover:border-sage-400 hover:bg-sage-50/50"
+                      : "bg-white border-carbon-200 hover:border-sage-400 hover:bg-sage-50/50",
                   )}
                 >
                   {existing ? (
@@ -502,7 +639,9 @@ export function OrderForm({
                   ) : (
                     <Plus className="w-3.5 h-3.5 text-sage-500" />
                   )}
-                  <span className="text-xs font-medium text-carbon-800">{product.name}</span>
+                  <span className="text-xs font-medium text-carbon-800">
+                    {product.name}
+                  </span>
                   <span className="text-xs font-semibold text-carbon-500">
                     ${product.price.toLocaleString()}
                   </span>
@@ -525,8 +664,12 @@ export function OrderForm({
             rice: selectedRice ? [selectedRice] : [],
           }}
           replacements={replacements}
-          onAddReplacement={(replacement) => setReplacements([...replacements, replacement])}
-          onRemoveReplacement={(id) => setReplacements(replacements.filter(r => r.id !== id))}
+          onAddReplacement={(replacement) =>
+            setReplacements([...replacements, replacement])
+          }
+          onRemoveReplacement={(id) =>
+            setReplacements(replacements.filter((r) => r.id !== id))
+          }
         />
       </Card>
 
@@ -537,13 +680,17 @@ export function OrderForm({
             <Sparkles className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-carbon-900">Buscar Producto</h3>
+            <h3 className="text-lg font-bold text-carbon-900">
+              Buscar Producto
+            </h3>
             <p className="text-sm text-carbon-500">
-              {selectedProtein ? "Agregar extra al almuerzo" : "Agregar producto individual"}
+              {selectedProtein
+                ? "Agregar extra al almuerzo"
+                : "Agregar producto individual"}
             </p>
           </div>
         </div>
-        
+
         {/* Added products with quantity controls - shown first */}
         {looseItems.length > 0 && (
           <div className="mb-4 p-4 bg-sage-50 rounded-xl border border-sage-200">
@@ -552,7 +699,10 @@ export function OrderForm({
                 Productos ({looseItems.reduce((sum, i) => sum + i.quantity, 0)})
               </p>
               <p className="text-sm font-bold text-sage-700">
-                +${looseItems.reduce((sum, i) => sum + (i.price * i.quantity), 0).toLocaleString()}
+                +$
+                {looseItems
+                  .reduce((sum, i) => sum + i.price * i.quantity, 0)
+                  .toLocaleString()}
               </p>
             </div>
             <div className="space-y-2">
@@ -562,21 +712,47 @@ export function OrderForm({
                   className="flex items-center justify-between p-2 bg-white rounded-lg border border-sage-100"
                 >
                   <div className="flex items-center gap-2 flex-1 min-w-0">
-                    <span className="text-sm font-medium text-carbon-800 truncate">{item.name}</span>
-                    <span className="text-xs text-sage-600">${item.price.toLocaleString()}</span>
+                    <span className="text-sm font-medium text-carbon-800 truncate">
+                      {item.name}
+                    </span>
+                    <span className="text-xs text-sage-600">
+                      ${item.price.toLocaleString()}
+                    </span>
                   </div>
                   <div className="flex items-center gap-1">
                     <button
-                      onClick={() => handleUpdateLooseItemQuantity(item.id, item.quantity - 1)}
+                      onClick={() =>
+                        handleUpdateLooseItemQuantity(
+                          item.id,
+                          item.quantity - 1,
+                        )
+                      }
                       className="w-8 h-8 rounded-lg bg-sage-100 text-sage-700 hover:bg-sage-200 flex items-center justify-center transition-colors"
                     >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M20 12H4"
+                        />
                       </svg>
                     </button>
-                    <span className="w-8 text-center font-bold text-carbon-900">{item.quantity}</span>
+                    <span className="w-8 text-center font-bold text-carbon-900">
+                      {item.quantity}
+                    </span>
                     <button
-                      onClick={() => handleUpdateLooseItemQuantity(item.id, item.quantity + 1)}
+                      onClick={() =>
+                        handleUpdateLooseItemQuantity(
+                          item.id,
+                          item.quantity + 1,
+                        )
+                      }
                       className="w-8 h-8 rounded-lg bg-sage-100 text-sage-700 hover:bg-sage-200 flex items-center justify-center transition-colors"
                     >
                       <Plus className="w-4 h-4" />
@@ -620,18 +796,30 @@ export function OrderForm({
                     "group relative p-4 rounded-xl border-2 transition-all text-left min-h-[80px]",
                     addedItem
                       ? "border-sage-500 bg-sage-50"
-                      : "border-sage-200 bg-white hover:border-sage-400 hover:bg-sage-50"
+                      : "border-sage-200 bg-white hover:border-sage-400 hover:bg-sage-50",
                   )}
                 >
                   {addedItem && (
                     <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-sage-500 flex items-center justify-center shadow-md">
-                      <span className="text-xs font-bold text-white">{addedItem.quantity}</span>
+                      <span className="text-xs font-bold text-white">
+                        {addedItem.quantity}
+                      </span>
                     </div>
                   )}
-                  <p className={cn("font-medium text-sm line-clamp-2 group-hover:text-sage-700 transition-colors", addedItem ? "text-sage-900" : "text-carbon-900")}>
+                  <p
+                    className={cn(
+                      "font-medium text-sm line-clamp-2 group-hover:text-sage-700 transition-colors",
+                      addedItem ? "text-sage-900" : "text-carbon-900",
+                    )}
+                  >
                     {item.name}
                   </p>
-                  <p className={cn("font-bold mt-1", addedItem ? "text-sage-700" : "text-sage-700")}>
+                  <p
+                    className={cn(
+                      "font-bold mt-1",
+                      addedItem ? "text-sage-700" : "text-sage-700",
+                    )}
+                  >
                     ${Number(item.price).toLocaleString("es-CO")}
                   </p>
                 </button>
@@ -639,9 +827,11 @@ export function OrderForm({
             })}
           </div>
         )}
-        
+
         {searchTerm && filteredLooseItems.length === 0 && (
-          <p className="text-center text-carbon-500 py-4">No se encontraron productos</p>
+          <p className="text-center text-carbon-500 py-4">
+            No se encontraron productos
+          </p>
         )}
       </Card>
 
@@ -649,16 +839,28 @@ export function OrderForm({
       <Card variant="elevated" className="p-6 rounded-2xl">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 text-purple-600 flex items-center justify-center">
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              />
             </svg>
           </div>
           <div>
             <h4 className="font-bold text-carbon-900">Notas del Pedido</h4>
-            <p className="text-xs text-carbon-500">Instrucciones especiales (opcional)</p>
+            <p className="text-xs text-carbon-500">
+              Instrucciones especiales (opcional)
+            </p>
           </div>
         </div>
-        
+
         <textarea
           value={orderNotes}
           onChange={(e) => setOrderNotes(e.target.value)}
@@ -669,12 +871,10 @@ export function OrderForm({
       </Card>
 
       {/* Add/update button */}
-      <Button
-        onClick={onAddToTable}
-        size="lg"
-        className="w-full"
-      >
-        {currentOrderIndex !== null ? "Actualizar Pedido" : "Agregar a la Orden"}
+      <Button onClick={onAddToTable} size="lg" className="w-full">
+        {currentOrderIndex !== null
+          ? "Actualizar Pedido"
+          : "Agregar a la Orden"}
       </Button>
     </div>
   );

@@ -30,15 +30,36 @@ interface KitchenKanbanProps {
 }
 
 const TABS_CONFIG = [
-  { id: "pending" as TabType, label: "Pendientes", icon: Clock, color: "bg-amber-500", textColor: "text-amber-700", bgColor: "bg-amber-50" },
-  { id: "inKitchen" as TabType, label: "Cocinando", icon: ChefHat, color: "bg-orange-500", textColor: "text-orange-700", bgColor: "bg-orange-50" },
-  { id: "ready" as TabType, label: "Listos", icon: CheckCircle, color: "bg-emerald-500", textColor: "text-emerald-700", bgColor: "bg-emerald-50" },
+  {
+    id: "pending" as TabType,
+    label: "Pendientes",
+    icon: Clock,
+    color: "bg-amber-500",
+    textColor: "text-amber-700",
+    bgColor: "bg-amber-50",
+  },
+  {
+    id: "inKitchen" as TabType,
+    label: "Cocinando",
+    icon: ChefHat,
+    color: "bg-orange-500",
+    textColor: "text-orange-700",
+    bgColor: "bg-orange-50",
+  },
+  {
+    id: "ready" as TabType,
+    label: "Listos",
+    icon: CheckCircle,
+    color: "bg-emerald-500",
+    textColor: "text-emerald-700",
+    bgColor: "bg-emerald-50",
+  },
 ];
 
 export function KitchenKanban(_props: KitchenKanbanProps) {
   const { data: allOrders, isLoading, error, refetch } = useKitchenOrders();
   const { mutate: updateStatus } = useUpdateOrderStatus();
-  
+
   const [readyItemIds, setReadyItemIds] = useState<number[]>([]);
   const [activeOrder, setActiveOrder] = useState<Order | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("pending");
@@ -59,7 +80,7 @@ export function KitchenKanban(_props: KitchenKanbanProps) {
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   useEffect(() => {
@@ -75,84 +96,110 @@ export function KitchenKanban(_props: KitchenKanbanProps) {
 
     const pending = allOrders
       .filter((o) => o.status === OrderStatus.PENDING)
-      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      .sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      );
 
     const inKitchen = allOrders
       .filter((o) => o.status === OrderStatus.IN_KITCHEN)
-      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      .sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      );
 
     const ready = allOrders
       .filter((o) => o.status === OrderStatus.READY)
-      .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+      .sort(
+        (a, b) =>
+          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+      );
 
     return { pending, inKitchen, ready };
   }, [allOrders]);
 
   const getOrdersForTab = (tab: TabType) => {
     switch (tab) {
-      case "pending": return ordersByStatus.pending;
-      case "inKitchen": return ordersByStatus.inKitchen;
-      case "ready": return ordersByStatus.ready;
+      case "pending":
+        return ordersByStatus.pending;
+      case "inKitchen":
+        return ordersByStatus.inKitchen;
+      case "ready":
+        return ordersByStatus.ready;
     }
   };
 
-  const handleDragStart = useCallback((event: DragStartEvent) => {
-    const { active } = event;
-    const order = allOrders?.find((o) => o.id === active.id);
-    if (order) {
-      setActiveOrder(order);
-    }
-  }, [allOrders]);
+  const handleDragStart = useCallback(
+    (event: DragStartEvent) => {
+      const { active } = event;
+      const order = allOrders?.find((o) => o.id === active.id);
+      if (order) {
+        setActiveOrder(order);
+      }
+    },
+    [allOrders],
+  );
 
-  const handleDragEnd = useCallback((event: DragEndEvent) => {
-    const { active, over } = event;
-    setActiveOrder(null);
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { active, over } = event;
+      setActiveOrder(null);
 
-    if (!over) return;
+      if (!over) return;
 
-    const orderId = active.id as string;
-    const newStatus = over.id as OrderStatus;
+      const orderId = active.id as string;
+      const newStatus = over.id as OrderStatus;
 
-    if (newStatus === OrderStatus.PENDING || 
-        newStatus === OrderStatus.IN_KITCHEN || 
-        newStatus === OrderStatus.READY) {
+      if (
+        newStatus === OrderStatus.PENDING ||
+        newStatus === OrderStatus.IN_KITCHEN ||
+        newStatus === OrderStatus.READY
+      ) {
+        updateStatus(
+          { id: orderId, orderStatus: newStatus },
+          {
+            onSuccess: () => {
+              toast.success(`Pedido movido a ${getStatusLabel(newStatus)}`);
+            },
+            onError: () => {
+              toast.error("Error al mover el pedido");
+            },
+          },
+        );
+      }
+    },
+    [updateStatus],
+  );
+
+  const handleToggleItemReady = useCallback(
+    (_orderId: string, itemId: number, ready: boolean) => {
+      setReadyItemIds((prev) => {
+        if (ready) {
+          return [...prev, itemId];
+        } else {
+          return prev.filter((id) => id !== itemId);
+        }
+      });
+    },
+    [],
+  );
+
+  const handleStatusChange = useCallback(
+    (orderId: string, status: OrderStatus) => {
       updateStatus(
-        { id: orderId, orderStatus: newStatus },
+        { id: orderId, orderStatus: status },
         {
           onSuccess: () => {
-            toast.success(`Pedido movido a ${getStatusLabel(newStatus)}`);
+            toast.success(`Pedido marcado como ${getStatusLabel(status)}`);
           },
           onError: () => {
-            toast.error("Error al mover el pedido");
+            toast.error("Error al actualizar el estado");
           },
-        }
+        },
       );
-    }
-  }, [updateStatus]);
-
-  const handleToggleItemReady = useCallback((_orderId: string, itemId: number, ready: boolean) => {
-    setReadyItemIds((prev) => {
-      if (ready) {
-        return [...prev, itemId];
-      } else {
-        return prev.filter((id) => id !== itemId);
-      }
-    });
-  }, []);
-
-  const handleStatusChange = useCallback((orderId: string, status: OrderStatus) => {
-    updateStatus(
-      { id: orderId, orderStatus: status },
-      {
-        onSuccess: () => {
-          toast.success(`Pedido marcado como ${getStatusLabel(status)}`);
-        },
-        onError: () => {
-          toast.error("Error al actualizar el estado");
-        },
-      }
-    );
-  }, [updateStatus]);
+    },
+    [updateStatus],
+  );
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
@@ -186,9 +233,10 @@ export function KitchenKanban(_props: KitchenKanbanProps) {
     );
   }
 
-  const totalOrders = ordersByStatus.pending.length + 
-                      ordersByStatus.inKitchen.length + 
-                      ordersByStatus.ready.length;
+  const totalOrders =
+    ordersByStatus.pending.length +
+    ordersByStatus.inKitchen.length +
+    ordersByStatus.ready.length;
 
   const currentTabOrders = getOrdersForTab(activeTab);
 
@@ -202,7 +250,9 @@ export function KitchenKanban(_props: KitchenKanbanProps) {
       <div className="h-full flex flex-col">
         <div className="flex items-center justify-between px-4 lg:px-6 py-3 lg:py-4 bg-white border-b border-sage-200">
           <div className="flex items-center gap-3 lg:gap-4">
-            <h1 className="text-xl lg:text-2xl font-bold text-carbon-900">Vista de Cocina</h1>
+            <h1 className="text-xl lg:text-2xl font-bold text-carbon-900">
+              Vista de Cocina
+            </h1>
             <div className="hidden sm:flex items-center gap-2 text-sm text-carbon-500 bg-sage-50 px-3 py-1.5 rounded-lg">
               <RefreshCw className="w-4 h-4" />
               <span>Auto-refresh: 30s</span>
@@ -247,37 +297,45 @@ export function KitchenKanban(_props: KitchenKanbanProps) {
                     const Icon = tab.icon;
                     const count = getOrdersForTab(tab.id).length;
                     const isActive = activeTab === tab.id;
-                    
+
                     return (
                       <button
                         key={tab.id}
                         onClick={() => handleTabChange(tab.id)}
                         className={cn(
                           "flex flex-col items-center justify-center py-2 px-4 rounded-xl min-w-[80px] transition-all",
-                          isActive 
-                            ? `${tab.bgColor} ${tab.textColor}` 
-                            : "text-carbon-400 hover:bg-sage-50"
+                          isActive
+                            ? `${tab.bgColor} ${tab.textColor}`
+                            : "text-carbon-400 hover:bg-sage-50",
                         )}
                       >
-                        <div className={cn(
-                          "p-2 rounded-full mb-1",
-                          isActive ? tab.color : "bg-sage-100"
-                        )}>
-                          <Icon className={cn(
-                            "w-5 h-5",
-                            isActive ? "text-white" : "text-carbon-400"
-                          )} />
+                        <div
+                          className={cn(
+                            "p-2 rounded-full mb-1",
+                            isActive ? tab.color : "bg-sage-100",
+                          )}
+                        >
+                          <Icon
+                            className={cn(
+                              "w-5 h-5",
+                              isActive ? "text-white" : "text-carbon-400",
+                            )}
+                          />
                         </div>
-                        <span className={cn(
-                          "text-xs font-semibold",
-                          isActive ? tab.textColor : "text-carbon-500"
-                        )}>
+                        <span
+                          className={cn(
+                            "text-xs font-semibold",
+                            isActive ? tab.textColor : "text-carbon-500",
+                          )}
+                        >
                           {tab.label}
                         </span>
-                        <span className={cn(
-                          "text-xs font-bold",
-                          isActive ? tab.textColor : "text-carbon-400"
-                        )}>
+                        <span
+                          className={cn(
+                            "text-xs font-bold",
+                            isActive ? tab.textColor : "text-carbon-400",
+                          )}
+                        >
                           {count}
                         </span>
                       </button>

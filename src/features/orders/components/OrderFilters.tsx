@@ -1,5 +1,11 @@
 import { OrderStatus, OrderType } from "@/types";
-import { FilterBar, FilterPills, FilterSelect, ActiveFilterChips, DateFilter } from "@/components";
+import {
+  FilterBar,
+  FilterPills,
+  FilterSelect,
+  ActiveFilterChips,
+  DateFilter,
+} from "@/components";
 import type { DateFilterType, DateRange } from "@/components";
 
 interface OrderFiltersProps {
@@ -50,7 +56,7 @@ const TYPE_LABELS: Record<string, string> = {
  *
  * Filtros unificados con diseño consistente (FilterBar, FilterPills, ActiveFilterChips, DateFilter).
  * Touch-friendly y responsive.
- * 
+ *
  * Enhanced with date filtering support for better order management.
  */
 export function OrderFilters({
@@ -70,11 +76,23 @@ export function OrderFilters({
   const statusPillOptions = [
     { value: "ALL", label: "Todos", count: counts.all },
     { value: OrderStatus.PENDING, label: "Pendientes", count: counts.pending },
-    { value: OrderStatus.IN_KITCHEN, label: "En Cocina", count: counts.inKitchen },
+    {
+      value: OrderStatus.IN_KITCHEN,
+      label: "En Cocina",
+      count: counts.inKitchen,
+    },
     { value: OrderStatus.READY, label: "Listos", count: counts.ready },
-    { value: OrderStatus.DELIVERED, label: "Entregados", count: counts.delivered },
+    {
+      value: OrderStatus.DELIVERED,
+      label: "Entregados",
+      count: counts.delivered,
+    },
     { value: OrderStatus.PAID, label: "Pagados", count: counts.paid },
-    { value: OrderStatus.SENT_TO_CASHIER, label: "En Caja", count: counts.sentToCashier },
+    {
+      value: OrderStatus.SENT_TO_CASHIER,
+      label: "En Caja",
+      count: counts.sentToCashier,
+    },
   ];
 
   const typeSelectOptions = [
@@ -85,15 +103,31 @@ export function OrderFilters({
     { value: OrderType.WHATSAPP, label: "WhatsApp" },
   ];
 
-  const hasActiveFilters = statusFilter !== "ALL" || typeFilter !== "ALL" || dateFilter !== "TODAY";
+  const hasActiveFilters =
+    statusFilter !== "ALL" || typeFilter !== "ALL" || dateFilter !== "TODAY";
 
   const activeChips = [
-    ...(statusFilter !== "ALL" ? [{ key: "status", label: "Estado", value: STATUS_LABELS[statusFilter] }] : []),
-    ...(typeFilter !== "ALL" ? [{ key: "type", label: "Tipo", value: TYPE_LABELS[typeFilter] }] : []),
-    ...(dateFilter !== "TODAY" ? [{ key: "date", label: "Fecha", value: getDateLabel(dateFilter, customDateRange) }] : []),
+    ...(statusFilter !== "ALL"
+      ? [{ key: "status", label: "Estado", value: STATUS_LABELS[statusFilter] }]
+      : []),
+    ...(typeFilter !== "ALL"
+      ? [{ key: "type", label: "Tipo", value: TYPE_LABELS[typeFilter] }]
+      : []),
+    ...(dateFilter !== "TODAY"
+      ? [
+          {
+            key: "date",
+            label: "Fecha",
+            value: getDateLabel(dateFilter, customDateRange),
+          },
+        ]
+      : []),
   ];
 
-  function getDateLabel(dateFilter: DateFilterType, customRange?: DateRange): string {
+  function getDateLabel(
+    dateFilter: DateFilterType,
+    customRange?: DateRange,
+  ): string {
     switch (dateFilter) {
       case "TODAY":
         return "Hoy";
@@ -124,7 +158,7 @@ export function OrderFilters({
               onCustomRangeChange={onCustomDateRangeChange}
             />
           </div>
-          
+
           <div className="flex-shrink-0 w-full sm:w-auto min-w-0">
             <FilterPills
               label="Estado"

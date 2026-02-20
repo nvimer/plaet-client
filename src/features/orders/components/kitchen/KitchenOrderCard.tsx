@@ -55,7 +55,7 @@ export function KitchenOrderCard({
     {
       onDrag: ({ movement: [mx], memo = translateX }) => {
         if (!isMobile) return memo;
-        
+
         // Only allow horizontal drag
         const clampedX = Math.max(-150, Math.min(150, mx));
         setTranslateX(clampedX);
@@ -68,7 +68,7 @@ export function KitchenOrderCard({
         }
 
         const swipeDirection = dir > 0 ? "right" : "left";
-        
+
         if (Math.abs(mx) > SWIPE_THRESHOLD) {
           // Get next/previous status
           let newStatus: OrderStatus | null = null;
@@ -114,7 +114,7 @@ export function KitchenOrderCard({
         filterTaps: true,
         threshold: SWIPE_THRESHOLD,
       },
-    }
+    },
   );
 
   const getSwipeBackground = () => {
@@ -141,16 +141,24 @@ export function KitchenOrderCard({
       // Swipe right - advance
       return (
         <div className="flex items-center gap-2 text-orange-600">
-          {order.status === OrderStatus.PENDING && <ArrowRight className="w-6 h-6" />}
-          {order.status === OrderStatus.IN_KITCHEN && <ArrowRight className="w-6 h-6" />}
+          {order.status === OrderStatus.PENDING && (
+            <ArrowRight className="w-6 h-6" />
+          )}
+          {order.status === OrderStatus.IN_KITCHEN && (
+            <ArrowRight className="w-6 h-6" />
+          )}
         </div>
       );
     } else if (translateX < -30) {
       // Swipe left - go back
       return (
         <div className="flex items-center gap-2 text-orange-600">
-          {order.status === OrderStatus.READY && <ArrowLeft className="w-6 h-6" />}
-          {order.status === OrderStatus.IN_KITCHEN && <ArrowLeft className="w-6 h-6" />}
+          {order.status === OrderStatus.READY && (
+            <ArrowLeft className="w-6 h-6" />
+          )}
+          {order.status === OrderStatus.IN_KITCHEN && (
+            <ArrowLeft className="w-6 h-6" />
+          )}
         </div>
       );
     }
@@ -185,16 +193,19 @@ export function KitchenOrderCard({
   }, [order.createdAt]);
 
   const preparableItems = useMemo(() => {
-    return order.items?.filter(
-      (item) => isPreparableCategory(item.menuItem?.categoryId)
-    ) || [];
+    return (
+      order.items?.filter((item) =>
+        isPreparableCategory(item.menuItem?.categoryId),
+      ) || []
+    );
   }, [order.items]);
 
   const readyItems = useMemo(() => {
     return preparableItems.filter((item) => readyItemIds.includes(item.id));
   }, [preparableItems, readyItemIds]);
 
-  const allProteinsReady = preparableItems.length > 0 && readyItems.length === preparableItems.length;
+  const allProteinsReady =
+    preparableItems.length > 0 && readyItems.length === preparableItems.length;
 
   const handleToggleItemReady = (itemId: number, ready: boolean) => {
     onToggleItemReady(order.id, itemId, ready);
@@ -220,28 +231,36 @@ export function KitchenOrderCard({
       className={cn(
         "relative border-l-4 rounded-2xl bg-white shadow-smooth-lg overflow-hidden",
         getColumnColor(),
-        (isDragging || isSwiping) && "opacity-90 z-50"
+        (isDragging || isSwiping) && "opacity-90 z-50",
       )}
       {...(isMobile ? {} : { ...attributes, ...listeners })}
       {...(isMobile ? bind() : {})}
     >
       {/* Swipe background indicator */}
       {isMobile && translateX !== 0 && (
-        <div className={cn(
-          "absolute inset-0 flex items-center justify-center pointer-events-none",
-          getSwipeBackground()
-        )}>
+        <div
+          className={cn(
+            "absolute inset-0 flex items-center justify-center pointer-events-none",
+            getSwipeBackground(),
+          )}
+        >
           {getSwipeIcon()}
         </div>
       )}
 
-      <Card variant="elevated" padding="md" className="bg-transparent shadow-none">
+      <Card
+        variant="elevated"
+        padding="md"
+        className="bg-transparent shadow-none"
+      >
         <div className="flex items-start justify-between mb-3">
           <div className="flex items-center gap-2">
             {order.table && (
               <div className="bg-sage-600 text-white rounded-xl px-4 py-2 flex items-center gap-2">
                 <UtensilsCrossed className="w-5 h-5" />
-                <span className="text-xl font-bold">Mesa {order.table.number}</span>
+                <span className="text-xl font-bold">
+                  Mesa {order.table.number}
+                </span>
               </div>
             )}
           </div>
@@ -252,8 +271,8 @@ export function KitchenOrderCard({
               timeInfo.isUrgent
                 ? "bg-rose-100 text-rose-700 animate-pulse"
                 : timeInfo.isWarning
-                ? "bg-amber-100 text-amber-700"
-                : "bg-sage-100 text-sage-700"
+                  ? "bg-amber-100 text-amber-700"
+                  : "bg-sage-100 text-sage-700",
             )}
           >
             <Clock className="w-5 h-5" />
@@ -282,14 +301,16 @@ export function KitchenOrderCard({
           ))}
         </div>
 
-        {preparableItems.length > 0 && allProteinsReady && order.status !== OrderStatus.READY && (
-          <button
-            onClick={() => onStatusChange(order.id, OrderStatus.READY)}
-            className="mt-3 w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-colors"
-          >
-            ✓ Todas las proteínas listas - Marcar como Listo
-          </button>
-        )}
+        {preparableItems.length > 0 &&
+          allProteinsReady &&
+          order.status !== OrderStatus.READY && (
+            <button
+              onClick={() => onStatusChange(order.id, OrderStatus.READY)}
+              className="mt-3 w-full py-3 bg-emerald-500 hover:bg-emerald-600 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-colors"
+            >
+              ✓ Todas las proteínas listas - Marcar como Listo
+            </button>
+          )}
       </Card>
     </div>
   );

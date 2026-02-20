@@ -8,18 +8,14 @@ import { useTables } from "@/features/tables";
 import { useOrder, useUpdateOrder } from "../hooks";
 import { ROUTES, getOrderDetailRoute } from "@/app/routes";
 import { toast } from "sonner";
-import {
-  Bike,
-  ShoppingBag,
-  UtensilsCrossed,
-} from "lucide-react";
+import { Bike, ShoppingBag, UtensilsCrossed } from "lucide-react";
 
 /**
  * OrderEditPage Component
- * 
+ *
  * Full-screen page for editing existing orders.
  * Simplified version focused on basic order modifications.
- * 
+ *
  * Features:
  * - Load existing order data
  * - Edit order type, table and notes
@@ -49,7 +45,8 @@ export function OrderEditPage() {
 
   // Filter available tables for dine-in
   const availableTables = tables?.filter(
-    (table) => table.status === TableStatus.AVAILABLE || table.id === order?.tableId
+    (table) =>
+      table.status === TableStatus.AVAILABLE || table.id === order?.tableId,
   );
 
   // Handle order submission
@@ -67,7 +64,10 @@ export function OrderEditPage() {
       {
         id: order.id,
         type: orderType,
-        tableId: orderType === OrderType.DINE_IN ? (selectedTable || undefined) : undefined,
+        tableId:
+          orderType === OrderType.DINE_IN
+            ? selectedTable || undefined
+            : undefined,
         notes: orderNotes,
       },
       {
@@ -83,7 +83,7 @@ export function OrderEditPage() {
             icon: "❌",
           });
         },
-      }
+      },
     );
   };
 
@@ -196,21 +196,23 @@ export function OrderEditPage() {
               >
                 <div>
                   <div className="font-medium text-carbon-900">
-                    {item.quantity}x {item.menuItem?.name || `Item #${item.menuItemId}`}
+                    {item.quantity}x{" "}
+                    {item.menuItem?.name || `Item #${item.menuItemId}`}
                   </div>
                   {item.notes && (
                     <div className="text-sm text-carbon-600">{item.notes}</div>
                   )}
                 </div>
                 <div className="font-semibold text-carbon-900">
-                  ${(Number(item.priceAtOrder) * item.quantity).toLocaleString()}
+                  $
+                  {(Number(item.priceAtOrder) * item.quantity).toLocaleString()}
                 </div>
               </div>
             ))}
           </div>
           <p className="text-sm text-carbon-500 mt-4">
-            Nota: Los items de la orden no pueden ser modificados desde esta vista.
-            Para cambiar items, contacte al administrador.
+            Nota: Los items de la orden no pueden ser modificados desde esta
+            vista. Para cambiar items, contacte al administrador.
           </p>
         </div>
 

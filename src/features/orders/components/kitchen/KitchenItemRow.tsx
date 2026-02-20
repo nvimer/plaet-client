@@ -44,7 +44,7 @@ export function KitchenItemRow({
         "flex items-center gap-3 p-3 rounded-xl border-2 transition-all",
         itemColor,
         isPreparable && "cursor-pointer hover:scale-[1.02] active:scale-[0.98]",
-        isReady && "opacity-60"
+        isReady && "opacity-60",
       )}
       onClick={handleClick}
       role={isPreparable ? "checkbox" : undefined}
@@ -57,7 +57,7 @@ export function KitchenItemRow({
             "border-2",
             isReady
               ? "bg-emerald-500 border-emerald-500 text-white"
-              : "border-carbon-300 bg-white"
+              : "border-carbon-300 bg-white",
           )}
         >
           {isReady && <Check className="w-4 h-4" />}
@@ -73,7 +73,7 @@ export function KitchenItemRow({
           <span
             className={cn(
               "font-semibold text-carbon-900",
-              isReady && "line-through"
+              isReady && "line-through",
             )}
           >
             {quantity}x {name}
@@ -91,9 +91,7 @@ export function KitchenItemRow({
         </div>
 
         {notes && (
-          <p className="text-xs text-carbon-500 mt-0.5 italic">
-            📝 {notes}
-          </p>
+          <p className="text-xs text-carbon-500 mt-0.5 italic">📝 {notes}</p>
         )}
       </div>
     </div>

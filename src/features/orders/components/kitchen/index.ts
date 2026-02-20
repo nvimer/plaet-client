@@ -2,7 +2,7 @@ export { KitchenKanban } from "./KitchenKanban";
 export { KitchenColumn } from "./KitchenColumn";
 export { KitchenOrderCard } from "./KitchenOrderCard";
 export { KitchenItemRow } from "./KitchenItemRow";
-export { 
+export {
   DEFAULT_KITCHEN_CATEGORIES,
   isPreparableCategory,
   isProteinCategory,

@@ -1,6 +1,12 @@
 import { Card } from "@/components";
 import { cn } from "@/utils/cn";
-import { Utensils, Plus, ArrowRightLeft, ShoppingBag, Copy } from "lucide-react";
+import {
+  Utensils,
+  Plus,
+  ArrowRightLeft,
+  ShoppingBag,
+  Copy,
+} from "lucide-react";
 
 /**
  * OrderItem
@@ -25,10 +31,10 @@ export interface OrderSummaryProps {
 
 /**
  * OrderSummary Component
- * 
+ *
  * Muestra el desglose detallado del pedido con todos los items,
  * sustituciones y adicionales. Incluye botón para duplicar el pedido.
- * 
+ *
  * @example
  * ```tsx
  * <OrderSummary
@@ -43,7 +49,12 @@ export interface OrderSummaryProps {
  * />
  * ```
  */
-export function OrderSummary({ items, total, onDuplicate, className }: OrderSummaryProps) {
+export function OrderSummary({
+  items,
+  total,
+  onDuplicate,
+  className,
+}: OrderSummaryProps) {
   const baseItem = items.find((i) => i.type === "base");
   const proteinItem = items.find((i) => i.type === "protein");
   const substitutions = items.filter((i) => i.type === "substitution");
@@ -80,14 +91,23 @@ export function OrderSummary({ items, total, onDuplicate, className }: OrderSumm
                 <Utensils className="w-5 h-5 text-sage-600" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-carbon-900">Almuerzo Completo</p>
+                <p className="font-semibold text-carbon-900">
+                  Almuerzo Completo
+                </p>
                 {proteinItem && (
-                  <p className="text-sm text-carbon-600">Proteína: {proteinItem.name}</p>
+                  <p className="text-sm text-carbon-600">
+                    Proteína: {proteinItem.name}
+                  </p>
                 )}
               </div>
               <div className="text-right">
                 <p className="font-bold text-lg text-sage-700">
-                  ${(baseItem?.totalPrice || proteinItem?.totalPrice || 0).toLocaleString("es-CO")}
+                  $
+                  {(
+                    baseItem?.totalPrice ||
+                    proteinItem?.totalPrice ||
+                    0
+                  ).toLocaleString("es-CO")}
                 </p>
               </div>
             </div>
@@ -107,7 +127,9 @@ export function OrderSummary({ items, total, onDuplicate, className }: OrderSumm
                 className="flex items-center justify-between p-2.5 bg-amber-50 rounded-lg border border-amber-200"
               >
                 <span className="text-sm text-carbon-700">{sub.name}</span>
-                <span className="text-sm font-medium text-amber-700">Sin costo</span>
+                <span className="text-sm font-medium text-amber-700">
+                  Sin costo
+                </span>
               </div>
             ))}
           </div>
@@ -126,9 +148,13 @@ export function OrderSummary({ items, total, onDuplicate, className }: OrderSumm
                 className="flex items-center justify-between p-2.5 bg-white rounded-lg border border-sage-200"
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-carbon-900">{item.name}</span>
+                  <span className="text-sm font-medium text-carbon-900">
+                    {item.name}
+                  </span>
                   {item.quantity > 1 && (
-                    <span className="text-xs text-carbon-500">x{item.quantity}</span>
+                    <span className="text-xs text-carbon-500">
+                      x{item.quantity}
+                    </span>
                   )}
                 </div>
                 <span className="text-sm font-semibold text-sage-700">
@@ -143,7 +169,9 @@ export function OrderSummary({ items, total, onDuplicate, className }: OrderSumm
         {items.length === 0 && (
           <div className="text-center py-6 text-carbon-500">
             <p className="text-sm">No hay items en el pedido</p>
-            <p className="text-xs mt-1">Selecciona una proteína para comenzar</p>
+            <p className="text-xs mt-1">
+              Selecciona una proteína para comenzar
+            </p>
           </div>
         )}
       </div>
@@ -154,7 +182,9 @@ export function OrderSummary({ items, total, onDuplicate, className }: OrderSumm
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-carbon-600">Total del pedido</p>
-              <p className="text-xs text-carbon-500">{items.reduce((sum, i) => sum + i.quantity, 0)} items</p>
+              <p className="text-xs text-carbon-500">
+                {items.reduce((sum, i) => sum + i.quantity, 0)} items
+              </p>
             </div>
             <p className="text-2xl sm:text-3xl font-bold text-sage-700">
               ${total.toLocaleString("es-CO")}

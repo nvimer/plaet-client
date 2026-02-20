@@ -1,10 +1,10 @@
 /**
  * Kitchen Category Configuration
- * 
+ *
  * Defines which category IDs are considered "preparable" items
  * in the kitchen view. These items will show checkboxes and
  * affect order status transitions.
- * 
+ *
  * NOTE: These IDs should match the database category IDs.
  * Configure these values based on your menu setup.
  */
@@ -18,7 +18,7 @@ export interface KitchenCategoryConfig {
 
 export const DEFAULT_KITCHEN_CATEGORIES: KitchenCategoryConfig = {
   proteinCategoryIds: [2], // TODO: Adjust to match your protein category ID
-  extraCategoryIds: [6],  // TODO: Adjust to match your extras category ID
+  extraCategoryIds: [6], // TODO: Adjust to match your extras category ID
 };
 
 /**
@@ -26,11 +26,13 @@ export const DEFAULT_KITCHEN_CATEGORIES: KitchenCategoryConfig = {
  */
 export function isPreparableCategory(
   categoryId: number | undefined,
-  config: KitchenCategoryConfig = DEFAULT_KITCHEN_CATEGORIES
+  config: KitchenCategoryConfig = DEFAULT_KITCHEN_CATEGORIES,
 ): boolean {
   if (!categoryId) return false;
-  return config.proteinCategoryIds.includes(categoryId) || 
-         config.extraCategoryIds.includes(categoryId);
+  return (
+    config.proteinCategoryIds.includes(categoryId) ||
+    config.extraCategoryIds.includes(categoryId)
+  );
 }
 
 /**
@@ -38,7 +40,7 @@ export function isPreparableCategory(
  */
 export function isProteinCategory(
   categoryId: number | undefined,
-  config: KitchenCategoryConfig = DEFAULT_KITCHEN_CATEGORIES
+  config: KitchenCategoryConfig = DEFAULT_KITCHEN_CATEGORIES,
 ): boolean {
   if (!categoryId) return false;
   return config.proteinCategoryIds.includes(categoryId);
@@ -49,7 +51,7 @@ export function isProteinCategory(
  */
 export function isExtraCategory(
   categoryId: number | undefined,
-  config: KitchenCategoryConfig = DEFAULT_KITCHEN_CATEGORIES
+  config: KitchenCategoryConfig = DEFAULT_KITCHEN_CATEGORIES,
 ): boolean {
   if (!categoryId) return false;
   return config.extraCategoryIds.includes(categoryId);

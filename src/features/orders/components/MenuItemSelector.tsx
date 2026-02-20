@@ -1,4 +1,3 @@
-
 import { Card } from "@/components";
 import { cn } from "@/utils/cn";
 import { AlertCircle, Check } from "lucide-react";
@@ -76,12 +75,16 @@ export function MenuItemSelector({
   // If no options configured
   if (options.length === 0) {
     return (
-      <Card className={cn("p-4 border-2 border-dashed", colors.border, colors.bg)}>
+      <Card
+        className={cn("p-4 border-2 border-dashed", colors.border, colors.bg)}
+      >
         <div className="flex items-center gap-3">
           {icon && <div className={cn("text-2xl", colors.text)}>{icon}</div>}
           <div>
             <p className={cn("font-semibold", colors.text)}>{label}</p>
-            <p className="text-sm text-carbon-500">No configurado en el menú del día</p>
+            <p className="text-sm text-carbon-500">
+              No configurado en el menú del día
+            </p>
           </div>
         </div>
       </Card>
@@ -100,7 +103,7 @@ export function MenuItemSelector({
           colors.bg,
           colors.border,
           isSelected ? colors.selected : colors.hover,
-          error && "border-rose-400 bg-rose-50"
+          error && "border-rose-400 bg-rose-50",
         )}
         onClick={() => onSelect(onlyOption)}
       >
@@ -126,7 +129,7 @@ export function MenuItemSelector({
               "w-12 h-12 rounded-full flex items-center justify-center transition-all",
               isSelected
                 ? "bg-sage-green-500 text-white"
-                : "bg-white border-2 border-sage-200"
+                : "bg-white border-2 border-sage-200",
             )}
           >
             {isSelected ? (
@@ -136,7 +139,7 @@ export function MenuItemSelector({
             )}
           </div>
         </div>
-        
+
         {/* Show rice info if applicable */}
         {showRiceInfo && riceName && (
           <div className="mt-3 pt-3 border-t border-sage-200">
@@ -158,26 +161,33 @@ export function MenuItemSelector({
 
   // Multiple options - show clickable cards
   return (
-    <div className={cn("space-y-3", error && "p-3 border-2 border-rose-300 rounded-xl bg-rose-50")}>
-      <div className="flex items-center justify-between">
+    <div
+      className={cn(
+        "space-y-3",
+        error && "p-3 border-2 border-rose-300 rounded-xl bg-rose-50",
+      )}
+    >
+      <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">
-          {icon && <span className={colors.text}>{icon}</span>}
-          <span className={cn("font-semibold", colors.text)}>{label}</span>
+          {icon && <span className={cn("text-lg", colors.text)}>{icon}</span>}
+          <span className={cn("font-bold text-sm sm:text-base", colors.text)}>
+            {label}
+          </span>
           {required && (
-            <span className="text-[10px] bg-sage-200 text-sage-700 px-1.5 py-0.5 rounded-full">
-              Requerido
+            <span className="text-[10px] bg-white/50 text-carbon-500 border border-carbon-200 px-1.5 py-0.5 rounded-full uppercase tracking-wider font-bold">
+              Obligatorio
             </span>
           )}
         </div>
         {selectedOption && (
-          <span className="text-sm text-sage-600 font-medium">
-            Seleccionado: {selectedOption.name}
+          <span className="text-[10px] sm:text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg font-bold border border-emerald-100 animate-in fade-in zoom-in-95 duration-300">
+            ✓ Seleccionado
           </span>
         )}
       </div>
 
       {/* Selection Cards Grid */}
-      <div className="grid grid-cols-2 gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
         {options.map((option) => {
           const isSelected = selectedOption?.id === option.id;
           return (
@@ -185,46 +195,39 @@ export function MenuItemSelector({
               key={option.id}
               onClick={() => onSelect(option)}
               className={cn(
-                "relative p-4 rounded-xl border-2 transition-all duration-200 text-left",
-                "min-h-[80px] flex flex-col justify-between",
+                "relative p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 text-left",
+                "min-h-[70px] sm:min-h-[80px] flex flex-col justify-center",
                 "active:scale-95 touch-manipulation",
                 isSelected
-                  ? cn(colors.selected, "border-sage-green-500 shadow-md")
-                  : cn("bg-white border-sage-200", colors.hover)
+                  ? cn(
+                      colors.selected,
+                      "border-sage-green-500 shadow-md ring-2 ring-sage-green-500/20",
+                    )
+                  : cn("bg-white border-sage-200", colors.hover),
               )}
             >
               <span
                 className={cn(
-                  "font-bold text-base leading-tight",
-                  isSelected ? "text-carbon-900" : "text-carbon-700"
+                  "font-bold text-sm sm:text-base leading-tight pr-6",
+                  isSelected ? "text-carbon-900" : "text-carbon-700",
                 )}
               >
                 {option.name}
               </span>
-              
+
               {/* Selection indicator */}
               <div
                 className={cn(
-                  "absolute top-3 right-3 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all",
+                  "absolute top-2 right-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-all",
                   isSelected
-                    ? "bg-sage-green-500 border-sage-green-500"
-                    : "bg-white border-sage-300"
+                    ? "bg-sage-green-500 border-sage-green-500 shadow-sm"
+                    : "bg-white border-sage-300",
                 )}
               >
-                {isSelected && <Check className="w-4 h-4 text-white" />}
+                {isSelected && (
+                  <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
+                )}
               </div>
-
-              {/* Option number badge */}
-              <span
-                className={cn(
-                  "absolute bottom-3 right-3 text-xs font-bold px-2 py-1 rounded-full",
-                  isSelected
-                    ? "bg-sage-green-100 text-sage-green-700"
-                    : "bg-sage-100 text-sage-600"
-                )}
-              >
-                Opción {options.indexOf(option) + 1}
-              </span>
             </button>
           );
         })}

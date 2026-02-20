@@ -10,9 +10,9 @@ interface MenuOption {
 
 export interface Replacement {
   id: string;
-  from: 'soup' | 'principle' | 'salad' | 'drink' | 'extra';
+  from: "soup" | "principle" | "salad" | "drink" | "extra";
   fromName: string;
-  to: 'soup' | 'principle' | 'salad' | 'drink' | 'extra' | 'rice';
+  to: "soup" | "principle" | "salad" | "drink" | "extra" | "rice";
   toName: string;
   itemId: number;
   itemName: string;
@@ -52,9 +52,9 @@ const CATEGORY_ICONS: Record<string, string> = {
 };
 
 const STEPS = [
-  { id: 'select', label: 'Quitar' },
-  { id: 'replace', label: 'Agregar' },
-  { id: 'item', label: 'Elegir' },
+  { id: "select", label: "Quitar" },
+  { id: "replace", label: "Agregar" },
+  { id: "item", label: "Elegir" },
 ];
 
 export function ReplacementManager({
@@ -71,21 +71,53 @@ export function ReplacementManager({
   const [selectedItem, setSelectedItem] = useState<number | null>(null);
 
   const replaceableCategories = useMemo(() => {
-    const categories: Array<{ key: string; name: string; icon: string; hasItems: boolean }> = [
-      { key: "soup", name: "Sopa", icon: CATEGORY_ICONS.soup, hasItems: availableItems.soup.length > 0 },
-      { key: "principle", name: "Principio", icon: CATEGORY_ICONS.principle, hasItems: availableItems.principle.length > 0 },
-      { key: "salad", name: "Ensalada", icon: CATEGORY_ICONS.salad, hasItems: availableItems.salad.length > 0 },
-      { key: "drink", name: "Jugo", icon: CATEGORY_ICONS.drink, hasItems: availableItems.drink.length > 0 },
-      { key: "extra", name: "Extra", icon: CATEGORY_ICONS.extra, hasItems: availableItems.extra.length > 0 },
+    const categories: Array<{
+      key: string;
+      name: string;
+      icon: string;
+      hasItems: boolean;
+    }> = [
+      {
+        key: "soup",
+        name: "Sopa",
+        icon: CATEGORY_ICONS.soup,
+        hasItems: availableItems.soup.length > 0,
+      },
+      {
+        key: "principle",
+        name: "Principio",
+        icon: CATEGORY_ICONS.principle,
+        hasItems: availableItems.principle.length > 0,
+      },
+      {
+        key: "salad",
+        name: "Ensalada",
+        icon: CATEGORY_ICONS.salad,
+        hasItems: availableItems.salad.length > 0,
+      },
+      {
+        key: "drink",
+        name: "Jugo",
+        icon: CATEGORY_ICONS.drink,
+        hasItems: availableItems.drink.length > 0,
+      },
+      {
+        key: "extra",
+        name: "Extra",
+        icon: CATEGORY_ICONS.extra,
+        hasItems: availableItems.extra.length > 0,
+      },
     ];
     return categories.filter((c) => c.hasItems);
   }, [availableItems]);
 
   const availableTargets = useMemo(() => {
     if (!selectedFrom) return [];
-    
+
     return replaceableCategories.filter(
-      (cat) => cat.key !== selectedFrom && !replacements.some((r) => r.from === selectedFrom && r.to === cat.key)
+      (cat) =>
+        cat.key !== selectedFrom &&
+        !replacements.some((r) => r.from === selectedFrom && r.to === cat.key),
     );
   }, [selectedFrom, replaceableCategories, replacements]);
 
@@ -164,7 +196,9 @@ export function ReplacementManager({
   if (disabled) {
     return (
       <Card className="p-4 bg-carbon-50 border-carbon-200">
-        <p className="text-carbon-500 text-center">Configura el almuerzo primero</p>
+        <p className="text-carbon-500 text-center">
+          Configura el almuerzo primero
+        </p>
       </Card>
     );
   }
@@ -200,7 +234,9 @@ export function ReplacementManager({
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 flex-1">
-                  <span className="text-xl">{CATEGORY_ICONS[replacement.from]}</span>
+                  <span className="text-xl">
+                    {CATEGORY_ICONS[replacement.from]}
+                  </span>
                   <ArrowRight className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   <div className="min-w-0 flex-1">
                     <span className="font-semibold text-carbon-900 text-sm block truncate">
@@ -244,15 +280,15 @@ export function ReplacementManager({
 
       {/* Bottom Sheet Modal */}
       {showAddModal && (
-        <div 
+        <div
           className="fixed inset-0 z-50 flex items-end sm:items-center justify-center"
           onClick={handleCloseModal}
         >
           {/* Backdrop */}
           <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" />
-          
+
           {/* Sheet */}
-          <div 
+          <div
             className="relative w-full sm:w-full sm:max-w-lg bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-h-[85vh] flex flex-col animate-slide-up"
             onClick={(e) => e.stopPropagation()}
           >
@@ -265,9 +301,9 @@ export function ReplacementManager({
             <div className="px-4 pb-4 border-b border-carbon-100">
               <div className="flex items-center justify-between">
                 <h3 className="font-bold text-lg text-carbon-900">
-                  {currentStep === 0 && '¿Qué quitamos?'}
-                  {currentStep === 1 && '¿Qué agregamos?'}
-                  {currentStep === 2 && 'Elige el item'}
+                  {currentStep === 0 && "¿Qué quitamos?"}
+                  {currentStep === 1 && "¿Qué agregamos?"}
+                  {currentStep === 2 && "Elige el item"}
                 </h3>
                 <button
                   onClick={handleCloseModal}
@@ -277,19 +313,21 @@ export function ReplacementManager({
                   <X className="w-6 h-6" />
                 </button>
               </div>
-              
+
               {/* Progress steps */}
               <div className="flex items-center gap-2 mt-4">
                 {STEPS.map((step, index) => (
                   <div key={step.id} className="flex items-center gap-2 flex-1">
-                    <div className={cn(
-                      "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors",
-                      index < currentStep 
-                        ? "bg-emerald-500 text-white"
-                        : index === currentStep 
-                          ? "bg-sage-600 text-white"
-                          : "bg-carbon-100 text-carbon-400"
-                    )}>
+                    <div
+                      className={cn(
+                        "w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-colors",
+                        index < currentStep
+                          ? "bg-emerald-500 text-white"
+                          : index === currentStep
+                            ? "bg-sage-600 text-white"
+                            : "bg-carbon-100 text-carbon-400",
+                      )}
+                    >
                       {index < currentStep ? (
                         <Check className="w-4 h-4" />
                       ) : (
@@ -297,10 +335,14 @@ export function ReplacementManager({
                       )}
                     </div>
                     {index < STEPS.length - 1 && (
-                      <div className={cn(
-                        "flex-1 h-1 rounded-full transition-colors",
-                        index < currentStep ? "bg-emerald-500" : "bg-carbon-200"
-                      )} />
+                      <div
+                        className={cn(
+                          "flex-1 h-1 rounded-full transition-colors",
+                          index < currentStep
+                            ? "bg-emerald-500"
+                            : "bg-carbon-200",
+                        )}
+                      />
                     )}
                   </div>
                 ))}
@@ -323,8 +365,12 @@ export function ReplacementManager({
                         >
                           <span className="text-3xl">{cat.icon}</span>
                           <div className="flex-1">
-                            <span className="font-semibold text-carbon-900 text-lg block">{cat.name}</span>
-                            <span className="text-sm text-carbon-500">Quitar del menú</span>
+                            <span className="font-semibold text-carbon-900 text-lg block">
+                              {cat.name}
+                            </span>
+                            <span className="text-sm text-carbon-500">
+                              Quitar del menú
+                            </span>
                           </div>
                           <ArrowRight className="w-6 h-6 text-carbon-300" />
                         </button>
@@ -345,8 +391,12 @@ export function ReplacementManager({
                       <ArrowLeft className="w-5 h-5" />
                     </button>
                     <div className="flex items-center gap-2">
-                      <span className="text-xl">{CATEGORY_ICONS[selectedFrom!]}</span>
-                      <span className="text-carbon-400 line-through">{CATEGORY_NAMES[selectedFrom!]}</span>
+                      <span className="text-xl">
+                        {CATEGORY_ICONS[selectedFrom!]}
+                      </span>
+                      <span className="text-carbon-400 line-through">
+                        {CATEGORY_NAMES[selectedFrom!]}
+                      </span>
                     </div>
                   </div>
 
@@ -360,8 +410,12 @@ export function ReplacementManager({
                         >
                           <span className="text-3xl">{cat.icon}</span>
                           <div className="flex-1">
-                            <span className="font-semibold text-carbon-900 text-lg block">{cat.name}</span>
-                            <span className="text-sm text-carbon-500">Agregar extra</span>
+                            <span className="font-semibold text-carbon-900 text-lg block">
+                              {cat.name}
+                            </span>
+                            <span className="text-sm text-carbon-500">
+                              Agregar extra
+                            </span>
                           </div>
                           <ArrowRight className="w-6 h-6 text-carbon-300" />
                         </button>
@@ -369,8 +423,12 @@ export function ReplacementManager({
                     </div>
                   ) : (
                     <div className="p-6 bg-amber-50 rounded-2xl border-2 border-amber-200 text-center">
-                      <p className="text-amber-700 font-medium">No hay más opciones</p>
-                      <p className="text-amber-600 text-sm mt-1">Todas las categorías están en uso</p>
+                      <p className="text-amber-700 font-medium">
+                        No hay más opciones
+                      </p>
+                      <p className="text-amber-600 text-sm mt-1">
+                        Todas las categorías están en uso
+                      </p>
                     </div>
                   )}
                 </div>
@@ -388,9 +446,13 @@ export function ReplacementManager({
                       <ArrowLeft className="w-5 h-5" />
                     </button>
                     <div className="flex items-center gap-2">
-                      <span className="text-xl">{CATEGORY_ICONS[selectedFrom!]}</span>
+                      <span className="text-xl">
+                        {CATEGORY_ICONS[selectedFrom!]}
+                      </span>
                       <ArrowRight className="w-4 h-4 text-carbon-400" />
-                      <span className="text-xl">{CATEGORY_ICONS[selectedTo!]}</span>
+                      <span className="text-xl">
+                        {CATEGORY_ICONS[selectedTo!]}
+                      </span>
                     </div>
                   </div>
 
@@ -403,10 +465,12 @@ export function ReplacementManager({
                           "w-full p-4 rounded-2xl border-2 transition-all text-left min-h-[72px] flex items-center justify-between",
                           selectedItem === item.id
                             ? "border-emerald-500 bg-emerald-50"
-                            : "border-carbon-200 bg-white hover:border-sage-400 hover:bg-sage-50 active:scale-[0.98]"
+                            : "border-carbon-200 bg-white hover:border-sage-400 hover:bg-sage-50 active:scale-[0.98]",
                         )}
                       >
-                        <span className="font-semibold text-carbon-900 text-lg">{item.name}</span>
+                        <span className="font-semibold text-carbon-900 text-lg">
+                          {item.name}
+                        </span>
                         {selectedItem === item.id && (
                           <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center">
                             <Check className="w-5 h-5 text-white" />
