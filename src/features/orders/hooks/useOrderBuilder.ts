@@ -171,14 +171,34 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
 
   // Popular products (quick add-ons)
-  const popularProducts = useMemo(() => [
-    { id: 9991, name: "Huevo", price: 2000 },
-    { id: 9992, name: "Gaseosa", price: 3500 },
-    { id: 9993, name: "Papas", price: 3000 },
-    { id: 9994, name: "Yuca", price: 2500 },
-    { id: 9995, name: "Plátano", price: 2000 },
-    { id: 9996, name: "Sopa", price: 5000 },
-  ], []);
+  // Calculate popular/common products from real menu data
+  // For now, we'll take the first 6 items that are available and not from lunch categories
+  const popularProducts = useMemo(() => {
+    if (!menuItems || !Array.isArray(menuItems)) return [];
+    
+    // Lunch category IDs to exclude from "popular" (loose items)
+    const lunchCategoryIds = [
+      dailyMenuData?.soupCategory?.id,
+      dailyMenuData?.principleCategory?.id,
+      dailyMenuData?.proteinCategory?.id,
+      dailyMenuData?.saladCategory?.id,
+      dailyMenuData?.drinkCategory?.id,
+      dailyMenuData?.extraCategory?.id,
+      dailyMenuData?.dessertCategory?.id,
+    ].filter(Boolean);
+
+    return menuItems
+      .filter(item => 
+        item.isAvailable && 
+        !lunchCategoryIds.includes(item.categoryId)
+      )
+      .slice(0, 8)
+      .map(item => ({
+        id: item.id,
+        name: item.name,
+        price: parseFloat(item.price)
+      }));
+  }, [menuItems, dailyMenuData]);
 
   // Daily Menu Prices
   const dailyMenuPrices = useMemo(() => ({
