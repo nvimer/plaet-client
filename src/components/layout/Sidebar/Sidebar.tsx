@@ -154,17 +154,19 @@ export function Sidebar() {
     });
   };
 
-    // Build navigation items with dynamic categories
-    const navigationItems = useMemo(() => {
-      // Build Menu children          const menuChildren: NavChild[] = [
-            {
-              type: "link",
-              path: ROUTES.MENU,
-              name: "Todos los productos",
-              icon: Grid3x3,
-            },
-            {
-              type: "link",        path: ROUTES.STOCK_MANAGEMENT,
+  // Build navigation items with dynamic categories
+  const navigationItems = useMemo(() => {
+    // Build Menu children
+    const menuChildren: NavChild[] = [
+      {
+        type: "link",
+        path: ROUTES.MENU,
+        name: "Todos los productos",
+        icon: Grid3x3,
+      },
+      {
+        type: "link",
+        path: ROUTES.STOCK_MANAGEMENT,
         name: "Inventario",
         icon: Package2,
         badge: "⚡",
