@@ -194,34 +194,34 @@ export function DashboardPage() {
 
         {/* Quick Actions Panel */}
         <div className="space-y-6">
-          <Card variant="elevated" padding="lg" className="shadow-smooth-lg border-none bg-carbon-900 text-white">
-            <h3 className="text-lg font-bold mb-4">Acciones de Operación</h3>
+          <Card variant="elevated" padding="lg" className="shadow-smooth-lg border-none bg-white">
+            <h3 className="text-lg font-bold text-carbon-900 mb-4 px-1">Acciones Rápidas</h3>
             <div className="space-y-3">
               <button 
                 onClick={() => navigate("/orders/new")}
-                className="w-full flex items-center justify-between p-4 bg-carbon-800 rounded-2xl hover:bg-carbon-700 transition-all group"
+                className="w-full flex items-center justify-between p-4 bg-sage-50 rounded-2xl hover:bg-sage-100 transition-all group border border-sage-100"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-primary-500 rounded-xl">
-                    <Plus className="w-5 h-5 text-white" />
+                  <div className="p-2 bg-primary-100 rounded-xl group-hover:bg-primary-200 transition-colors">
+                    <Plus className="w-5 h-5 text-primary-600" />
                   </div>
-                  <span className="font-bold">Nuevo Pedido</span>
+                  <span className="font-bold text-carbon-800">Nuevo Pedido</span>
                 </div>
-                <ArrowRight className="w-4 h-4 text-carbon-500 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 text-carbon-400 group-hover:translate-x-1 transition-transform" />
               </button>
               
               <button 
                 onClick={() => navigate("/menu/daily")}
-                className="w-full flex items-center justify-between p-4 bg-carbon-800 rounded-2xl hover:bg-carbon-700 transition-all group"
+                className="w-full flex items-center justify-between p-4 bg-sage-50 rounded-2xl hover:bg-sage-100 transition-all group border border-sage-100"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 bg-amber-500 rounded-xl">
-                    <MenuIcon className="w-5 h-5 text-white" />
+                  <div className="p-2 bg-amber-100 rounded-xl group-hover:bg-amber-200 transition-colors">
+                    <MenuIcon className="w-5 h-5 text-amber-600" />
                   </div>
-                  <span className="font-bold">Menú del Día</span>
+                  <span className="font-bold text-carbon-800">Menú del Día</span>
                 </div>
-                <ArrowRight className="w-4 h-4 text-carbon-500 group-hover:translate-x-1 transition-transform" />
-              </button>
+                <ArrowRight className="w-4 h-4 text-carbon-400 group-hover:translate-x-1 transition-transform" />
+              </div>
             </div>
           </Card>
 
