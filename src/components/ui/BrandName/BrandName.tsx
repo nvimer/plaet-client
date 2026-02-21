@@ -13,15 +13,17 @@ interface BrandNameProps {
  */
 export function BrandName({ className, accentClassName }: BrandNameProps) {
   const accentClass = cn(
-    "inline-block transform scale-x-[-1] origin-center -ml-[0.05em]",
+    "inline-block transform scale-x-[-1] origin-center",
     accentClassName || "text-sage-green-600",
   );
 
   return (
     <span className={cn("inline-flex whitespace-nowrap", className)}>
-      <span>Pla</span>
-      <span className={accentClass}>e</span>
-      <span className={accentClass}>t</span>
+      <span>P</span>
+      <span className="ml-[0.015em]">l</span>
+      <span className="ml-[0.015em]">a</span>
+      <span className={cn(accentClass, "ml-[0.015em]")}>e</span>
+      <span className={cn(accentClass, "ml-[0.015em]")}>t</span>
     </span>
   );
 }
