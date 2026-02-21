@@ -19,9 +19,11 @@ export function BrandName({ className, accentClassName }: BrandNameProps) {
 
   return (
     <span className={cn("inline-flex whitespace-nowrap", className)}>
-      <span>Pla</span>
-      <span className={cn(accentClass, "-ml-[0.02em]")}>e</span>
-      <span className={cn(accentClass, "ml-[0.01em]")}>t</span>
+      <span>P</span>
+      <span className="ml-[0.015em]">l</span>
+      <span className="ml-[0.015em]">a</span>
+      <span className={cn(accentClass, "ml-[0.015em]")}>e</span>
+      <span className={cn(accentClass, "ml-[0.015em]")}>t</span>
     </span>
   );
 }
