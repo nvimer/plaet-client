@@ -15,5 +15,6 @@ export { useBatchOrderStatusUpdate } from "./useCreateOrder";
 export { useDuplicateOrder } from "./useCreateOrder";
 export { useValidateOrder } from "./useCreateOrder";
 export { useCancelOrder } from "./useCreateOrder";
+export { useBatchCreateOrder } from "./useBatchCreateOrder";
 export { useOrderBuilder } from "./useOrderBuilder";
 export type { UseOrderBuilderReturn } from "./useOrderBuilder";

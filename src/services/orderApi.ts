@@ -72,6 +72,22 @@ export const createOrder = async (orderData: CreateOrderInput) => {
 };
 
 /**
+ * POST /orders/batch
+ *
+ * Create multiple orders at once
+ *
+ * @param batchData - Batch order data
+ * @return Created orders
+ */
+export const createBatchOrders = async (batchData: BatchCreateOrderInput) => {
+  const { data } = await axiosClient.post<ApiResponse<{ orders: Order[]; tableTotal: number }>>(
+    "/orders/batch",
+    batchData,
+  );
+  return data;
+};
+
+/**
  * PATCH /orders/:id
  *
  * Update an existing order

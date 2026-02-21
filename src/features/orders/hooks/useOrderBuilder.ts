@@ -6,6 +6,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { useCreateOrder } from "./useCreateOrder";
+import { useBatchCreateOrder } from "./useBatchCreateOrder";
 import { useTables, useUpdateTableStatus } from "@/features/tables";
 import { useItems } from "@/features/menu";
 import { useDailyMenuToday } from "@/features/menu/hooks/useDailyMenu";
@@ -140,8 +141,11 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const { data: tablesData, isLoading: tablesLoading } = useTables();
   const { data: menuItems, isLoading: itemsLoading } = useItems();
   const { data: dailyMenuData, isLoading: menuLoading } = useDailyMenuToday();
-  const { mutate: createOrder, isPending } = useCreateOrder();
+  const { mutateAsync: createOrder, isPending: isCreating } = useCreateOrder();
+  const { mutateAsync: createBatchOrders, isPending: isBatchCreating } = useBatchCreateOrder();
   const { mutate: updateTableStatus } = useUpdateTableStatus();
+  
+  const isPending = isCreating || isBatchCreating;
 
   const tables = tablesData?.tables || [];
   const availableTables = tables.filter((t) => t.status === "AVAILABLE");
@@ -519,9 +523,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     }
 
     setShowSummaryModal(false);
-    const orderPromises: Promise<unknown>[] = [];
 
-    tableOrders.forEach((order) => {
+    // Transform tableOrders into CreateOrderInput[]
+    const ordersPayload = tableOrders.map((order) => {
       const items: OrderItemInput[] = [];
       
       if (order.protein && order.protein.id > 0) {
@@ -543,43 +547,50 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
           });
         }
       });
+      
+      return {
+        type: selectedOrderType!,
+        tableId: selectedOrderType === OrderType.DINE_IN ? (selectedTable ?? undefined) : undefined,
+        items,
+        notes: order.notes,
+        createdAt: backdatedDate || undefined,
+      };
+    }).filter(order => order.items.length > 0);
 
-      if (items.length === 0) {
-        toast.error("El pedido no tiene items válidos");
-        return;
-      }
-
-      const promise = new Promise((resolve, reject) => {
-        createOrder(
-          {
-            type: selectedOrderType!,
-            tableId: selectedOrderType === OrderType.DINE_IN ? (selectedTable ?? undefined) : undefined,
-            items,
-            createdAt: backdatedDate || undefined,
-          },
-          {
-            onSuccess: () => resolve(true),
-            onError: (error: Error) => {
-              toast.error(`Error en pedido`, { description: error.message });
-              reject(error);
-            },
-          }
-        );
-      });
-
-      orderPromises.push(promise);
-    });
+    if (ordersPayload.length === 0) {
+      toast.error("No hay pedidos válidos para crear");
+      return;
+    }
 
     try {
-      await Promise.all(orderPromises);
-      
-      const successMessage = selectedOrderType === OrderType.DINE_IN 
-        ? `${tableOrders.length} pedidos creados para Mesa ${selectedTable}`
-        : `${tableOrders.length} pedidos creados`;
-      
-      toast.success(successMessage, {
-        description: `Total: $${tableTotal.toLocaleString("es-CO")}`,
-      });
+      if (ordersPayload.length === 1) {
+        // Single order creation
+        await createOrder(ordersPayload[0]);
+        toast.success("Pedido creado exitosamente");
+      } else {
+        // Batch order creation
+        // Only for DINE_IN with tableId (backend requirement for batch usually, check schema)
+        // Batch schema: tableId (required), orders array.
+        // If not DINE_IN, usually we don't batch multiple orders for same "client" unless strictly supported.
+        // But UI allows multiple "orders" (people) per "table" (or group).
+        
+        if (selectedOrderType === OrderType.DINE_IN && selectedTable) {
+            await createBatchOrders({
+                tableId: selectedTable,
+                orders: ordersPayload
+            });
+            toast.success(`${ordersPayload.length} pedidos creados para Mesa ${selectedTable}`);
+        } else {
+            // For TakeOut/Delivery, usually single order? 
+            // If user added multiple "orders" in UI for TakeOut, we should probably iterate
+            // But batch endpoint requires tableId.
+            // Fallback to Promise.all for non-table batch?
+            // Backend batchCreateOrderSchema requires tableId.
+            
+            await Promise.all(ordersPayload.map(order => createOrder(order)));
+            toast.success(`${ordersPayload.length} pedidos creados`);
+        }
+      }
 
       // Automatically mark table as occupied if it's DINE_IN
       if (selectedOrderType === OrderType.DINE_IN && selectedTable) {
@@ -589,10 +600,18 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       setTableOrders([]);
       setSelectedTable(null);
       clearCurrentOrder();
-    } catch (_error) {
-      toast.error("Algunos pedidos no se pudieron crear");
+      
+      // Navigate or reset? UseOrderBuilder doesn't have navigate.
+      // The parent component handles UI reset via state change (back to type selection)
+      setSelectedOrderType(null); 
+
+    } catch (error) {
+      console.error(error);
+      toast.error("Error al crear los pedidos", {
+        description: error instanceof Error ? error.message : "Intenta nuevamente",
+      });
     }
-  }, [selectedTable, selectedOrderType, tableOrders, createOrder, tableTotal, clearCurrentOrder]);
+  }, [selectedTable, selectedOrderType, tableOrders, createOrder, createBatchOrders, backdatedDate, updateTableStatus, clearCurrentOrder]);
 
   const handleSelectOrderType = useCallback((type: OrderType) => {
     setSelectedOrderType(type);

@@ -98,18 +98,19 @@ export interface CreateOrderItemInput {
  * Used in POST /orders
  */
 export interface CreateOrderInput {
+  type: OrderType;
   tableId?: number;
   customerId?: string;
-  type: OrderType;
-  notes?: string;
   items: CreateOrderItemInput[];
-  createdAt?: string; // Support for historical data entry
+  notes?: string;
+  whatsappOrderId?: string;
 }
 
-/**
- * Order update input
- * Used in PATCH /orders/:id
- */
+export interface BatchCreateOrderInput {
+  tableId: number;
+  orders: CreateOrderInput[];
+}
+
 export interface UpdateOrderInput {
   tableId?: number;
   customerId?: string;
