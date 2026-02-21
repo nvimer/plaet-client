@@ -1,6 +1,7 @@
 export { OrderStatusBadge } from "./OrderStatusBadge";
 export { OrderTypeBadge } from "./OrderTypeBadge";
 export { OrderCard } from "./OrderCard";
+export { GroupedOrderCard } from "./GroupedOrderCard";
 export { OrderFilters } from "./OrderFilters";
 export { ProductGrid } from "./ProductGrid";
 export { DailyMenuSection } from "./DailyMenuSection";
