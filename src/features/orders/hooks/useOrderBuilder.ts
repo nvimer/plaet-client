@@ -160,6 +160,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const isPending = isCreating;
 
   const tables = tablesData?.tables || [];
+  const availableTables = tables.filter((t) => t.status === "AVAILABLE");
 
   // Lunch selection state
 
