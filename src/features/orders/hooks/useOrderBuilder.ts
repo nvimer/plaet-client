@@ -6,7 +6,6 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { useCreateOrder } from "./useCreateOrder";
-import { useBatchCreateOrder } from "./useBatchCreateOrder";
 import { useTables, useUpdateTableStatus } from "@/features/tables";
 import { useItems } from "@/features/menu";
 import { useDailyMenuToday } from "@/features/menu/hooks/useDailyMenu";
@@ -142,10 +141,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const { data: menuItems, isLoading: itemsLoading } = useItems();
   const { data: dailyMenuData, isLoading: menuLoading } = useDailyMenuToday();
   const { mutateAsync: createOrder, isPending: isCreating } = useCreateOrder();
-  const { mutateAsync: createBatchOrders, isPending: isBatchCreating } = useBatchCreateOrder();
   const { mutate: updateTableStatus } = useUpdateTableStatus();
   
-  const isPending = isCreating || isBatchCreating;
+  const isPending = isCreating;
 
   const tables = tablesData?.tables || [];
   const availableTables = tables.filter((t) => t.status === "AVAILABLE");
@@ -575,10 +573,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
         // But UI allows multiple "orders" (people) per "table" (or group).
         
         if (selectedOrderType === OrderType.DINE_IN && selectedTable) {
-            await createBatchOrders({
-                tableId: selectedTable,
-                orders: ordersPayload
-            });
+            await Promise.all(ordersPayload.map(order => createOrder(order)));
             toast.success(`${ordersPayload.length} pedidos creados para Mesa ${selectedTable}`);
         } else {
             // For TakeOut/Delivery, usually single order? 
@@ -611,7 +606,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
         description: error instanceof Error ? error.message : "Intenta nuevamente",
       });
     }
-  }, [selectedTable, selectedOrderType, tableOrders, createOrder, createBatchOrders, backdatedDate, updateTableStatus, clearCurrentOrder]);
+  }, [selectedTable, selectedOrderType, tableOrders, createOrder, backdatedDate, updateTableStatus, clearCurrentOrder]);
 
   const handleSelectOrderType = useCallback((type: OrderType) => {
     setSelectedOrderType(type);
