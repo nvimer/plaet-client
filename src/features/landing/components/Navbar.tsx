@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Button } from "@/components";
+import { Button, BrandName } from "@/components";
 import { Menu, X } from "lucide-react";
 
 /**
@@ -57,9 +57,10 @@ export function Navbar() {
             </div>
 
             {/* Brand Name */}
-            <span className="text-2xl font-bold text-carbon-900 tracking-tight">
-              Plates
-            </span>
+            <BrandName
+              className="text-2xl font-bold text-carbon-900 tracking-tight"
+              accentClassName="text-sage-green-600"
+            />
           </Link>
 
           {/* ======== DESKTOP MENU ========== */}

@@ -105,7 +105,7 @@ export function StatsSection() {
       value: 500,
       suffix: "+",
       label: "Restaurante Activos",
-      description: "Confían en Plates",
+      description: "Confían en Plaet",
       color: "from-sage-green-200 to-sage-green-300",
     },
     {

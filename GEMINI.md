@@ -1,8 +1,8 @@
 # GEMINI.md - Project Context & Guidelines
 
-## 🍽 Project Overview: SazonArte POS (Plaet App)
+## 🍽 Project Overview: Plaet POS (Plaet App)
 
-**SazonArte** is a specialized Restaurant Management Point of Sale (POS) application. It is designed with a **tactile/kiosk-first UX**, optimized for use on tablets and touchscreens by Cashiers, Waiters, and Kitchen Staff.
+**Plaet** is a specialized Restaurant Management Point of Sale (POS) application. It is designed with a **tactile/kiosk-first UX**, optimized for use on tablets and touchscreens by Cashiers, Waiters, and Kitchen Staff.
 
 - **Primary Stack:** React 19, TypeScript 5.8, Vite 6
 - **Styling:** Tailwind CSS 3.4 (with custom color palette and touch-optimized components)

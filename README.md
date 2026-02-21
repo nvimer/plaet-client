@@ -1,4 +1,4 @@
-# SazonArte - Restaurant Management POS
+# Plaet - Restaurant Management POS
 
 React + TypeScript + Vite restaurant management application with tactile/kiosk UX.
 

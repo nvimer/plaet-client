@@ -18,7 +18,7 @@ import {
   EyeOff,
   ShieldCheck,
 } from "lucide-react";
-import { Button, Input } from "@/components";
+import { Button, Input, BrandName } from "@/components";
 import { useAuth } from "@/hooks";
 import { toast } from "sonner";
 
@@ -126,7 +126,7 @@ export default function LoginPage() {
             </motion.div>
 
             <h1 className="text-3xl font-bold text-carbon-900 mb-2 tracking-tight">
-              Plaet
+              <BrandName accentClassName="text-sage-green-600" />
             </h1>
             <p className="text-carbon-600 font-light">
               Sistema de Gestión de Restaurantes

@@ -1,4 +1,4 @@
-import { Button, Input } from "@/components";
+import { Button, Input, BrandName } from "@/components";
 import { Facebook, Instagram, Linkedin, Mail, Twitter } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -63,9 +63,10 @@ export function Footer() {
                   P
                 </span>
               </div>
-              <span className="text-2xl font-bold text-carbon-900 tracking-tight">
-                Plates
-              </span>
+              <BrandName
+                className="text-2xl font-bold text-carbon-900 tracking-tight"
+                accentClassName="text-sage-green-600"
+              />
             </Link>
 
             {/* Description */}
@@ -122,7 +123,7 @@ export function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Copyright */}
           <p className="text-sm text-carbon-500 font-light">
-            © {new Date().getFullYear()} Plates. Todos los derechhos reservados.
+            © {new Date().getFullYear()} <BrandName className="inline-flex" />. Todos los derechos reservados.
           </p>
 
           <div className="flex items-center gap-4">

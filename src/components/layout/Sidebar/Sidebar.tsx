@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { ROUTES } from "@/app/routes";
+import { BrandName } from "@/components";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { useCategories } from "@/features/menu/categories/hooks";
 import type { LucideIcon } from "lucide-react";
@@ -169,7 +170,7 @@ export function Sidebar() {
   const navigate = useNavigate();
 
   // Fetch categories for dynamic menu
-  const { data: categories } = useCategories();
+  const { data: _categories } = useCategories();
 
   // Flyout state for collapsed sidebar
   const [flyoutItem, setFlyoutItem] = useState<string | null>(null);
@@ -362,9 +363,10 @@ export function Sidebar() {
               />
             </div>
             {(!isCollapsed || isMobile) && (
-              <span className="text-xl font-bold bg-gradient-to-r from-sage-600 to-sage-700 bg-clip-text text-transparent truncate">
-                Plaet
-              </span>
+              <BrandName
+                className="text-xl font-bold bg-gradient-to-r from-sage-600 to-sage-700 bg-clip-text text-transparent truncate"
+                accentClassName="text-sage-700"
+              />
             )}
           </Link>
 
@@ -740,7 +742,9 @@ export function Sidebar() {
         >
           {(!isCollapsed || isMobile) && (
             <div className="text-xs text-carbon-400 text-center space-y-0.5">
-              <div className="font-medium">Plaet v2.0</div>
+              <div className="font-medium">
+                <BrandName className="inline-flex" /> v2.0
+              </div>
               <div className="text-carbon-300">© 2025</div>
             </div>
           )}
