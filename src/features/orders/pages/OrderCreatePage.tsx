@@ -31,6 +31,9 @@ import {
   Sparkles,
   Calendar,
 } from "lucide-react";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
+import { TableSelector } from "@/features/tables/components/TableSelector";
+import { Card } from "@/components/ui/Card/Card";
 
 export function OrderCreatePage() {
   const { user } = useAuth();

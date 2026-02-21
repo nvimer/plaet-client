@@ -41,7 +41,7 @@ export const getUsers = async (params?: PaginationParams) => {
     limit: String(limit),
   };
 
-  const { data } = await axiosClient.get<PaginatedResponse<User>>("/users", {
+  const { data } = await axiosClient.get<PaginatedResponse<User>>("users", {
     params: queryParams,
   });
   return data;
@@ -56,7 +56,7 @@ export const getUsers = async (params?: PaginationParams) => {
  * @returns User data
  */
 export const getUserById = async (id: string) => {
-  const { data } = await axiosClient.get<ApiResponse<User>>(`/users/${id}`);
+  const { data } = await axiosClient.get<ApiResponse<User>>(`users/${id}`);
   return data;
 };
 
@@ -71,7 +71,7 @@ export const getUserById = async (id: string) => {
 export const getUserWithRolesAndPermissions = async (id: string) => {
   const { data } = await axiosClient.get<
     ApiResponse<UserWithRolesAndPermissions>
-  >(`/users/${id}/roles-permissions`);
+  >(`users/${id}/roles-permissions`);
   return data;
 };
 
@@ -85,7 +85,7 @@ export const getUserWithRolesAndPermissions = async (id: string) => {
  */
 export const registerUser = async (userData: RegisterInput) => {
   const { data } = await axiosClient.post<ApiResponse<User>>(
-    "/auth/register",
+    "auth/register",
     userData,
   );
   return data;
@@ -102,7 +102,7 @@ export const registerUser = async (userData: RegisterInput) => {
  */
 export const updateUser = async (id: string, userData: UpdateUserInput) => {
   const { data } = await axiosClient.patch<ApiResponse<User>>(
-    `/users/${id}`,
+    `users/${id}`,
     userData,
   );
   return data;

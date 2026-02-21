@@ -24,7 +24,7 @@ import type {
  */
 export const login = async (credentials: LoginInput) => {
   const { data } = await axiosClient.post<AuthResponse>(
-    "/auth/login",
+    "auth/login",
     credentials,
   );
   return data;
@@ -40,7 +40,7 @@ export const login = async (credentials: LoginInput) => {
  */
 export const register = async (userData: RegisterInput) => {
   const { data } = await axiosClient.post<ApiResponse<User>>(
-    "/auth/register",
+    "auth/register",
     userData,
   );
   return data;
@@ -52,7 +52,7 @@ export const register = async (userData: RegisterInput) => {
  * Cierra la sesión actual
  */
 export const logout = async () => {
-  const { data } = await axiosClient.post<ApiResponse<null>>("/auth/logout");
+  const { data } = await axiosClient.post<ApiResponse<null>>("auth/logout");
   return data;
 };
 
@@ -62,7 +62,7 @@ export const logout = async () => {
  * Refresca el token de autenticación
  */
 export const refreshToken = async () => {
-  const { data } = await axiosClient.post<AuthResponse>("/auth/refresh");
+  const { data } = await axiosClient.post<AuthResponse>("auth/refresh-token");
   return data;
 };
 

@@ -49,7 +49,8 @@ const processQueue = (error: Error | null): void => {
 axiosClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     if (import.meta.env.DEV) {
-      console.log(`[API] ${config.method?.toUpperCase()} ${config.url}`);
+      const fullUrl = `${config.baseURL || ""}${config.url || ""}`;
+      console.log(`[API] ${config.method?.toUpperCase()} ${fullUrl}`);
     }
     return config;
   },
@@ -205,6 +206,9 @@ axiosClient.interceptors.response.use(
         case 503:
         case 504: {
           console.error("[API] Server error occurred");
+          if (import.meta.env.DEV && error.response?.data) {
+            console.error("[API] Server Error Details:", error.response.data);
+          }
           break;
         }
 
