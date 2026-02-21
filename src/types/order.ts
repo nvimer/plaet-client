@@ -103,6 +103,7 @@ export interface CreateOrderInput {
   type: OrderType;
   notes?: string;
   items: CreateOrderItemInput[];
+  createdAt?: string; // Support for historical data entry
 }
 
 /**

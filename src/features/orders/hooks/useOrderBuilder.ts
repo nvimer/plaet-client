@@ -48,6 +48,7 @@ export interface UseOrderBuilderReturn {
   selectedTable: number | null;
   tableOrders: TableOrder[];
   currentOrderIndex: number | null;
+  backdatedDate: string | null;
   
   // Current order state
   selectedProtein: ProteinOption | null;
@@ -113,6 +114,7 @@ export interface UseOrderBuilderReturn {
   setTouchedFields: (fields: Set<string>) => void;
   setTableOrders: (orders: TableOrder[] | ((prev: TableOrder[]) => TableOrder[])) => void;
   setCurrentOrderIndex: (index: number | null) => void;
+  setBackdatedDate: (date: string | null) => void;
   
   // Handlers
   handleAddLooseItem: (item: { id: number; name: string; price: number }) => void;
@@ -149,8 +151,10 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const [selectedTable, setSelectedTable] = useState<number | null>(null);
   const [tableOrders, setTableOrders] = useState<TableOrder[]>([]);
   const [currentOrderIndex, setCurrentOrderIndex] = useState<number | null>(null);
+  const [backdatedDate, setBackdatedDate] = useState<string | null>(null);
 
-  // Current order state
+  // Lunch selection state
+
   const [selectedProtein, setSelectedProtein] = useState<ProteinOption | null>(null);
   const [looseItems, setLooseItems] = useState<LooseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -551,6 +555,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
             type: selectedOrderType!,
             tableId: selectedOrderType === OrderType.DINE_IN ? (selectedTable ?? undefined) : undefined,
             items,
+            createdAt: backdatedDate || undefined,
           },
           {
             onSuccess: () => resolve(true),
@@ -616,6 +621,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     selectedTable,
     tableOrders,
     currentOrderIndex,
+    backdatedDate,
     
     // Current order state
     selectedProtein,
@@ -668,6 +674,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setTouchedFields,
     setTableOrders,
     setCurrentOrderIndex,
+    setBackdatedDate,
     
     // Handlers
     handleAddLooseItem,

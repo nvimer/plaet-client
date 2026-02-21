@@ -11,11 +11,9 @@
  * - User-facing text remains in Spanish
  */
 
-import { OrderType } from "@/types";
-import { SidebarLayout } from "@/layouts/SidebarLayout";
-import { Card } from "@/components";
-import { TableSelector } from "@/features/tables";
 import { useOrderBuilder } from "../hooks";
+import { useAuth } from "@/hooks";
+import { RoleName, OrderType } from "@/types";
 import {
   OrderForm,
   OrdersListPanel,
@@ -31,9 +29,15 @@ import {
   ShoppingBag,
   Bike,
   Sparkles,
+  Calendar,
 } from "lucide-react";
 
 export function OrderCreatePage() {
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.some(r => 
+    (typeof r === 'object' && 'name' in r ? r.name : r) === RoleName.ADMIN
+  );
+
   // Use the order builder hook for all state and logic
   const orderBuilder = useOrderBuilder();
 
@@ -47,6 +51,8 @@ export function OrderCreatePage() {
     tableOrders,
     currentOrderIndex,
     showSummaryModal,
+    backdatedDate,
+    setBackdatedDate,
     setShowSummaryModal,
     setSelectedOrderType,
     setSelectedTable,
@@ -227,7 +233,19 @@ export function OrderCreatePage() {
         backRoute={ROUTES.ORDERS}
         fullWidth
         actions={
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {isAdmin && (
+              <div className="flex items-center gap-2 px-3 py-1.5 bg-white border-2 border-primary-100 rounded-xl shadow-sm">
+                <Calendar className="w-4 h-4 text-primary-600" />
+                <span className="text-xs font-bold text-carbon-600 uppercase">Fecha:</span>
+                <input
+                  type="date"
+                  value={backdatedDate || new Date().toISOString().split('T')[0]}
+                  onChange={(e) => setBackdatedDate(e.target.value)}
+                  className="bg-transparent border-none text-sm font-black text-carbon-900 focus:ring-0 cursor-pointer p-0"
+                />
+              </div>
+            )}
             <button
               onClick={handleBackToOrderType}
               className="flex items-center gap-2 px-4 py-2 bg-sage-100 text-sage-700 rounded-xl font-medium hover:bg-sage-200 transition-colors"
