@@ -13,10 +13,16 @@ export function HeroSection() {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex items-center justify-center bg-sage-green-50 overflow-hidden pt-20"
+      className="relative min-h-screen flex items-center justify-center bg-sage-50 overflow-hidden pt-20"
     >
       {/* ============== BACKGROUND DECORATION ============= */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        {/* Abstract Background Image (Subtle) */}
+        <div 
+          className="absolute inset-0 opacity-[0.03] grayscale bg-cover bg-center"
+          style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80&w=2070")' }}
+        />
+
         {/* Gradients Orbs  */}
         <motion.div
           animate={{
@@ -49,15 +55,15 @@ export function HeroSection() {
         <div className="grid lg:grid-cols-2 gap-16 items-center">
           {/* Left Column: Content */}
           <div className="text-center lg:text-left">
-            {/* Badge using Badge Component */}
+            {/* Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               className="inline-flex items-center gap-2 mb-8"
             >
-              <Badge variant="success" size="md" className="glass-sage-light">
-                <Sparkles className="w-4 h-4 mr-1" />
+              <Badge variant="success" size="md" className="bg-sage-green-100 text-sage-green-700 border-sage-green-200">
+                <Sparkles className="w-4 h-4 mr-1 text-sage-green-500" />
                 Sistema #1 en Gestión de Restaurantes
               </Badge>
             </motion.div>
@@ -68,18 +74,10 @@ export function HeroSection() {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="mb-8"
             >
-              {/* Line 1: Large */}
-              <span className="block text-6xl md:text-7xl lg:text-8xl font-extrabold text-carbon-900 leading-tight-custom tracking-tighter mb-2">
-                Gestiona
+              <span className="block text-5xl md:text-6xl lg:text-display-sm font-extrabold text-carbon-900 leading-tight tracking-tight mb-2">
+                Gestiona tu
               </span>
-
-              {/* Line 2: Extra Large */}
-              <span className="block text-7xl md:text-8xl lg:text-display-md font-black text-carbon-900 leading-tight-custom tracking-tighter mb-2">
-                tu
-              </span>
-
-              {/* Line 3: Gradient Highlight */}
-              <span className="block text-7xl md:text-8xl lg:text-display-md font-black text-gradient-sage leading-tight-custom tracking-tighter">
+              <span className="block text-6xl md:text-7xl lg:text-display-md font-black text-gradient-sage leading-tight tracking-tighter">
                 Restaurante
               </span>
             </motion.h1>
@@ -95,7 +93,7 @@ export function HeroSection() {
               <span className="font-semibold text-sage-green-600">
                 simplifica
               </span>{" "}
-              la gestión de pedidos, mesas y menú de tu restaurante.
+              cada aspecto de tu negocio, desde el menú hasta la caja.
             </motion.p>
 
             {/* Feature Bullets */}
@@ -103,29 +101,23 @@ export function HeroSection() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.5 }}
-              className="flex flex-col sm:flex-row items-start sm:items-center gap-6 mb-12 justify-center lg:justify-start"
+              className="flex flex-wrap items-center gap-x-8 gap-y-4 mb-12 justify-center lg:justify-start"
             >
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-sage-green-400"></div>
-                <span className="text-carbon-700 font-medium">
-                  Sin instalación
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-sage-green-400"></div>
-                <span className="text-carbon-700 font-medium">
-                  Gratis 30 días
-                </span>
-              </div>
-              <div className="flex items-center gap-2">
-                <div className="w-2 h-2 rounded-full bg-sage-green-400"></div>
-                <span className="text-carbon-700 font-medium">
-                  Soporte 24/7
-                </span>
-              </div>
+              {[
+                "Sin instalación",
+                "Gratis 30 días",
+                "Soporte 24/7",
+              ].map((text) => (
+                <div key={text} className="flex items-center gap-2">
+                  <div className="w-1.5 h-1.5 rounded-full bg-sage-green-400"></div>
+                  <span className="text-carbon-600 font-medium text-sm md:text-base">
+                    {text}
+                  </span>
+                </div>
+              ))}
             </motion.div>
 
-            {/* CTA Buttons using Button component */}
+            {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -136,7 +128,7 @@ export function HeroSection() {
                 <Button
                   variant="primary"
                   size="lg"
-                  className="group shadow-soft-log hover:shadow-soft-xl hover:-translate-y-0.5"
+                  className="group shadow-lg hover:shadow-xl transition-all"
                 >
                   <span>Comenzar Ahora</span>
                   <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
@@ -146,117 +138,116 @@ export function HeroSection() {
               <Button
                 variant="secondary"
                 size="lg"
-                className="glass-sage-light hover:-translate-y-0.5"
+                className="hover:bg-white transition-all"
               >
                 Ver Demo
               </Button>
             </motion.div>
+            
+            {/* Social Proof */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1, delay: 1 }}
+              className="mt-12 flex items-center justify-center lg:justify-start gap-4"
+            >
+              <div className="flex -space-x-2">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="w-8 h-8 rounded-full border-2 border-white bg-sage-green-200 overflow-hidden">
+                    <img 
+                      src={`https://i.pravatar.cc/100?u=${i}`} 
+                      alt="Avatar" 
+                      className="w-full h-full object-cover grayscale"
+                    />
+                  </div>
+                ))}
+              </div>
+              <p className="text-sm text-carbon-500">
+                Más de <span className="font-bold text-carbon-900">500+</span> restaurantes confían en nosotros
+              </p>
+            </motion.div>
           </div>
 
-          {/* Right Column: Glass Cards */}
-          <div className="relative">
-            {/* Main Dashboard Mockup Card */}
+          {/* Right Column: Layered Mockup */}
+          <div className="relative lg:h-[600px] flex items-center justify-center">
+            {/* Main App Window */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
-              className="relative glass-light rounded-[2rem] p-8 lg:p-12 shadow-soft-xl"
+              className="relative w-full aspect-[4/3] max-w-[500px] glass-light rounded-[2.5rem] p-6 shadow-2xl overflow-hidden border border-white/50"
             >
-              {/* Header */}
-              <div className="flex items-center justify-between mb-8">
-                <div>
-                  <p className="text-sm font-medium text-carbon-500 mb-1">
-                    Dashboard
-                  </p>
-                  <h3 className="text-2xl font-bold text-carbon-900">
-                    Vista General
-                  </h3>
-                </div>
-
-                <div className="w-12 h-12 bg-gradient-sage rounded-xl flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-sage-green-600" />
-                </div>
+              {/* App Toolbar */}
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-3 h-3 rounded-full bg-error-400"></div>
+                <div className="w-3 h-3 rounded-full bg-warning-400"></div>
+                <div className="w-3 h-3 rounded-full bg-success-400"></div>
+                <div className="ml-4 h-6 w-32 bg-sage-green-100 rounded-lg"></div>
               </div>
 
-              {/* Stats Grid */}
-              <div className="grid grid-cols-2 gap-4 mb-8">
-                {/* Stat Card 1 */}
-                <div className="glass-sage-light rounded-xl p-4">
-                  <p className="text-sm text-carbon-500 mb-1">Pedidos Hoy</p>
-                  <p className="text-3xl font-bold text-carbon-900">142</p>
-                  <p className="text-xs text-sage-green-600 font-medium mt-1">
-                    +18% vs ayer
-                  </p>
-                </div>
-
-                {/* Stat Card 2 */}
-                <div className="glass-sage-light rounded-xl p-4">
-                  <p className="text-sm text-carbon-500 mb-1">Mesas Activas</p>
-                  <p className="text-3xl font-bold text-carbon-900">12</p>
-                  <p className="text-xs text-sage-green-600 font-medium mt-1">
-                    75% ocupación
-                  </p>
-                </div>
-
-                {/* Stat Card 3 */}
-                <div className="glass-sage-light rounded-xl p-4">
-                  <p className="text-sm text-carbon-500 mb-1">Ingresos</p>
-                  <p className="text-3xl font-bold text-carbon-900">$3.2K</p>
-                  <p className="text-xs text-sage-green-600 font-medium mt-1">
-                    +12% vs ayer
-                  </p>
-                </div>
-
-                {/* Stat Card 4 */}
-                <div className="glass-sage-light rounded-xl p-4">
-                  <p className="text-sm text-carbon-500 mb-1">Productos</p>
-                  <p className="text-3xl font-bold text-carbon-900">48</p>
-                  <p className="text-xs text-sage-green-600 font-medium mt-1">
-                    En menú
-                  </p>
-                </div>
+              {/* Order Grid (Mockup) */}
+              <div className="grid grid-cols-2 gap-4">
+                {[1, 2, 3, 4].map((i) => (
+                  <div key={i} className="bg-white/50 rounded-2xl p-4 border border-sage-green-100">
+                    <div className="flex justify-between mb-3">
+                      <div className="w-10 h-10 rounded-xl bg-sage-green-100"></div>
+                      <div className="w-12 h-5 bg-sage-green-200/50 rounded-md"></div>
+                    </div>
+                    <div className="w-full h-3 bg-carbon-100 rounded-full mb-2"></div>
+                    <div className="w-2/3 h-3 bg-carbon-50 rounded-full"></div>
+                  </div>
+                ))}
               </div>
-
-              {/* Progress Bar */}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-carbon-700 font-medium">
-                    Meta del Día
-                  </span>
-                  <span className=" text-sage-green-600 font-semibold">
-                    82%
-                  </span>
-                </div>
-
-                <div className="h-2 bg-sage-green-100 rounded-full overflow-hidden">
+              
+              {/* Bottom Chart Area */}
+              <div className="mt-6 p-4 bg-gradient-sage rounded-2xl h-32 flex items-end justify-between gap-2 px-6">
+                {[40, 70, 45, 90, 65, 80, 55].map((h, i) => (
                   <motion.div
-                    initial={{ width: 0 }}
-                    animate={{ width: "82%" }}
-                    transition={{ duration: 1.5, delay: 0.8 }}
-                    className="h-full bg-gradient-to-ra from-sage-green-300 to-sage-green-400 rounded-full"
+                    key={i}
+                    initial={{ height: 0 }}
+                    animate={{ height: `${h}%` }}
+                    transition={{ duration: 1, delay: 1 + i * 0.1 }}
+                    className="w-full bg-white/40 rounded-t-lg"
                   />
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Floating Element 1: Active Order */}
+            <motion.div
+              animate={{ 
+                y: [0, -15, 0],
+                rotate: [0, 1, 0]
+              }}
+              transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -top-6 -right-4 lg:-right-12 glass-light rounded-2xl p-4 shadow-xl border border-white/60 max-w-[200px]"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-primary-300 rounded-xl flex items-center justify-center shadow-lg shadow-primary-200/50">
+                  <Sparkles className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-[10px] uppercase tracking-wider text-carbon-500 font-bold">Nuevo Pedido</p>
+                  <p className="text-sm font-bold text-carbon-900">Mesa 14 • $45.00</p>
                 </div>
               </div>
             </motion.div>
 
-            {/* Floating Badge using component */}
+            {/* Floating Element 2: Performance */}
             <motion.div
-              initial={{ opacity: 0, x: 20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.8, delay: 0.8 }}
-              className="absolute -right-4 -bottom-12 glass-sage-medium rounded-2xl p-4 shadow-soft-lg animate-float"
+              animate={{ 
+                y: [0, 15, 0],
+                rotate: [0, -1, 0]
+              }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
+              className="absolute -bottom-6 -left-4 lg:-left-12 glass-light rounded-2xl p-5 shadow-xl border border-white/60 min-w-[180px]"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-sage-green-300 rounded-xl flex items-center justify-center">
-                  <Users className="w-5 h-5 text-sage-green-700" />
-                </div>
-                <div>
-                  <p className="text-xs text-carbon-500 font-medium">
-                    Clientes Felices
-                  </p>
-                  <p className="text-xl font-bold text-carbon-900">1.200+</p>
-                </div>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs font-bold text-carbon-500">Rendimiento</p>
+                <div className="w-2 h-2 rounded-full bg-success-500"></div>
               </div>
+              <p className="text-2xl font-black text-carbon-900 tracking-tight">+24.5%</p>
+              <p className="text-[10px] text-success-600 font-bold">vs el mes anterior</p>
             </motion.div>
           </div>
         </div>

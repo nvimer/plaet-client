@@ -115,7 +115,9 @@ export async function getToday() {
  * Get daily menu for a specific date
  */
 export async function getByDate(date: string) {
-  const response = await axiosClient.get<DailyMenuResponse>(`${DAILY_MENU_BASE_URL}/${date}`);
+  const response = await axiosClient.get<DailyMenuResponse>(DAILY_MENU_BASE_URL, {
+    params: { date },
+  });
   return response.data;
 }
 
@@ -131,7 +133,9 @@ export async function updateToday(data: UpdateDailyMenuData) {
  * Update daily menu for a specific date
  */
 export async function updateByDate(date: string, data: UpdateDailyMenuData) {
-  const response = await axiosClient.put<DailyMenuResponse>(`${DAILY_MENU_BASE_URL}/${date}`, data);
+  const response = await axiosClient.put<DailyMenuResponse>(DAILY_MENU_BASE_URL, data, {
+    params: { date },
+  });
   return response.data;
 }
 
