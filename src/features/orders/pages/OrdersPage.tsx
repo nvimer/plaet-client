@@ -7,13 +7,78 @@ import type { DateFilterType, DateRange } from "@/components";
 import {
   CheckCircle,
   Clock,
+  LayoutGrid,
+  List,
   Plus,
   ShoppingCart,
   TrendingUp,
 } from "lucide-react";
-import { OrderCard, OrderFilters } from "../components";
+import { OrderCard, OrderFilters, GroupedOrderCard } from "../components";
 import { ROUTES, getOrderDetailRoute } from "@/app/routes";
 import type { Order } from "@/types";
+
+/**
+ * Grouped Order Interface
+ * Groups multiple individual orders (usually for same table/time)
+ */
+export interface GroupedOrder {
+  id: string; // ID of the first order in group
+  tableId?: number;
+  table?: { number: number };
+  createdAt: string;
+  status: OrderStatus;
+  type: OrderType;
+  orders: Order[];
+  totalAmount: number;
+}
+
+/**
+ * Group orders by table and time (within 2 minutes)
+ */
+const groupOrders = (orders: Order[]): GroupedOrder[] => {
+  const grouped: GroupedOrder[] = [];
+  const processedIds = new Set<string>();
+
+  // Sort by date newest first
+  const sorted = [...orders].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
+  );
+
+  sorted.forEach((order) => {
+    if (processedIds.has(order.id)) return;
+
+    // Potential group members: same table, same type, within 2 minutes
+    const groupMembers = sorted.filter((other) => {
+      if (processedIds.has(other.id)) return false;
+      if (other.type !== order.type) return false;
+      if (other.tableId !== order.tableId) return false;
+
+      // Only group DINE_IN with tableId
+      if (order.type === OrderType.DINE_IN && !order.tableId) return false;
+
+      const timeDiff = Math.abs(
+        new Date(order.createdAt).getTime() -
+          new Date(other.createdAt).getTime(),
+      );
+      return timeDiff <= 2 * 60 * 1000; // 2 minutes window
+    });
+
+    groupMembers.forEach((m) => processedIds.add(m.id));
+
+    grouped.push({
+      id: order.id,
+      tableId: order.tableId,
+      table: order.table,
+      createdAt: order.createdAt,
+      status: order.status,
+      type: order.type,
+      orders: groupMembers,
+      totalAmount: groupMembers.reduce((sum, o) => sum + o.totalAmount, 0),
+    });
+  });
+
+  return grouped;
+};
 
 /**
  * Helper: Check if order date is today
@@ -90,6 +155,7 @@ export function OrdersPage() {
   const [customDateRange, setCustomDateRange] = useState<DateRange | undefined>(
     undefined,
   );
+  const [isGrouped, setIsGrouped] = useState(true);
 
   // ============== QUERIES ===============
   const { data: orders, isLoading, error } = useOrders();
@@ -124,6 +190,10 @@ export function OrdersPage() {
       return matchesStatus && matchesType && matchesDate;
     });
   }, [orders, statusFilter, typeFilter, dateFilter, customDateRange]);
+
+  const groupedOrders = useMemo(() => {
+    return groupOrders(filteredOrders);
+  }, [filteredOrders]);
 
   const counts = useMemo(
     () => ({
@@ -328,23 +398,62 @@ export function OrdersPage() {
         />
       </div>
 
-      {/* Result count */}
-      <p className="text-sm font-medium text-carbon-600 mb-5">
-        {filteredOrders.length}{" "}
-        {filteredOrders.length === 1 ? "pedido" : "pedidos"}
-        {hasActiveFilters && " encontrados"}
-      </p>
+      {/* Result count and View Toggle */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+        <p className="text-sm font-medium text-carbon-600">
+          {isGrouped ? groupedOrders.length : filteredOrders.length}{" "}
+          { (isGrouped ? groupedOrders.length : filteredOrders.length) === 1 ? (isGrouped ? "mesa" : "pedido") : (isGrouped ? "mesas" : "pedidos")}
+          {hasActiveFilters && " encontrados"}
+        </p>
+
+        <div className="flex items-center gap-1 bg-carbon-100 p-1 rounded-xl border border-carbon-200">
+          <button
+            onClick={() => setIsGrouped(true)}
+            className={cn(
+              "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
+              isGrouped 
+                ? "bg-white text-sage-700 shadow-soft-sm" 
+                : "text-carbon-500 hover:text-carbon-700"
+            )}
+          >
+            <LayoutGrid className="w-3.5 h-3.5" />
+            VISTA AGRUPADA
+          </button>
+          <button
+            onClick={() => setIsGrouped(false)}
+            className={cn(
+              "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
+              !isGrouped 
+                ? "bg-white text-sage-700 shadow-soft-sm" 
+                : "text-carbon-500 hover:text-carbon-700"
+            )}
+          >
+            <List className="w-3.5 h-3.5" />
+            INDIVIDUAL
+          </button>
+        </div>
+      </div>
 
       {/* ============ ORDERS GRID ============= */}
-      {filteredOrders.length > 0 ? (
+      {(isGrouped ? groupedOrders.length : filteredOrders.length) > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-          {filteredOrders.map((order) => (
-            <OrderCard
-              key={order.id}
-              order={order}
-              onViewDetail={handleViewDetail}
-            />
-          ))}
+          {isGrouped ? (
+            groupedOrders.map((group) => (
+              <GroupedOrderCard
+                key={group.id}
+                groupedOrder={group}
+                onViewDetail={handleViewDetail}
+              />
+            ))
+          ) : (
+            filteredOrders.map((order) => (
+              <OrderCard
+                key={order.id}
+                order={order}
+                onViewDetail={handleViewDetail}
+              />
+            ))
+          )}
         </div>
       ) : (
         <EmptyState
