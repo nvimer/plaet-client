@@ -1,6 +1,5 @@
 export * from "./TestimonialsSection";
 export * from "./PricingSection";
-export * from "./TrustedBySection";
 export * from "./BenefitsSection";
 export * from "./CTASection";
 export * from "./FeaturesSection";
