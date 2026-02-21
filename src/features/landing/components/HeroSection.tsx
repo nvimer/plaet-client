@@ -1,15 +1,4 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
-import { Button } from "@/components";
-import { Badge } from "@/components/ui/Badge/Badge";
-
-/**
- * HeroSection Component
- *
- * Main hero section with headline, description, and CTA
- */
-import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components";
@@ -58,9 +47,11 @@ export function HeroSection() {
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {/* Abstract Background Image */}
         <motion.div 
-          style={{ y: y1 }}
+          style={{ 
+            y: y1,
+            backgroundImage: 'url("https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80&w=2070")'
+          }}
           className="absolute inset-0 opacity-[0.04] grayscale bg-cover bg-center scale-110"
-          src="https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80&w=2070"
         />
 
         {/* Interactive Gradients Orbs */}
