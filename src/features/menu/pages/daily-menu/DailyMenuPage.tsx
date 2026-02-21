@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { Card, Button } from "@/components";
 import { DailyMenuConfigForm } from "./DailyMenuConfigForm";
-import { useDailyMenuToday } from "@/features/menu/hooks/useDailyMenu";
+import { useDailyMenuToday, useDailyMenuByDate } from "@/features/menu/hooks/useDailyMenu";
+import { useAuth } from "@/hooks";
+import { RoleName } from "@/types";
 import { type DailyMenu } from "@/services/dailyMenuApi";
 import { Calendar, RefreshCw, UtensilsCrossed } from "lucide-react";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
@@ -175,9 +178,24 @@ function HelpCard() {
 }
 
 export function DailyMenuPage() {
-  const { data: dailyMenu, isLoading, error, refetch } = useDailyMenuToday();
+  const { user } = useAuth();
+  const isAdmin = user?.roles?.some(r => 
+    (typeof r === 'object' && 'name' in r ? r.name : r) === RoleName.ADMIN
+  );
 
-  const formattedDate = new Date().toLocaleDateString("es-ES", {
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+
+  const todayMenu = useDailyMenuToday();
+  const historicalMenu = useDailyMenuByDate(selectedDate || "");
+
+  const dailyMenu = selectedDate ? historicalMenu.data : todayMenu.data;
+  const isLoading = selectedDate ? historicalMenu.isLoading : todayMenu.isLoading;
+  const error = selectedDate ? historicalMenu.error : todayMenu.error;
+  const refetch = selectedDate ? historicalMenu.refetch : todayMenu.refetch;
+
+  const displayDate = selectedDate ? new Date(selectedDate + "T12:00:00") : new Date();
+
+  const formattedDate = displayDate.toLocaleDateString("es-ES", {
     weekday: "long",
     year: "numeric",
     month: "long",
@@ -220,7 +238,7 @@ export function DailyMenuPage() {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-2xl sm:text-3xl font-semibold text-carbon-900 tracking-tight">
             Menú del Día
@@ -229,15 +247,36 @@ export function DailyMenuPage() {
             Configura los elementos del menú para punto de venta
           </p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-carbon-500">
-          <Calendar className="w-4 h-4" />
-          <span className="capitalize">{formattedDate}</span>
+        <div className="flex flex-wrap items-center gap-3">
+          {isAdmin && (
+            <div className="flex items-center gap-2 px-3 py-1.5 bg-white border-2 border-primary-100 rounded-xl shadow-sm">
+              <Calendar className="w-4 h-4 text-primary-600" />
+              <span className="text-xs font-bold text-carbon-600 uppercase">
+                Ver Fecha:
+              </span>
+              <input
+                type="date"
+                value={selectedDate || new Date().toISOString().split("T")[0]}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="bg-transparent border-none text-sm font-black text-carbon-900 focus:ring-0 cursor-pointer p-0"
+              />
+            </div>
+          )}
+          <div className="flex items-center gap-2 text-sm text-carbon-500 bg-sage-50 px-3 py-2 rounded-xl border border-sage-100">
+            <Calendar className="w-4 h-4" />
+            <span className="capitalize">{formattedDate}</span>
+          </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
-          <DailyMenuConfigForm initialData={dailyMenu} onSuccess={handleSuccess} />
+          <DailyMenuConfigForm
+            key={selectedDate || "today"}
+            initialData={dailyMenu}
+            onSuccess={handleSuccess}
+            selectedDate={selectedDate}
+          />
         </div>
 
         <div className="space-y-4">

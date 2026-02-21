@@ -4,6 +4,7 @@ import { FilterSelect } from "@/components/filters/FilterSelect";
 import { Save, UtensilsCrossed, Check } from "lucide-react";
 import {
   useUpdateDailyMenu,
+  useUpdateDailyMenuByDate,
   useItemsByCategory,
 } from "@/features/menu/hooks/useDailyMenu";
 import {
@@ -17,6 +18,8 @@ import { cn } from "@/utils/cn";
 interface DailyMenuConfigFormProps {
   initialData?: DailyMenu | null;
   onSuccess?: () => void;
+  /** Date to save the menu for (defaults to today if not provided) */
+  selectedDate?: string | null;
 }
 
 interface FormState {
@@ -64,8 +67,10 @@ const DEFAULT_CATEGORY_NAMES = {
 export function DailyMenuConfigForm({
   initialData,
   onSuccess,
+  selectedDate,
 }: DailyMenuConfigFormProps) {
-  const updateMenu = useUpdateDailyMenu();
+  const updateMenuToday = useUpdateDailyMenu();
+  const updateMenuByDate = useUpdateDailyMenuByDate();
   const { data: categories } = useCategories();
 
   // Helper to find category ID by name - memoized to avoid ESLint warning
@@ -103,7 +108,7 @@ export function DailyMenuConfigForm({
     dessertOption1Id: initialData?.dessertOptions?.[0]?.id || null,
     dessertOption2Id: initialData?.dessertOptions?.[1]?.id || null,
     selectedProteinIds: initialData?.proteinOptions?.map((p) => p.id) || [],
-    createdAt: initialData?.createdAt || null,
+    createdAt: initialData?.createdAt || (selectedDate ? new Date(selectedDate).toISOString() : null),
   });
 
   // Auto-set default categories when categories load and no initial data
@@ -129,9 +134,10 @@ export function DailyMenuConfigForm({
         saladCategoryId:
           prev.saladCategoryId ||
           findCategoryIdByName(DEFAULT_CATEGORY_NAMES.salad),
+        createdAt: prev.createdAt || (selectedDate ? new Date(selectedDate).toISOString() : null),
       }));
     }
-  }, [categories, initialData, findCategoryIdByName]);
+  }, [categories, initialData, findCategoryIdByName, selectedDate]);
 
   // Fetch items for each selected category
   const soupItems = useItemsByCategory(formState.soupCategoryId || 0);
@@ -177,14 +183,14 @@ export function DailyMenuConfigForm({
         dessertOption1Id: initialData.dessertOptions?.[0]?.id || null,
         dessertOption2Id: initialData.dessertOptions?.[1]?.id || null,
         selectedProteinIds: initialData.proteinOptions?.map((p) => p.id) || [],
-        createdAt: initialData.createdAt || null,
+        createdAt: initialData.createdAt || (selectedDate ? new Date(selectedDate).toISOString() : null),
       });
     }
-  }, [initialData, categories, findCategoryIdByName]);
+  }, [initialData, categories, findCategoryIdByName, selectedDate]);
 
   const handleSubmit = async () => {
     try {
-      const data: UpdateDailyMenuData = {
+      const payload: UpdateDailyMenuData = {
         basePrice: formState.basePrice,
         soupCategoryId: formState.soupCategoryId,
         principleCategoryId: formState.principleCategoryId,
@@ -229,7 +235,12 @@ export function DailyMenuConfigForm({
             : undefined,
       };
 
-      await updateMenu.mutateAsync(data);
+      if (selectedDate) {
+        await updateMenuByDate.mutateAsync({ date: selectedDate, data: payload });
+      } else {
+        await updateMenuToday.mutateAsync(payload);
+      }
+      
       onSuccess?.();
     } catch (error) {
       console.error("Failed to update daily menu:", error);
@@ -263,6 +274,8 @@ export function DailyMenuConfigForm({
     saladItems.isLoading ||
     (formState.includeDessert && dessertItems.isLoading);
 
+  const isMutationPending = updateMenuToday.isPending || updateMenuByDate.isPending;
+
   return (
     <Card variant="elevated" className="p-6 rounded-2xl">
       <div className="flex items-center gap-3 mb-6">
@@ -271,7 +284,7 @@ export function DailyMenuConfigForm({
         </div>
         <div>
           <h2 className="text-lg font-bold text-carbon-900">
-            Configurar Menú del Día
+            {selectedDate ? `Configurar Menú para ${selectedDate}` : "Configurar Menú del Día"}
           </h2>
           <p className="text-sm text-carbon-500">
             Selecciona las categorías y opciones disponibles
@@ -727,7 +740,7 @@ export function DailyMenuConfigForm({
         <div className="flex justify-end pt-4 border-t border-carbon-100">
           <Button
             onClick={handleSubmit}
-            isLoading={updateMenu.isPending || isLoading}
+            isLoading={isMutationPending || isLoading}
             className="inline-flex items-center gap-2"
           >
             <Save className="w-4 h-4" />

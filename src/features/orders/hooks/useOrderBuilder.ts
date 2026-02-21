@@ -8,7 +8,7 @@ import { toast } from "sonner";
 import { useCreateOrder } from "./useCreateOrder";
 import { useTables, useUpdateTableStatus } from "@/features/tables";
 import { useItems } from "@/features/menu";
-import { useDailyMenuToday } from "@/features/menu/hooks/useDailyMenu";
+import { useDailyMenuToday, useDailyMenuByDate } from "@/features/menu/hooks/useDailyMenu";
 import { OrderType, TableStatus } from "@/types";
 import type {
   MenuOption,
@@ -136,24 +136,30 @@ export interface UseOrderBuilderReturn {
 }
 
 export function useOrderBuilder(): UseOrderBuilderReturn {
-  // Data hooks
-  const { data: tablesData, isLoading: tablesLoading } = useTables();
-  const { data: menuItems, isLoading: itemsLoading } = useItems();
-  const { data: dailyMenuData, isLoading: menuLoading } = useDailyMenuToday();
-  const { mutateAsync: createOrder, isPending: isCreating } = useCreateOrder();
-  const { mutate: updateTableStatus } = useUpdateTableStatus();
-  
-  const isPending = isCreating;
-
-  const tables = tablesData?.tables || [];
-  const availableTables = tables.filter((t) => t.status === "AVAILABLE");
-
   // Order type and table state
   const [selectedOrderType, setSelectedOrderType] = useState<OrderType | null>(null);
   const [selectedTable, setSelectedTable] = useState<number | null>(null);
   const [tableOrders, setTableOrders] = useState<TableOrder[]>([]);
   const [currentOrderIndex, setCurrentOrderIndex] = useState<number | null>(null);
   const [backdatedDate, setBackdatedDate] = useState<string | null>(null);
+
+  // Data hooks
+  const { data: tablesData, isLoading: tablesLoading } = useTables();
+  const { data: menuItems, isLoading: itemsLoading } = useItems();
+  
+  // Daily Menu Data fetching logic
+  const todayMenu = useDailyMenuToday();
+  const historicalMenu = useDailyMenuByDate(backdatedDate || "");
+  
+  const dailyMenuData = backdatedDate ? historicalMenu.data : todayMenu.data;
+  const menuLoading = backdatedDate ? historicalMenu.isLoading : todayMenu.isLoading;
+  
+  const { mutateAsync: createOrder, isPending: isCreating } = useCreateOrder();
+  const { mutate: updateTableStatus } = useUpdateTableStatus();
+  
+  const isPending = isCreating;
+
+  const tables = tablesData?.tables || [];
 
   // Lunch selection state
 
