@@ -68,96 +68,106 @@ export function BenefitsSection() {
         </div>
 
         {/* Steps */}
-        <div className="space-y-32">
+        <div className="space-y-48">
           {steps.map((step, index) => (
             <div 
               key={step.number} 
-              className={`flex flex-col ${index % 2 === 1 ? "lg:flex-row-reverse" : "lg:flex-row"} items-center gap-16 lg:gap-24`}
+              className={`flex flex-col ${index % 2 === 1 ? "lg:flex-row-reverse" : "lg:flex-row"} items-center gap-20 lg:gap-32`}
             >
               {/* Content */}
               <motion.div
-                initial={{ opacity: 0, x: index % 2 === 1 ? 40 : -40 }}
+                initial={{ opacity: 0, x: index % 2 === 1 ? 60 : -60 }}
                 whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
                 className="flex-1"
               >
                 {/* Step Number */}
-                <div className="inline-flex items-center gap-4 mb-8">
-                  <span className="text-7xl md:text-8xl font-black text-sage-green-100 leading-none">
+                <div className="inline-flex items-center gap-6 mb-10 group">
+                  <span className="text-8xl md:text-9xl font-black text-sage-green-100/60 leading-none group-hover:text-sage-green-200 transition-colors duration-500">
                     {step.number}
                   </span>
-                  <div className="w-20 h-1.5 bg-gradient-to-r from-sage-green-300 to-sage-green-500 rounded-full"></div>
+                  <div className="w-24 h-2 bg-gradient-to-r from-sage-green-300 to-sage-green-500 rounded-full group-hover:w-32 transition-all duration-700"></div>
                 </div>
 
                 {/* Title */}
-                <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-carbon-900 mb-6">
+                <h3 className="text-4xl md:text-5xl lg:text-6xl font-black text-carbon-900 mb-8 leading-tight tracking-tight">
                   {step.title}
                 </h3>
 
                 {/* Description */}
-                <p className="text-lg md:text-xl text-carbon-700 mb-10 font-light leading-relaxed">
+                <p className="text-xl md:text-2xl text-carbon-700 mb-12 font-light leading-relaxed max-w-xl">
                   {step.description}
                 </p>
 
                 {/* Benefits List */}
-                <ul className="space-y-5">
-                  {step.benefits.map((benefit) => (
-                    <li key={benefit} className="flex items-center gap-4">
-                      <div className="flex-shrink-0 w-6 h-6 rounded-full bg-sage-green-100 flex items-center justify-center">
+                <ul className="space-y-6">
+                  {step.benefits.map((benefit, bIndex) => (
+                    <motion.li 
+                      key={benefit} 
+                      initial={{ opacity: 0, y: 10 }}
+                      whileInView={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 + bIndex * 0.1 }}
+                      className="flex items-center gap-5 group/item"
+                    >
+                      <div className="flex-shrink-0 w-8 h-8 rounded-2xl bg-sage-green-100 flex items-center justify-center group-hover/item:bg-sage-green-200 transition-colors">
                         <Check
-                          className="w-4 h-4 text-sage-green-600"
+                          className="w-5 h-5 text-sage-green-600"
                           strokeWidth={3}
                         />
                       </div>
-                      <span className="text-lg text-carbon-800 font-medium">
+                      <span className="text-xl text-carbon-800 font-medium group-hover/item:text-sage-green-700 transition-colors">
                         {benefit}
                       </span>
-                    </li>
+                    </motion.li>
                   ))}
                 </ul>
               </motion.div>
 
               {/* Visual */}
               <motion.div
-                initial={{ opacity: 0, scale: 0.9, x: index % 2 === 1 ? -40 : 40 }}
+                initial={{ opacity: 0, scale: 0.8, x: index % 2 === 1 ? -60 : 60 }}
                 whileInView={{ opacity: 1, scale: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8 }}
+                viewport={{ once: false, amount: 0.3 }}
+                transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
                 className="flex-1 w-full"
               >
-                <div className="relative group">
+                <div className="relative group/img">
                   {/* Image Container with decorative elements */}
-                  <div className="relative z-10 rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white/50 aspect-video lg:aspect-square">
+                  <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.15)] border-[6px] border-white aspect-video lg:aspect-[4/5] xl:aspect-square">
                     <img 
                       src={step.image} 
                       alt={step.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                      className="w-full h-full object-cover group-hover/img:scale-110 transition-transform duration-[2s] ease-out"
                     />
                     {/* Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-carbon-900/40 to-transparent"></div>
+                    <div className="absolute inset-0 bg-gradient-to-t from-carbon-900/60 via-transparent to-transparent opacity-60 group-hover/img:opacity-40 transition-opacity"></div>
                   </div>
 
                   {/* Decorative Background Card */}
-                  <div className="absolute -top-6 -bottom-6 -left-6 -right-6 bg-sage-green-50 rounded-[3rem] -z-10 border border-sage-green-100"></div>
+                  <motion.div 
+                    animate={{ rotate: index % 2 === 1 ? [-2, 2, -2] : [2, -2, 2] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute -top-10 -bottom-10 -left-10 -right-10 bg-sage-green-100/50 rounded-[4rem] -z-10 border border-sage-green-200/50"
+                  />
 
                   {/* Floating element */}
                   <motion.div
-                    animate={{ y: [0, -12, 0] }}
+                    animate={{ y: [0, -8, 0], x: [0, 4, 0] }}
                     transition={{
-                      duration: 4,
+                      duration: 8,
                       repeat: Infinity,
                       ease: "easeInOut",
                     }}
-                    className="absolute -bottom-10 -right-6 lg:-right-10 glass-light rounded-2xl p-6 shadow-xl border border-white/60 z-20"
+                    className="absolute -bottom-12 -right-8 lg:-right-16 bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/80 z-20"
                   >
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 bg-sage-green-100 rounded-xl flex items-center justify-center">
-                        <ArrowRight className="w-6 h-6 text-sage-green-600" />
+                    <div className="flex items-center gap-5">
+                      <div className="w-14 h-14 bg-gradient-to-br from-sage-green-400 to-sage-green-500 rounded-2xl flex items-center justify-center shadow-lg shadow-sage-green-200/50">
+                        <ArrowRight className="w-8 h-8 text-white" />
                       </div>
                       <div>
-                        <p className="text-xs uppercase tracking-widest text-carbon-500 font-bold">Paso Siguiente</p>
-                        <span className="text-sm font-black text-carbon-900">
+                        <p className="text-xs uppercase tracking-[0.2em] text-carbon-400 font-black mb-1">Paso Siguiente</p>
+                        <span className="text-lg font-black text-carbon-900">
                           {index === 2 ? "¡Empieza ya!" : `Paso ${index + 2}`}
                         </span>
                       </div>

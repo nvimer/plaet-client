@@ -94,7 +94,7 @@ export function FeaturesSection() {
 
         {/* Features Grid using Card component */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature) => {
+          {features.map((feature, index) => {
             const Icon = feature.icon;
 
             return (
@@ -102,40 +102,44 @@ export function FeaturesSection() {
                 key={feature.title}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: feature.delay }}
-                whileHover={{ y: -8 }}
+                viewport={{ once: false, amount: 0.2 }}
+                transition={{ 
+                  duration: 0.8, 
+                  delay: (index % 3) * 0.1,
+                  ease: [0.16, 1, 0.3, 1] 
+                }}
+                whileHover={{ y: -12, scale: 1.02 }}
               >
                 <Card
                   variant="bordered"
                   padding="lg"
                   hover
-                  className="h-full group relative overflow-hidden"
+                  className="h-full group relative overflow-hidden bg-white/50 backdrop-blur-sm border-sage-green-100 hover:border-sage-green-300 transition-all duration-500 shadow-soft-sm hover:shadow-xl"
                 >
                   {/* Icon Container */}
-                  <div className="relative mb-6">
+                  <div className="relative mb-8">
                     <div
-                      className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${feature.color} group-hover:animate-glow-pulse transition-all duration-300`}
+                      className={`inline-flex p-5 rounded-[1.5rem] bg-gradient-to-br ${feature.color} group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-sage-green-100`}
                     >
-                      <Icon className="w-7 h-7 text-white" />
+                      <Icon className="w-8 h-8 text-white" />
                     </div>
 
                     {/* Decorative Element */}
-                    <div className="absolute -top-2 -right-2 w-20 h-20 bg-sage-green-100 rounded-full blur-2xl opacity-0 group-hover:opacity-50 transition-opacity duration-300"></div>
+                    <div className="absolute -top-4 -right-4 w-24 h-24 bg-sage-green-100 rounded-full blur-3xl opacity-0 group-hover:opacity-60 transition-opacity duration-500"></div>
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-2xl font-bold text-carbon-900 mb-4 group-hover:text-sage-green-600 transition-colors duration-300">
+                  <h3 className="text-2xl font-black text-carbon-900 mb-4 group-hover:text-sage-green-600 transition-colors duration-300">
                     {feature.title}
                   </h3>
 
                   {/* Description */}
-                  <p className="text-carbon-700 leading-relaxed font-light">
+                  <p className="text-carbon-600 leading-relaxed font-light text-lg">
                     {feature.description}
                   </p>
 
                   {/* Hover Accent Line */}
-                  <div className="absolute bottom-0 left-0 w-0 h-1 bg-gradient-to-r from-sage-green-300 to-sage-green-500 group-hover:w-full transition-all duration-500 rounded-b-3xl"></div>
+                  <div className="absolute bottom-0 left-0 w-0 h-1.5 bg-gradient-to-r from-sage-green-300 to-sage-green-500 group-hover:w-full transition-all duration-700 rounded-b-3xl"></div>
                 </Card>
               </motion.div>
             );
