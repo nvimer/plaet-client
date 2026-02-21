@@ -68,23 +68,24 @@ function StatCard({ stat, index, isInView }: StatCardProps) {
         variant="elevated"
         padding="lg"
         hover
-        className="h-full group"
+        className="h-full group text-center"
       >
         {/* Icon */}
         <div
-          className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${stat.color} mb-6 group-hover:animate-glow-pulse transition-all`}
+          className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${stat.color} mb-6 group-hover:animate-glow-pulse transition-all shadow-lg shadow-sage-green-100`}
         >
           <Icon className="w-8 h-8 text-white" />
         </div>
 
         {/* Number */}
-        <div className="text-4xl md:text-5xl font-bold text-white mb-2">
+        <div className="text-4xl md:text-5xl font-black text-carbon-900 mb-2">
           {count}
           {stat.suffix}
         </div>
 
         {/* Label */}
-        <div className="text-carbon-300 font-medium">{stat.label}</div>
+        <div className="text-carbon-500 font-bold uppercase tracking-wider text-xs mb-1">{stat.label}</div>
+        <div className="text-sage-green-600 font-medium text-sm">{stat.description}</div>
       </Card>
     </motion.div>
   );
@@ -147,25 +148,24 @@ export function StatsSection() {
 
       <div className="relative max-w-7xl mx-auto px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center mb-16">
+        <div className="text-center mb-20">
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
-            className="text-4xl md:text-5xl lg:text-6xl font-bold text-carbon-900 mb-4 tracking-tight"
+            className="text-4xl md:text-5xl lg:text-7xl font-bold text-carbon-900 mb-6 tracking-tight"
           >
-            Resultados que {""}
-            <span className="text-gradient-sage">hablan</span>
+            Resultados que <span className="text-gradient-sage">hablan</span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="text-lg text-carbon-700 font-light"
+            className="text-xl text-carbon-700 max-w-2xl mx-auto font-light"
           >
-            Miles de restaurantes ya transforman su gestión
+            Nuestra plataforma escala con tu negocio, proporcionando las herramientas necesarias para el éxito.
           </motion.p>
         </div>
 

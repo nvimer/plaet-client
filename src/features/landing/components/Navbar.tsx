@@ -37,8 +37,8 @@ export function Navbar() {
     { label: "Inicio", href: "#home" },
     { label: "Características", href: "#features" },
     { label: "Beneficios", href: "#benefits" },
+    { label: "Historias", href: "#testimonials" },
     { label: "Precios", href: "#pricing" },
-    { label: "Contacto", href: "#contact" },
   ];
 
   // =============== RENDER ===============

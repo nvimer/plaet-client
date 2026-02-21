@@ -34,7 +34,7 @@ export function Card({
   };
 
   const hoverStyles = hover
-    ? "hover:-traslate-y-1 hover:shadow-soft-lg cursor-pointer"
+    ? "hover:-translate-y-1 hover:shadow-soft-lg cursor-pointer"
     : "";
 
   // Combine all styles

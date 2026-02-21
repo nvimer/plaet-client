@@ -6,6 +6,9 @@ import {
   CTASection,
   Footer,
   BenefitsSection,
+  TrustedBySection,
+  PricingSection,
+  TestimonialsSection,
 } from "../components";
 
 /**
@@ -16,15 +19,18 @@ import {
  * Structure /
  * - Navbar (sticky)
  * - Hero Section
+ * - Trusted By Section
  * - Features Section
  * - Stats Section
  * - Benefits Section
+ * - Testimonials Section
+ * - Pricing Section
  * - CTA Section
  * - Footer
  */
 export function LandingPage() {
   return (
-    <div>
+    <div className="bg-sage-50 min-h-screen">
       {/* ================= NAVIGATION ================ */}
       <Navbar />
 
@@ -32,6 +38,9 @@ export function LandingPage() {
       <main>
         {/* Hero  */}
         <HeroSection />
+
+        {/* Trusted By Brands */}
+        <TrustedBySection />
 
         {/* Features */}
         <FeaturesSection />
@@ -41,6 +50,12 @@ export function LandingPage() {
 
         {/* Benefits */}
         <BenefitsSection />
+
+        {/* Testimonials */}
+        <TestimonialsSection />
+
+        {/* Pricing */}
+        <PricingSection />
 
         {/* CTA */}
         <CTASection />
