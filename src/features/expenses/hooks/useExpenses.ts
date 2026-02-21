@@ -11,7 +11,7 @@ export const useExpenses = (startDate?: string, endDate?: string) => {
   const queryClient = useQueryClient();
 
   // Fetch expenses list
-  const { data, isLoading, error: _error } = useQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: ["expenses", { startDate, endDate }],
     queryFn: () => expensesApi.getExpenses(startDate, endDate),
   });
@@ -27,7 +27,7 @@ export const useExpenses = (startDate?: string, endDate?: string) => {
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
       toast.success("Gasto registrado correctamente");
     },
-    onError: (error: { response?: { data?: { message?: string } } }) => {
+    onError: (error: any) => {
       toast.error(error?.response?.data?.message || "Error al registrar el gasto");
     },
   });
@@ -40,7 +40,7 @@ export const useExpenses = (startDate?: string, endDate?: string) => {
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
       toast.success("Gasto eliminado");
     },
-    onError: (_error: unknown) => {
+    onError: (error: any) => {
       toast.error("Error al eliminar el gasto");
     },
   });

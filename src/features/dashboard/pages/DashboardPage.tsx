@@ -10,6 +10,8 @@ import {
   DollarSign,
   Plus,
   MenuIcon,
+  CircleCheck,
+  CircleDot,
   Clock,
   LayoutDashboard,
   ArrowRight,
@@ -111,7 +113,7 @@ export function DashboardPage() {
     }
   };
 
-  const _itemVariants = {
+  const itemVariants = {
     hidden: { opacity: 0, y: 10 },
     visible: { opacity: 1, y: 0 }
   };

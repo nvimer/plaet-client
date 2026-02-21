@@ -169,7 +169,7 @@ export function Sidebar() {
   const navigate = useNavigate();
 
   // Fetch categories for dynamic menu
-  const { data: _categories } = useCategories();
+  const { data: categories } = useCategories();
 
   // Flyout state for collapsed sidebar
   const [flyoutItem, setFlyoutItem] = useState<string | null>(null);

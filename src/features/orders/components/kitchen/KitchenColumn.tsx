@@ -8,7 +8,7 @@ import { cn } from "@/utils/cn";
 import { type Order, OrderStatus } from "@/types";
 import { KitchenOrderCard } from "./KitchenOrderCard";
 
-import { type KitchenCategoryConfig } from "./kitchenCategories";
+import { isPreparableCategory, type KitchenCategoryConfig } from "./kitchenCategories";
 
 export interface KitchenColumnProps {
   id: string;

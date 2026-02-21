@@ -88,7 +88,7 @@ export default function ResetPasswordPage() {
           type: "success",
         },
       });
-    } catch (_error) {
+    } catch (error) {
       setError(
         "Error al restaurar la contraseña. El enlace puede haber expirado.",
       );

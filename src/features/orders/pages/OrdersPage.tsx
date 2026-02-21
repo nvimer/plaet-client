@@ -11,24 +11,9 @@ import {
   ShoppingCart,
   TrendingUp,
 } from "lucide-react";
-import { OrderCard, OrderFilters, OrderGroupCard } from "../components";
+import { OrderCard, OrderFilters } from "../components";
 import { ROUTES, getOrderDetailRoute } from "@/app/routes";
 import type { Order } from "@/types";
-
-interface OrderGroup {
-  type: "group";
-  id: string; // "table-X"
-  title: string;
-  totalAmount: number;
-  orders: Order[];
-}
-
-interface SingleOrderWrapper {
-  type: "single";
-  order: Order;
-}
-
-type OrderDisplayItem = OrderGroup | SingleOrderWrapper;
 
 /**
  * Helper: Check if order date is today
@@ -139,80 +124,6 @@ export function OrdersPage() {
       return matchesStatus && matchesType && matchesDate;
     });
   }, [orders, statusFilter, typeFilter, dateFilter, customDateRange]);
-
-  // Group orders by Table for DINE_IN
-  const groupedItems = useMemo(() => {
-    const items: OrderDisplayItem[] = [];
-    // Key: tableId-YYYY-MM-DD
-    const tableGroups = new Map<string, Order[]>();
-
-    // First pass: Group DINE_IN orders by table and date
-    filteredOrders.forEach((order) => {
-      // We only group DINE_IN orders that have a table
-      // AND we only group orders that are NOT Paid or Cancelled (active session)
-      // Actually, user wants to see grouped orders even if they are in history? 
-      // Usually "orders" in a POS refers to a single bill/ticket.
-      // Since we don't have a ticketId yet, we group by table + date.
-      
-      const isActiveSession = order.status !== OrderStatus.PAID && order.status !== OrderStatus.CANCELLED;
-      
-      if (order.type === OrderType.DINE_IN && order.table) {
-        const dateKey = new Date(order.createdAt).toISOString().split('T')[0];
-        // If it's a paid order, we don't group it with active orders
-        const sessionKey = isActiveSession ? 'active' : `closed-${order.id.slice(0, 8)}`;
-        const groupKey = `table-${order.table.id}-${dateKey}-${sessionKey}`;
-        
-        if (isActiveSession) {
-            const tableDateKey = `table-${order.table.id}-${dateKey}`;
-            if (!tableGroups.has(tableDateKey)) {
-              tableGroups.set(tableDateKey, []);
-            }
-            tableGroups.get(tableDateKey)?.push(order);
-        } else {
-            // Closed orders are shown individually or grouped by something else?
-            // For now, keep closed orders separate
-            items.push({ type: "single", order });
-        }
-      } else {
-        // Non-DINE_IN or no table -> Single item
-        items.push({ type: "single", order });
-      }
-    });
-
-    // Process table groups
-    tableGroups.forEach((groupOrders, key) => {
-      if (groupOrders.length === 1) {
-        // If only 1 order for table, show as single
-        items.push({ type: "single", order: groupOrders[0] });
-      } else {
-        // Multiple orders -> Group
-        const tableNumber = groupOrders[0].table?.number;
-        const totalAmount = groupOrders.reduce((sum, o) => sum + o.totalAmount, 0);
-        
-        items.push({
-          type: "group",
-          id: key,
-          title: `Mesa ${tableNumber}`,
-          totalAmount,
-          orders: groupOrders,
-        });
-      }
-    });
-
-    // Sort items by date (newest first)
-    // For groups, use the newest order in the group
-    return items.sort((a, b) => {
-      const dateA = a.type === "single" 
-        ? new Date(a.order.createdAt).getTime()
-        : Math.max(...a.orders.map(o => new Date(o.createdAt).getTime()));
-      
-      const dateB = b.type === "single"
-        ? new Date(b.order.createdAt).getTime()
-        : Math.max(...b.orders.map(o => new Date(o.createdAt).getTime()));
-        
-      return dateB - dateA;
-    });
-  }, [filteredOrders]);
 
   const counts = useMemo(
     () => ({
@@ -425,25 +336,14 @@ export function OrdersPage() {
       </p>
 
       {/* ============ ORDERS GRID ============= */}
-      {groupedItems.length > 0 ? (
+      {filteredOrders.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-          {groupedItems.map((item) => (
-            item.type === "group" ? (
-              <OrderGroupCard
-                key={item.id}
-                groupId={item.id}
-                title={item.title}
-                orders={item.orders}
-                totalAmount={item.totalAmount}
-                onViewDetail={handleViewDetail}
-              />
-            ) : (
-              <OrderCard
-                key={item.order.id}
-                order={item.order}
-                onViewDetail={handleViewDetail}
-              />
-            )
+          {filteredOrders.map((order) => (
+            <OrderCard
+              key={order.id}
+              order={order}
+              onViewDetail={handleViewDetail}
+            />
           ))}
         </div>
       ) : (
