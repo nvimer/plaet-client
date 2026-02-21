@@ -5,9 +5,6 @@
  */
 
 // Auth components
-export {
-  default as ProtectedRoute,
-  withAuth,
-  withRole,
-  withPermission,
-} from "./ProtectedRoute";
+export { default as ProtectedRoute } from "./ProtectedRoute";
+export { withAuth, withRole, withPermission } from "./hocs";
+export { RegisterForm } from "./RegisterForm";

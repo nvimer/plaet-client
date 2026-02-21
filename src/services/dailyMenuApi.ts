@@ -89,6 +89,7 @@ export interface UpdateDailyMenuData {
 
   // All protein IDs available (array of all protein item IDs)
   allProteinIds?: number[];
+  createdAt?: string;
 }
 
 /**

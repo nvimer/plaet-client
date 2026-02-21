@@ -43,6 +43,7 @@ interface FormState {
   dessertOption2Id: number | null;
   // All available proteins (checkbox selection)
   selectedProteinIds: number[];
+  createdAt: string | null;
 }
 
 const defaultPrices = {
@@ -102,6 +103,7 @@ export function DailyMenuConfigForm({
     dessertOption1Id: initialData?.dessertOptions?.[0]?.id || null,
     dessertOption2Id: initialData?.dessertOptions?.[1]?.id || null,
     selectedProteinIds: initialData?.proteinOptions?.map((p) => p.id) || [],
+    createdAt: initialData?.createdAt || null,
   });
 
   // Auto-set default categories when categories load and no initial data
@@ -175,6 +177,7 @@ export function DailyMenuConfigForm({
         dessertOption1Id: initialData.dessertOptions?.[0]?.id || null,
         dessertOption2Id: initialData.dessertOptions?.[1]?.id || null,
         selectedProteinIds: initialData.proteinOptions?.map((p) => p.id) || [],
+        createdAt: initialData.createdAt || null,
       });
     }
   }, [initialData, categories, findCategoryIdByName]);
@@ -219,6 +222,7 @@ export function DailyMenuConfigForm({
             }
           : undefined,
         // All selected proteins
+        createdAt: formState.createdAt || undefined,
         allProteinIds:
           formState.selectedProteinIds.length > 0
             ? formState.selectedProteinIds
@@ -276,6 +280,34 @@ export function DailyMenuConfigForm({
       </div>
 
       <div className="space-y-6">
+        {/* Historical Data Section */}
+        <div className="space-y-4">
+          <h3 className="text-sm font-semibold text-carbon-800 flex items-center gap-2">
+            <span className="w-8 h-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs font-bold">
+              H
+            </span>
+            Datos Históricos (Opcional)
+          </h3>
+          <div className="p-4 rounded-xl border-2 border-blue-100 bg-blue-50/30">
+            <label className="block text-xs font-medium text-carbon-500 mb-2">
+              Fecha de Registro (Sobrescribir createdAt)
+            </label>
+            <input
+              type="datetime-local"
+              value={formState.createdAt ? new Date(new Date(formState.createdAt).getTime() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16) : ""}
+              onChange={(e) =>
+                setFormState((prev) => ({
+                  ...prev,
+                  createdAt: e.target.value ? new Date(e.target.value).toISOString() : null,
+                }))
+              }
+              className="w-full px-3 py-2 border border-carbon-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm font-medium bg-white"
+            />
+            <p className="text-[10px] text-carbon-400 mt-2">
+              Usa este campo solo si estás registrando un menú de una fecha pasada y quieres conservar la cronología exacta.
+            </p>
+          </div>
+        </div>
         {/* Prices Section - Margen Base Configuration */}
         <div className="space-y-4">
           <h3 className="text-sm font-semibold text-carbon-800 flex items-center gap-2">
