@@ -6,7 +6,6 @@ import {
   CTASection,
   Footer,
   BenefitsSection,
-  TrustedBySection,
   PricingSection,
   TestimonialsSection,
 } from "../components";
@@ -19,7 +18,6 @@ import {
  * Structure /
  * - Navbar (sticky)
  * - Hero Section
- * - Trusted By Section
  * - Features Section
  * - Stats Section
  * - Benefits Section
@@ -38,9 +36,6 @@ export function LandingPage() {
       <main>
         {/* Hero  */}
         <HeroSection />
-
-        {/* Trusted By Brands */}
-        <TrustedBySection />
 
         {/* Features */}
         <FeaturesSection />

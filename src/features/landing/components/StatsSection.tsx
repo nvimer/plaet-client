@@ -12,7 +12,10 @@ function useCountUp(
   const [count, setCount] = useState(0);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled) {
+      setCount(0);
+      return;
+    }
 
     let startTime: number | null = null;
     const startCount = 0;
@@ -28,7 +31,8 @@ function useCountUp(
       }
     };
 
-    requestAnimationFrame(animate);
+    const requestId = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(requestId);
   }, [end, duration, enabled]);
 
   return count;
@@ -98,7 +102,7 @@ function StatCard({ stat, index, isInView }: StatCardProps) {
  */
 export function StatsSection() {
   const ref = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  const isInView = useInView(ref, { once: false, amount: 0.3 });
   // =============== STATS DATA ==================
   const stats = [
     {

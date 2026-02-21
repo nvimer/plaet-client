@@ -7,7 +7,8 @@ export function PricingSection() {
   const plans = [
     {
       name: "Básico",
-      price: "$29",
+      price: "15.000",
+      originalPrice: "29.000",
       description: "Ideal para pequeños negocios que están empezando.",
       features: [
         "Hasta 10 mesas",
@@ -21,7 +22,7 @@ export function PricingSection() {
     },
     {
       name: "Pro",
-      price: "$59",
+      price: "59.000",
       description: "Para restaurantes en crecimiento que necesitan más control.",
       features: [
         "Mesas ilimitadas",
@@ -75,7 +76,7 @@ export function PricingSection() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-xl text-carbon-700 max-w-2xl mx-auto font-light"
           >
-            Precios transparentes, sin costos ocultos. Cancela cuando quieras.
+            Precios transparentes en COP, sin costos ocultos. Cancela cuando quieras.
           </motion.p>
         </div>
 
@@ -90,10 +91,10 @@ export function PricingSection() {
               className="relative flex"
             >
               {plan.popular && (
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20">
-                  <Badge variant="success" size="lg" className="bg-sage-green-400 text-white border-none shadow-lg px-6 py-1">
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20 w-full flex justify-center">
+                  <Badge variant="success" size="lg" className="bg-sage-green-400 text-white border-none shadow-lg px-6 py-1 whitespace-nowrap">
                     <Sparkles className="w-4 h-4 mr-2" />
-                    Más Popular
+                    Recomendado
                   </Badge>
                 </div>
               )}
@@ -111,8 +112,20 @@ export function PricingSection() {
                 </div>
 
                 <div className="mb-8">
-                  <span className="text-5xl font-black text-carbon-900">{plan.price}</span>
-                  {plan.price !== "Personalizado" && <span className="text-carbon-500 font-medium">/mes</span>}
+                  {plan.originalPrice && (
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-lg text-carbon-400 line-through font-light">${plan.originalPrice}</span>
+                      <Badge variant="success" size="sm" className="bg-sage-green-100 text-sage-green-700 border-none text-[10px] font-bold">
+                        OFERTA
+                      </Badge>
+                    </div>
+                  )}
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-4xl lg:text-5xl font-black text-carbon-900">
+                      {plan.price !== "Personalizado" ? `$${plan.price}` : plan.price}
+                    </span>
+                    {plan.price !== "Personalizado" && <span className="text-carbon-500 font-medium text-sm">/mes</span>}
+                  </div>
                 </div>
 
                 <div className="flex-1 mb-10">
