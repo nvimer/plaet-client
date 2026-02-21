@@ -6,10 +6,10 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { useCreateOrder } from "./useCreateOrder";
-import { useTables } from "@/features/tables";
+import { useTables, useUpdateTableStatus } from "@/features/tables";
 import { useItems } from "@/features/menu";
 import { useDailyMenuToday } from "@/features/menu/hooks/useDailyMenu";
-import { OrderType } from "@/types";
+import { OrderType, TableStatus } from "@/types";
 import type {
   MenuOption,
   ProteinOption,
@@ -139,6 +139,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const { data: menuItems, isLoading: itemsLoading } = useItems();
   const { data: dailyMenuData, isLoading: menuLoading } = useDailyMenuToday();
   const { mutate: createOrder, isPending } = useCreateOrder();
+  const { mutate: updateTableStatus } = useUpdateTableStatus();
 
   const tables = tablesData?.tables || [];
   const availableTables = tables.filter((t) => t.status === "AVAILABLE");
@@ -574,6 +575,11 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       toast.success(successMessage, {
         description: `Total: $${tableTotal.toLocaleString("es-CO")}`,
       });
+
+      // Automatically mark table as occupied if it's DINE_IN
+      if (selectedOrderType === OrderType.DINE_IN && selectedTable) {
+        updateTableStatus({ id: selectedTable, status: TableStatus.OCCUPIED });
+      }
       
       setTableOrders([]);
       setSelectedTable(null);
