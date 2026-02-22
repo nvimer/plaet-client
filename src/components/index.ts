@@ -12,6 +12,7 @@ export { BaseModal } from "./ui/BaseModal/BaseModal";
 export { SearchInput } from "./ui/SearchInput/SearchInput";
 export { RadioGroup } from "./ui/RadioGroup/RadioGroup";
 export { BrandName } from "./ui/BrandName/BrandName";
+export { Seo } from "./seo/Seo";
 
 // Filters (unified design for all modules)
 export {

@@ -18,7 +18,7 @@ import {
   EyeOff,
   ShieldCheck,
 } from "lucide-react";
-import { Button, Input, BrandName } from "@/components";
+import { Button, Input, BrandName, Seo } from "@/components";
 import { useAuth } from "@/hooks";
 import { toast } from "sonner";
 
@@ -75,6 +75,8 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-sage-50 flex items-center justify-center p-6 relative overflow-hidden">
+      <Seo title="Iniciar Sesión" description="Ingresa a tu cuenta de Plaet para gestionar tu restaurante." />
+      
       {/* Background decorations */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div

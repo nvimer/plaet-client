@@ -9,6 +9,7 @@ import {
   PricingSection,
   TestimonialsSection,
 } from "../components";
+import { Seo } from "@/components";
 
 /**
  * LandingPage Component
@@ -29,6 +30,11 @@ import {
 export function LandingPage() {
   return (
     <div className="bg-sage-50 min-h-screen">
+      <Seo 
+        title="POS para Restaurantes"
+        description="Sistema de gestión para restaurantes optimizado para pantallas táctiles. Gestiona pedidos, cocina e inventario sin fricción."
+      />
+      
       {/* ================= NAVIGATION ================ */}
       <Navbar />
 
