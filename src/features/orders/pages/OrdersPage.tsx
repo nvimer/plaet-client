@@ -13,6 +13,7 @@ import {
   ShoppingCart,
   TrendingUp,
 } from "lucide-react";
+import { cn } from "@/utils/cn";
 import { OrderCard, OrderFilters, GroupedOrderCard } from "../components";
 import { ROUTES, getOrderDetailRoute } from "@/app/routes";
 import type { Order } from "@/types";
