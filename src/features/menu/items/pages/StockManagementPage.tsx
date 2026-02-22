@@ -10,6 +10,7 @@ import {
 import { usePermissions } from "@/hooks/usePermissions";
 import { ROUTES } from "@/app/routes";
 import { Package, RotateCcw, Search, Plus, AlertTriangle } from "lucide-react";
+import { cn } from "@/utils/cn";
 import type { MenuItem } from "@/types";
 import { QuickStockModal } from "../components/QuickStockModal";
 import { Input } from "@/components/ui/Input/Input";
