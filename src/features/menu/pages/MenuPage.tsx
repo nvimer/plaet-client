@@ -117,6 +117,15 @@ export function MenuPage() {
           </p>
         </div>
         <div className="flex items-center gap-3">
+          <Button
+            variant="outline"
+            size="md"
+            onClick={() => navigate(ROUTES.STOCK_MANAGEMENT)}
+            className="hidden sm:flex border-sage-200 text-sage-700 hover:bg-sage-50"
+          >
+            <Package className="w-4 h-4 mr-2" />
+            Gestión de Inventario
+          </Button>
           <div
             className={cn(
               "flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 min-h-[44px] touch-manipulation",

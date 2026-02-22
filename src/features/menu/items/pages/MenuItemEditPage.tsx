@@ -25,7 +25,6 @@ import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
 import { Check, Trash2, XCircle, Package } from "lucide-react";
 import { useState } from "react";
-import { StockManagementSection } from "../components/StockManagementSection";
 import { InventoryType } from "@/types";
 
 const inputClass =
@@ -42,7 +41,7 @@ export function MenuItemEditPage() {
   const navigate = useNavigate();
   const { data: item, isLoading, error } = useMenuItem(Number(id));
   const { data: categories, isLoading: loadingCategories } = useCategories();
-  const { mutateAsync: updateItem, isPending: isUpdating } = useUpdateItem();
+  const { mutateAsync: updateItem } = useUpdateItem();
   const { mutateAsync: deleteItem, isPending: isDeleting } = useDeleteItem();
   const { mutateAsync: addStock } = useAddStock();
   const { mutateAsync: setInventoryTypeMutation } = useSetInventoryType();
@@ -447,8 +446,6 @@ export function MenuItemEditPage() {
               </div>
             </form>
           </div>
-
-          <StockManagementSection item={item} />
         </div>
       </SidebarLayout>
 

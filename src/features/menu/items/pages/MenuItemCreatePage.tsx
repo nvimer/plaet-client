@@ -200,7 +200,7 @@ export function MenuItemCreatePage() {
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                        Stock *
+                        Stock Inicial *
                       </label>
                       <Input
                         type="number"
@@ -211,7 +211,7 @@ export function MenuItemCreatePage() {
                         fullWidth
                       />
                       <p className="mt-2 text-sm text-carbon-400">
-                        Cantidad en inventario
+                        Cantidad con la que iniciará el inventario
                       </p>
                     </div>
                     <div>
@@ -243,9 +243,6 @@ export function MenuItemCreatePage() {
                         <span className="text-carbon-800 font-medium">
                           Marcar no disponible al llegar a 0
                         </span>
-                        <p className="text-sm text-carbon-400">
-                          El producto se ocultará cuando no haya stock
-                        </p>
                       </div>
                     </label>
                   </div>
