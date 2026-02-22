@@ -12,7 +12,7 @@ interface SeoProps {
 
 const DEFAULT_DESCRIPTION = "Plaet - El sistema POS definitivo para restaurantes. Optimiza tu servicio, gestión de cocina e inventario con una experiencia táctil fluida.";
 const DEFAULT_IMAGE = "/og-image.jpg"; // You should ensure this image exists in public/
-const SITE_URL = import.meta.env.VITE_APP_URL || "https://plaet.com";
+const SITE_URL = import.meta.env.VITE_APP_URL || "https://plaet.cloud";
 
 export function Seo({
   title,

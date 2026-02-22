@@ -31,7 +31,7 @@ export const API_URL = `${API_BASE_URL}${API_PREFIX}`;
 export const APP_NAME = "Plaet";
 
 // Application URL (for SEO and canonical links)
-export const APP_URL = import.meta.env.VITE_APP_URL || "https://plaet.com";
+export const APP_URL = import.meta.env.VITE_APP_URL || "https://plaet.cloud";
 
 // Pagination
 export const ITEMS_PER_PAGE = 20;
