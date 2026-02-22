@@ -8,7 +8,7 @@ export const createItemSchema = z.object({
 
   categoryId: z.number().min(1, "Selecciona una categoría"),
 
-  price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Debe ser un precio válido (ej: 12.50)").refine(
+  price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Debe ser un precio válido (ej: 1250 o 12.50)").refine(
     (val) => {
       const num = parseFloat(val);
       return !isNaN(num) && num > 0;
@@ -44,7 +44,7 @@ export const updateItemSchema = z.object({
 
   categoryId: z.number().min(1, "Selecciona una categoría").optional(),
 
-  price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Debe ser un precio válido (ej: 12.50)").refine(
+  price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Debe ser un precio válido (ej: 1250 o 12.50)").refine(
     (val) => {
       const num = parseFloat(val);
       return !isNaN(num) && num > 0;

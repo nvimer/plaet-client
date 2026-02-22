@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, type FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import {
@@ -51,7 +51,7 @@ export function MenuItemEditPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isValid, isDirty },
+    formState: { errors, isDirty },
     watch,
   } = useForm<UpdateItemInput>({
     resolver: zodResolver(updateItemSchema),
@@ -198,6 +198,13 @@ export function MenuItemEditPage() {
     }
   };
 
+  const onFormError = (formErrors: FieldErrors<UpdateItemInput>) => {
+    console.log("Form validation errors:", formErrors);
+    toast.error("Datos inválidos", {
+      description: "Por favor revisa los campos marcados en rojo.",
+    });
+  };
+
   return (
     <>
       <SidebarLayout
@@ -215,7 +222,7 @@ export function MenuItemEditPage() {
           </div>
 
           <div className="bg-white rounded-2xl border border-sage-200 shadow-sm">
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <form onSubmit={handleSubmit(onSubmit, onFormError)}>
               <div className="p-6 lg:p-8 space-y-8">
                 <section>
                   <h3 className="text-lg font-semibold text-carbon-800 mb-4">
@@ -425,7 +432,7 @@ export function MenuItemEditPage() {
                     variant="primary"
                     size="lg"
                     isLoading={isSaving}
-                    disabled={isSaving || (!isDirty && !isValid)}
+                    disabled={isSaving || !isDirty}
                     className="sm:min-w-[180px]"
                   >
                     {!isSaving && <Check className="w-5 h-5 mr-2" />}
