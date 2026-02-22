@@ -364,7 +364,7 @@ export function Sidebar() {
             </div>
             {(!isCollapsed || isMobile) && (
               <BrandName
-                className="text-xl font-bold bg-gradient-to-r from-sage-600 to-sage-700 bg-clip-text text-transparent truncate"
+                className="text-xl font-bold bg-gradient-to-r from-sage-600 to-sage-700 bg-clip-text text-transparent truncate tracking-tight"
                 accentClassName="text-sage-700"
               />
             )}
@@ -743,7 +743,7 @@ export function Sidebar() {
           {(!isCollapsed || isMobile) && (
             <div className="text-xs text-carbon-400 text-center space-y-0.5">
               <div className="font-medium">
-                <BrandName className="inline-flex" /> v2.0
+                <BrandName className="inline-flex tracking-tight" /> v2.0
               </div>
               <div className="text-carbon-300">© 2025</div>
             </div>
