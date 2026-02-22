@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { Edit2, ImageIcon, Trash2, AlertTriangle, Package, Star } from "lucide-react";
+import { Edit2, ImageIcon, Trash2, AlertTriangle, Package, Star, Plus } from "lucide-react";
 import type { MenuItem } from "@/types";
 import { Button, ConfirmDialog } from "@/components";
 import { cn } from "@/utils/cn";
+import { QuickStockModal } from "./QuickStockModal";
 
 interface MenuItemCardProps {
   item: MenuItem;
@@ -17,6 +18,7 @@ interface MenuItemCardProps {
  */
 export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isStockModalOpen, setIsStockModalOpen] = useState(false);
 
   const isOutOfStock =
     item.inventoryType === "TRACKED" && (item.stockQuantity ?? 0) === 0;
@@ -107,27 +109,30 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
             {/* Pills: stock, extra */}
             <div className="flex flex-wrap gap-1.5 mb-4">
               {item.inventoryType === "TRACKED" && item.stockQuantity !== undefined && (
-                <>
+                <button 
+                  onClick={() => setIsStockModalOpen(true)}
+                  className="transition-transform active:scale-95"
+                >
                   {item.stockQuantity === 0 ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-rose-100 text-rose-700">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold bg-rose-100 text-rose-700 border border-rose-200 hover:bg-rose-200">
                       <AlertTriangle className="w-3 h-3" />
-                      Sin stock
+                      SIN STOCK
                     </span>
                   ) : isLowStock ? (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-amber-100 text-amber-700">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold bg-amber-100 text-amber-700 border border-amber-200 hover:bg-amber-200">
                       <Package className="w-3 h-3" />
                       {item.stockQuantity} ud.
                     </span>
                   ) : (
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-sage-100 text-sage-700">
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-bold bg-sage-100 text-sage-700 border border-sage-200 hover:bg-sage-200">
                       <Package className="w-3 h-3" />
                       {item.stockQuantity} ud.
                     </span>
                   )}
-                </>
+                </button>
               )}
               {item.isExtra && (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-amber-100 text-amber-700">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium bg-amber-100 text-amber-700 border border-amber-200">
                   <Star className="w-3 h-3" />
                   Extra
                 </span>
@@ -136,11 +141,22 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
 
             {/* Acciones – siempre visibles, barra inferior */}
             <div className="mt-auto flex gap-2 pt-3 border-t border-sage-100">
+              {item.inventoryType === "TRACKED" && (
+                <Button
+                  variant="primary"
+                  size="sm"
+                  onClick={() => setIsStockModalOpen(true)}
+                  className="flex-1 min-h-[40px] touch-manipulation shadow-soft-sm bg-sage-600 hover:bg-sage-700"
+                >
+                  <Plus className="w-4 h-4 mr-1.5" />
+                  Stock
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => onEdit(item.id)}
-                className="flex-1 min-h-[40px] touch-manipulation text-carbon-600 hover:bg-sage-50"
+                className="flex-1 min-h-[40px] touch-manipulation text-carbon-600 hover:bg-sage-50 border border-sage-200"
               >
                 <Edit2 className="w-4 h-4 mr-1.5" />
                 Editar
@@ -149,7 +165,7 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
                 variant="ghost"
                 size="sm"
                 onClick={() => setIsDeleteDialogOpen(true)}
-                className="min-h-[40px] touch-manipulation text-rose-600 hover:bg-rose-50 px-3"
+                className="min-h-[40px] touch-manipulation text-rose-600 hover:bg-rose-50 px-3 border border-rose-100"
                 aria-label="Eliminar"
               >
                 <Trash2 className="w-4 h-4" />
@@ -158,6 +174,12 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
           </div>
         </div>
       </article>
+
+      <QuickStockModal 
+        item={item} 
+        isOpen={isStockModalOpen} 
+        onClose={() => setIsStockModalOpen(false)} 
+      />
 
       <ConfirmDialog
         isOpen={isDeleteDialogOpen}

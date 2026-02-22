@@ -9,7 +9,13 @@ import {
   EmptyState,
   ConfirmDialog,
 } from "@/components";
-import { useMenuItem, useUpdateItem, useDeleteItem } from "../hooks";
+import {
+  useMenuItem,
+  useUpdateItem,
+  useDeleteItem,
+  useAddStock,
+  useSetInventoryType,
+} from "../hooks";
 import { useCategories } from "../../categories/hooks";
 import {
   updateItemSchema,
@@ -19,7 +25,6 @@ import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
 import { Check, Trash2, XCircle, Package } from "lucide-react";
 import { useState } from "react";
-import type { AxiosErrorWithResponse } from "@/types/common";
 import { StockManagementSection } from "../components/StockManagementSection";
 import { InventoryType } from "@/types";
 
@@ -37,9 +42,12 @@ export function MenuItemEditPage() {
   const navigate = useNavigate();
   const { data: item, isLoading, error } = useMenuItem(Number(id));
   const { data: categories, isLoading: loadingCategories } = useCategories();
-  const { mutate: updateItem, isPending: isUpdating } = useUpdateItem();
-  const { mutate: deleteItem, isPending: isDeleting } = useDeleteItem();
+  const { mutateAsync: updateItem, isPending: isUpdating } = useUpdateItem();
+  const { mutateAsync: deleteItem, isPending: isDeleting } = useDeleteItem();
+  const { mutateAsync: addStock } = useAddStock();
+  const { mutateAsync: setInventoryTypeMutation } = useSetInventoryType();
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const {
     register,
@@ -68,6 +76,7 @@ export function MenuItemEditPage() {
 
   const inventoryType = watch("inventoryType");
   const isTracked = inventoryType === InventoryType.TRACKED;
+  const wasTracked = item?.inventoryType === InventoryType.TRACKED;
 
   if (isLoading) {
     return (
@@ -107,61 +116,87 @@ export function MenuItemEditPage() {
     );
   }
 
-  const onSubmit = (data: UpdateItemInput) => {
-    // Debug: log the data being submitted
-    console.log("Submitting item data:", data);
+  const onSubmit = async (data: UpdateItemInput) => {
+    setIsSaving(true);
+    try {
+      // 1. Basic product update
+      const payload: Record<string, unknown> = {};
+      const basicFields = [
+        "name",
+        "description",
+        "categoryId",
+        "price",
+        "isAvailable",
+        "imageUrl",
+        "autoMarkUnavailable",
+      ];
 
-    const payload: Record<string, unknown> = {};
-    for (const [key, value] of Object.entries(data)) {
-      if (value === undefined) continue;
+      basicFields.forEach((field) => {
+        if (data[field as keyof UpdateItemInput] !== undefined) {
+          payload[field] = data[field as keyof UpdateItemInput];
+        }
+      });
 
-      // Debug: log each field being processed
-      console.log(`Field ${key}:`, value, `(type: ${typeof value})`);
+      await updateItem({ id: item.id, ...payload } as UpdateItemInput & {
+        id: number;
+      });
 
-      if (
-        (key === "stockQuantity" || key === "lowStockAlert") &&
-        typeof value === "number" &&
-        (Number.isNaN(value) || !Number.isFinite(value))
-      ) {
-        console.log(`Skipping ${key} - invalid number:`, value);
-        continue;
+      // 2. Inventory type change logic
+      if (data.inventoryType !== item.inventoryType) {
+        await setInventoryTypeMutation({
+          id: item.id,
+          inventoryType: data.inventoryType!,
+          lowStockAlert: data.lowStockAlert,
+        });
+
+        // 3. Initial stock logic: If switching to TRACKED and initial stock > 0
+        if (
+          data.inventoryType === InventoryType.TRACKED &&
+          data.stockQuantity &&
+          data.stockQuantity > 0
+        ) {
+          await addStock({
+            id: item.id,
+            stockData: {
+              quantity: data.stockQuantity,
+              reason: "Stock inicial al activar rastreo",
+            },
+          });
+        }
+      } else if (isTracked && data.lowStockAlert !== item.lowStockAlert) {
+        // Just update alert if type didn't change but alert did
+        await setInventoryTypeMutation({
+          id: item.id,
+          inventoryType: InventoryType.TRACKED,
+          lowStockAlert: data.lowStockAlert,
+        });
       }
-      payload[key] = value;
+
+      toast.success("Producto actualizado", {
+        description: `"${data.name || item.name}" ha sido actualizado correctamente`,
+      });
+      navigate(ROUTES.MENU);
+    } catch (error) {
+      console.error("Update error:", error);
+      toast.error("Error al actualizar producto", {
+        description:
+          error instanceof Error ? error.message : "Error desconocido",
+      });
+    } finally {
+      setIsSaving(false);
     }
-
-    console.log("Final payload:", payload);
-
-    updateItem(
-      { id: item.id, ...payload } as UpdateItemInput & { id: number },
-      {
-        onSuccess: () => {
-          toast.success("Producto actualizado", {
-            description: `"${data.name || item.name}" ha sido actualizado`,
-          });
-          navigate(ROUTES.MENU);
-        },
-        onError: (error: AxiosErrorWithResponse) => {
-          console.error("Update error:", error);
-          toast.error("Error al actualizar producto", {
-            description: error.response?.data?.message || error.message,
-          });
-        },
-      },
-    );
   };
 
-  const handleDelete = () => {
-    deleteItem(item.id, {
-      onSuccess: () => {
-        toast.success("Producto eliminado");
-        navigate(ROUTES.MENU);
-      },
-      onError: (error: AxiosErrorWithResponse) => {
-        toast.error("Error al eliminar producto", {
-          description: error.response?.data?.message || error.message,
-        });
-      },
-    });
+  const handleDelete = async () => {
+    try {
+      await deleteItem(item.id);
+      toast.success("Producto eliminado");
+      navigate(ROUTES.MENU);
+    } catch (error) {
+      toast.error("Error al eliminar producto", {
+        description: error instanceof Error ? error.message : "Error desconocido",
+      });
+    }
   };
 
   return (
@@ -301,16 +336,25 @@ export function MenuItemEditPage() {
                       </div>
                       <div>
                         <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                        Stock
-                      </label>
-                      <Input
-                        type="number"
-                        placeholder="Ej: 100"
-                        {...register("stockQuantity", { valueAsNumber: true })}
-                        error={errors.stockQuantity?.message}
-                        min={0}
-                        fullWidth
-                      />
+                          {wasTracked ? "Stock actual" : "Stock Inicial"}
+                        </label>
+                        <Input
+                          type="number"
+                          placeholder={wasTracked ? "Ver stock" : "Ej: 100"}
+                          {...register("stockQuantity", {
+                            valueAsNumber: true,
+                          })}
+                          error={errors.stockQuantity?.message}
+                          min={0}
+                          fullWidth
+                          disabled={wasTracked}
+                        />
+                        {wasTracked && (
+                          <p className="text-xs text-carbon-500 mt-2">
+                            Para modificar el stock actual, usa la sección de
+                            &quot;Gestión de Stock&quot; al final de la página.
+                          </p>
+                        )}
                       </div>
                       <div>
                         <label className="block text-sm font-semibold text-carbon-800 mb-3">
@@ -372,7 +416,7 @@ export function MenuItemEditPage() {
                     variant="ghost"
                     size="lg"
                     onClick={() => navigate(ROUTES.MENU)}
-                    disabled={isUpdating}
+                    disabled={isSaving}
                     className="sm:min-w-[120px]"
                   >
                     Cancelar
@@ -381,11 +425,11 @@ export function MenuItemEditPage() {
                     type="submit"
                     variant="primary"
                     size="lg"
-                    isLoading={isUpdating}
-                    disabled={isUpdating || (!isDirty && !isValid)}
+                    isLoading={isSaving}
+                    disabled={isSaving || (!isDirty && !isValid)}
                     className="sm:min-w-[180px]"
                   >
-                    {!isUpdating && <Check className="w-5 h-5 mr-2" />}
+                    {!isSaving && <Check className="w-5 h-5 mr-2" />}
                     Guardar Cambios
                   </Button>
                 </div>
@@ -395,7 +439,7 @@ export function MenuItemEditPage() {
                   size="lg"
                   onClick={() => setShowDeleteConfirm(true)}
                   className="text-red-600 hover:bg-red-50 hover:text-red-700"
-                  disabled={isUpdating}
+                  disabled={isSaving}
                 >
                   <Trash2 className="w-5 h-5 mr-2" />
                   Eliminar producto
