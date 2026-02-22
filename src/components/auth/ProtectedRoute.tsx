@@ -37,7 +37,7 @@ const LoadingScreen = ({
       transition={{ duration: 0.6 }}
       className="max-w-md w-full"
     >
-      <div className="glass-light rounded-[2rem] p-10 shadow-soft-xl text-center">
+      <div className="glass-light rounded-3xl p-10 shadow-soft-xl text-center">
         {error ? (
           <>
             <motion.div
@@ -94,7 +94,7 @@ const AccessDenied = ({
       transition={{ duration: 0.6 }}
       className="max-w-md w-full"
     >
-      <div className="glass-light rounded-[2rem] p-10 shadow-soft-xl text-center">
+      <div className="glass-light rounded-3xl p-10 shadow-soft-xl text-center">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -131,7 +131,7 @@ const SessionExpiredScreen = ({ onGoToLogin }: { onGoToLogin: () => void }) => (
       transition={{ duration: 0.6 }}
       className="max-w-md w-full"
     >
-      <div className="glass-light rounded-[2rem] p-10 shadow-soft-xl text-center">
+      <div className="glass-light rounded-3xl p-10 shadow-soft-xl text-center">
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}

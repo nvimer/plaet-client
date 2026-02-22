@@ -247,7 +247,7 @@ export function HeroSection() {
               initial={{ opacity: 0, scale: 0.8, rotateY: -10 }}
               animate={{ opacity: 1, scale: 1, rotateY: 0 }}
               transition={{ duration: 1.2, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
-              className="relative w-full aspect-[4/3] max-w-[500px] bg-white/70 backdrop-blur-2xl rounded-[3rem] p-8 shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden border border-white/80 z-10"
+              className="relative w-full aspect-[4/3] max-w-[500px] bg-white/70 backdrop-blur-2xl rounded-4xl p-8 shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden border border-white/80 z-10"
             >
               {/* App Toolbar */}
               <div className="flex items-center gap-2 mb-8">
@@ -278,7 +278,7 @@ export function HeroSection() {
               </div>
               
               {/* Bottom Chart Area */}
-              <div className="mt-8 p-6 bg-gradient-to-br from-sage-green-50 to-sage-green-100/50 rounded-[2rem] h-36 flex items-end justify-between gap-2.5 px-8 border border-sage-green-200/30">
+              <div className="mt-8 p-6 bg-gradient-to-br from-sage-green-50 to-sage-green-100/50 rounded-3xl h-36 flex items-end justify-between gap-2.5 px-8 border border-sage-green-200/30">
                 {[40, 75, 45, 95, 65, 85, 55].map((h, i) => (
                   <motion.div
                     key={i}

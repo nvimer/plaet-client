@@ -134,7 +134,7 @@ export function BenefitsSection() {
               >
                 <div className="relative group/img">
                   {/* Image Container with decorative elements */}
-                  <div className="relative z-10 rounded-[3rem] overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.15)] border-[6px] border-white aspect-video lg:aspect-[4/5] xl:aspect-square">
+                  <div className="relative z-10 rounded-4xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.15)] border-[6px] border-white aspect-video lg:aspect-[4/5] xl:aspect-square">
                     <img 
                       src={step.image} 
                       alt={step.title}
@@ -148,7 +148,7 @@ export function BenefitsSection() {
                   <motion.div 
                     animate={{ rotate: index % 2 === 1 ? [-2, 2, -2] : [2, -2, 2] }}
                     transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute -top-10 -bottom-10 -left-10 -right-10 bg-sage-green-100/50 rounded-[4rem] -z-10 border border-sage-green-200/50"
+                    className="absolute -top-10 -bottom-10 -left-10 -right-10 bg-sage-green-100/50 rounded-5xl -z-10 border border-sage-green-200/50"
                   />
 
                   {/* Floating element */}

@@ -121,7 +121,7 @@ export default function AccountLockoutPage() {
         transition={{ duration: 0.6 }}
         className="relative w-full max-w-md"
       >
-        <div className="glass-light rounded-[2rem] p-10 shadow-soft-xl">
+        <div className="glass-light rounded-3xl p-10 shadow-soft-xl">
           <div className="text-center mb-8">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}

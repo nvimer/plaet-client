@@ -40,7 +40,7 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
       <article
         className={cn(
           "group relative flex flex-col h-full overflow-hidden",
-          "bg-white rounded-[2rem] border-2 border-sage-200 shadow-sm",
+          "bg-white rounded-3xl border-2 border-sage-200 shadow-sm",
           "transition-all duration-300 hover:shadow-soft-xl hover:border-sage-400 hover:-translate-y-1"
         )}
       >

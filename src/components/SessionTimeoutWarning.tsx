@@ -149,7 +149,7 @@ export default function SessionTimeoutWarning({
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           exit={{ scale: 0.9, opacity: 0 }}
-          className="glass-light rounded-[2rem] shadow-soft-xl max-w-md w-full mx-4 overflow-hidden"
+          className="glass-light rounded-3xl shadow-soft-xl max-w-md w-full mx-4 overflow-hidden"
         >
           <div className="bg-warning-50 px-6 py-4 border-b border-warning-100">
             <div className="flex items-center gap-3">

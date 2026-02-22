@@ -37,7 +37,7 @@ export default function ResetPasswordPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-light rounded-[2rem] p-10 shadow-soft-xl max-w-md w-full text-center"
+          className="glass-light rounded-3xl p-10 shadow-soft-xl max-w-md w-full text-center"
         >
           <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-6">
             <AlertCircle className="w-10 h-10 text-red-600" />
@@ -133,7 +133,7 @@ export default function ResetPasswordPage() {
         transition={{ duration: 0.6 }}
         className="relative w-full max-w-md"
       >
-        <div className="glass-light rounded-[2rem] p-10 shadow-soft-xl">
+        <div className="glass-light rounded-3xl p-10 shadow-soft-xl">
           <div className="text-center mb-8">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}

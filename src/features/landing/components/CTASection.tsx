@@ -51,7 +51,7 @@ export function CTASection() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="glass-light rounded-[3rem] p-12 lg:p-16 shadow-soft-xl text-center"
+          className="glass-light rounded-4xl p-12 lg:p-16 shadow-soft-xl text-center"
         >
           {/* Badge using component */}
           <motion.div

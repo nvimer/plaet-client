@@ -270,20 +270,20 @@ export default {
       borderRadius: {
         xs: "0.125rem",   // 2px
         sm: "0.25rem",    // 4px
-        md: "0.375rem",   // 6px
-        lg: "0.5rem",     // 8px
-        xl: "0.75rem",    // 12px
-        "2xl": "1rem",     // 16px
-        "3xl": "1.5rem",   // 24px
-        "4xl": "2rem",     // 32px
-        "5xl": "2.5rem",   // 40px
-        "6xl": "3rem",     // 48px
-        "7xl": "3.5rem",   // 56px
-        "8xl": "4rem",     // 64px
-        "9xl": "4.5rem",   // 72px
-        "10xl": "5rem",    // 80px
-        "11xl": "5.5rem",  // 88px
-        "12xl": "6rem",    // 96px
+        md: "0.25rem",    // 4px (was 6px)
+        lg: "0.375rem",   // 6px (was 8px)
+        xl: "0.5rem",     // 8px (was 12px)
+        "2xl": "0.75rem",  // 12px (was 16px)
+        "3xl": "1rem",     // 16px (was 24px)
+        "4xl": "1.25rem",  // 20px (was 32px)
+        "5xl": "1.5rem",   // 24px (was 40px)
+        "6xl": "2rem",     // 32px (was 48px)
+        "7xl": "2.5rem",   // 40px
+        "8xl": "3rem",     // 48px
+        "9xl": "3.5rem",   // 56px
+        "10xl": "4rem",    // 64px
+        "11xl": "4.5rem",  // 72px
+        "12xl": "5rem",    // 80px
       },
 
       // Enhanced Backdrop Blur System
