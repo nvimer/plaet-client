@@ -66,7 +66,7 @@ export function MenuPage() {
     totalPages,
     setPage,
     setLimit,
-  } = useItemsPagination();
+  } = useItemsPagination(1, 10, filterCategory);
 
   const items = useMemo(
     () => paginationData?.data || [],
@@ -86,9 +86,7 @@ export function MenuPage() {
   }, [categories]);
 
   
-  const filteredItems = filterCategory
-    ? items?.filter((item) => String(item.categoryId) === filterCategory)
-    : items;
+  const filteredItems = items;
 
       const hasStockAlerts =
         (outOfStockItems?.length ?? 0) > 0 || (lowStockItems?.length ?? 0) > 0;

@@ -166,7 +166,7 @@ function HelpCard() {
       <h3 className="font-semibold text-carbon-900 mb-2">Cómo Configurar</h3>
       <ol className="text-sm text-carbon-500 space-y-2 list-decimal list-inside">
         <li>Las categorías se detectan automáticamente por nombre</li>
-        <li>Elige hasta 2 opciones para Sopas, Principios, Ensaladas, Extras, Jugos</li>
+        <li>Elige hasta 2 opciones para Sopas, Principios, Ensaladas, Extras, Bebidas</li>
         <li>Selecciona todas las proteínas que estarán disponibles hoy</li>
         <li>El postre es opcional - actívalo si deseas incluirlo</li>
         <li>Configura el margen base para todos los almuerzos</li>

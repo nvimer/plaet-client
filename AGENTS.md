@@ -8,7 +8,7 @@ This is the frontend client for Plaet API. It handles restaurant operations from
 
 ### Core Domain: The "Corrientazo" (Daily Menu)
 A critical feature of this system is the **Corrientazo** (Colombian daily lunch menu).
-- **Categories are fixed/default:** Categories (Sopas, Principios, Proteínas, Arroces, Ensaladas, Jugos, Postres, Extras) are seeded directly in the backend and cannot be created, edited, or deleted through the UI. The Category management UI is intentionally removed/hidden.
+- **Categories are fixed/default:** Categories (Sopas, Principios, Proteínas, Arroces, Ensaladas, Bebidas, Postres, Extras) are seeded directly in the backend and cannot be created, edited, or deleted through the UI. The Category management UI is intentionally removed/hidden.
 - **Pricing:** The total price of a Corrientazo is calculated as `basePrice` + `price of the selected protein(s)`.
 - **Proteins:** `proteinIds` is an array of IDs representing all the available meat/protein options for the day.
 - **Menu Form:** The configuration form avoids redundant labels (e.g., using "Sopas" instead of "Sopas del Día") to maintain a clean, POS-style UI.

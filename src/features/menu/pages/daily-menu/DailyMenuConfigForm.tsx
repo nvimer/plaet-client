@@ -58,7 +58,7 @@ const DEFAULT_CATEGORY_NAMES = {
   soup: "Sopas",
   principle: "Principios",
   protein: "Proteínas",
-  drink: "Jugos",
+  drink: "Bebidas",
   extra: "Extras",
   salad: "Ensaladas",
   dessert: "Postres",
@@ -569,7 +569,7 @@ export function DailyMenuConfigForm({
           {/* Drink Section - Pre-selected category */}
           <div className="space-y-3 md:col-span-2">
             <label className="block text-sm font-medium text-carbon-700">
-              Bebidas (Jugos)
+              Bebidas
             </label>
 
             {formState.drinkCategoryId ? (
@@ -599,7 +599,7 @@ export function DailyMenuConfigForm({
               </div>
             ) : (
               <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
-                No se encontró la categoría &quot;Jugos&quot;. Por favor, créala
+                No se encontró la categoría &quot;Bebidas&quot;. Por favor, créala
                 primero.
               </p>
             )}

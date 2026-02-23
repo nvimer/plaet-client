@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { menuApi } from "@/services";
 import { queryKeys } from "@/lib";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
@@ -29,14 +29,22 @@ export interface UseItemsPaginationReturn {
 export function useItemsPagination(
   initialPage: number = 1,
   initialLimit: ItemsPerPage = 10,
+  categoryId?: number | string,
 ): UseItemsPaginationReturn {
   const [page, setPage] = useState(initialPage);
   const [limit, setLimit] = useState<ItemsPerPage>(initialLimit);
 
+  // Reset page when category filter changes
+  useEffect(() => {
+    setPage(1);
+  }, [categoryId]);
+
   const { data, isLoading, isError, error, refetch } = useQuery({
-    queryKey: [...queryKeys.menu.all, page, limit],
+    queryKey: [...queryKeys.menu.all, page, limit, categoryId],
     queryFn: async () => {
-      const response = await menuApi.getMenuItems({ page, limit });
+      const params: any = { page, limit };
+      if (categoryId) params.categoryId = categoryId;
+      const response = await menuApi.getMenuItems(params);
       return response;
     },
     placeholderData: keepPreviousData,
