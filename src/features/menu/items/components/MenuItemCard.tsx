@@ -126,7 +126,7 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
                 )}
               >
                 <div className="flex items-center gap-2">
-                  <Package className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                  <Package className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">Stock</span>
                 </div>
                 <span className="text-xs sm:text-sm font-black">
@@ -145,12 +145,11 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
             {item.inventoryType === "TRACKED" ? (
               <Button
                 variant="primary"
-                size="md"
                 onClick={() => setIsStockModalOpen(true)}
-                className="col-span-2 rounded-xl sm:rounded-2xl bg-sage-600 hover:bg-sage-700 shadow-soft-sm h-11 sm:h-14"
+                className="col-span-2 rounded-xl sm:rounded-2xl bg-sage-600 hover:bg-sage-700 shadow-soft-sm h-11 sm:h-14 px-2"
               >
-                <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1" />
-                <span className="font-bold text-xs sm:text-base">Stock</span>
+                <Plus className="w-5 h-5 mr-1.5 flex-shrink-0" />
+                <span className="font-bold text-xs sm:text-sm truncate">Stock</span>
               </Button>
             ) : (
               <div className="col-span-2" />
@@ -158,22 +157,20 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
             
             <Button
               variant="ghost"
-              size="md"
               onClick={() => onEdit(item.id)}
-              className="col-span-1 rounded-xl sm:rounded-2xl bg-carbon-50 hover:bg-sage-100 text-carbon-600 border border-carbon-100 h-11 sm:h-14"
+              className="col-span-1 rounded-xl sm:rounded-2xl bg-carbon-50 hover:bg-sage-100 text-carbon-600 border border-carbon-100 h-11 sm:h-14 px-0"
               title="Editar Producto"
             >
-              <Edit2 className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Edit2 className="w-5 h-5" />
             </Button>
 
             <Button
               variant="ghost"
-              size="md"
               onClick={() => setIsDeleteDialogOpen(true)}
-              className="col-span-1 rounded-xl sm:rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 h-11 sm:h-14"
+              className="col-span-1 rounded-xl sm:rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 h-11 sm:h-14 px-0"
               title="Eliminar"
             >
-              <Trash2 className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Trash2 className="w-5 h-5" />
             </Button>
           </div>
         </div>
