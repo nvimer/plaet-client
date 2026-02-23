@@ -65,8 +65,8 @@ export function MenuItemEditPage() {
           imageUrl: item.imageUrl || "",
           inventoryType:
             (item.inventoryType as InventoryType) || InventoryType.UNLIMITED,
-          stockQuantity: item.stockQuantity,
-          lowStockAlert: item.lowStockAlert,
+          stockQuantity: item.stockQuantity ?? undefined,
+          lowStockAlert: item.lowStockAlert ?? undefined,
           autoMarkUnavailable: item.autoMarkUnavailable,
         }
       : undefined,
