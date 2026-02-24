@@ -52,8 +52,8 @@ export function Navbar() {
           {/* ============ LOGO ============ */}
           <Link to="/" className="flex items-center gap-3 group">
             {/* Logo Icon  */}
-            <div className="w-10 h-10 rounded-xl bg-gradient-sage flex items-center justify-center group-hover:animate-glow-pulse transition-all">
-              <span className="text-2xl font-bold text-sage-green-600">P</span>
+            <div className="w-10 h-10 flex items-center justify-center group-hover:animate-glow-pulse transition-all">
+              <img src="/plaet.png" alt="Plaet Logo" className="w-full h-full object-contain mix-blend-multiply" />
             </div>
 
             {/* Brand Name */}

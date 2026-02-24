@@ -45,10 +45,8 @@ export function Footer() {
           <div className="lg:col-span-2">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 rounded-xl bg-gradient-sage flex items-center justify-center">
-                <span className="text-2xl font-bold text-carbon-900 tracking-tight">
-                  P
-                </span>
+              <div className="w-10 h-10 flex items-center justify-center">
+                <img src="/plaet.png" alt="Plaet Logo" className="w-full h-full object-contain mix-blend-multiply" />
               </div>
               <BrandName
                 className="text-2xl font-bold text-carbon-900 tracking-tight"

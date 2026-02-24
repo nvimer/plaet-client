@@ -122,8 +122,8 @@ export default function LoginPage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="inline-flex items-center justify-center mb-6"
             >
-              <div className="w-16 h-16 rounded-2xl bg-gradient-sage flex items-center justify-center shadow-soft-md">
-                <ChefHat className="w-8 h-8 text-sage-green-600" />
+              <div className="w-20 h-20 flex items-center justify-center">
+                <img src="/plaet.png" alt="Plaet Logo" className="w-full h-full object-contain mix-blend-multiply drop-shadow-sm" />
               </div>
             </motion.div>
 

@@ -348,18 +348,16 @@ export function Sidebar() {
           >
             <div
               className={cn(
-                "bg-gradient-to-br from-sage-500 to-sage-600 rounded-xl",
                 "flex items-center justify-center flex-shrink-0",
-                "group-hover:scale-105 group-hover:shadow-lg",
+                "group-hover:scale-105",
                 "transition-all duration-200",
                 isCollapsed && !isMobile ? "w-10 h-10" : "w-9 h-9",
               )}
             >
-              <Home
-                className={cn(
-                  "text-white",
-                  isCollapsed && !isMobile ? "w-5 h-5" : "w-4 h-4",
-                )}
+              <img 
+                src="/plaet.png" 
+                alt="Plaet Logo" 
+                className="w-full h-full object-contain mix-blend-multiply" 
               />
             </div>
             {(!isCollapsed || isMobile) && (
