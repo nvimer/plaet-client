@@ -104,6 +104,7 @@ export interface CreateOrderInput {
   items: CreateOrderItemInput[];
   notes?: string;
   whatsappOrderId?: string;
+  createdAt?: string;
 }
 
 export interface BatchCreateOrderInput {

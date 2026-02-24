@@ -204,6 +204,7 @@ export function DailyMenuPage() {
 
   const handleSuccess = () => {
     toast.success("Menú del día actualizado correctamente");
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   if (isLoading) {

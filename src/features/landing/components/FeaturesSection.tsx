@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { BarChart3, Clock, LayoutGrid, Shield, Users, Zap } from "lucide-react";
+import { LayoutGrid, Shield, Zap, Utensils, ClipboardList, Package } from "lucide-react";
 import { Badge } from "@/components/ui/Badge/Badge";
 import { Button, Card } from "@/components";
 
@@ -12,52 +12,52 @@ export function FeaturesSection() {
   // ================= FEATURES DATA ===================
   const features = [
     {
-      icon: LayoutGrid,
-      title: "Gestión de Mesas",
+      icon: Utensils,
+      title: "Gestión del Menú del Día",
       description:
-        "Visualiza y administra todas tus mesas en tiempo real. Asigna pedidos, controla ocupación y optimiza tiempos.",
+        "Configuración especializada para el menú diario. Maneja proteínas, categorías fijas y precios dinámicos fácilmente.",
       color: "from-sage-green-200 to-sage-green-300",
       delay: 0.1,
     },
     {
-      icon: Clock,
-      title: "Menú Digital",
+      icon: Zap,
+      title: "Punto de Venta Táctil",
       description:
-        "Sistema sincronizado entre cocina, meseros y caja. Nunca pierdas un pedido, reduce errores y acelera el servicio.",
+        "Interfaz optimizada para tablets y kioscos con botones grandes. Rápida y sin complicaciones para cajeros y meseros.",
       color: "from-sage-green-300 to-sage-green-400",
       delay: 0.2,
     },
     {
-      icon: BarChart3,
-      title: "Reportes Inteligentes",
+      icon: LayoutGrid,
+      title: "Gestión de Mesas Visual",
       description:
-        "Analiza ventas, productos populares y tendencias. Toma decisiones basadas en datos reales y claros.",
+        "Mapa interactivo en tiempo real. Visualiza el estado de cada mesa, asigna pedidos y controla la ocupación al instante.",
       color: "from-sage-green-200 to-sage-green-400",
       delay: 0.3,
     },
     {
-      icon: Shield,
-      title: "Seguridad Total",
+      icon: ClipboardList,
+      title: "Kanban de Cocina",
       description:
-        "Tus datos protegidos con encriptación a nivel bancario. Control de accesos por roles y respaldos automáticos.",
+        "Tablero interactivo para la cocina. Recibe pedidos en tiempo real y gestiona su estado con un simple arrastrar y soltar.",
       color: "from-sage-green-300 to-sage-green-500",
       delay: 0.4,
     },
     {
-      icon: Zap,
-      title: "Rápido y Ligero",
+      icon: Package,
+      title: "Control de Stock Diario",
       description:
-        "Diseñado para funcionar incluso con interet lento. Sin lag, sin esperas, sin complicaciones.",
+        "Reseteo y manejo de inventario limitado para el día. Control exacto para que nunca vendas platos que ya se han agotado.",
       color: "from-sage-green-200 to-sage-green-300",
       delay: 0.5,
     },
     {
-      icon: Users,
-      title: "Multi-Usuario",
+      icon: Shield,
+      title: "Roles y Permisos",
       description:
-        "Acceso simultáneo para todo tu equipo. Meseros, cocina y administración trabajando en perfecta sintonía.",
+        "Seguridad basada en roles (RBAC). Accesos personalizados y seguros para administradores, meseros y personal de cocina.",
       color: "from-sage-green-300 to-sage-green-400",
-      delay: 0.5,
+      delay: 0.6,
     },
   ];
 

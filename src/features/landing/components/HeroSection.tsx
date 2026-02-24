@@ -152,9 +152,9 @@ export function HeroSection() {
               className="flex flex-wrap items-center gap-x-8 gap-y-4 mb-12 justify-center lg:justify-start"
             >
               {[
-                "Sin instalación",
-                "Gratis 30 días",
-                "Soporte 24/7",
+                "Optimizado para Táctil",
+                "Gestión de Menú Diario",
+                "Kanban en Cocina",
               ].map((text, i) => (
                 <motion.div 
                   key={text} 

@@ -27,11 +27,21 @@ export function useDailyMenuToday() {
   return useQuery({
     queryKey: DAILY_MENU_KEYS.today(),
     queryFn: async () => {
-      const response = await getToday();
-      return response.data;
+      try {
+        const response = await getToday();
+        return response.data;
+      } catch (error: any) {
+        if (error.response?.status === 404) {
+          return null;
+        }
+        throw error;
+      }
     },
     staleTime: 1000 * 60 * 5,
-    retry: 1,
+    retry: (failureCount, error: any) => {
+      if (error.response?.status === 404) return false;
+      return failureCount < 1;
+    },
   });
 }
 
@@ -39,12 +49,23 @@ export function useDailyMenuByDate(date: string) {
   return useQuery({
     queryKey: DAILY_MENU_KEYS.byDate(date),
     queryFn: async () => {
-      const response = await getByDate(date);
-      return response.data;
+      try {
+        const response = await getByDate(date);
+        return response.data;
+      } catch (error: any) {
+        if (error.response?.status === 404) {
+          return null; // Return null if the menu is just not found, so we can create it
+        }
+        throw error;
+      }
     },
     enabled: !!date,
     staleTime: 1000 * 60 * 5,
-    retry: 1,
+    retry: (failureCount, error: any) => {
+      // Don't retry on 404s
+      if (error.response?.status === 404) return false;
+      return failureCount < 1;
+    },
   });
 }
 

@@ -22,11 +22,14 @@ function useCountUp(
 
     const animate = (currentTime: number) => {
       if (startTime === null) startTime = currentTime;
-      const progress = Math.min((currentTime - startTime) / duration, 1);
+      const timeFraction = Math.min((currentTime - startTime) / duration, 1);
+      
+      // Ease Out Cubic: slows down as it approaches 1
+      const progress = 1 - Math.pow(1 - timeFraction, 3);
 
       setCount(Math.floor(progress * (end - startCount) + startCount));
 
-      if (progress < 1) {
+      if (timeFraction < 1) {
         requestAnimationFrame(animate);
       }
     };

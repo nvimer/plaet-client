@@ -5,37 +5,37 @@ export function BenefitsSection() {
   const steps = [
     {
       number: "01",
-      title: "Regístrate en 2 minutos",
+      title: "Define tu Menú Diario",
       description:
-        "Sin tarjeta de crédito, sin instalación. Solo crea tu cuenta y comienza a explorar todas las funcionalidades.",
+        "Configura las opciones del menú del día rápidamente. Define proteínas, principios, sopas y actualiza los precios base.",
       benefits: [
-        "Configuración guiada",
-        "Importa tu menú existente",
-        "Define mesas y zonas",
+        "Categorías ya integradas",
+        "Control de stock por porciones",
+        "Precios dinámicos",
       ],
       image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=2070",
     },
     {
       number: "02",
-      title: "Configura tu restaurante",
+      title: "Configura el POS y Mesas",
       description:
-        "Personaliza el sistema a tu medida. Agrega tu menú, mesas, categorías y usuarios del equipo.",
+        "Prepara la interfaz para tus meseros y cajeros. Diseña el mapa visual de tus mesas y optimiza el punto de venta táctil.",
       benefits: [
-        "Interfaz intuitiva",
-        "Organización por zonas",
-        "Control de permisos",
+        "Distribución visual de mesas",
+        "Asignación de roles al personal",
+        "Botones optimizados para táctil",
       ],
       image: "https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&q=80&w=2070",
     },
     {
       number: "03",
-      title: "Empieza a gestionar",
+      title: "Opera en Tiempo Real",
       description:
-        "Tu equipo puede empezar a tomar pedidos inmediatamente. Todo sincronizado en tiempo real.",
+        "Meseros toman la orden, cocina la recibe en su tablero Kanban y la caja factura. Todo sincronizado para evitar retrasos.",
       benefits: [
-        "Sincronización instantánea",
-        "Sin curva de aprendizaje",
-        "Soporte 24/7",
+        "Tablero Kanban en cocina",
+        "Cierre de caja y gastos",
+        "Reportes instantáneos",
       ],
       image: "https://images.unsplash.com/photo-1556745753-b2904692b3cd?auto=format&fit=crop&q=80&w=2070",
     },

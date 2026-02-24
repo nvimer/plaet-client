@@ -26,7 +26,6 @@ export interface MenuCategory {
  */
 export interface DailyMenu {
   id: string;
-  date: string;
   isActive: boolean;
   basePrice: number; // Base margin added to protein individual price
   createdAt: string;
@@ -123,7 +122,7 @@ export async function getByDate(date: string) {
  * Update or create today's daily menu
  */
 export async function updateToday(data: UpdateDailyMenuData) {
-  const response = await axiosClient.put<DailyMenuResponse>(DAILY_MENU_BASE_URL, data);
+  const response = await axiosClient.post<DailyMenuResponse>(`${DAILY_MENU_BASE_URL}/today`, data);
   return response.data;
 }
 
@@ -131,7 +130,7 @@ export async function updateToday(data: UpdateDailyMenuData) {
  * Update daily menu for a specific date
  */
 export async function updateByDate(date: string, data: UpdateDailyMenuData) {
-  const response = await axiosClient.put<DailyMenuResponse>(`${DAILY_MENU_BASE_URL}/${date}`, data);
+  const response = await axiosClient.post<DailyMenuResponse>(`${DAILY_MENU_BASE_URL}/${date}`, data);
   return response.data;
 }
 

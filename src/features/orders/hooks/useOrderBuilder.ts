@@ -558,7 +558,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
         tableId: selectedOrderType === OrderType.DINE_IN ? (selectedTable ?? undefined) : undefined,
         items,
         notes: order.notes,
-        createdAt: backdatedDate || undefined,
+        createdAt: backdatedDate ? new Date(backdatedDate).toISOString() : undefined,
       };
     }).filter(order => order.items.length > 0);
 
