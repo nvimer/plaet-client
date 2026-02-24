@@ -271,6 +271,7 @@ interface WithAuthOptions {
   fallback?: React.ReactNode;
 }
 
+/* eslint-disable react-refresh/only-export-components */
 export function withAuth<P extends object>(
   Component: React.ComponentType<P>,
   options?: WithAuthOptions,

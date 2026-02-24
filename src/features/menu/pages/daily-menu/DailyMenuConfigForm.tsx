@@ -77,8 +77,13 @@ export function DailyMenuConfigForm({
   const findCategoryIdByName = useCallback(
     (name: string): number | null => {
       if (!categories) return null;
+      
+      const normalize = (str: string) => 
+        str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
+
+      const searchName = normalize(name);
       const category = categories.find(
-        (c) => c.name.toLowerCase() === name.toLowerCase(),
+        (c) => normalize(c.name) === searchName
       );
       return category?.id || null;
     },

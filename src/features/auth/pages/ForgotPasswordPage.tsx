@@ -41,7 +41,7 @@ export default function ForgotPasswordPage() {
       toast.success(
         "Si tu correo está registrado, recibirás un enlace para restaurar tu contraseña",
       );
-    } catch (error) {
+    } catch (_error) {
       toast.error("Error al procesar la solicitud");
     } finally {
       setIsLoading(false);

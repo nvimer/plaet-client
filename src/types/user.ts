@@ -9,6 +9,7 @@ import { RoleName } from "./enums";
  */
 export interface Profile {
   id: string;
+  restaurantId?: string | null;
   userId: string;
   photoUrl?: string | null;
   birthDate?: string | null;
@@ -65,6 +66,7 @@ export interface Permission {
  */
 export interface User {
   id: string;
+  restaurantId?: string | null;
   firstName: string;
   lastName: string;
   email: string;
@@ -131,6 +133,7 @@ export interface AuthResponse {
   data: {
     user: {
       id: string;
+  restaurantId?: string | null;
       email: string;
       firstName: string;
       lastName: string;
