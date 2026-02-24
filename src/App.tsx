@@ -17,7 +17,7 @@ import NetworkStatusManager from "./components/NetworkStatusManager";
 import ErrorPage from "./pages/ErrorPage";
 import { DashboardPage } from "./features/dashboard/pages/DashboardPage";
 import { TablesPage } from "./features/tables";
-import { LandingPage } from "./features/landing/pages";
+import { LandingPage, PrivacyPage, TermsPage } from "./features/landing/pages";
 import { MenuPage } from "./features/menu";
 import { StockManagementPage } from "./features/menu/items/pages/StockManagementPage";
 import { OrdersPage } from "./features/orders";
@@ -109,6 +109,12 @@ const App = () => {
             <Route path="/verify-email" element={<VerifyEmailPage />} />
             {/* Public Route: Account Lockout */}
             <Route path="/lockout" element={<AccountLockoutPage />} />
+            
+            {/* Public Route: Privacy Policy */}
+            <Route path="/privacy" element={<PrivacyPage />} />
+            
+            {/* Public Route: Terms & Conditions */}
+            <Route path="/terms" element={<TermsPage />} />
 
             {/* ============= PROTECTED ROUTES ============== */}
             {/* Dashboard (Home) */}

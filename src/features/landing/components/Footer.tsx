@@ -8,36 +8,23 @@ export function Footer() {
       title: "Producto",
       links: [
         { label: "Características", href: "#features" },
+        { label: "Beneficios", href: "#benefits" },
+        { label: "Testimonios", href: "#testimonials" },
         { label: "Precios", href: "#pricing" },
-        { label: "Demo", href: "#demo" },
-        { label: "Actualizaciones", href: "#updates" },
       ],
     },
-    company: {
-      title: "Empresa",
+    support: {
+      title: "Soporte",
       links: [
-        { label: "Sobre Nosotros", href: "/about" },
-        { label: "Blog", href: "/blog" },
-        { label: "Carreras", href: "/careers" },
-        { label: "Contacto", href: "/contact" },
-      ],
-    },
-    resource: {
-      title: "Recursos",
-      links: [
-        { label: "Centro de Ayuda", href: "/help" },
-        { label: "Documentación", href: "/docs" },
-        { label: "API", href: "/api" },
-        { label: "Status", href: "/status" },
+        { label: "Contacto", href: "mailto:hola@plaet.app" },
+        { label: "Centro de Ayuda", href: "mailto:soporte@plaet.app" },
       ],
     },
     legal: {
       title: "Legal",
       links: [
         { label: "Privacidad", href: "/privacy" },
-        { label: "Términos", href: "/terms" },
-        { label: "Cookies", href: "/cookies" },
-        { label: "Licencias", href: "/licences" },
+        { label: "Términos y Condiciones", href: "/terms" },
       ],
     },
   };
