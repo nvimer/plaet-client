@@ -3,7 +3,7 @@ import { useCashClosure } from "../hooks/useCashClosure";
 import { OpenShiftModal } from "../components/OpenShiftModal";
 import { CloseShiftModal } from "../components/CloseShiftModal";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
-import { _Wallet, LogIn, LogOut, AlertCircle, CheckCircle2 } from "lucide-react";
+import { Wallet as _Wallet, LogIn, LogOut, AlertCircle, CheckCircle2 } from "lucide-react";
 
 /**
  * CASH CLOSURE PAGE
