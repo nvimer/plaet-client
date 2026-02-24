@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { expensesApi } from "@/services";
 import type { CreateExpenseDTO } from "@/types";
 import { toast } from "sonner";
@@ -27,8 +28,11 @@ export const useExpenses = (startDate?: string, endDate?: string) => {
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
       toast.success("Gasto registrado correctamente");
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || "Error al registrar el gasto");
+    onError: (error: unknown) => {
+      const message = axios.isAxiosError(error) 
+        ? error?.response?.data?.message 
+        : "Error al registrar el gasto";
+      toast.error(message || "Error al registrar el gasto");
     },
   });
 
@@ -40,7 +44,7 @@ export const useExpenses = (startDate?: string, endDate?: string) => {
       queryClient.invalidateQueries({ queryKey: ["analytics"] });
       toast.success("Gasto eliminado");
     },
-    onError: (error: any) => {
+    onError: () => {
       toast.error("Error al eliminar el gasto");
     },
   });

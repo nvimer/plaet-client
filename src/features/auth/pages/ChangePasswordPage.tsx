@@ -21,6 +21,7 @@ import {
 import { Button } from "@/components";
 import { authApi } from "@/services";
 import { toast } from "sonner";
+import axios from "axios";
 
 interface FormErrors {
   currentPassword?: string;
@@ -119,12 +120,12 @@ export default function ChangePasswordPage() {
       toast.success("Contraseña actualizada correctamente");
       navigate("/profile");
     } catch (error: unknown) {
-      const axiosError = error as {
-        response?: { data?: { message?: string } };
-      };
-      const message = axiosError.response?.data?.message;
+      let message = "";
+      if (axios.isAxiosError(error)) {
+        message = error.response?.data?.message || "";
+      }
 
-      if (message?.toLowerCase().includes("current password")) {
+      if (message.toLowerCase().includes("current password")) {
         setErrors({ currentPassword: "Contraseña actual incorrecta" });
       } else {
         toast.error(message || "Error al cambiar la contraseña");

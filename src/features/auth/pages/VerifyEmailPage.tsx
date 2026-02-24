@@ -20,6 +20,7 @@ import {
 import { Button } from "@/components";
 import { authApi } from "@/services";
 import { toast } from "sonner";
+import axios from "axios";
 
 type VerificationStatus =
   | "idle"
@@ -51,12 +52,12 @@ export default function VerifyEmailPage() {
         setStatus("success");
         toast.success("¡Email verificado correctamente!");
       } catch (error: unknown) {
-        const axiosError = error as {
-          response?: { data?: { message?: string } };
-        };
-        const message = axiosError.response?.data?.message;
+        let message = "";
+        if (axios.isAxiosError(error)) {
+          message = error.response?.data?.message || "";
+        }
 
-        if (message?.includes("expired") || message?.includes("invalid")) {
+        if (message.includes("expired") || message.includes("invalid")) {
           setStatus("expired");
         } else {
           setStatus("error");

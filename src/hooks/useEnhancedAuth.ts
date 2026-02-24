@@ -7,16 +7,7 @@
 
 import { useContext } from "react";
 import { AuthContext } from "@/contexts/EnhancedAuthContext";
-import type { User } from "@/types";
-
-interface UserRole {
-  name: string;
-  permissions?: Array<{ permission?: { name: string } }>;
-}
-
-interface AuthUser {
-  roles?: UserRole[];
-}
+import type { Role, UserRole } from "@/types";
 
 /**
  * Enhanced useAuth hook
@@ -43,8 +34,8 @@ export function useAuthState() {
     user: auth.user,
     isAuthenticated: auth.isAuthenticated,
     isLoading: auth.isLoading,
-    error: auth.isLoading ? false : null,
-    lastActivity: null,
+    error: auth.error,
+    lastActivity: auth.lastActivity,
   };
 }
 
@@ -56,20 +47,12 @@ export function useAuthActions() {
 
   return {
     login: auth.login,
-    register:
-      (auth as { register?: (data: unknown) => Promise<void> }).register ??
-      (() => Promise.resolve()),
-    logout: auth.logout as () => Promise<void>,
-    refreshToken:
-      (auth as { refreshToken?: () => Promise<void> }).refreshToken ??
-      (() => Promise.resolve()),
-    checkAuth:
-      (auth as { checkAuth?: () => Promise<boolean> }).checkAuth ??
-      (() => Promise.resolve(false)),
-    clearError: (auth as { clearError?: () => void }).clearError ?? (() => {}),
-    updateUser:
-      (auth as { updateUser?: (data: Partial<User>) => void }).updateUser ??
-      (() => {}),
+    register: auth.register,
+    logout: auth.logout,
+    refreshToken: auth.refreshToken,
+    checkAuth: auth.checkAuth,
+    clearError: auth.clearError,
+    updateUser: auth.updateUser,
   };
 }
 
@@ -80,23 +63,32 @@ export function useUser() {
   const auth = useAuth();
 
   return {
-    user: auth.user as AuthUser | null,
-    updateUser:
-      (auth as { updateUser?: (data: Partial<User>) => void }).updateUser ??
-      (() => {}),
+    user: auth.user,
+    updateUser: auth.updateUser,
     hasRole: (roleName: string) => {
-      const user = auth.user as AuthUser | null;
-      return user?.roles?.some((role) => role.name === roleName) || false;
+      if (!auth.user?.roles) return false;
+      
+      return auth.user.roles.some((roleEntry) => {
+        // Handle both Role and UserRole structures
+        const role = 'role' in roleEntry ? (roleEntry as UserRole).role : (roleEntry as Role);
+        return role.name === roleName;
+      });
     },
     hasPermission: (permissionName: string) => {
-      const user = auth.user as AuthUser | null;
-      if (!user?.roles) return false;
+      if (!auth.user?.roles) return false;
 
-      return user.roles.some((role) =>
-        role.permissions?.some(
-          (perm) => perm.permission?.name === permissionName,
-        ),
-      );
+      return auth.user.roles.some((roleEntry) => {
+        // Safe check for UserRole structure with nested permissions
+        if ('role' in roleEntry) {
+          const userRole = roleEntry as UserRole & { 
+            role: Role & { permissions?: Array<{ permission?: { name: string } }> } 
+          };
+          return userRole.role.permissions?.some(
+            (perm) => perm.permission?.name === permissionName,
+          );
+        }
+        return false;
+      });
     },
   };
 }

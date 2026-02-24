@@ -182,7 +182,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
         saveUserToStorage(userWithRoles);
         return userWithRoles;
-      } catch (rolesError) {
+      } catch (_rolesError) {
         // Don't propagate 401/403 from roles API - user is still authenticated
         console.warn("Could not fetch user roles");
         saveUserToStorage(userData);

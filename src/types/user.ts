@@ -71,7 +71,14 @@ export interface User {
   phone?: string;
   profile?: Profile;
   // Roles can be either UserRole[] (from backend with relation) or Role[] (direct)
-  roles?: (UserRole | Role)[];
+  // The UserRole variant may include nested permissions
+  roles?: (Role | (UserRole & { 
+    role: Role & { 
+      permissions?: Array<{ 
+        permission?: { name: string } 
+      }> 
+    } 
+  }))[];
   createdAt: string;
   updatedAt: string;
   deleted: boolean;

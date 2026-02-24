@@ -33,6 +33,7 @@ export interface ApiError {
 export interface PaginationParams {
   page?: number;
   limit?: number;
+  categoryId?: number | string;
 }
 
 /**

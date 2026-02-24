@@ -13,7 +13,7 @@ export interface ProteinOption {
 export interface ProteinSelectorProps {
   proteins: ProteinOption[];
   selectedProteinId?: number;
-  onSelect: (protein: ProteinOption) => void;
+  onSelect: (protein: ProteinOption | null) => void;
   basePrice: number; // Base margin price
   className?: string;
 }
@@ -36,8 +36,8 @@ export function ProteinSelector({
   const availableProteins = proteins.filter((p) => p.isAvailable);
 
   const lunchPrices = availableProteins.map((p) => basePrice + p.price);
-  const minPrice = Math.min(...lunchPrices);
-  const maxPrice = Math.max(...lunchPrices);
+  const minPrice = availableProteins.length > 0 ? Math.min(...lunchPrices) : 0;
+  const maxPrice = availableProteins.length > 0 ? Math.max(...lunchPrices) : 0;
 
   const selectedProteinTotal = selectedProteinId
     ? (() => {
@@ -82,7 +82,7 @@ export function ProteinSelector({
               key={protein.id}
               onPress={() => {
                 if (isSelected) {
-                  onSelect(null as unknown as ProteinOption);
+                  onSelect(null);
                 } else {
                   onSelect(protein);
                 }

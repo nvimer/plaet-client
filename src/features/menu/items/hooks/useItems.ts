@@ -2,7 +2,7 @@ import { useState, useCallback, useEffect } from "react";
 import { menuApi } from "@/services";
 import { queryKeys } from "@/lib";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import type { PaginatedResponse, MenuItem } from "@/types";
+import type { PaginatedResponse, MenuItem, PaginationParams } from "@/types";
 
 export type ItemsPerPage = 10 | 20 | 50 | 100;
 
@@ -42,7 +42,7 @@ export function useItemsPagination(
   const { data, isLoading, isError, error, refetch } = useQuery({
     queryKey: [...queryKeys.menu.all, page, limit, categoryId],
     queryFn: async () => {
-      const params: any = { page, limit };
+      const params: PaginationParams = { page, limit };
       if (categoryId) params.categoryId = categoryId;
       const response = await menuApi.getMenuItems(params);
       return response;

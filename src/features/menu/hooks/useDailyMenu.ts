@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import {
   getToday,
   getByDate,
@@ -30,16 +31,16 @@ export function useDailyMenuToday() {
       try {
         const response = await getToday();
         return response.data;
-      } catch (error: any) {
-        if (error.response?.status === 404) {
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
           return null;
         }
         throw error;
       }
     },
     staleTime: 1000 * 60 * 5,
-    retry: (failureCount, error: any) => {
-      if (error.response?.status === 404) return false;
+    retry: (failureCount, error: unknown) => {
+      if (axios.isAxiosError(error) && error.response?.status === 404) return false;
       return failureCount < 1;
     },
   });
@@ -52,8 +53,8 @@ export function useDailyMenuByDate(date: string) {
       try {
         const response = await getByDate(date);
         return response.data;
-      } catch (error: any) {
-        if (error.response?.status === 404) {
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error) && error.response?.status === 404) {
           return null; // Return null if the menu is just not found, so we can create it
         }
         throw error;
@@ -61,9 +62,9 @@ export function useDailyMenuByDate(date: string) {
     },
     enabled: !!date,
     staleTime: 1000 * 60 * 5,
-    retry: (failureCount, error: any) => {
+    retry: (failureCount, error: unknown) => {
       // Don't retry on 404s
-      if (error.response?.status === 404) return false;
+      if (axios.isAxiosError(error) && error.response?.status === 404) return false;
       return failureCount < 1;
     },
   });

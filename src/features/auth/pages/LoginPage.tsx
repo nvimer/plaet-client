@@ -11,7 +11,6 @@ import { motion } from "framer-motion";
 import {
   AlertCircle,
   ArrowRight,
-  ChefHat,
   Lock,
   Mail,
   Eye,
