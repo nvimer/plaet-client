@@ -264,7 +264,7 @@ export function MenuPage() {
             />
           ) : (
             <>
-              <CardGrid>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
                 {filteredItems.map((item) => (
                   <MenuItemCard
                     key={item.id}
@@ -274,7 +274,7 @@ export function MenuPage() {
                     onDelete={handleDeleteItem}
                   />
                 ))}
-              </CardGrid>
+              </div>
 
               {/* Pagination */}
               {(totalItems ?? 0) > 0 && (
