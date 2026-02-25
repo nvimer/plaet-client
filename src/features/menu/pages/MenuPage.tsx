@@ -66,7 +66,7 @@ export function MenuPage() {
     totalPages,
     setPage,
     setLimit,
-  } = useItemsPagination(1, 10, filterCategory);
+  } = useItemsPagination(1, 12, filterCategory);
 
   const items = useMemo(
     () => paginationData?.data || [],
