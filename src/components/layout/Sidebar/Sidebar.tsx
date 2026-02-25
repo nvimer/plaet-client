@@ -20,6 +20,7 @@ import {
   Receipt,
   Settings,
   Building2,
+  ShieldCheck,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { ROUTES } from "@/app/routes";
@@ -210,6 +211,12 @@ export function Sidebar() {
           name: "Restaurantes",
           icon: Building2,
           description: "Gestionar inquilinos",
+        },
+        {
+          path: ROUTES.PERMISSIONS,
+          name: "Roles y Permisos",
+          icon: ShieldCheck,
+          description: "Matriz de seguridad",
         },
       ];
     }

@@ -39,6 +39,7 @@ import {
   ProfilePage,
 } from "./features/users/pages";
 import { RestaurantsPage } from "./features/restaurants";
+import { RolePermissionsPage } from "./features/permissions";
 import { AdminDashboardPage } from "./features/analytics/pages/AdminDashboardPage";
 import { CashClosurePage } from "./features/cash-closure/pages/CashClosurePage";
 import { ExpensesPage } from "./features/expenses/pages/ExpensesPage";
@@ -152,6 +153,20 @@ const App = () => {
                   <RoleProtectedRoute allowedRoles={[RoleName.SUPERADMIN]}>
                     <DashboardLayout>
                       <RestaurantsPage />
+                    </DashboardLayout>
+                  </RoleProtectedRoute>
+                </PrivateRoute>
+              }
+            />
+
+            {/* SuperAdmin - Roles & Permissions Management */}
+            <Route
+              path={ROUTES.PERMISSIONS}
+              element={
+                <PrivateRoute>
+                  <RoleProtectedRoute allowedRoles={[RoleName.SUPERADMIN]}>
+                    <DashboardLayout>
+                      <RolePermissionsPage />
                     </DashboardLayout>
                   </RoleProtectedRoute>
                 </PrivateRoute>

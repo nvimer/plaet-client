@@ -20,6 +20,7 @@ export const ROUTES = {
   DASHBOARD: "/dashboard",
   ADMIN_DASHBOARD: "/admin/dashboard",
   RESTAURANTS: "/admin/restaurants",
+  PERMISSIONS: "/admin/permissions",
   CASH_CLOSURE: "/admin/cash-closure",
   EXPENSES: "/admin/expenses",
 

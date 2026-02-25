@@ -33,5 +33,7 @@ export type {
 
 // Route Components
 export { PrivateRoute } from "./PrivateRoute";
-export { RoleProtectedRoute } from "./RoleProtectedRoute";
+export * from "./RoleProtectedRoute";
+export * from "./Guard";
+export * from "./SessionTimeoutWarning";
 export type { RoleProtectedRouteProps } from "./RoleProtectedRoute";

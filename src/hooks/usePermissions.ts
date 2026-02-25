@@ -1,5 +1,6 @@
 import { useAuth } from "./useAuth";
 import { RoleName, type UserRole, type Role } from "@/types";
+import { useMemo } from "react";
 
 /**
  * usePermissions Hook
@@ -14,88 +15,91 @@ export function usePermissions() {
 
   /**
    * Extract role names from user roles
-   * Handles both UserRole structure (with nested role) and direct Role structure
    */
-  const getUserRoleNames = (): RoleName[] => {
+  const getUserRoleNames = useMemo((): RoleName[] => {
     if (!user || !user.roles) return [];
 
     return user.roles.map((userRoleOrRole) => {
-      // Check if it's UserRole structure (has role property)
       if ("role" in userRoleOrRole) {
         const userRole = userRoleOrRole as UserRole;
         return userRole.role.name;
       }
-      // Direct Role structure
       const role = userRoleOrRole as Role;
       return role.name;
     });
+  }, [user]);
+
+  /**
+   * Extract all unique permissions from all user roles
+   * Result is a Set for O(1) lookups
+   */
+  const permissions = useMemo((): Set<string> => {
+    const permSet = new Set<string>();
+    if (!user || !user.roles) return permSet;
+
+    user.roles.forEach((userRoleOrRole) => {
+      // We need the variant that has the role property and permissions inside
+      if ("role" in userRoleOrRole) {
+        const userRole = userRoleOrRole as any; // Using any here because of complex nested structure in TS
+        const rolePermissions = userRole.role.permissions;
+        
+        if (Array.isArray(rolePermissions)) {
+          rolePermissions.forEach((rp: any) => {
+            if (rp.permission?.name) {
+              permSet.add(rp.permission.name);
+            }
+          });
+        }
+      }
+    });
+
+    return permSet;
+  }, [user]);
+
+  /**
+   * Checks if the user has a specific permission by name
+   */
+  const hasPermission = (permissionName: string): boolean => {
+    // SuperAdmin always has all permissions
+    if (isSuperAdmin()) return true;
+    return permissions.has(permissionName);
   };
 
   /**
    * Checks if the user has a specific role
-   * 
-   * @param role - Role name to check
-   * @returns true if user has the role
    */
   const hasRole = (role: RoleName): boolean => {
-    const userRoles = getUserRoleNames();
-    return userRoles.includes(role);
+    return getUserRoleNames.includes(role);
   };
 
   /**
    * Checks if the user has any of the specified roles
-   * 
-   * @param roles - Array of role names to check
-   * @returns true if user has at least one of the roles
    */
   const hasAnyRole = (roles: RoleName[]): boolean => {
     return roles.some((role) => hasRole(role));
   };
 
   /**
-   * Checks if the user has all of the specified roles
-   * 
-   * @param roles - Array of role names to check
-   * @returns true if user has all roles
+   * Checks if the user is a super admin
    */
-  const hasAllRoles = (roles: RoleName[]): boolean => {
-    return roles.every((role) => hasRole(role));
+  const isSuperAdmin = (): boolean => {
+    return getUserRoleNames.includes(RoleName.SUPERADMIN);
   };
 
   /**
-   * Checks if the user is an admin (ADMIN or SUPER_ADMIN)
+   * Checks if the user is an admin
    */
   const isAdmin = (): boolean => {
     return hasAnyRole([RoleName.ADMIN]);
   };
 
-  /**
-   * Checks if the user is a super admin
-   */
-  const isSuperAdmin = (): boolean => {
-    return hasRole(RoleName.SUPERADMIN);
-  };
-
-  /**
-   * Checks if the user is an employee (has access to dashboard)
-   */
-  const isEmployee = (): boolean => {
-    return hasAnyRole([
-      RoleName.ADMIN,
-      RoleName.WAITER,
-      RoleName.KITCHEN_MANAGER,
-      RoleName.CASHIER,
-    ]);
-  };
-
   return {
     hasRole,
     hasAnyRole,
-    hasAllRoles,
-    isAdmin,
+    hasPermission,
     isSuperAdmin,
-    isEmployee,
-    getUserRoleNames,
+    isAdmin,
+    permissions,
     user,
   };
 }
