@@ -54,7 +54,7 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
             />
           ) : (
             <div className="absolute inset-0 flex items-center justify-center">
-              <ImageIcon className="w-8 h-8 sm:w-12 sm:h-12 text-sage-300" />
+              <ImageIcon className="w-10 h-10 sm:w-12 sm:h-12 text-sage-300" />
             </div>
           )}
 
@@ -95,7 +95,7 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
             <div className="flex gap-1">
               {item.isExtra && (
                 <div className="p-1 sm:p-1.5 rounded-lg bg-amber-100 text-amber-600" title="Producto Extra">
-                  <Star className="w-3 sm:w-3.5 h-3 sm:h-3.5 fill-current" />
+                  <Star className="w-4 h-4 sm:w-4 sm:h-4 fill-current" />
                 </div>
               )}
             </div>
@@ -126,7 +126,7 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
                 )}
               >
                 <div className="flex items-center gap-2">
-                  <Package className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <Package className="w-5 h-5 sm:w-5 sm:h-5" />
                   <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">Stock</span>
                 </div>
                 <span className="text-xs sm:text-sm font-black">
@@ -141,36 +141,43 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
           </div>
 
           {/* ACCIONES - Botones grandes y fáciles de tocar */}
-          <div className="grid grid-cols-4 gap-2">
-            {item.inventoryType === "TRACKED" ? (
+          <div className={cn(
+            "grid gap-2 mt-auto",
+            item.inventoryType === "TRACKED" ? "grid-cols-4" : "grid-cols-2"
+          )}>
+            {item.inventoryType === "TRACKED" && (
               <Button
                 variant="primary"
                 onClick={() => setIsStockModalOpen(true)}
                 className="col-span-2 rounded-xl sm:rounded-2xl bg-sage-600 hover:bg-sage-700 shadow-soft-sm h-11 sm:h-14 px-2"
               >
-                <Plus className="w-5 h-5 mr-1.5 flex-shrink-0" />
+                <Plus className="w-5 h-5 sm:w-6 sm:h-6 mr-1.5 flex-shrink-0" />
                 <span className="font-bold text-xs sm:text-sm truncate">Stock</span>
               </Button>
-            ) : (
-              <div className="col-span-2" />
             )}
             
             <Button
               variant="ghost"
               onClick={() => onEdit(item.id)}
-              className="col-span-1 rounded-xl sm:rounded-2xl bg-carbon-50 hover:bg-sage-100 text-carbon-600 border border-carbon-100 h-11 sm:h-14 px-0"
+              className={cn(
+                "rounded-xl sm:rounded-2xl bg-carbon-50 hover:bg-sage-100 text-carbon-600 border border-carbon-100 h-11 sm:h-14 px-0",
+                item.inventoryType === "TRACKED" ? "col-span-1" : "col-span-1"
+              )}
               title="Editar Producto"
             >
-              <Edit2 className="w-5 h-5" />
+              <Edit2 className="w-5 h-5 sm:w-6 sm:h-6" />
             </Button>
 
             <Button
               variant="ghost"
               onClick={() => setIsDeleteDialogOpen(true)}
-              className="col-span-1 rounded-xl sm:rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 h-11 sm:h-14 px-0"
+              className={cn(
+                "rounded-xl sm:rounded-2xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 h-11 sm:h-14 px-0",
+                item.inventoryType === "TRACKED" ? "col-span-1" : "col-span-1"
+              )}
               title="Eliminar"
             >
-              <Trash2 className="w-5 h-5" />
+              <Trash2 className="w-5 h-5 sm:w-6 sm:h-6" />
             </Button>
           </div>
         </div>

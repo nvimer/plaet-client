@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import {
   getRestaurants,
   searchRestaurants,
@@ -18,7 +19,8 @@ import { toast } from "sonner";
 export const RESTAURANT_KEYS = {
   all: ["restaurants"] as const,
   lists: () => [...RESTAURANT_KEYS.all, "list"] as const,
-  list: (params: any) => [...RESTAURANT_KEYS.lists(), params] as const,
+  list: (params: PaginationParams | (PaginationParams & RestaurantSearchParams)) => 
+    [...RESTAURANT_KEYS.lists(), params] as const,
   details: () => [...RESTAURANT_KEYS.all, "detail"] as const,
   detail: (id: string) => [...RESTAURANT_KEYS.details(), id] as const,
 };
@@ -55,8 +57,11 @@ export function useCreateRestaurant() {
       queryClient.invalidateQueries({ queryKey: RESTAURANT_KEYS.lists() });
       toast.success("Restaurante creado exitosamente");
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Error al crear el restaurante");
+    onError: (error: unknown) => {
+      const message = axios.isAxiosError(error) 
+        ? error.response?.data?.message 
+        : "Error al crear el restaurante";
+      toast.error(message || "Error al crear el restaurante");
     },
   });
 }
@@ -72,8 +77,11 @@ export function useUpdateRestaurant() {
       queryClient.invalidateQueries({ queryKey: RESTAURANT_KEYS.detail(variables.id) });
       toast.success("Restaurante actualizado exitosamente");
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Error al actualizar el restaurante");
+    onError: (error: unknown) => {
+      const message = axios.isAxiosError(error) 
+        ? error.response?.data?.message 
+        : "Error al actualizar el restaurante";
+      toast.error(message || "Error al actualizar el restaurante");
     },
   });
 }
@@ -87,8 +95,11 @@ export function useDeleteRestaurant() {
       queryClient.invalidateQueries({ queryKey: RESTAURANT_KEYS.lists() });
       toast.success("Restaurante eliminado exitosamente");
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Error al eliminar el restaurante");
+    onError: (error: unknown) => {
+      const message = axios.isAxiosError(error) 
+        ? error.response?.data?.message 
+        : "Error al eliminar el restaurante";
+      toast.error(message || "Error al eliminar el restaurante");
     },
   });
 }

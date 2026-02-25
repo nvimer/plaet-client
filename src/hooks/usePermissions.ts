@@ -3,6 +3,20 @@ import { RoleName, type UserRole, type Role } from "@/types";
 import { useMemo } from "react";
 
 /**
+ * Local interface for nested permission structure
+ */
+interface NestedUserRole {
+  role: {
+    name: RoleName;
+    permissions?: Array<{
+      permission: {
+        name: string;
+      };
+    }>;
+  };
+}
+
+/**
  * usePermissions Hook
  * 
  * Provides utilities to check user roles and permissions.
@@ -40,11 +54,11 @@ export function usePermissions() {
     user.roles.forEach((userRoleOrRole) => {
       // We need the variant that has the role property and permissions inside
       if ("role" in userRoleOrRole) {
-        const userRole = userRoleOrRole as any; // Using any here because of complex nested structure in TS
+        const userRole = userRoleOrRole as unknown as NestedUserRole;
         const rolePermissions = userRole.role.permissions;
         
         if (Array.isArray(rolePermissions)) {
-          rolePermissions.forEach((rp: any) => {
+          rolePermissions.forEach((rp) => {
             if (rp.permission?.name) {
               permSet.add(rp.permission.name);
             }

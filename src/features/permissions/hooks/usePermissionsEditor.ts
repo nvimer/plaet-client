@@ -1,4 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
 import { getRoles, getRoleWithPermissions, assignPermissionsToRole } from "@/services/rolesApi";
 import { getPermissions } from "@/services/permissionsApi";
 import { toast } from "sonner";
@@ -41,8 +42,11 @@ export function useAssignPermissions() {
       queryClient.invalidateQueries({ queryKey: PERMISSION_KEYS.roles() });
       toast.success("Permisos actualizados correctamente");
     },
-    onError: (error: any) => {
-      toast.error(error.response?.data?.message || "Error al actualizar permisos");
+    onError: (error: unknown) => {
+      const message = axios.isAxiosError(error) 
+        ? error.response?.data?.message 
+        : "Error al actualizar permisos";
+      toast.error(message || "Error al actualizar permisos");
     },
   });
 }

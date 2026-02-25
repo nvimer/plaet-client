@@ -8,7 +8,7 @@ import { Save, User, Building2, Globe, Phone, Mail, Lock } from "lucide-react";
 interface RestaurantFormProps {
   onSubmit: (data: RestaurantFormValues) => void;
   isLoading?: boolean;
-  initialData?: any;
+  initialData?: Partial<RestaurantFormValues>;
 }
 
 export function RestaurantForm({ onSubmit, isLoading, initialData }: RestaurantFormProps) {
