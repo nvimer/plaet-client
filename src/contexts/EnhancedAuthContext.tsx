@@ -110,6 +110,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const refreshIntervalRef = useRef<number | null>(null);
+  const initializationLockRef = useRef<boolean>(false);
 
   /**
    * Update state helper
@@ -184,13 +185,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return userWithRoles;
       } catch (_rolesError) {
         // Don't propagate 401/403 from roles API - user is still authenticated
-        console.warn("Could not fetch user roles");
         saveUserToStorage(userData);
         return userData;
       }
     } catch (error) {
-      console.error("Failed to fetch user profile");
-
       const axiosError = error as {
         response?: { status?: number };
         code?: string;
@@ -216,9 +214,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const interval = window.setInterval(async () => {
       try {
         await authApi.refreshToken();
-        console.info("Token refreshed successfully");
       } catch {
-        console.error("Failed to refresh token");
         updateState({
           user: null,
           isAuthenticated: false,
@@ -347,7 +343,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
 
       setLoading(false);
-      console.info("User logged out successfully");
     }
   }, [updateState, setLoading]);
 
@@ -357,9 +352,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshToken = useCallback(async (): Promise<void> => {
     try {
       await authApi.refreshToken();
-      console.info("Token refreshed successfully");
     } catch (error) {
-      console.error("Failed to refresh token:", error);
       throw error;
     }
   }, []);
@@ -375,7 +368,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ]);
 
       if (result) {
-        console.log("[CHECK] Auth successful - setting isLoading: false");
         updateState({
           user: result,
           isAuthenticated: true,
@@ -387,7 +379,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return true;
       }
 
-      console.log("[CHECK] No user data - setting isLoading: false");
       updateState({
         user: null,
         isAuthenticated: false,
@@ -397,7 +388,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
       return false;
     } catch (error) {
-      console.error("Auth check failed");
 
       const axiosError = error as {
         response?: { status?: number };
@@ -471,6 +461,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
    */
   useEffect(() => {
     const initializeAuth = async () => {
+      // Prevent multiple initializations (StrictMode)
+      if (initializationLockRef.current) return;
+      initializationLockRef.current = true;
+
       const storedUser = getUserFromStorage();
 
       if (storedUser) {

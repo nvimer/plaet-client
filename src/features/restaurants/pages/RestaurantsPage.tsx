@@ -90,7 +90,7 @@ export function RestaurantsPage() {
           <>
             <RestaurantList
               restaurants={restaurants}
-              onEdit={(r) => console.log("Edit", r)}
+              onEdit={(_r) => {}}
               onDelete={setDeleteId}
             />
             {meta && meta.totalPages > 1 && (

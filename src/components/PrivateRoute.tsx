@@ -133,18 +133,9 @@ export function PrivateRoute({ children }: PrivateRouteProps) {
   const { isAuthenticated, isLoading, error, retryAuth } = useAuth();
   const [showTimeout, setShowTimeout] = useState(false);
 
-  console.log("[PRIVATE_ROUTE] Render state:", {
-    isLoading,
-    isAuthenticated,
-    errorType: error?.type,
-    errorCode: (error as { code?: string })?.code,
-  });
-
   useEffect(() => {
-    console.log("[PRIVATE_ROUTE] isLoading changed:", isLoading);
     if (isLoading) {
       const timer = setTimeout(() => {
-        console.log("[PRIVATE_ROUTE] Timeout reached, showing error screen");
         if (isLoading) {
           setShowTimeout(true);
         }

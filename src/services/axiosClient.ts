@@ -48,14 +48,9 @@ const processQueue = (error: Error | null): void => {
  */
 axiosClient.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
-    if (import.meta.env.DEV) {
-      const fullUrl = `${config.baseURL || ""}${config.url || ""}`;
-      console.log(`[API] ${config.method?.toUpperCase()} ${fullUrl}`);
-    }
     return config;
   },
   (error) => {
-    console.error("[API] Request setup error:", error.message);
     return Promise.reject(error);
   },
 );
@@ -65,9 +60,6 @@ axiosClient.interceptors.request.use(
  */
 axiosClient.interceptors.response.use(
   (response) => {
-    if (import.meta.env.DEV) {
-      console.log(`[API] ${response.config.url} -> ${response.status}`);
-    }
     return response;
   },
   async (error: AxiosError) => {
@@ -79,28 +71,18 @@ axiosClient.interceptors.response.use(
 
     const url = originalRequest.url || "unknown";
 
-    if (import.meta.env.DEV) {
-      console.error(
-        `[API Error] ${url} ->`,
-        error.response?.status || "Network Error",
-      );
-    }
-
     if (error.response) {
       const status = error.response.status;
 
       switch (status) {
         case 401: {
-          console.log(`[AXIOS INTERCEPTOR] 401 received for ${url}`);
-          console.log(`[AXIOS INTERCEPTOR] Error data:`, error.response?.data);
-
           const isRefreshEndpoint = originalRequest.url?.includes(
             "/auth/refresh-token",
           );
 
           if (isRefreshEndpoint) {
             console.warn(
-              "[AXIOS INTERCEPTOR] Refresh token itself is invalid - closing session",
+              "[Auth] Refresh token invalid - session closed",
             );
             processQueue(new Error("REFRESH_TOKEN_INVALID"));
             const authError = new Error("REFRESH_TOKEN_INVALID");
@@ -108,33 +90,22 @@ axiosClient.interceptors.response.use(
             throw authError;
           }
 
-          console.warn(
-            "[AXIOS INTERCEPTOR] Unauthorized - Token may be expired",
-          );
-
           if (!isRefreshing) {
             isRefreshing = true;
 
             try {
-              console.log("[AXIOS INTERCEPTOR] Attempting token refresh...");
               await axios.post(`${API_URL}/auth/refresh-token`, undefined, {
                 withCredentials: true,
               });
 
-              console.log("[AXIOS INTERCEPTOR] Token refreshed successfully");
               isRefreshing = false;
               processQueue(null);
               return axiosClient(originalRequest);
             } catch (refreshError) {
-              console.error(
-                "[AXIOS INTERCEPTOR] Token refresh failed:",
-                refreshError,
-              );
               isRefreshing = false;
               const authError = new Error("TOKEN_REFRESH_FAILED");
               (authError as { code?: string }).code = "AUTH_REFRESH_FAILED";
               processQueue(authError);
-              console.log("[AXIOS INTERCEPTOR] Throwing AUTH_REFRESH_FAILED");
               throw authError;
             }
           }
@@ -149,20 +120,22 @@ axiosClient.interceptors.response.use(
         }
 
         case 403: {
-          console.warn("[API] Forbidden - Insufficient permissions");
+          if (import.meta.env.DEV) {
+            console.warn(`[API] Forbidden (403): ${url}`);
+          }
           break;
         }
 
         case 404: {
           if (import.meta.env.DEV) {
-            console.warn(`[API] Resource not found: ${url}`);
+            console.warn(`[API] Not Found (404): ${url}`);
           }
           break;
         }
 
         case 422: {
           if (import.meta.env.DEV) {
-            console.warn("[API] Validation error:", error.response.data);
+            console.warn(`[API] Validation Error (422): ${url}`, error.response.data);
           }
           break;
         }
@@ -174,8 +147,6 @@ axiosClient.interceptors.response.use(
           };
           const message = responseData?.message || "Tu cuenta está bloqueada.";
           const lockedUntil = responseData?.lockedUntil;
-
-          console.warn(`[API] Account locked: ${message}`);
 
           if (
             typeof window !== "undefined" &&
@@ -195,9 +166,7 @@ axiosClient.interceptors.response.use(
         }
 
         case 429: {
-          const retryAfter = error.response.headers["retry-after"];
-          const seconds = retryAfter ? parseInt(retryAfter, 10) : 60;
-          console.warn(`[API] Rate limited. Retry after ${seconds} seconds`);
+          console.warn(`[API] Rate limited (429): ${url}`);
           break;
         }
 
@@ -205,22 +174,11 @@ axiosClient.interceptors.response.use(
         case 502:
         case 503:
         case 504: {
-          console.error("[API] Server error occurred");
-          if (import.meta.env.DEV && error.response?.data) {
-            console.error("[API] Server Error Details:", error.response.data);
-          }
+          console.error(`[API] Server error (${status}): ${url}`);
           break;
-        }
-
-        default: {
-          if (import.meta.env.DEV) {
-            console.error(`[API] Error ${status}:`, error.response.data);
-          }
         }
       }
     } else if (error.request) {
-      console.error("[API] Network error - No response from server");
-
       if ((error.request as { retried?: boolean }).retried) {
         return Promise.reject(error);
       }
@@ -232,18 +190,12 @@ axiosClient.interceptors.response.use(
         (originalRequest as { _retryCount?: number })._retryCount =
           retryCount + 1;
 
-        console.log(
-          `[API] Retrying request (${retryCount + 1}/${MAX_RETRIES})...`,
-        );
-
         await new Promise((resolve) =>
           setTimeout(resolve, RETRY_DELAY * (retryCount + 1)),
         );
 
         return axiosClient(originalRequest);
       }
-    } else {
-      console.error("[API] Request error:", error.message);
     }
 
     return Promise.reject(error);

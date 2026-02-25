@@ -198,11 +198,8 @@ export function MenuItemEditPage() {
     }
   };
 
-  const onFormError = (formErrors: FieldErrors<UpdateItemInput>) => {
-    console.log("Form validation errors:", formErrors);
-    toast.error("Datos inválidos", {
-      description: "Por favor revisa los campos marcados en rojo.",
-    });
+  const onError = (_formErrors: any) => {
+    // Errores de validación manejados por react-hook-form
   };
 
   return (
