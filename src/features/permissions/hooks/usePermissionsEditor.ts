@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getRoles, getRoleWithPermissions, assignPermissionsToRole } from "@/services/rolesApi";
 import { getPermissions } from "@/services/permissionsApi";
 import { toast } from "sonner";
+import type { RoleWithPermissions } from "@/types";
 
 export const PERMISSION_KEYS = {
   all: ["permissions-editor"] as const,
@@ -13,7 +14,13 @@ export const PERMISSION_KEYS = {
 export function useRolesWithPermissions() {
   return useQuery({
     queryKey: PERMISSION_KEYS.roles(),
-    queryFn: () => getRoles({ page: 1, limit: 100 }),
+    queryFn: async () => {
+      const response = await getRoles({ page: 1, limit: 100 });
+      return {
+        ...response,
+        data: response.data as RoleWithPermissions[],
+      };
+    },
   });
 }
 

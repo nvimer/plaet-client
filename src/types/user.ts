@@ -49,6 +49,23 @@ export interface UserRole {
 }
 
 /**
+ * Role-Permission relation
+ */
+export interface RolePermission {
+  roleId: number;
+  permissionId: number;
+  assignedAt: string;
+  permission: Permission;
+}
+
+/**
+ * Role with its permissions included
+ */
+export interface RoleWithPermissions extends Role {
+  permissions: RolePermission[];
+}
+
+/**
  * Permissions
  */
 export interface Permission {

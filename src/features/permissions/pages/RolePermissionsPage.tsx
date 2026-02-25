@@ -3,6 +3,7 @@ import { useRolesWithPermissions, useAllPermissions, useAssignPermissions } from
 import { RolePermissionMatrix } from "../components/RolePermissionMatrix";
 import { Card } from "@/components/ui/Card/Card";
 import { ShieldAlert, Info, ShieldCheck } from "lucide-react";
+import type { RoleWithPermissions } from "@/types";
 
 export function RolePermissionsPage() {
   const { data: rolesResponse, isLoading: loadingRoles } = useRolesWithPermissions();
@@ -12,12 +13,12 @@ export function RolePermissionsPage() {
   const [updatingRoleId, setUpdatingRoleId] = useState<number | null>(null);
 
   const handleTogglePermission = async (roleId: number, permissionId: number, isAssigned: boolean) => {
-    const role = rolesResponse?.data.find((r) => r.id === roleId);
+    const role = rolesResponse?.data.find((r) => r.id === roleId) as RoleWithPermissions;
     if (!role) return;
 
     // Get current permission IDs
-    const currentPermIds = (role as any).permissions?.map(
-      (rp: any) => rp.permissionId || rp.permission?.id
+    const currentPermIds = role.permissions?.map(
+      (rp) => rp.permissionId || rp.permission?.id
     ) || [];
 
     let newPermIds: number[];

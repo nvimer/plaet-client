@@ -23,25 +23,8 @@ export { isApiErrorResponse } from "./common";
 export * from "./enums";
 
 // Domain types
-export type {
-  Restaurant,
-  CreateRestaurantInput,
-  UpdateRestaurantInput,
-  RestaurantSearchParams,
-} from "./restaurant";
-export type {
-  User,
-  Profile,
-  Role,
-  UserRole,
-  Permission,
-  UserWithRolesAndPermissions,
-  RegisterInput,
-  LoginInput,
-  AuthResponse,
-  UpdateUserInput,
-  ProfileMeResponse,
-} from "./user";
+export * from "./restaurant";
+export * from "./user";
 export type {
   Table,
   CreateTableInput,

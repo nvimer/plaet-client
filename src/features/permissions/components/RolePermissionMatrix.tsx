@@ -1,9 +1,10 @@
-import { Permission, Role } from "@/types";
+import React from "react";
+import type { Permission, RoleWithPermissions } from "@/types";
 import { Check, Loader2 } from "lucide-react";
 import { cn } from "@/utils/cn";
 
 interface RolePermissionMatrixProps {
-  roles: Role[];
+  roles: RoleWithPermissions[];
   permissions: Permission[];
   onToggle: (roleId: number, permissionId: number, isAssigned: boolean) => void;
   isUpdating?: boolean;
@@ -70,9 +71,8 @@ export function RolePermissionMatrix({
                     </td>
                     {roles.map((role) => {
                       // Check if role has this permission
-                      // Note: role.permissions usually comes as { permission: Permission }[] from backend
-                      const isAssigned = (role as any).permissions?.some(
-                        (rp: any) => rp.permissionId === permission.id || rp.permission?.id === permission.id
+                      const isAssigned = role.permissions?.some(
+                        (rp) => rp.permissionId === permission.id || rp.permission?.id === permission.id
                       );
 
                       return (
@@ -104,5 +104,3 @@ export function RolePermissionMatrix({
     </div>
   );
 }
-
-import React from "react";
