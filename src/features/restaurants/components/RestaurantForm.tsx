@@ -1,6 +1,6 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { restaurantFormSchema, RestaurantFormValues } from "../schemas/restaurant.schema";
+import { restaurantFormSchema, type RestaurantFormValues } from "../schemas/restaurant.schema";
 import { Button } from "@/components/ui/Button/Button";
 import { Input } from "@/components/ui/Input/Input";
 import { Save, User, Building2, Globe, Phone, Mail, Lock } from "lucide-react";

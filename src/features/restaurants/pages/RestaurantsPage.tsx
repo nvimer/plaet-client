@@ -9,7 +9,7 @@ import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 import { BaseModal } from "@/components/ui/BaseModal/BaseModal";
 import { Pagination } from "@/components/ui/Pagination/Pagination";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog/ConfirmDialog";
-import { RestaurantFormValues } from "../schemas/restaurant.schema";
+import type { RestaurantFormValues } from "../schemas/restaurant.schema";
 import { Plus, Building2, CheckCircle2, AlertCircle, Clock } from "lucide-react";
 import { RestaurantStatus } from "@/types";
 

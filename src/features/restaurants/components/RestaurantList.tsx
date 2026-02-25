@@ -1,10 +1,8 @@
-import { Restaurant } from "@/types";
+import type { Restaurant } from "@/types";
 import { Card } from "@/components/ui/Card/Card";
 import { Button } from "@/components/ui/Button/Button";
 import { RestaurantStatusBadge } from "./RestaurantStatusBadge";
 import { Edit2, Trash2, ExternalLink } from "lucide-react";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 
 interface RestaurantListProps {
   restaurants: Restaurant[];
@@ -50,7 +48,11 @@ export function RestaurantList({ restaurants, onEdit, onDelete }: RestaurantList
                 <RestaurantStatusBadge status={restaurant.status} />
               </td>
               <td className="py-4 px-4 text-sm text-carbon-500">
-                {format(new Date(restaurant.createdAt), "dd MMM, yyyy", { locale: es })}
+                {new Intl.DateTimeFormat('es-CO', { 
+                  day: '2-digit', 
+                  month: 'short', 
+                  year: 'numeric' 
+                }).format(new Date(restaurant.createdAt))}
               </td>
               <td className="py-4 px-4">
                 <div className="flex items-center gap-2">

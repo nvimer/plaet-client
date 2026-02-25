@@ -71,14 +71,9 @@ export function usePermissions() {
 
   /**
    * Checks if the user is a super admin
-   * Note: SuperAdmin is determined by having ADMIN role
-   * and potentially a special permission. For now, we'll
-   * check if user is ADMIN - you can add permission check later.
    */
   const isSuperAdmin = (): boolean => {
-    // For MVP: SuperAdmin is ADMIN
-    // Later you can add permission check: hasPermission("SUPER_ADMIN")
-    return hasRole(RoleName.ADMIN);
+    return hasRole(RoleName.SUPERADMIN);
   };
 
   /**

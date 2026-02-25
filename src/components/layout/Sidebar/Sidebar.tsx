@@ -25,7 +25,7 @@ import { cn } from "@/utils/cn";
 import { ROUTES } from "@/app/routes";
 import { BrandName } from "@/components";
 import { useSidebar } from "@/contexts/SidebarContext";
-import { useAuth } from "@/hooks";
+import { useAuth, usePermissions } from "@/hooks";
 import { RoleName } from "@/types";
 import { useCategories } from "@/features/menu/categories/hooks";
 import type { LucideIcon } from "lucide-react";
@@ -192,13 +192,12 @@ export function Sidebar() {
     });
   };
 
-  const { user } = useAuth();
-  const userRole = user?.role?.name as RoleName;
+  const { isSuperAdmin, user } = usePermissions();
 
   // Build navigation items based on role
   const navigationItems = useMemo(() => {
     // 1. Logic for SUPERADMIN
-    if (userRole === RoleName.SUPERADMIN) {
+    if (isSuperAdmin()) {
       return [
         {
           path: ROUTES.DASHBOARD,
@@ -264,7 +263,7 @@ export function Sidebar() {
     ];
 
     return items;
-  }, [userRole]);
+  }, [isSuperAdmin, user]);
 
   const handleNavClick = () => {
     if (isMobile) {

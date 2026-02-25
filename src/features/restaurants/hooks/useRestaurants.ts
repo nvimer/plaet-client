@@ -8,10 +8,10 @@ import {
   deleteRestaurant,
 } from "@/services/restaurantApi";
 import {
-  CreateRestaurantInput,
-  UpdateRestaurantInput,
-  RestaurantSearchParams,
-  PaginationParams,
+  type CreateRestaurantInput,
+  type UpdateRestaurantInput,
+  type RestaurantSearchParams,
+  type PaginationParams,
 } from "@/types";
 import { toast } from "sonner";
 

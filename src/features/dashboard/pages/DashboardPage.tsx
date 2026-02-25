@@ -25,17 +25,16 @@ import { cn } from "@/utils/cn";
 import { motion } from "framer-motion";
 import { ActiveShiftWidget } from "../components/ActiveShiftWidget";
 import { TodaySalesChart } from "../components/TodaySalesChart";
-import { useAuth } from "@/hooks";
+import { useAuth, usePermissions } from "@/hooks";
 
 export function DashboardPage() {
-  const { user } = useAuth();
+  const { isSuperAdmin } = usePermissions();
   const navigate = useNavigate();
-  const userRole = user?.role?.name as RoleName;
 
   // Redirigir SuperAdmin a su panel principal si lo prefieres,
   // o mostrar métricas globales. Por ahora, si es SuperAdmin,
   // mostraremos un Dashboard simplificado para evitar errores de carga.
-  if (userRole === RoleName.SUPERADMIN) {
+  if (isSuperAdmin()) {
     return (
       <div className="space-y-8">
         <header>
@@ -85,7 +84,6 @@ export function DashboardPage() {
 
   const { data: tablesData } = useTables();
   const tables = tablesData?.tables;
-  const navigate = useNavigate();
 
   // Helper function to get today's date filter
   const getTodayFilter = () => {
