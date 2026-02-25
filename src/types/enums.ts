@@ -10,10 +10,22 @@
  * Sincronizado con: enum RoleName en Prisma
  */
 export enum RoleName {
+  SUPERADMIN = "SUPERADMIN",
   ADMIN = "ADMIN",
   CASHIER = "CASHIER",
   WAITER = "WAITER",
   KITCHEN_MANAGER = "KITCHEN_MANAGER",
+}
+
+/**
+ * Estados de un restaurante
+ * Sincronizado con: enum RestaurantStatus en Prisma
+ */
+export enum RestaurantStatus {
+  ACTIVE = "ACTIVE",
+  SUSPENDED = "SUSPENDED",
+  TRIAL = "TRIAL",
+  PAST_DUE = "PAST_DUE",
 }
 
 /**

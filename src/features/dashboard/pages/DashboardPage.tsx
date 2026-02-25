@@ -1,8 +1,8 @@
 import { Button, Card, StatCard } from "@/components";
 import { useTables } from "@/features/tables";
 import { useOrders } from "@/features/orders";
-import { getTableManageRoute } from "@/app/routes";
-import { TableStatus, OrderStatus } from "@/types";
+import { getTableManageRoute, ROUTES } from "@/app/routes";
+import { TableStatus, OrderStatus, RoleName } from "@/types";
 import type { Order, OrderItem } from "@/types";
 import {
   Table2,
@@ -16,15 +16,73 @@ import {
   LayoutDashboard,
   ArrowRight,
   TrendingUp,
+  Building2,
+  Users,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Navigate } from "react-router-dom";
 import { useMemo } from "react";
 import { cn } from "@/utils/cn";
 import { motion } from "framer-motion";
 import { ActiveShiftWidget } from "../components/ActiveShiftWidget";
 import { TodaySalesChart } from "../components/TodaySalesChart";
+import { useAuth } from "@/hooks";
 
 export function DashboardPage() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const userRole = user?.role?.name as RoleName;
+
+  // Redirigir SuperAdmin a su panel principal si lo prefieres,
+  // o mostrar métricas globales. Por ahora, si es SuperAdmin,
+  // mostraremos un Dashboard simplificado para evitar errores de carga.
+  if (userRole === RoleName.SUPERADMIN) {
+    return (
+      <div className="space-y-8">
+        <header>
+          <div className="flex items-center gap-2 text-primary-600 mb-1">
+            <LayoutDashboard className="w-5 h-5" />
+            <span className="text-sm font-bold uppercase tracking-widest">Panel de Control Global</span>
+          </div>
+          <h1 className="text-4xl font-black text-carbon-900 tracking-tight">
+            Bienvenido, SuperAdmin
+          </h1>
+          <p className="text-carbon-500 font-medium">
+            Gestión global de la plataforma Plaet POS
+          </p>
+        </header>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card 
+            variant="elevated" 
+            padding="lg" 
+            className="flex flex-col items-center text-center p-12 hover:shadow-xl transition-shadow cursor-pointer"
+            onClick={() => navigate(ROUTES.RESTAURANTS)}
+          >
+            <div className="w-16 h-16 rounded-2xl bg-sage-100 text-sage-600 flex items-center justify-center mb-4">
+              <Building2 className="w-8 h-8" />
+            </div>
+            <h3 className="text-xl font-bold text-carbon-900 mb-2">Gestión de Restaurantes</h3>
+            <p className="text-carbon-500 mb-6">Administra los clientes, sus suscripciones y estados.</p>
+            <Button>Ver Restaurantes</Button>
+          </Card>
+
+          <Card 
+            variant="elevated" 
+            padding="lg" 
+            className="flex flex-col items-center text-center p-12 hover:shadow-xl transition-shadow opacity-50 cursor-not-allowed"
+          >
+            <div className="w-16 h-16 rounded-2xl bg-carbon-100 text-carbon-600 flex items-center justify-center mb-4">
+              <Users className="w-8 h-8" />
+            </div>
+            <h3 className="text-xl font-bold text-carbon-900 mb-2">Soporte Global</h3>
+            <p className="text-carbon-500 mb-6">Próximamente: Tickets de soporte y ayuda técnica.</p>
+            <Button disabled>Próximamente</Button>
+          </Card>
+        </div>
+      </div>
+    );
+  }
+
   const { data: tablesData } = useTables();
   const tables = tablesData?.tables;
   const navigate = useNavigate();

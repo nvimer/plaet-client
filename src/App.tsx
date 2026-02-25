@@ -38,6 +38,7 @@ import {
   UserEditPage,
   ProfilePage,
 } from "./features/users/pages";
+import { RestaurantsPage } from "./features/restaurants";
 import { AdminDashboardPage } from "./features/analytics/pages/AdminDashboardPage";
 import { CashClosurePage } from "./features/cash-closure/pages/CashClosurePage";
 import { ExpensesPage } from "./features/expenses/pages/ExpensesPage";
@@ -137,6 +138,20 @@ const App = () => {
                   <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
                     <DashboardLayout>
                       <AdminDashboardPage />
+                    </DashboardLayout>
+                  </RoleProtectedRoute>
+                </PrivateRoute>
+              }
+            />
+
+            {/* SuperAdmin - Restaurants Management */}
+            <Route
+              path={ROUTES.RESTAURANTS}
+              element={
+                <PrivateRoute>
+                  <RoleProtectedRoute allowedRoles={[RoleName.SUPERADMIN]}>
+                    <DashboardLayout>
+                      <RestaurantsPage />
                     </DashboardLayout>
                   </RoleProtectedRoute>
                 </PrivateRoute>

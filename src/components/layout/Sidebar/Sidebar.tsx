@@ -19,11 +19,14 @@ import {
   Wallet,
   Receipt,
   Settings,
+  Building2,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { ROUTES } from "@/app/routes";
 import { BrandName } from "@/components";
 import { useSidebar } from "@/contexts/SidebarContext";
+import { useAuth } from "@/hooks";
+import { RoleName } from "@/types";
 import { useCategories } from "@/features/menu/categories/hooks";
 import type { LucideIcon } from "lucide-react";
 
@@ -189,8 +192,30 @@ export function Sidebar() {
     });
   };
 
-  // Build navigation items with dynamic categories
+  const { user } = useAuth();
+  const userRole = user?.role?.name as RoleName;
+
+  // Build navigation items based on role
   const navigationItems = useMemo(() => {
+    // 1. Logic for SUPERADMIN
+    if (userRole === RoleName.SUPERADMIN) {
+      return [
+        {
+          path: ROUTES.DASHBOARD,
+          name: "Dashboard Global",
+          icon: Home,
+          description: "Métricas del SaaS",
+        },
+        {
+          path: ROUTES.RESTAURANTS,
+          name: "Restaurantes",
+          icon: Building2,
+          description: "Gestionar inquilinos",
+        },
+      ];
+    }
+
+    // 2. Logic for regular users (ADMIN, CASHIER, etc.)
     // Build Menu children
     const menuChildren: NavChild[] = [
       {
@@ -226,7 +251,6 @@ export function Sidebar() {
       },
     ];
 
-    // Insert Menu item at position 2 (after Tables)
     const items: NavItem[] = [
       baseNavigationItems[0], // Dashboard
       baseNavigationItems[1], // Tables
@@ -240,7 +264,7 @@ export function Sidebar() {
     ];
 
     return items;
-  }, []);
+  }, [userRole]);
 
   const handleNavClick = () => {
     if (isMobile) {

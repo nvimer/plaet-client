@@ -24,6 +24,12 @@ export * from "./enums";
 
 // Domain types
 export type {
+  Restaurant,
+  CreateRestaurantInput,
+  UpdateRestaurantInput,
+  RestaurantSearchParams,
+} from "./restaurant";
+export type {
   User,
   Profile,
   Role,
