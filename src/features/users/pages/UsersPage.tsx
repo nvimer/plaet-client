@@ -327,8 +327,9 @@ export function UsersPage() {
           onAction={
             !hasActiveFilters && isAdmin() ? handleCreateUser : undefined
           }
-        />
-      )}
-    </>
-  );
-}
+                  />
+                )}
+              </div>
+            );
+          }
+        

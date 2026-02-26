@@ -191,8 +191,9 @@ export function TablesPage() {
           }
           actionLabel={!hasActiveFilters ? "Crear primera mesa" : undefined}
           onAction={!hasActiveFilters ? handleCreateTable : undefined}
-        />
-      )}
-    </>
-  );
-}
+                  />
+                )}
+              </div>
+            );
+          }
+        
