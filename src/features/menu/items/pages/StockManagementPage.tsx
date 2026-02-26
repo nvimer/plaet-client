@@ -9,7 +9,7 @@ import {
 } from "../components";
 import { usePermissions } from "@/hooks/usePermissions";
 import { ROUTES } from "@/app/routes";
-import { Package, RotateCcw, Search, Plus, AlertTriangle } from "lucide-react";
+import { Package, RotateCcw, Search, Plus, AlertTriangle, Settings2 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import type { MenuItem } from "@/types";
 import { QuickStockModal } from "../components/QuickStockModal";
