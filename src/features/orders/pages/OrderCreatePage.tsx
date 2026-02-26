@@ -330,22 +330,22 @@ export function OrderCreatePage() {
             </div>
           </div>
         </div>
-      </SidebarLayout>
 
-      {/* Fixed Order Summary Bar (Mobile only) */}
-      <div className="lg:hidden">
-        <FixedOrderSummaryBar
-          looseItems={formProps.looseItems}
-          currentOrderTotal={formProps.currentOrderTotal}
-          tableTotal={formProps.tableTotal}
-          hasProtein={!!formProps.selectedProtein}
-          currentProteinName={formProps.selectedProtein?.name}
-          onAddOrder={() => formProps.handleAddOrderToTable()}
-          onShowSummary={handleShowSummary}
-          scrollToOrder={scrollToOrder}
-          ordersCount={tableOrders.length}
-        />
-      </div>
+        {/* Fixed Order Summary Bar (Unified for Mobile & Desktop) */}
+        <div className="sticky bottom-0 z-50 w-full mt-auto">
+          <FixedOrderSummaryBar
+            looseItems={formProps.looseItems}
+            currentOrderTotal={formProps.currentOrderTotal}
+            tableTotal={formProps.tableTotal}
+            hasProtein={!!formProps.selectedProtein}
+            currentProteinName={formProps.selectedProtein?.name}
+            onAddOrder={() => formProps.handleAddOrderToTable()}
+            onShowSummary={handleShowSummary}
+            scrollToOrder={scrollToOrder}
+            ordersCount={tableOrders.length}
+          />
+        </div>
+      </SidebarLayout>
 
       {/* Summary Modal */}
       <OrderSummaryModal
