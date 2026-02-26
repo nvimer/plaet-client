@@ -21,7 +21,7 @@ type StockFilter = "ALL" | "LOW_STOCK" | "OUT_OF_STOCK" | "TRACKED";
  * StockManagementPage Component
  *
  * Comprehensive stock management page for restaurant inventory.
- * Uses SidebarLayout and unified design system.
+ * Uses DashboardLayout (from App.tsx) and unified premium design system.
  */
 export function StockManagementPage() {
   const { isAdmin } = usePermissions();
@@ -91,13 +91,8 @@ export function StockManagementPage() {
   // Loading state
   if (loadingItems) {
     return (
-      <SidebarLayout
-        title="Gestión de Stock"
-        backRoute={ROUTES.MENU}
-        fullWidth
-        contentClassName="p-4 sm:p-6 lg:p-10"
-      >
-        <div className="space-y-6">
+      <SidebarLayout hideHeader fullWidth>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
               <Skeleton key={i} variant="card" height={80} />
@@ -114,54 +109,48 @@ export function StockManagementPage() {
   }
 
   return (
-    <SidebarLayout
-      title="Gestión de Stock"
-      backRoute={ROUTES.MENU}
-      fullWidth
-      hideHeader
-      contentClassName="p-0"
-    >
-      <div className="px-4 sm:px-6 lg:px-8 space-y-8 pb-24 py-8 max-w-7xl mx-auto">
-        {/* ============ PAGE HEADER =============== */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2 text-sage-600">
-              <Package className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Control de Existencias</span>
-            </div>
-            <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Inventario de Productos</h1>
-            <p className="text-sm text-carbon-500 font-medium">Monitorea y ajusta el stock de tus insumos en tiempo real.</p>
+    <SidebarLayout hideHeader fullWidth>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 pb-24 py-8">
+      {/* ============ PAGE HEADER =============== */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 text-sage-600">
+            <Package className="w-5 h-5" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Control de Existencias</span>
           </div>
-          
-          <div className="flex flex-wrap items-center gap-3">
-            {isAdmin && (
-              <>
-                <Button
-                  variant="outline"
-                  size="lg"
-                  onClick={() => setIsInventoryTypeModalOpen(true)}
-                  className="rounded-2xl h-14 px-6 border-sage-200 text-sage-700 hover:bg-sage-50 transition-all font-bold"
-                >
-                  <Settings2 className="w-4 h-4 mr-2" />
-                  Configurar
-                </Button>
-                
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={handleDailyReset}
-                  className="rounded-2xl h-14 px-8 shadow-soft-lg transition-all active:scale-95 font-bold bg-carbon-900 hover:bg-carbon-800"
-                >
-                  <RotateCcw className="w-5 h-5 mr-2 stroke-[3px]" />
-                  Reinicio Diario
-                </Button>
-              </>
-            )}
-          </div>
-        </header>
+          <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Inventario de Productos</h1>
+          <p className="text-sm text-carbon-500 font-medium">Monitorea y ajusta el stock de tus insumos en tiempo real.</p>
+        </div>
+        
+        <div className="flex flex-wrap items-center gap-3">
+          {isAdmin && (
+            <>
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => setIsInventoryTypeModalOpen(true)}
+                className="rounded-2xl h-14 px-6 border-sage-200 text-sage-700 hover:bg-sage-50 transition-all font-bold"
+              >
+                <Settings2 className="w-4 h-4 mr-2" />
+                Configurar
+              </Button>
+              
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={handleDailyReset}
+                className="rounded-2xl h-14 px-8 shadow-soft-lg transition-all active:scale-95 font-bold bg-carbon-900 hover:bg-carbon-800"
+              >
+                <RotateCcw className="w-5 h-5 mr-2 stroke-[3px]" />
+                Reinicio Diario
+              </Button>
+            </>
+          )}
+        </div>
+      </header>
 
-        {/* Dashboard */}
-        <div className="mb-2">
+      {/* Dashboard */}
+      <div className="mb-2">
         <InventoryDashboard items={allItems || []} />
       </div>
 
@@ -217,18 +206,6 @@ export function StockManagementPage() {
                 Solo Rastreados
               </Button>
             </div>
-
-            {isAdmin() && (
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleDailyReset}
-                className="text-sage-600 hover:bg-sage-50 font-bold"
-              >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Reset Diario
-              </Button>
-            )}
           </div>
         </div>
       </div>
@@ -291,12 +268,12 @@ export function StockManagementPage() {
             setSelectedItem(null);
           }}
         />
-              )}
-            </div>
-          </SidebarLayout>
-        );
-      }
-      /**
+      )}
+    </SidebarLayout>
+  );
+}
+
+/**
  * StockItemCard Component
  *
  * Card displaying item stock information with unified design.

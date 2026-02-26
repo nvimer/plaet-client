@@ -8,6 +8,7 @@ import { ROUTES, getTableManageRoute } from "@/app/routes";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 import { TableStatus } from "@/types";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
 
 const STATUS_LABELS: Record<string, string> = {
   ALL: "Todas",
@@ -98,7 +99,8 @@ export function TablesPage() {
   }
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 pb-12">
+    <SidebarLayout hideHeader fullWidth>
+      <div className="px-4 sm:px-6 lg:px-8 space-y-8 pb-24">
       {/* ============ PAGE HEADER =============== */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
         <div className="space-y-1.5">
@@ -192,8 +194,9 @@ export function TablesPage() {
           actionLabel={!hasActiveFilters ? "Crear primera mesa" : undefined}
           onAction={!hasActiveFilters ? handleCreateTable : undefined}
                   />
-                )}
-              </div>
-            );
-          }
-        
+                        )}
+                      </div>
+                    </SidebarLayout>
+                  );
+                }
+                

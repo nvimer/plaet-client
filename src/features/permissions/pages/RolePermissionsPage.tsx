@@ -2,7 +2,11 @@ import { useState } from "react";
 import { useRolesWithPermissions, useAllPermissions, useAssignPermissions } from "../hooks/usePermissionsEditor";
 import { RolePermissionMatrix } from "../components/RolePermissionMatrix";
 import { Card } from "@/components/ui/Card/Card";
-import { ShieldAlert, Info, ShieldCheck } from "lucide-react";
+import { ShieldCheck, Check, X, Shield, Lock, Layout, User, Users, Store, ClipboardList, Database, Bell, Settings, Info, RefreshCw } from "lucide-react";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
+
+/**
+ * PAGE: RolePermissionsPage
 import type { RoleWithPermissions } from "@/types";
 
 export function RolePermissionsPage() {
@@ -41,7 +45,8 @@ export function RolePermissionsPage() {
   const isLoading = loadingRoles || loadingPerms;
 
   return (
-    <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-24">
+    <SidebarLayout hideHeader fullWidth>
+      <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-24">
       {/* ============ PAGE HEADER =============== */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1.5">
@@ -97,6 +102,6 @@ export function RolePermissionsPage() {
           </Card>
         </div>
       </div>
-    </div>
+    </SidebarLayout>
   );
-}
+};

@@ -37,6 +37,11 @@ import {
 } from "@/app/routes";
 import { cn } from "@/utils/cn";
 
+import { SidebarLayout } from "@/layouts/SidebarLayout";
+
+/**
+ * MenuPage – Catálogo de productos con filtros y gestión de stock unificada.
+ */
 export function MenuPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -104,7 +109,8 @@ export function MenuPage() {
     };
   
   return (
-    <div className="px-4 sm:px-6 lg:px-8 space-y-8 pb-24">
+    <SidebarLayout hideHeader fullWidth>
+      <div className="px-4 sm:px-6 lg:px-8 space-y-8 pb-24">
       {/* ============ PAGE HEADER =============== */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1.5">
@@ -292,7 +298,9 @@ export function MenuPage() {
               )}
             </>
           )}
-        </div>
-    </div>
-  );
-}
+                </div>
+              </div>
+            </SidebarLayout>
+          );
+        }
+        

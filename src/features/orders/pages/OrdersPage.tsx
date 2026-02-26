@@ -18,6 +18,7 @@ import { cn } from "@/utils/cn";
 import { OrderCard, OrderFilters, GroupedOrderCard } from "../components";
 import { ROUTES, getOrderDetailRoute } from "@/app/routes";
 import type { Order } from "@/types";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
 
 /**
  * Grouped Order Interface
@@ -267,12 +268,12 @@ export function OrdersPage() {
           {[...Array(6)].map((_, i) => (
             <Skeleton key={i} variant="card" />
           ))}
-        </div>
-      </div>
-    );
-  }
-
-  // ========== ERROR STATE =============
+                </div>
+              </div>
+            </SidebarLayout>
+          );
+        }
+          // ========== ERROR STATE =============
   if (error) {
     return (
       <div className="flex items-center justify-center min-h-[50vh] px-4 sm:px-6 lg:px-8">
@@ -306,7 +307,8 @@ export function OrdersPage() {
 
   // =============== MAIN RENDER =================
   return (
-    <div className="px-4 sm:px-6 lg:px-8 pb-24">
+    <SidebarLayout hideHeader fullWidth>
+      <div className="px-4 sm:px-6 lg:px-8 pb-24">
       {/* ============ PAGE HEADER =============== */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
         <div className="space-y-1.5">

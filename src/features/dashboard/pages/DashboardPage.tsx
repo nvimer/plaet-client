@@ -26,6 +26,7 @@ import { motion } from "framer-motion";
 import { ActiveShiftWidget } from "../components/ActiveShiftWidget";
 import { TodaySalesChart } from "../components/TodaySalesChart";
 import { useAuth, usePermissions } from "@/hooks";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
 
 export function DashboardPage() {
   const { user } = useAuth();
@@ -37,18 +38,25 @@ export function DashboardPage() {
   // mostraremos un Dashboard simplificado para evitar errores de carga.
   if (isSuperAdmin()) {
     return (
-      <div className="space-y-8">
-        <header>
-          <div className="flex items-center gap-2 text-primary-600 mb-1">
-            <LayoutDashboard className="w-5 h-5" />
-            <span className="text-sm font-medium tracking-wide">Panel de Control Global</span>
-          </div>
-          <h1 className="text-4xl font-black text-carbon-900 tracking-tight">
-            Bienvenido, SuperAdmin
-          </h1>
-          <p className="text-carbon-500 font-medium">
-            Gestión global de la plataforma Plaet POS
-          </p>
+      <SidebarLayout hideHeader fullWidth>
+        <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+          <header>
+            <div className="flex items-center gap-2 text-primary-600 mb-1">
+              <LayoutDashboard className="w-5 h-5" />
+              <span className="text-sm font-medium tracking-wide">Panel de Control Global</span>
+            </div>
+            <h1 className="text-4xl font-black text-carbon-900 tracking-tight">
+              Bienvenido, SuperAdmin
+            </h1>
+            <p className="text-carbon-500 font-medium">
+              Gestión global de la plataforma Plaet POS
+            </p>
+          </header>
+          {/* ... SuperAdmin content ... */}
+        </div>
+      </SidebarLayout>
+    );
+  }
         </header>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -171,12 +179,13 @@ export function DashboardPage() {
   };
 
   return (
-    <motion.div 
-      variants={containerVariants}
-      initial="hidden"
-      animate="visible"
-      className="space-y-8 pb-12"
-    >
+    <SidebarLayout hideHeader fullWidth>
+      <motion.div 
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+        className="space-y-8 pb-12 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto"
+      >
       {/* 1. Header Section */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1.5">
@@ -350,7 +359,9 @@ export function DashboardPage() {
             })}
           </div>
         </Card>
-      </div>
-    </motion.div>
-  );
-}
+              </div>
+            </motion.div>
+          </SidebarLayout>
+        );
+      }
+      

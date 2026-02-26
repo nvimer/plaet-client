@@ -232,13 +232,6 @@ export function Sidebar() {
       },
       {
         type: "link",
-        path: ROUTES.STOCK_MANAGEMENT,
-        name: "Inventario",
-        icon: Package2,
-        badge: "⚡",
-      },
-      {
-        type: "link",
         path: ROUTES.DAILY_MENU,
         name: "Menú del Día",
         icon: ChefHat,
@@ -260,6 +253,12 @@ export function Sidebar() {
     const items: NavItem[] = [
       baseNavigationItems[0], // Dashboard
       baseNavigationItems[1], // Tables
+      {
+        path: ROUTES.STOCK_MANAGEMENT,
+        name: "Inventario",
+        icon: Package2,
+        description: "Control de existencias",
+      },
       {
         ...menuNavItem,
         children: menuChildren,

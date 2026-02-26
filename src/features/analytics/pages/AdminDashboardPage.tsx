@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { BarChart3, Calendar, RefreshCcw, AlertCircle, LayoutGrid, ShoppingCart, PieChart, TrendingDown } from "lucide-react";
 import { Button } from "@/components/ui/Button/Button";
 import { cn } from "@/utils/cn";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
 
 /**
  * ADMIN DASHBOARD PAGE
@@ -18,43 +19,48 @@ export const AdminDashboardPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <Skeleton className="h-12 w-64 rounded-2xl" />
-          <Skeleton className="h-12 w-48 rounded-2xl" />
+      <SidebarLayout hideHeader fullWidth>
+        <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <Skeleton className="h-12 w-64 rounded-2xl" />
+            <Skeleton className="h-12 w-48 rounded-2xl" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 w-full rounded-3xl" />)}
+          </div>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <Skeleton className="h-[450px] w-full rounded-3xl" />
+            <Skeleton className="h-[450px] w-full rounded-3xl" />
+          </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {[1, 2, 3, 4].map(i => <Skeleton key={i} className="h-32 w-full rounded-3xl" />)}
-        </div>
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <Skeleton className="h-[450px] w-full rounded-3xl" />
-          <Skeleton className="h-[450px] w-full rounded-3xl" />
-        </div>
-      </div>
+      </SidebarLayout>
     );
   }
 
   if (isError) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6 text-center px-4">
-        <div className="w-20 h-20 bg-error-50 rounded-3xl flex items-center justify-center shadow-inner">
-          <AlertCircle className="w-10 h-10 text-error-500" />
+      <SidebarLayout hideHeader fullWidth>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6 text-center px-4">
+          <div className="w-20 h-20 bg-error-50 rounded-3xl flex items-center justify-center shadow-inner">
+            <AlertCircle className="w-10 h-10 text-error-500" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-2xl font-bold text-carbon-900 tracking-tight">Error al cargar estadísticas</h2>
+            <p className="text-carbon-500 max-w-xs mx-auto">No pudimos conectar con el servidor de analítica. Por favor reintenta.</p>
+          </div>
+          <Button onClick={() => refetch()} className="gap-2 rounded-2xl h-12 px-8 font-bold shadow-soft-md">
+            <RefreshCcw className="w-4 h-4" /> Reintentar
+          </Button>
         </div>
-        <div className="space-y-2">
-          <h2 className="text-2xl font-bold text-carbon-900 tracking-tight">Error al cargar estadísticas</h2>
-          <p className="text-carbon-500 max-w-xs mx-auto">No pudimos conectar con el servidor de analítica. Por favor reintenta.</p>
-        </div>
-        <Button onClick={() => refetch()} className="gap-2 rounded-2xl h-12 px-8 font-bold shadow-soft-md">
-          <RefreshCcw className="w-4 h-4" /> Reintentar
-        </Button>
-      </div>
+      </SidebarLayout>
     );
   }
 
   const hasSales = (dailySummary?.salesSummary?.totalSold || 0) > 0;
 
   return (
-    <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-24">
+    <SidebarLayout hideHeader fullWidth>
+      <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-24">
       {/* Professional Header */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="space-y-1.5">
@@ -159,8 +165,9 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
             ))}
           </div>
-        </div>
-      )}
-    </div>
-  );
-};
+                </div>
+              )}
+            </SidebarLayout>
+          );
+        };
+        

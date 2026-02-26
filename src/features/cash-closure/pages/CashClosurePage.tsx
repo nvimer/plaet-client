@@ -5,9 +5,10 @@ import { CloseShiftModal } from "../components/CloseShiftModal";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { Wallet as _Wallet, LogIn, LogOut, AlertCircle, CheckCircle2 } from "lucide-react";
 
+import { SidebarLayout } from "@/layouts/SidebarLayout";
+
 /**
- * CASH CLOSURE PAGE
- * Handles opening and closing of cash drawer shifts.
+ * PAGE: CashClosurePage
  */
 export const CashClosurePage: React.FC = () => {
   const { currentShift, isLoading, isOpen } = useCashClosure();
@@ -24,7 +25,8 @@ export const CashClosurePage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto pb-24">
+    <SidebarLayout hideHeader fullWidth>
+      <div className="space-y-10 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-24">
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2 text-sage-600">
@@ -125,7 +127,9 @@ export const CashClosurePage: React.FC = () => {
           onClose={() => setIsCloseModalOpen(false)} 
           currentShift={currentShift}
         />
-      )}
-    </div>
-  );
-};
+              )}
+            </div>
+          </SidebarLayout>
+        );
+      };
+      

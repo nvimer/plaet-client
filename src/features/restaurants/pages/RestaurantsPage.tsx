@@ -10,7 +10,12 @@ import { BaseModal } from "@/components/ui/BaseModal/BaseModal";
 import { Pagination } from "@/components/ui/Pagination/Pagination";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog/ConfirmDialog";
 import type { RestaurantFormValues } from "../schemas/restaurant.schema";
-import { Plus, Building2, CheckCircle2, AlertCircle, Clock } from "lucide-react";
+import { Plus, Building2, MapPin, Phone, Globe, Trash2, Edit } from "lucide-react";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
+
+/**
+ * SuperAdmin page to manage all restaurant tenants.
+
 import { RestaurantStatus } from "@/types";
 
 export function RestaurantsPage() {
@@ -59,7 +64,8 @@ export function RestaurantsPage() {
   ];
 
   return (
-    <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-24">
+    <SidebarLayout hideHeader fullWidth>
+      <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-24">
       {/* ============ PAGE HEADER =============== */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
         <div className="space-y-1.5">
@@ -150,7 +156,8 @@ export function RestaurantsPage() {
         confirmLabel="Eliminar"
         variant="danger"
         isLoading={deleteMutation.isPending}
-      />
-    </div>
+        />
+      </div>
+    </SidebarLayout>
   );
-}
+};

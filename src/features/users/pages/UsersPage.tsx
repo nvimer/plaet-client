@@ -14,6 +14,7 @@ import { UserCard } from "../components";
 import { ROUTES } from "@/app/routes";
 import { usePermissions } from "@/hooks";
 import { RoleName } from "@/types";
+import { SidebarLayout } from "@/layouts/SidebarLayout";
 
 /**
  * UsersPage Component
@@ -179,7 +180,8 @@ export function UsersPage() {
 
   // =============== MAIN RENDER =================
   return (
-    <div className="px-4 sm:px-6 lg:px-8 pb-12">
+    <SidebarLayout hideHeader fullWidth>
+      <div className="px-4 sm:px-6 lg:px-8 space-y-8 pb-24">
       {/* ============ PAGE HEADER =============== */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
         <div className="space-y-1.5">
@@ -328,8 +330,9 @@ export function UsersPage() {
             !hasActiveFilters && isAdmin() ? handleCreateUser : undefined
           }
                   />
-                )}
-              </div>
-            );
-          }
-        
+                        )}
+                      </div>
+                    </SidebarLayout>
+                  );
+                }
+                
