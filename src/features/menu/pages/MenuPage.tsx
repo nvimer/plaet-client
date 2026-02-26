@@ -103,49 +103,51 @@ export function MenuPage() {
       });
     };
   
-    return (    <div className="space-y-6">
-      {/* Header con estadísticas */}
-      <header className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-carbon-900 tracking-tight">
-            Menú
-          </h1>
-          <p className="text-sm text-carbon-500 mt-1">
-            Productos y categorías del restaurante
-          </p>
+  return (
+    <div className="px-4 sm:px-6 lg:px-8 space-y-8 pb-24">
+      {/* ============ PAGE HEADER =============== */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 text-sage-600">
+            <Grid3x3 className="w-5 h-5" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Carta Digital</span>
+          </div>
+          <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Catálogo de Productos</h1>
+          <p className="text-sm text-carbon-500 font-medium">Administra los productos y categorías de tu restaurante.</p>
         </div>
-        <div className="flex items-center gap-3">
+        
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="hidden lg:flex items-center gap-2 px-4 py-3 bg-white rounded-2xl shadow-smooth-sm border border-sage-100">
+            <div className="flex flex-col items-end">
+              <span className="text-[10px] font-bold text-carbon-400 uppercase tracking-wider leading-none">{items?.length ?? 0}</span>
+              <span className="text-[10px] font-medium text-carbon-400 uppercase tracking-widest">Items</span>
+            </div>
+            <div className="w-px h-6 bg-sage-100 mx-1" />
+            <div className="flex flex-col items-start">
+              <span className="text-[10px] font-bold text-carbon-400 uppercase tracking-wider leading-none">{categories?.length ?? 0}</span>
+              <span className="text-[10px] font-medium text-carbon-400 uppercase tracking-widest">Rubros</span>
+            </div>
+          </div>
+
           <Button
             variant="outline"
-            size="md"
+            size="lg"
             onClick={() => navigate(ROUTES.STOCK_MANAGEMENT)}
-            className="hidden sm:flex border-sage-200 text-sage-700 hover:bg-sage-50"
+            className="rounded-2xl h-14 px-6 border-sage-200 text-sage-700 hover:bg-sage-50 transition-all font-bold shadow-soft-sm"
           >
-            <Package className="w-4 h-4 mr-2" />
-            Gestión de Inventario
+            <Package className="w-5 h-5 mr-2" />
+            Inventario
           </Button>
-          <div
-            className={cn(
-              "flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 min-h-[44px] touch-manipulation",
-              "bg-white border-sage-200 text-carbon-700",
-            )}
+
+          <Button
+            size="lg"
+            variant="primary"
+            onClick={handleCreateItem}
+            className="rounded-2xl h-14 px-8 shadow-soft-lg transition-all active:scale-95 font-bold"
           >
-            <Grid3x3 className="w-5 h-5 text-sage-600 flex-shrink-0" />
-            <span className="text-sm font-medium">
-              {items?.length ?? 0} productos
-            </span>
-          </div>
-          <div
-            className={cn(
-              "flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 min-h-[44px] touch-manipulation",
-              "bg-white border-sage-200 text-carbon-700",
-            )}
-          >
-            <FolderOpen className="w-5 h-5 text-sage-600 flex-shrink-0" />
-            <span className="text-sm font-medium">
-              {categories?.length ?? 0} categorías
-            </span>
-          </div>
+            <Plus className="w-5 h-5 mr-2 stroke-[3px]" />
+            Nuevo Producto
+          </Button>
         </div>
       </header>
 

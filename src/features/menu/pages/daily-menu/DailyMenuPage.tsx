@@ -139,93 +139,99 @@ export function DailyMenuPage() {
     );
   }
 
-  return (
-    <>
-      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-carbon-900 tracking-tight">
-            Menú Diario
-          </h1>
-          <p className="text-sm text-carbon-500 mt-1">
-            Visualiza y administra las opciones de almuerzo para tu equipo.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          {isAdmin && !isEditing && (
-            <div className="flex items-center gap-2 px-3 py-1.5 bg-white border-2 border-sage-100 rounded-xl shadow-sm">
-              <Calendar className="w-4 h-4 text-sage-600" />
-              <span className="text-xs font-bold text-carbon-600 uppercase">
-                Ver Fecha:
-              </span>
-              <input
-                type="date"
+    return (
+      <div className="px-4 sm:px-6 lg:px-8 space-y-8 pb-24">
+        {/* ============ PAGE HEADER =============== */}
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 text-sage-600">
+              <UtensilsCrossed className="w-5 h-5" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Configuración Diaria</span>
+            </div>
+            <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Menú del Día</h1>
+            <p className="text-sm text-carbon-500 font-medium">Visualiza y administra las opciones de almuerzo para tu equipo.</p>
+          </div>
+          
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl shadow-smooth-md border border-sage-100 ring-4 ring-sage-50/50">
+              <div className="flex items-center gap-2 px-3 py-2 bg-sage-50 rounded-xl text-sage-700">
+                <Calendar className="w-4 h-4" />
+                <span className="text-xs font-bold uppercase tracking-wider">Fecha</span>
+              </div>
+              <input 
+                type="date" 
                 value={selectedDate || new Date().toISOString().split("T")[0]}
                 onChange={(e) => {
                   setSelectedDate(e.target.value);
-                  setIsEditing(false); // Cancel edit mode if date changes
+                  setIsEditing(false);
                 }}
-                className="bg-transparent border-none text-sm font-black text-carbon-900 focus:ring-0 cursor-pointer p-0 outline-none"
+                className="bg-transparent border-none text-carbon-900 font-bold text-sm focus:ring-0 cursor-pointer pr-4"
               />
             </div>
-          )}
-          <div className="flex items-center gap-2 text-sm text-carbon-600 bg-sage-50 px-4 py-2 rounded-xl border border-sage-200 font-medium">
-            <Calendar className="w-4 h-4" />
-            <span className="capitalize">{formattedDate}</span>
+  
+            {!isEditing && isAdmin && (
+              <Button
+                size="lg"
+                variant="primary"
+                onClick={() => setIsEditing(true)}
+                className="rounded-2xl h-14 px-8 shadow-soft-lg transition-all active:scale-95 font-bold bg-carbon-900 hover:bg-carbon-800"
+              >
+                <Edit2 className="w-5 h-5 mr-2" />
+                Editar Menú
+              </Button>
+            )}
+  
+            {isEditing && (
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => setIsEditing(false)}
+                className="rounded-2xl h-14 px-8 border-sage-200 text-sage-700 hover:bg-sage-50 transition-all font-bold"
+              >
+                <ArrowLeft className="w-5 h-5 mr-2" />
+                Volver
+              </Button>
+            )}
           </div>
-        </div>
-      </div>
-
-      {isEditing ? (
-        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-carbon-900 flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-sage-100 text-sage-600 flex items-center justify-center">
-                <Settings2 className="w-4 h-4" />
+        </header>
+  
+        {isEditing ? (
+          <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              <div className="lg:col-span-2">
+                <DailyMenuConfigForm
+                  key={selectedDate || "today"}
+                  initialData={dailyMenu}
+                  onSuccess={handleSuccess}
+                  selectedDate={selectedDate}
+                />
               </div>
-              Configuración del Menú
-            </h2>
-            <Button variant="ghost" onClick={() => setIsEditing(false)} className="text-carbon-500 hover:text-carbon-800">
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Volver a la vista
-            </Button>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
-              <DailyMenuConfigForm
-                key={selectedDate || "today"}
-                initialData={dailyMenu}
-                onSuccess={handleSuccess}
-                selectedDate={selectedDate}
-              />
+              <div className="space-y-4">
+                <HelpCard />
+              </div>
             </div>
-            <div className="space-y-4">
-              <HelpCard />
-            </div>
-          </div>
-        </motion.div>
-      ) : (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-          {hasOptions ? (
-            <div className="space-y-6">
-              {/* Toolbar */}
-              <div className="flex justify-between items-center bg-white p-4 rounded-2xl border border-sage-100 shadow-sm">
-                <div className="flex items-center gap-4">
-                  <div className="px-4 py-2 bg-sage-50 rounded-lg border border-sage-200">
-                    <span className="text-xs text-carbon-500 block mb-0.5">Margen Base</span>
-                    <span className="font-black text-lg text-sage-700">${dailyMenu?.basePrice?.toLocaleString()}</span>
+          </motion.div>
+        ) : (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+            {hasOptions ? (
+              <div className="space-y-6">
+                {/* Informational Banner */}
+                <div className="flex items-center justify-between p-4 bg-sage-50 rounded-2xl border border-sage-200 shadow-sm mb-6">
+                  <div className="flex items-center gap-4">
+                    <div className="px-4 py-2 bg-white rounded-xl border border-sage-100 shadow-sm">
+                      <span className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest block mb-0.5">Margen Base</span>
+                      <span className="font-bold text-lg text-sage-700">${dailyMenu?.basePrice?.toLocaleString("es-CO")}</span>
+                    </div>
+                    <div className="hidden sm:block text-sm text-carbon-500 font-medium italic">
+                      + Precio individual por cada proteína seleccionada
+                    </div>
                   </div>
-                  <div className="hidden sm:block text-sm text-carbon-500">
-                    + Precio individual por proteína
+                  <div className="flex items-center gap-2 text-carbon-400">
+                    <Calendar className="w-4 h-4" />
+                    <span className="text-sm font-semibold capitalize">{formattedDate}</span>
                   </div>
                 </div>
-                <Button variant="primary" onClick={() => setIsEditing(true)}>
-                  <Edit2 className="w-4 h-4 mr-2" />
-                  Editar Menú
-                </Button>
-              </div>
-
-              {/* Visual Menu Grid */}
+                {/* Visual Menu Grid */}
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 <MenuCategoryGroup 
                   title="Proteínas" 
