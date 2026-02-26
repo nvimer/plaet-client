@@ -13,3 +13,4 @@ export { FixedOrderSummaryBar } from "./FixedOrderSummaryBar";
 export { OrderForm } from "./OrderForm";
 export { OrdersListPanel } from "./OrdersListPanel";
 export { OrderSummaryModal } from "./OrderSummaryModal";
+export { PaymentModal } from "./PaymentModal";

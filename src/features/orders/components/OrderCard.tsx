@@ -12,9 +12,9 @@
  * - Enhanced status workflow
  */
 
-import { OrderStatus, type Order } from "@/types";
+import { OrderStatus, PaymentMethod, type Order } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
-import { useUpdateOrderStatus } from "../hooks";
+import { useUpdateOrderStatus, useAddPayment } from "../hooks";
 import {
   CheckCircle,
   ChefHat,
@@ -26,12 +26,15 @@ import {
   AlertCircle,
   Flame,
   ArrowRight,
+  DollarSign,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components";
 import { OrderStatusBadge } from "./OrderStatusBadge";
 import { OrderTypeBadge } from "./OrderTypeBadge";
+import { PaymentModal } from "./PaymentModal";
 import { cn } from "@/utils/cn";
+import { useState } from "react";
 
 interface OrderCardProps {
   order: Order;
@@ -169,7 +172,10 @@ export function OrderCard({
   onViewDetail,
   compact = false,
 }: OrderCardProps) {
-  const { mutate: updateStatus, isPending } = useUpdateOrderStatus();
+  const { mutate: updateStatus, isPending: isUpdatingStatus } = useUpdateOrderStatus();
+  const { mutate: addPayment, isPending: isAddingPayment } = useAddPayment();
+  
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   const config = STATUS_CONFIG[order.status];
   const shortId = `#${order.id.slice(-6).toUpperCase()}`;
@@ -183,13 +189,24 @@ export function OrderCard({
   const itemsCount =
     order.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
+  const paidAmount = order.payments?.reduce((sum, p) => sum + Number(p.amount), 0) || 0;
+  const remainingAmount = Math.max(0, Number(order.totalAmount) - paidAmount);
+
   const getNextStatus = (): {
     status: OrderStatus;
     label: string;
-    icon: typeof ChefHat;
+    icon: any;
+    action?: () => void;
   } | null => {
     switch (order.status) {
       case OrderStatus.PENDING:
+        return {
+          status: OrderStatus.PAID,
+          label: "Cobrar",
+          icon: DollarSign,
+          action: () => setIsPaymentModalOpen(true),
+        };
+      case OrderStatus.PAID:
         return {
           status: OrderStatus.IN_KITCHEN,
           label: "Enviar a Cocina",
@@ -217,6 +234,12 @@ export function OrderCard({
   const handleStatusChange = () => {
     if (!nextStatus) return;
 
+    // If there is a custom action (like opening a modal), run it
+    if (nextStatus.action) {
+      nextStatus.action();
+      return;
+    }
+
     updateStatus(
       { id: order.id, orderStatus: nextStatus.status },
       {
@@ -232,6 +255,39 @@ export function OrderCard({
         },
       },
     );
+  };
+
+  const handleConfirmPayment = (method: PaymentMethod, amount: number, reference?: string) => {
+    addPayment({
+      orderId: order.id,
+      paymentData: {
+        method,
+        amount,
+        transactionRef: reference
+      }
+    }, {
+      onSuccess: () => {
+        setIsPaymentModalOpen(false);
+        toast.success("Pago registrado correctamente");
+        
+        // Si el pago cubre el total pendiente, enviamos directamente a cocina
+        if (amount >= remainingAmount) {
+          updateStatus({ 
+            id: order.id, 
+            orderStatus: OrderStatus.IN_KITCHEN 
+          }, {
+            onSuccess: () => {
+              toast.success("Pedido enviado a Cocina automáticamente");
+            }
+          });
+        }
+      },
+      onError: (error: AxiosErrorWithResponse) => {
+        toast.error("Error al registrar pago", {
+          description: error.response?.data?.message || error.message
+        });
+      }
+    });
   };
 
   // Compact list view
@@ -285,7 +341,7 @@ export function OrderCard({
           {nextStatus && (
             <button
               onClick={handleStatusChange}
-              disabled={isPending}
+              disabled={isUpdatingStatus}
               className={cn(
                 "p-2 rounded-lg transition-colors",
                 "bg-sage-100 text-sage-700 hover:bg-sage-200",
@@ -447,7 +503,8 @@ export function OrderCard({
               variant="primary"
               size="lg"
               onClick={handleStatusChange}
-              disabled={isPending}
+              disabled={isUpdatingStatus}
+              isLoading={isUpdatingStatus}
               className="flex-1 min-h-[48px] rounded-xl font-bold shadow-soft-md"
             >
               <nextStatus.icon className="w-5 h-5 mr-2" />
@@ -456,6 +513,15 @@ export function OrderCard({
           )}
         </div>
       </div>
+
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        orderTotal={Number(order.totalAmount)}
+        remainingAmount={remainingAmount}
+        onConfirm={handleConfirmPayment}
+        isPending={isAddingPayment}
+      />
     </article>
   );
 }
