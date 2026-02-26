@@ -102,7 +102,11 @@ export function OrdersListPanel({
                   </span>
                   <div>
                     <p className="font-bold text-carbon-900 text-sm sm:text-base tracking-tight leading-tight">
-                      {order.protein ? order.protein.name : "Productos sueltos"}
+                      {order.protein 
+                        ? order.protein.name 
+                        : order.looseItems.length > 0 
+                          ? order.looseItems[0].name + (order.looseItems.length > 1 ? ` (+${order.looseItems.length - 1})` : "")
+                          : "Productos sueltos"}
                     </p>
                     <p className={cn(
                       "text-sm font-semibold mt-0.5",

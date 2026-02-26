@@ -236,33 +236,32 @@ export function OrderCreatePage() {
         backRoute={ROUTES.ORDERS}
         fullWidth
         actions={
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center justify-end gap-2 w-full sm:w-auto">
             {isAdmin && (
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-white border-2 border-primary-100 rounded-xl shadow-sm">
-                <Calendar className="w-4 h-4 text-primary-600" />
-                <span className="text-xs font-bold text-carbon-600 uppercase">Fecha:</span>
+              <div className="flex items-center gap-2 px-3 py-2 bg-white border-2 border-primary-100 rounded-xl shadow-sm flex-1 sm:flex-initial">
+                <Calendar className="w-4 h-4 text-primary-600 shrink-0" />
                 <input
                   type="date"
                   value={backdatedDate || new Date().toISOString().split('T')[0]}
                   onChange={(e) => setBackdatedDate(e.target.value)}
-                  className="bg-transparent border-none text-sm font-black text-carbon-900 focus:ring-0 cursor-pointer p-0"
+                  className="bg-transparent border-none text-xs font-bold text-carbon-900 focus:ring-0 cursor-pointer p-0 w-full sm:w-auto"
                 />
               </div>
             )}
             <button
               onClick={handleBackToOrderType}
-              className="flex items-center gap-2 px-4 py-2 bg-sage-100 text-sage-700 rounded-xl font-medium hover:bg-sage-200 transition-colors"
+              className="flex items-center justify-center gap-2 px-3 py-2 bg-sage-100 text-sage-700 rounded-xl font-semibold text-xs hover:bg-sage-200 transition-colors flex-1 sm:flex-initial min-h-[40px]"
             >
-              <ArrowLeft className="w-4 h-4" />
-              Cambiar Tipo
+              <ArrowLeft className="w-3.5 h-3.5" />
+              <span>Tipo</span>
             </button>
             {selectedOrderType === OrderType.DINE_IN && (
               <button
                 onClick={() => setSelectedTable(null)}
-                className="flex items-center gap-2 px-4 py-2 bg-amber-100 text-amber-700 rounded-xl font-medium hover:bg-amber-200 transition-colors"
+                className="flex items-center justify-center gap-2 px-3 py-2 bg-amber-100 text-amber-700 rounded-xl font-semibold text-xs hover:bg-amber-200 transition-colors flex-1 sm:flex-initial min-h-[40px]"
               >
-                <Users className="w-4 h-4" />
-                Cambiar Mesa
+                <Users className="w-3.5 h-3.5" />
+                <span>Mesa</span>
               </button>
             )}
           </div>

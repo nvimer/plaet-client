@@ -78,7 +78,9 @@ export function OrderSummaryModal({
                     <h3 className="font-semibold text-base sm:text-lg text-carbon-900">
                       {order.protein
                         ? `Almuerzo ${order.protein.name}`
-                        : "Productos a la Carta"}
+                        : order.looseItems.length > 0
+                          ? order.looseItems[0].name + (order.looseItems.length > 1 ? ` (+${order.looseItems.length - 1})` : "")
+                          : "Productos a la Carta"}
                     </h3>
                   </div>
                   <span className="font-semibold text-base sm:text-xl text-sage-600">
