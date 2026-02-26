@@ -54,7 +54,7 @@ export function OrdersListPanel({
           </div>
           <div className="text-right">
             <p className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-              ${tableTotal.toLocaleString("es-CO")}
+              ${Number(tableTotal).toLocaleString("es-CO")}
             </p>
             <p className="text-carbon-400 text-[10px] sm:text-xs font-semibold uppercase tracking-widest mt-0.5">Total</p>
           </div>
@@ -112,7 +112,7 @@ export function OrdersListPanel({
                       "text-sm font-semibold mt-0.5",
                       currentOrderIndex === index ? "text-warning-700" : "text-sage-600"
                     )}>
-                      ${order.total.toLocaleString("es-CO")}
+                      ${Number(order.total).toLocaleString("es-CO")}
                     </p>
                   </div>
                 </div>

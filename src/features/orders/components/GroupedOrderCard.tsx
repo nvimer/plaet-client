@@ -151,7 +151,7 @@ export function GroupedOrderCard({
             <div className="text-right mt-auto">
               <p className="text-[10px] text-carbon-400 font-bold uppercase tracking-widest mb-0.5">Total</p>
               <p className="text-2xl font-bold text-carbon-900 tracking-tight">
-                ${groupedOrder.totalAmount.toLocaleString("es-CO")}
+                ${Number(groupedOrder.totalAmount).toLocaleString("es-CO")}
               </p>
             </div>
           </div>
@@ -226,10 +226,9 @@ export function GroupedOrderCard({
                       )}
                     </div>
                   </div>
-                  <div className="flex flex-col items-end">
-                    <OrderStatusBadge status={order.status} className="mb-1" />
-                    <p className="text-sm font-bold text-sage-600">
-                      ${order.totalAmount.toLocaleString("es-CO")}
+                  <div className="text-right">
+                    <p className="text-sm font-bold text-carbon-900">
+                      ${Number(order.totalAmount).toLocaleString("es-CO")}
                     </p>
                   </div>
                 </div>

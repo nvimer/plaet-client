@@ -133,7 +133,7 @@ export function DashboardPage() {
       [OrderStatus.PENDING, OrderStatus.IN_KITCHEN, OrderStatus.READY].includes(order.status)
     );
 
-    const totalRevenue = paidOrders.reduce((sum: number, order: Order) => sum + (order.totalAmount || 0), 0);
+    const totalRevenue = paidOrders.reduce((sum: number, order: Order) => sum + (Number(order.totalAmount) || 0), 0);
 
     const itemCounts: Record<string, { name: string; count: number }> = {};
     orders.forEach((order: Order) => {

@@ -84,7 +84,7 @@ export function OrderSummaryModal({
                     </h3>
                   </div>
                   <span className="font-semibold text-base sm:text-xl text-sage-600">
-                    ${order.total.toLocaleString("es-CO")}
+                    ${Number(order.total).toLocaleString("es-CO")}
                   </span>
                 </div>
 
@@ -176,7 +176,7 @@ export function OrderSummaryModal({
           <div className="flex items-center justify-between mb-6">
             <span className="text-sm font-bold text-carbon-400 tracking-wide">Total del Pedido</span>
             <span className="text-3xl sm:text-4xl font-semibold text-carbon-900 tracking-tight">
-              ${tableTotal.toLocaleString("es-CO")}
+              ${Number(tableTotal).toLocaleString("es-CO")}
             </span>
           </div>
           

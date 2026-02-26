@@ -74,7 +74,7 @@ const groupOrders = (orders: Order[]): GroupedOrder[] => {
       status: order.status,
       type: order.type,
       orders: groupMembers,
-      totalAmount: groupMembers.reduce((sum, o) => sum + o.totalAmount, 0),
+      totalAmount: groupMembers.reduce((sum, o) => sum + Number(o.totalAmount), 0),
     });
   });
 
@@ -220,7 +220,7 @@ export function OrdersPage() {
     if (!orders) return 0;
     return orders
       .filter((o) => isToday(o.createdAt) && isSaleOrder(o))
-      .reduce((sum, o) => sum + o.totalAmount, 0);
+      .reduce((sum, o) => sum + Number(o.totalAmount), 0);
   }, [orders]);
 
   const hasActiveFilters =

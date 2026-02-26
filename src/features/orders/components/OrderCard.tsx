@@ -275,7 +275,7 @@ export function OrderCard({
             <span>{itemsCount} items</span>
             <span>·</span>
             <span className="font-semibold text-sage-700">
-              ${order.totalAmount.toLocaleString("es-CO")}
+              ${Number(order.totalAmount).toLocaleString("es-CO")}
             </span>
           </div>
         </div>
@@ -427,7 +427,7 @@ export function OrderCard({
         <div className="flex items-center justify-between mb-5 p-4 bg-gradient-to-r from-sage-50 to-sage-100/50 rounded-xl border border-sage-200 mt-auto flex-shrink-0">
           <span className="text-sm font-medium text-carbon-600">Total</span>
           <span className="text-2xl font-bold text-carbon-900 tracking-tight">
-            ${order.totalAmount.toLocaleString("es-CO")}
+            ${Number(order.totalAmount).toLocaleString("es-CO")}
           </span>
         </div>
 

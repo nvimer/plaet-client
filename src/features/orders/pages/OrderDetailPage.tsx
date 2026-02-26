@@ -84,7 +84,7 @@ export function OrderDetailPage() {
   });
 
   const paidAmount = order.payments?.reduce((sum, p) => sum + p.amount, 0) || 0;
-  const remainingAmount = order.totalAmount - paidAmount;
+  const remainingAmount = Number(order.totalAmount) - paidAmount;
 
   // Status actions
   const statusActions: {
@@ -247,7 +247,7 @@ export function OrderDetailPage() {
             <div className="space-y-2">
               <div className="flex justify-between text-carbon-700">
                 <span>Subtotal</span>
-                <span>${order.totalAmount.toLocaleString("es-CO")}</span>
+                <span>${Number(order.totalAmount).toLocaleString("es-CO")}</span>
               </div>
               {paidAmount > 0 && (
                 <div className="flex justify-between text-green-600">

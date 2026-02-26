@@ -51,7 +51,7 @@ export function FixedOrderSummaryBar({
               <Receipt className="w-3.5 h-3.5 text-sage-400" />
               <span className="text-[10px] font-bold tracking-wide">Mesa: {ordersCount} servicios</span>
             </div>
-            <span className="text-xs font-bold tracking-tight">${tableTotal.toLocaleString("es-CO")}</span>
+            <span className="text-xs font-bold tracking-tight">${Number(tableTotal).toLocaleString("es-CO")}</span>
           </div>
         </div>
       )}
@@ -66,7 +66,7 @@ export function FixedOrderSummaryBar({
             >
               <span>Agregar a la orden</span>
               <span className="bg-white/20 px-2 py-0.5 rounded text-xs sm:text-sm font-bold">
-                ${currentOrderTotal.toLocaleString("es-CO")}
+                ${Number(currentOrderTotal).toLocaleString("es-CO")}
               </span>
             </button>
           ) : (
@@ -79,7 +79,7 @@ export function FixedOrderSummaryBar({
                   <Receipt className="w-4 h-4 sm:w-5 sm:h-5 text-sage-400" />
                   <span>Confirmar Mesa ({ordersCount})</span>
                 </div>
-                <span className="font-bold tracking-tight">${tableTotal.toLocaleString("es-CO")}</span>
+                <span className="font-bold tracking-tight">${Number(tableTotal).toLocaleString("es-CO")}</span>
               </button>
             )
           )}
