@@ -165,9 +165,9 @@ export const AdminDashboardPage: React.FC = () => {
               </div>
             ))}
           </div>
-                </div>
-              )}
-            </SidebarLayout>
-          );
-        };
+        )}
+      </div>
+    </SidebarLayout>
+  );
+};
         
