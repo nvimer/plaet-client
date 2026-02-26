@@ -63,7 +63,7 @@ function DailyMenuCategory({
         </div>
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <p className="text-xs font-semibold uppercase tracking-wider">
+            <p className="text-xs font-semibold tracking-wide">
               {label}
             </p>
             {isRequired && hasOptions && (

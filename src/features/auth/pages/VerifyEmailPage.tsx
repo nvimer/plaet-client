@@ -98,7 +98,7 @@ export default function VerifyEmailPage() {
               className="inline-flex items-center justify-center mb-6"
             >
               <div className="w-16 h-16 rounded-2xl bg-gradient-sage flex items-center justify-center shadow-soft-md">
-                <ChefHat className="w-8 h-8 text-sage-green-600" />
+                <ChefHat className="w-8 h-8 text-sage-600" />
               </div>
             </motion.div>
 
@@ -114,7 +114,7 @@ export default function VerifyEmailPage() {
               transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
               className="mt-8"
             >
-              <RefreshCw className="w-8 h-8 text-sage-green-600 mx-auto" />
+              <RefreshCw className="w-8 h-8 text-sage-600 mx-auto" />
             </motion.div>
           </div>
         );
@@ -129,7 +129,7 @@ export default function VerifyEmailPage() {
               className="inline-flex items-center justify-center mb-6"
             >
               <div className="w-16 h-16 rounded-2xl bg-gradient-sage flex items-center justify-center shadow-soft-md">
-                <ChefHat className="w-8 h-8 text-sage-green-600" />
+                <ChefHat className="w-8 h-8 text-sage-600" />
               </div>
             </motion.div>
 
@@ -166,7 +166,7 @@ export default function VerifyEmailPage() {
               className="inline-flex items-center justify-center mb-6"
             >
               <div className="w-16 h-16 rounded-2xl bg-gradient-sage flex items-center justify-center shadow-soft-md">
-                <ChefHat className="w-8 h-8 text-sage-green-600" />
+                <ChefHat className="w-8 h-8 text-sage-600" />
               </div>
             </motion.div>
 
@@ -202,7 +202,7 @@ export default function VerifyEmailPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="tu@email.com"
-                    className="w-full pl-12 pr-4 py-3 border border-carbon-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-green-500"
+                    className="w-full pl-12 pr-4 py-3 border border-carbon-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sage-500"
                   />
                 </div>
                 <Button
@@ -238,7 +238,7 @@ export default function VerifyEmailPage() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-20 left-10 w-96 h-96 bg-sage-green-200 rounded-full blur-3xl opacity-30"
+          className="absolute top-20 left-10 w-96 h-96 bg-sage-200 rounded-full blur-3xl opacity-30"
         />
         <motion.div
           animate={{
@@ -251,7 +251,7 @@ export default function VerifyEmailPage() {
             ease: "easeInOut",
             delay: 1,
           }}
-          className="absolute bottom-20 right-10 w-[32rem] h-[32rem] bg-sage-green-100 rounded-full blur-3xl opacity-20"
+          className="absolute bottom-20 right-10 w-[32rem] h-[32rem] bg-sage-100 rounded-full blur-3xl opacity-20"
         />
       </div>
 

@@ -10,11 +10,11 @@ export function TermsPage() {
       {/* Header Simple */}
       <header className="py-6 px-6 lg:px-8 border-b border-sage-border-subtle sticky top-0 bg-white/80 backdrop-blur-md z-50">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 text-carbon-600 hover:text-sage-green-600 transition-colors">
+          <Link to="/" className="flex items-center gap-2 text-carbon-600 hover:text-sage-600 transition-colors">
             <ArrowLeft className="w-5 h-5" />
             <span className="font-medium">Volver al inicio</span>
           </Link>
-          <BrandName className="text-xl font-bold text-carbon-900" accentClassName="text-sage-green-600" />
+          <BrandName className="text-xl font-bold text-carbon-900" accentClassName="text-sage-600" />
         </div>
       </header>
 
@@ -53,7 +53,7 @@ export function TermsPage() {
 
           <div className="mt-16 p-6 bg-sage-50 rounded-2xl border border-sage-100">
             <p className="text-carbon-700">
-              Si tiene alguna duda sobre nuestros Términos y Condiciones, escríbanos a <a href="mailto:legal@plaet.app" className="text-sage-green-600 font-medium hover:underline">legal@plaet.app</a>.
+              Si tiene alguna duda sobre nuestros Términos y Condiciones, escríbanos a <a href="mailto:legal@plaet.app" className="text-sage-600 font-medium hover:underline">legal@plaet.app</a>.
             </p>
           </div>
         </motion.div>

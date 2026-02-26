@@ -87,7 +87,7 @@ export function TouchableCard({
         "cursor-pointer select-none",
         "transition-all duration-200",
         sizeClasses[size],
-        selected && "ring-4 ring-sage-green-400 ring-offset-2",
+        selected && "ring-4 ring-sage-400 ring-offset-2",
         disabled
           ? "opacity-50 cursor-not-allowed"
           : "hover:shadow-lg active:shadow-md",

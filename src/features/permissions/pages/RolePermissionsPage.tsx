@@ -46,7 +46,7 @@ export function RolePermissionsPage() {
         <div>
           <div className="flex items-center gap-2 text-primary-600 mb-1">
             <ShieldCheck className="w-5 h-5" />
-            <span className="text-sm font-bold uppercase tracking-widest">Seguridad</span>
+            <span className="text-sm font-medium tracking-wide">Seguridad</span>
           </div>
           <h1 className="text-2xl font-bold text-carbon-900">Roles y Permisos Granulares</h1>
           <p className="text-carbon-500">Configura qué acciones puede realizar cada perfil de usuario.</p>

@@ -85,8 +85,8 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
                   ${sizeClasses[size]}
                   rounded-lg border-2 cursor-pointer transition-all duration-200
                   ${isSelected 
-                    ? 'bg-sage-green-50 border-sage-green-500 text-sage-green-700' 
-                    : 'bg-white border-sage-border-subtle hover:border-sage-green-300 text-carbon-700'
+                    ? 'bg-sage-50 border-sage-500 text-sage-700' 
+                    : 'bg-white border-sage-border-subtle hover:border-sage-300 text-carbon-700'
                   }
                   ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                 `.trim().replace(/\s+/g, ' ')}
@@ -106,7 +106,7 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
                 <div className={`
                   w-4 h-4 rounded-full border-2 flex items-center justify-center
                   ${isSelected 
-                    ? 'border-sage-green-500 bg-sage-green-500' 
+                    ? 'border-sage-500 bg-sage-500' 
                     : 'border-carbon-300 bg-white'
                   }
                 `}>
@@ -123,7 +123,7 @@ export const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
                   <span className={`
                     px-2 py-0.5 rounded-full text-xs font-semibold
                     ${isSelected 
-                      ? 'bg-sage-green-600 text-white' 
+                      ? 'bg-sage-600 text-white' 
                       : 'bg-carbon-100 text-carbon-600'
                     }
                   `}>

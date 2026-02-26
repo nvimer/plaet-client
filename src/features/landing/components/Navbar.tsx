@@ -59,7 +59,7 @@ export function Navbar() {
             {/* Brand Name */}
             <BrandName
               className="text-2xl font-bold text-carbon-900 tracking-tight"
-              accentClassName="text-sage-green-600"
+              accentClassName="text-sage-600"
             />
           </Link>
 
@@ -73,11 +73,11 @@ export function Navbar() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="text-carbon-700 hover:text-sage-green-600 font-medium transition-colors duration-200 relative group"
+                className="text-carbon-700 hover:text-sage-600 font-medium transition-colors duration-200 relative group"
               >
                 {link.label}
                 {/* Underline effect  */}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-sage-green-300 group-hover:w-full transition-all duration-300"></span>
+                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-sage-300 group-hover:w-full transition-all duration-300"></span>
               </motion.a>
             ))}
           </div>
@@ -96,7 +96,7 @@ export function Navbar() {
           {/* ============== MOBILE MENU BUTTON =============== */}
           <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 rounded-lg hover:bg-sage-green-50 transition-colors"
+            className="md:hidden p-2 rounded-lg hover:bg-sage-50 transition-colors"
             aria-label="Toggle menu"
           >
             {isMobileMenuOpen ? (
@@ -123,7 +123,7 @@ export function Navbar() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className=" block py-2 text-carbon-700 hover:text-sage-green-600 font-medium transition-colors"
+                className=" block py-2 text-carbon-700 hover:text-sage-600 font-medium transition-colors"
               >
                 {item.label}
               </a>

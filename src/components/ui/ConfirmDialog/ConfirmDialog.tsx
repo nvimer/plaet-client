@@ -39,9 +39,9 @@ export function ConfirmDialog({
             button: "bg-yellow-600 text-white hover:bg-yellow-700",
         },
         info: {
-            icon: "bg-sage-green-50 text-sage-green-600",
+            icon: "bg-sage-50 text-sage-600",
             title: "text-carbon-900",
-            button: "bg-sage-green-600 text-carbon-900 hover:bg-sage-green-400",
+            button: "bg-sage-600 text-carbon-900 hover:bg-sage-400",
         },
     };
 

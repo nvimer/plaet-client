@@ -14,7 +14,7 @@ interface BrandNameProps {
 export function BrandName({ className, accentClassName }: BrandNameProps) {
   const accentClass = cn(
     "inline-block transform scale-x-[-1] origin-center",
-    accentClassName || "text-sage-green-600",
+    accentClassName || "text-sage-600",
   );
 
   return (

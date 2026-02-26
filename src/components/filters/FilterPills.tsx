@@ -44,7 +44,7 @@ export function FilterPills({
                 "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium min-h-[44px] touch-manipulation transition-all duration-200",
                 "border-2",
                 isSelected
-                  ? "bg-sage-100 border-sage-400 text-sage-900 ring-2 ring-sage-green-400/20"
+                  ? "bg-sage-100 border-sage-400 text-sage-900 ring-2 ring-sage-400/20"
                   : "bg-white border-sage-200 text-carbon-600 hover:bg-sage-50 hover:border-sage-300"
               )}
               aria-pressed={isSelected}

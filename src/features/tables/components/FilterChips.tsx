@@ -25,11 +25,11 @@ export const FilterChips = ({
   }
 
   return (
-    <div className={`bg-sage-green-50 border border-sage-green-200 rounded-xl p-4 ${className}`}>
+    <div className={`bg-sage-50 border border-sage-200 rounded-xl p-4 ${className}`}>
       <div className="flex items-center justify-between flex-wrap gap-4">
         {/* Filter chips */}
         <div className="flex items-center flex-wrap gap-2 flex-1">
-          <div className="flex items-center gap-2 text-sm text-sage-green-700 font-medium mr-2">
+          <div className="flex items-center gap-2 text-sm text-sage-700 font-medium mr-2">
             <Filter className="w-4 h-4" />
             <span>Filtros Activos:</span>
           </div>
@@ -37,10 +37,10 @@ export const FilterChips = ({
           {filters.map((filter) => (
             <div
               key={filter.key}
-              className="inline-flex items-center gap-1.5 bg-white border border-sage-green-300 rounded-full px-3 py-1 text-sm text-carbon-700 group hover:border-sage-green-400 transition-colors duration-150"
+              className="inline-flex items-center gap-1.5 bg-white border border-sage-300 rounded-full px-3 py-1 text-sm text-carbon-700 group hover:border-sage-400 transition-colors duration-150"
             >
               <span className="font-medium">{filter.label}:</span>
-              <span className="text-sage-green-600 font-semibold">
+              <span className="text-sage-600 font-semibold">
                 {filter.value}
               </span>
               <button
@@ -58,7 +58,7 @@ export const FilterChips = ({
         {/* Clear all button and result count */}
         <div className="flex items-center gap-3">
           {/* Result count */}
-          <div className="text-sm text-sage-green-700">
+          <div className="text-sm text-sage-700">
             <span className="font-semibold">{resultCount}</span>
             <span className="ml-1">
               {resultCount === 1 ? 'resultado' : 'resultados'}
@@ -69,7 +69,7 @@ export const FilterChips = ({
           <button
             type="button"
             onClick={onClearAll}
-            className="text-sm text-sage-green-600 hover:text-sage-green-800 font-medium hover:underline transition-colors duration-150"
+            className="text-sm text-sage-600 hover:text-sage-800 font-medium hover:underline transition-colors duration-150"
           >
             Limpiar todos
           </button>

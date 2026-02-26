@@ -13,7 +13,7 @@ import type { AxiosErrorWithResponse } from "@/types/common";
 import { InventoryType } from "@/types";
 
 const inputClass =
-  "w-full px-4 py-3 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 placeholder:text-carbon-400 focus:outline-none focus:ring-2 focus:ring-sage-green-400 focus:border-sage-green-400";
+  "w-full px-4 py-3 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 placeholder:text-carbon-400 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:border-sage-400";
 
 export function MenuItemCreatePage() {
   const navigate = useNavigate();
@@ -193,7 +193,7 @@ export function MenuItemCreatePage() {
                 {isTracked && (
                   <div className="mt-6 p-5 bg-sage-50/80 border-2 border-sage-200 rounded-xl space-y-6">
                     <div className="flex items-center gap-2">
-                      <Package className="w-5 h-5 text-sage-green-600" />
+                      <Package className="w-5 h-5 text-sage-600" />
                       <h4 className="font-semibold text-carbon-900">
                         Configuración de stock
                       </h4>
@@ -237,7 +237,7 @@ export function MenuItemCreatePage() {
                       <input
                         type="checkbox"
                         {...register("autoMarkUnavailable")}
-                        className="w-5 h-5 rounded border-sage-300 text-sage-green-600 focus:ring-sage-green-400"
+                        className="w-5 h-5 rounded border-sage-300 text-sage-600 focus:ring-sage-400"
                       />
                       <div>
                         <span className="text-carbon-800 font-medium">
@@ -258,7 +258,7 @@ export function MenuItemCreatePage() {
                     <input
                       type="checkbox"
                       {...register("isAvailable")}
-                      className="w-5 h-5 rounded border-sage-300 text-sage-green-600 focus:ring-sage-green-400"
+                      className="w-5 h-5 rounded border-sage-300 text-sage-600 focus:ring-sage-400"
                     />
                     <span className="text-carbon-800">
                       Disponible en el menú

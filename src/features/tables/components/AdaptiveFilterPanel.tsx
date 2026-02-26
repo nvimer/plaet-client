@@ -117,7 +117,7 @@ export const AdaptiveFilterPanel = ({
           <div className="sticky bottom-0 bg-white border-t border-sage-border-subtle p-4">
             <button
               onClick={() => setShowAdvanced(false)}
-              className="w-full py-2 bg-sage-green-500 text-white rounded-lg hover:bg-sage-green-600 transition-colors duration-200"
+              className="w-full py-2 bg-sage-500 text-white rounded-lg hover:bg-sage-600 transition-colors duration-200"
             >
               Aplicar Filtros
             </button>

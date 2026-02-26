@@ -28,7 +28,7 @@ export function RestaurantList({ restaurants, onEdit, onDelete }: RestaurantList
             <tr key={restaurant.id} className="border-b border-carbon-50 hover:bg-carbon-50/50 transition-colors">
               <td className="py-4 px-4">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-sage-100 flex items-center justify-center text-sage-700 font-bold uppercase">
+                  <div className="w-10 h-10 rounded-lg bg-sage-100 flex items-center justify-center text-sage-700 font-medium">
                     {restaurant.logoUrl ? (
                       <img src={restaurant.logoUrl} alt={restaurant.name} className="w-full h-full object-cover rounded-lg" />
                     ) : (

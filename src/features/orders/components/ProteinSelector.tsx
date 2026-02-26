@@ -52,7 +52,7 @@ export function ProteinSelector({
             </div>
             <div>
               <h3 className="text-base sm:text-lg font-black tracking-tight uppercase">Precio del Almuerzo</h3>
-              <p className="text-xs text-carbon-400 font-bold uppercase tracking-widest">
+              <p className="text-xs text-carbon-400 font-medium tracking-wide">
                 Incluye todos los componentes
               </p>
             </div>
@@ -114,7 +114,7 @@ export function ProteinSelector({
                 {/* Higher Price Badge */}
                 {isHigherPrice && !isSelected && (
                   <div className="absolute top-2 right-2">
-                    <span className="text-[9px] font-black uppercase text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-200">
+                    <span className="text-[9px] font-semibold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-200">
                       Extra + ${(totalPrice - minPrice).toLocaleString()}
                     </span>
                   </div>
@@ -134,7 +134,7 @@ export function ProteinSelector({
               {/* Protein Info */}
               <div className="p-4 flex flex-col items-center text-center justify-center flex-1">
                 {protein.categoryName && (
-                  <span className="text-[8px] font-black text-carbon-300 uppercase tracking-widest block mb-1">
+                  <span className="text-[8px] font-black text-carbon-300 tracking-wide block mb-1">
                     {protein.categoryName}
                   </span>
                 )}
@@ -150,7 +150,7 @@ export function ProteinSelector({
               {!protein.isAvailable && (
                 <div className="absolute inset-0 bg-white/80 flex flex-col items-center justify-center backdrop-blur-[1px]">
                   <AlertCircle className="w-8 h-8 text-carbon-400 mb-1" />
-                  <span className="text-xs font-black uppercase text-carbon-500">
+                  <span className="text-xs font-semibold text-carbon-500">
                     Agotado
                   </span>
                 </div>

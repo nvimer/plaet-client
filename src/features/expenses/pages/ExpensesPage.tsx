@@ -16,7 +16,7 @@ export const ExpensesPage: React.FC = () => {
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-primary-600">
             <Receipt className="w-5 h-5" />
-            <span className="text-sm font-bold uppercase tracking-wider">Administración</span>
+            <span className="text-sm font-medium tracking-wide">Administración</span>
           </div>
           <h1 className="text-3xl font-black text-carbon-900">Gastos</h1>
           <p className="text-carbon-500 font-medium">Gestiona tus egresos y compras del día</p>

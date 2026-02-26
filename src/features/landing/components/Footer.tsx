@@ -50,7 +50,7 @@ export function Footer() {
               </div>
               <BrandName
                 className="text-2xl font-bold text-carbon-900 tracking-tight"
-                accentClassName="text-sage-green-600"
+                accentClassName="text-sage-600"
               />
             </Link>
 
@@ -82,7 +82,7 @@ export function Footer() {
           {/* Links Columns */}
           {Object.entries(footerLinks).map(([key, section]) => (
             <div key={key}>
-              <h3 className="text-sm font-bold text-carbon-900 uppercase tracking-wider mb-4">
+              <h3 className="text-sm font-bold text-carbon-900 tracking-wide mb-4">
                 {section.title}
               </h3>
               <ul className="space-y-3">
@@ -90,7 +90,7 @@ export function Footer() {
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      className="text-carbon-700 hover:text-sage-green-600 transition-colors font-light"
+                      className="text-carbon-700 hover:text-sage-600 transition-colors font-light"
                     >
                       {link.label}
                     </a>
@@ -120,9 +120,9 @@ export function Footer() {
                   target="_blank"
                   rel="noonpener noreferrer"
                   aria-label={social.label}
-                  className="w-10 h-10 rounded-xl bg-sage-50 flex items-center justify-center hover:bg-sage-green-100 transition-colors group"
+                  className="w-10 h-10 rounded-xl bg-sage-50 flex items-center justify-center hover:bg-sage-100 transition-colors group"
                 >
-                  <Icon className="w-5 h-5 text-carbon-700 group-hover:text-sage-green-600 transition-colors" />
+                  <Icon className="w-5 h-5 text-carbon-700 group-hover:text-sage-600 transition-colors" />
                 </a>
               );
             })}

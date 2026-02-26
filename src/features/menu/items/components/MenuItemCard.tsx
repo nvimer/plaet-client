@@ -119,7 +119,7 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
               >
                 <div className="flex items-center gap-2">
                   <Package className="w-4 h-4 text-sage-500" />
-                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider">Existencias</span>
+                  <span className="text-[10px] sm:text-xs font-medium tracking-wide">Existencias</span>
                 </div>
                 <span className="text-xs sm:text-base font-black">{item.stockQuantity} ud.</span>
               </button>

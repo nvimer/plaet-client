@@ -79,7 +79,7 @@ function StatCard({ stat, index, isInView }: StatCardProps) {
       >
         {/* Icon */}
         <div
-          className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${stat.color} mb-6 group-hover:animate-glow-pulse transition-all shadow-lg shadow-sage-green-100`}
+          className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${stat.color} mb-6 group-hover:animate-glow-pulse transition-all shadow-lg shadow-sage-100`}
         >
           <Icon className="w-8 h-8 text-white" />
         </div>
@@ -91,8 +91,8 @@ function StatCard({ stat, index, isInView }: StatCardProps) {
         </div>
 
         {/* Label */}
-        <div className="text-carbon-500 font-bold uppercase tracking-wider text-xs mb-1">{stat.label}</div>
-        <div className="text-sage-green-600 font-medium text-sm">{stat.description}</div>
+        <div className="text-carbon-500 font-medium tracking-wide text-xs mb-1">{stat.label}</div>
+        <div className="text-sage-600 font-medium text-sm">{stat.description}</div>
       </Card>
     </motion.div>
   );
@@ -114,7 +114,7 @@ export function StatsSection() {
       suffix: "+",
       label: "Restaurante Activos",
       description: "Confían en Plaet",
-      color: "from-sage-green-200 to-sage-green-300",
+      color: "from-sage-200 to-sage-300",
     },
     {
       icon: Users,
@@ -122,7 +122,7 @@ export function StatsSection() {
       suffix: "+",
       label: "Usuarios Diarios",
       description: "Gestionando pedidos",
-      color: "from-sage-green-300 to-sage-green-400",
+      color: "from-sage-300 to-sage-400",
     },
     {
       icon: TrendingUp,
@@ -130,7 +130,7 @@ export function StatsSection() {
       suffix: "%",
       label: "Satisfacción",
       description: "Rating promedio",
-      color: "from-sage-green-200 to-sage-green-300",
+      color: "from-sage-200 to-sage-300",
     },
     {
       icon: Star,
@@ -138,7 +138,7 @@ export function StatsSection() {
       suffix: "%",
       label: "Más Eficiencia",
       description: "En promedio",
-      color: "from-sage-green-200 to-sage-green-300",
+      color: "from-sage-200 to-sage-300",
     },
   ];
 
@@ -150,7 +150,7 @@ export function StatsSection() {
     >
       {/* Background Decoration */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -w-[800px] h-[800px] bg-sage-green-100 rounded-full blur-3xl opacity-30"></div>
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 -w-[800px] h-[800px] bg-sage-100 rounded-full blur-3xl opacity-30"></div>
       </div>
 
       <div className="relative max-w-7xl mx-auto px-6 lg:px-8">

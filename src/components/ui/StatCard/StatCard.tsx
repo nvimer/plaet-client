@@ -74,7 +74,7 @@ export function StatCard({
             className={cn(
                 config.padding,
                 isClickable && "cursor-pointer transition-transform hover:scale-105",
-                isTactile && "border-2 border-sage-green-200",
+                isTactile && "border-2 border-sage-200",
                 className
             )}
             onClick={onClick}
@@ -86,8 +86,8 @@ export function StatCard({
                         className={cn(
                             "flex-shrink-0 rounded-xl flex items-center justify-center",
                             config.iconSize,
-                            iconBgColor || "bg-sage-green-50",
-                            iconColor || "text-sage-green-600"
+                            iconBgColor || "bg-sage-50",
+                            iconColor || "text-sage-600"
                         )}
                     >
                         <div className={config.iconInner}>{icon}</div>
@@ -124,7 +124,7 @@ export function StatCard({
                                     "font-medium",
                                     config.change,
                                     change.type === "increase"
-                                        ? "text-sage-green-600"
+                                        ? "text-sage-600"
                                         : "text-red-600"
                                 )}
                             >

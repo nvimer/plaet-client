@@ -51,7 +51,7 @@ export function RolePermissionMatrix({
               <tr className="bg-sage-50/50">
                 <td 
                   colSpan={roles.length + 1} 
-                  className="py-2 px-6 text-[10px] font-black uppercase tracking-widest text-sage-700 border-y border-carbon-50"
+                  className="py-2 px-6 text-[10px] font-semibold tracking-wide text-sage-700 border-y border-carbon-50"
                 >
                   Módulo: {category}
                 </td>

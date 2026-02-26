@@ -33,7 +33,7 @@ export const ActiveShiftWidget: React.FC = () => {
             {isOpen ? <Unlock className="w-7 h-7" /> : <Lock className="w-7 h-7" />}
           </div>
           <div>
-            <h4 className="text-sm font-bold uppercase tracking-wider mb-1 text-carbon-500">
+            <h4 className="text-sm font-medium tracking-wide mb-1 text-carbon-500">
               Turno de Caja
             </h4>
             <p className={cn(

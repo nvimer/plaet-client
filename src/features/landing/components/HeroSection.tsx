@@ -66,7 +66,7 @@ export function HeroSection() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-0 left-1/4 w-[40rem] h-[40rem] bg-sage-green-200 rounded-full blur-[100px] opacity-30"
+          className="absolute top-0 left-1/4 w-[40rem] h-[40rem] bg-sage-200 rounded-full blur-[100px] opacity-30"
         />
         <motion.div
           style={{ 
@@ -83,7 +83,7 @@ export function HeroSection() {
             ease: "easeInOut",
             delay: 1,
           }}
-          className="absolute -bottom-20 right-1/4 w-[45rem] h-[45rem] bg-sage-green-100 rounded-full blur-[120px] opacity-20"
+          className="absolute -bottom-20 right-1/4 w-[45rem] h-[45rem] bg-sage-100 rounded-full blur-[120px] opacity-20"
         />
       </div>
 
@@ -105,8 +105,8 @@ export function HeroSection() {
               }}
               className="inline-flex items-center gap-2 mb-8"
             >
-              <Badge variant="success" size="md" className="bg-white/80 backdrop-blur-md text-sage-green-700 border-sage-green-200 shadow-soft-sm px-4 py-1.5">
-                <Sparkles className="w-4 h-4 mr-1 text-sage-green-500 animate-pulse" />
+              <Badge variant="success" size="md" className="bg-white/80 backdrop-blur-md text-sage-700 border-sage-200 shadow-soft-sm px-4 py-1.5">
+                <Sparkles className="w-4 h-4 mr-1 text-sage-500 animate-pulse" />
                 Sistema #1 en Gestión de Restaurantes
               </Badge>
             </motion.div>
@@ -138,7 +138,7 @@ export function HeroSection() {
               className="text-xl md:text-2xl text-carbon-700 font-light leading-relaxed mb-10 max-w-2xl mx-auto lg:mx-0"
             >
               La plataforma todo-en-uno que {""}
-              <span className="font-semibold text-sage-green-600">
+              <span className="font-semibold text-sage-600">
                 simplifica
               </span>{" "}
               cada aspecto de tu negocio, desde el menú hasta la caja.
@@ -163,7 +163,7 @@ export function HeroSection() {
                   transition={{ delay: 0.6 + i * 0.1 }}
                   className="flex items-center gap-2"
                 >
-                  <div className="w-1.5 h-1.5 rounded-full bg-sage-green-400"></div>
+                  <div className="w-1.5 h-1.5 rounded-full bg-sage-400"></div>
                   <span className="text-carbon-600 font-medium text-sm md:text-base">
                     {text}
                   </span>
@@ -182,7 +182,7 @@ export function HeroSection() {
                 <Button
                   variant="primary"
                   size="lg"
-                  className="group relative overflow-hidden shadow-xl shadow-sage-green-200/50 hover:shadow-2xl hover:shadow-sage-green-300/50 transition-all duration-300 transform hover:-translate-y-1"
+                  className="group relative overflow-hidden shadow-xl shadow-sage-200/50 hover:shadow-2xl hover:shadow-sage-300/50 transition-all duration-300 transform hover:-translate-y-1"
                 >
                   <span className="relative z-10 flex items-center">
                     Comenzar Ahora
@@ -200,7 +200,7 @@ export function HeroSection() {
               <Button
                 variant="secondary"
                 size="lg"
-                className="bg-white/50 backdrop-blur-md border-sage-green-100 hover:bg-white transition-all transform hover:-translate-y-1"
+                className="bg-white/50 backdrop-blur-md border-sage-100 hover:bg-white transition-all transform hover:-translate-y-1"
               >
                 Ver Demo
               </Button>
@@ -218,7 +218,7 @@ export function HeroSection() {
                   <motion.div 
                     key={i} 
                     whileHover={{ y: -5, scale: 1.1, zIndex: 10 }}
-                    className="w-10 h-10 rounded-full border-2 border-white bg-sage-green-200 shadow-md overflow-hidden cursor-pointer transition-transform"
+                    className="w-10 h-10 rounded-full border-2 border-white bg-sage-200 shadow-md overflow-hidden cursor-pointer transition-transform"
                   >
                     <img 
                       src={`https://i.pravatar.cc/100?u=${i + 10}`} 
@@ -240,7 +240,7 @@ export function HeroSection() {
             className="relative lg:h-[600px] flex items-center justify-center"
           >
             {/* Floating Glow Background */}
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-sage-green-300/20 blur-[100px] rounded-full"></div>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-sage-300/20 blur-[100px] rounded-full"></div>
 
             {/* Main App Window */}
             <motion.div
@@ -256,7 +256,7 @@ export function HeroSection() {
                   <div className="w-3 h-3 rounded-full bg-warning-400"></div>
                   <div className="w-3 h-3 rounded-full bg-success-400"></div>
                 </div>
-                <div className="ml-6 h-7 w-40 bg-sage-green-100/50 rounded-xl border border-sage-green-200/30"></div>
+                <div className="ml-6 h-7 w-40 bg-sage-100/50 rounded-xl border border-sage-200/30"></div>
               </div>
 
               {/* Order Grid (Mockup) */}
@@ -265,11 +265,11 @@ export function HeroSection() {
                   <motion.div 
                     key={i} 
                     whileHover={{ scale: 1.05, backgroundColor: "rgba(255,255,255,0.9)" }}
-                    className="bg-white/60 rounded-[1.5rem] p-5 border border-sage-green-100 shadow-sm transition-colors"
+                    className="bg-white/60 rounded-[1.5rem] p-5 border border-sage-100 shadow-sm transition-colors"
                   >
                     <div className="flex justify-between mb-4">
-                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sage-green-100 to-sage-green-200"></div>
-                      <div className="w-14 h-6 bg-sage-green-300/30 rounded-lg"></div>
+                      <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-sage-100 to-sage-200"></div>
+                      <div className="w-14 h-6 bg-sage-300/30 rounded-lg"></div>
                     </div>
                     <div className="w-full h-2.5 bg-carbon-100/50 rounded-full mb-3"></div>
                     <div className="w-2/3 h-2.5 bg-carbon-50/50 rounded-full"></div>
@@ -278,7 +278,7 @@ export function HeroSection() {
               </div>
               
               {/* Bottom Chart Area */}
-              <div className="mt-8 p-6 bg-gradient-to-br from-sage-green-50 to-sage-green-100/50 rounded-3xl h-36 flex items-end justify-between gap-2.5 px-8 border border-sage-green-200/30">
+              <div className="mt-8 p-6 bg-gradient-to-br from-sage-50 to-sage-100/50 rounded-3xl h-36 flex items-end justify-between gap-2.5 px-8 border border-sage-200/30">
                 {[40, 75, 45, 95, 65, 85, 55].map((h, i) => (
                   <motion.div
                     key={i}
@@ -306,7 +306,7 @@ export function HeroSection() {
                   <Sparkles className="w-7 h-7 text-white" />
                 </div>
                 <div>
-                  <p className="text-[11px] uppercase tracking-widest text-carbon-400 font-bold mb-0.5">Nuevo Pedido</p>
+                  <p className="text-[11px] tracking-wide text-carbon-400 font-bold mb-0.5">Nuevo Pedido</p>
                   <p className="text-base font-black text-carbon-900">Mesa 14 • $45.00</p>
                 </div>
               </div>
@@ -323,7 +323,7 @@ export function HeroSection() {
               className="absolute -bottom-10 -left-6 lg:-left-16 bg-carbon-900/95 backdrop-blur-xl rounded-3xl p-6 shadow-2xl border border-carbon-800 z-20 min-w-[200px]"
             >
               <div className="flex items-center justify-between mb-3">
-                <p className="text-[11px] font-bold text-carbon-400 uppercase tracking-widest">Rendimiento</p>
+                <p className="text-[11px] font-bold text-carbon-400 tracking-wide">Rendimiento</p>
                 <div className="w-2.5 h-2.5 rounded-full bg-success-400 shadow-[0_0_10px_rgba(74,222,128,0.5)]"></div>
               </div>
               <p className="text-3xl font-black text-white tracking-tight mb-1">+24.5%</p>

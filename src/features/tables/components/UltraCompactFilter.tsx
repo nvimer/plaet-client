@@ -35,7 +35,7 @@ export const UltraCompactFilter = ({
       label: 'Disp.', 
       value: TableStatus.AVAILABLE, 
       count: counts.available,
-      color: 'bg-sage-green-100 text-sage-green-700 border-sage-green-300'
+      color: 'bg-sage-100 text-sage-700 border-sage-300'
     },
     { 
       label: 'Ocup.', 
@@ -66,7 +66,7 @@ export const UltraCompactFilter = ({
               value={filters.search}
               onChange={(e) => onFilterChange('search', e.target.value)}
               placeholder="Buscar mesas..."
-              className="w-full pl-9 pr-8 py-2 text-sm bg-carbon-50 border border-carbon-200 rounded-lg focus:border-sage-green-400 focus:ring-1 focus:ring-sage-green-200 focus:bg-white transition-all duration-200"
+              className="w-full pl-9 pr-8 py-2 text-sm bg-carbon-50 border border-carbon-200 rounded-lg focus:border-sage-400 focus:ring-1 focus:ring-sage-200 focus:bg-white transition-all duration-200"
             />
             {filters.search && (
               <button
@@ -84,7 +84,7 @@ export const UltraCompactFilter = ({
             className={`
               px-3 py-2 text-sm font-medium rounded-lg border transition-all duration-150 flex items-center gap-1.5
               ${hasActiveFilters 
-                ? 'bg-sage-green-50 text-sage-green-700 border-sage-green-300' 
+                ? 'bg-sage-50 text-sage-700 border-sage-300' 
                 : 'bg-white text-carbon-600 border-sage-border-subtle hover:bg-carbon-50'
               }
             `}
@@ -92,7 +92,7 @@ export const UltraCompactFilter = ({
             <Filter className="w-4 h-4" />
             <span className="hidden sm:inline">Filtros</span>
             {hasActiveFilters && (
-              <span className="bg-sage-green-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-semibold">
+              <span className="bg-sage-600 text-white text-xs rounded-full w-4 h-4 flex items-center justify-center font-semibold">
                 {[filters.search, filters.status !== 'ALL' ? 'status' : '', filters.location].filter(Boolean).length}
               </span>
             )}

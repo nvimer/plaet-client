@@ -132,7 +132,7 @@ export function MenuItemSelector({
             className={cn(
               "w-12 h-12 rounded-full flex items-center justify-center transition-all",
               isSelected
-                ? "bg-sage-green-500 text-white"
+                ? "bg-sage-500 text-white"
                 : "bg-white border-2 border-sage-200",
             )}
           >
@@ -178,7 +178,7 @@ export function MenuItemSelector({
             {label}
           </span>
           {required && (
-            <span className="text-[10px] bg-white/50 text-carbon-500 border border-carbon-200 px-1.5 py-0.5 rounded-full uppercase tracking-wider font-bold">
+            <span className="text-[10px] bg-white/50 text-carbon-500 border border-carbon-200 px-1.5 py-0.5 rounded-full tracking-wide font-bold">
               Obligatorio
             </span>
           )}
@@ -205,7 +205,7 @@ export function MenuItemSelector({
                 isSelected
                   ? cn(
                       colors.selected,
-                      "border-sage-green-500 shadow-md ring-4 ring-sage-green-500/10",
+                      "border-sage-500 shadow-md ring-4 ring-sage-500/10",
                     )
                   : cn("bg-white border-sage-200", colors.hover),
               )}
@@ -224,7 +224,7 @@ export function MenuItemSelector({
                   className={cn(
                     "absolute top-2 right-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all backdrop-blur-sm",
                     isSelected
-                      ? "bg-sage-green-500 border-sage-green-500 text-white shadow-md"
+                      ? "bg-sage-500 border-sage-500 text-white shadow-md"
                       : "bg-white/80 border-sage-300 text-transparent",
                   )}
                 >

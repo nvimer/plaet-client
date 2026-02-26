@@ -67,7 +67,7 @@ export const CashClosurePage: React.FC = () => {
                 </div>
               </div>
               <div className="text-right">
-                <p className="text-xs text-success-700 uppercase tracking-wider font-bold">Base de Apertura</p>
+                <p className="text-xs text-success-700 tracking-wide font-bold">Base de Apertura</p>
                 <p className="text-xl font-black text-success-900">${currentShift!.openingBalance.toLocaleString()}</p>
               </div>
             </div>

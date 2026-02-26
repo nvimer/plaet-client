@@ -377,7 +377,7 @@ export function OrderForm({
                         🍲
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs text-amber-600 font-medium uppercase tracking-wider">
+                        <p className="text-xs text-amber-600 font-medium tracking-wide">
                           Sopa
                         </p>
                         <p className="text-carbon-900 font-semibold">
@@ -409,7 +409,7 @@ export function OrderForm({
                         🥔
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs text-emerald-600 font-medium uppercase tracking-wider">
+                        <p className="text-xs text-emerald-600 font-medium tracking-wide">
                           Principio
                         </p>
                         <p className="text-carbon-900 font-semibold">
@@ -441,7 +441,7 @@ export function OrderForm({
                         🥗
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs text-sage-600 font-medium uppercase tracking-wider">
+                        <p className="text-xs text-sage-600 font-medium tracking-wide">
                           Ensalada
                         </p>
                         <p className="text-carbon-900 font-semibold">
@@ -473,7 +473,7 @@ export function OrderForm({
                         🥤
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs text-blue-600 font-medium uppercase tracking-wider">
+                        <p className="text-xs text-blue-600 font-medium tracking-wide">
                           Jugo
                         </p>
                         <p className="text-carbon-900 font-semibold">
@@ -505,7 +505,7 @@ export function OrderForm({
                         🍌
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs text-purple-600 font-medium uppercase tracking-wider">
+                        <p className="text-xs text-purple-600 font-medium tracking-wide">
                           Extra
                         </p>
                         <p className="text-carbon-900 font-semibold">
@@ -537,7 +537,7 @@ export function OrderForm({
                         🍚
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs text-amber-600 font-medium uppercase tracking-wider">
+                        <p className="text-xs text-amber-600 font-medium tracking-wide">
                           Arroz
                         </p>
                         <p className="text-carbon-900 font-semibold">

@@ -88,7 +88,7 @@ export default function LoginPage() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-20 left-10 w-96 h-96 bg-sage-green-200 rounded-full blur-3xl opacity-30"
+          className="absolute top-20 left-10 w-96 h-96 bg-sage-200 rounded-full blur-3xl opacity-30"
         />
         <motion.div
           animate={{
@@ -101,7 +101,7 @@ export default function LoginPage() {
             ease: "easeInOut",
             delay: 1,
           }}
-          className="absolute bottom-20 right-10 w-[32rem] h-[32rem] bg-sage-green-100 rounded-full blur-3xl opacity-20"
+          className="absolute bottom-20 right-10 w-[32rem] h-[32rem] bg-sage-100 rounded-full blur-3xl opacity-20"
         />
       </div>
 
@@ -127,7 +127,7 @@ export default function LoginPage() {
             </motion.div>
 
             <h1 className="text-3xl font-bold text-carbon-900 mb-2 tracking-tight">
-              <BrandName accentClassName="text-sage-green-600" />
+              <BrandName accentClassName="text-sage-600" />
             </h1>
             <p className="text-carbon-600 font-light">
               Sistema de Gestión de Restaurantes
@@ -235,7 +235,7 @@ export default function LoginPage() {
             <div className="flex justify-end">
               <Link
                 to="/forgot-password"
-                className="text-sm text-sage-green-600 hover:text-sage-green-700 font-medium transition-colors"
+                className="text-sm text-sage-600 hover:text-sage-700 font-medium transition-colors"
               >
                 ¿Olvidaste tu contraseña?
               </Link>
@@ -266,7 +266,7 @@ export default function LoginPage() {
               ¿Eres administrador?{" "}
               <Link
                 to="/register"
-                className="text-sage-green-600 font-semibold hover:text-sage-green-700 transition-colors"
+                className="text-sage-600 font-semibold hover:text-sage-700 transition-colors"
               >
                 Registra tu restaurante
               </Link>

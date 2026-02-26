@@ -22,7 +22,7 @@ export function Badge({
     const varianStyles = {
         neutral: "bg-sage-50 text-carbon-700 border border-sage-border-subtle",
         success:
-            "bg-sage-green-50 text-sage-green-700 border border-sage-green-200",
+            "bg-sage-50 text-sage-700 border border-sage-200",
         warning: "bg-amber-50 text-yellow-700 border border-yellow-200",
         error: "bg-red-50 text-red-700 border border-red-200",
         info: "bg-blue-50 text-blue-700 border-blue-200",

@@ -202,8 +202,8 @@
 
   /* Primary Button  */
   .btn-sage-primary {
-    @apply px-8 py-4 bg-sage-green-300 text-carbon-900 rounded-2xl font-semibold text-lg;
-    @apply hover:bg-sage-green-400 active:bg-sage-green-500;
+    @apply px-8 py-4 bg-sage-300 text-carbon-900 rounded-2xl font-semibold text-lg;
+    @apply hover:bg-sage-400 active:bg-sage-500;
     @apply transition-all duration-300 ease-out;
     @apply shadow-soft-md hover:shadow-soft-lg;
   }
@@ -218,8 +218,8 @@
 
   /* Outline Button  */
   .btn-sage-outline {
-    @apply px-8 py-4 bg-transparent border-2 border-sage-green-300 text-sage-green-600 rounded-2xl font-semibold text-lg;
-    @apply hover:bg-sage-green-50 active:bg-sage-green-100;
+    @apply px-8 py-4 bg-transparent border-2 border-sage-300 text-sage-600 rounded-2xl font-semibold text-lg;
+    @apply hover:bg-sage-50 active:bg-sage-100;
     @apply transition-all duration-300 ease-out;
   }
 }

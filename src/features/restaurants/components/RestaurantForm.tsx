@@ -28,7 +28,7 @@ export function RestaurantForm({ onSubmit, isLoading, initialData }: RestaurantF
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
       {/* Sección: Información del Restaurante */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold text-carbon-900 uppercase tracking-wider flex items-center gap-2">
+        <h3 className="text-sm font-bold text-carbon-900 tracking-wide flex items-center gap-2">
           <Building2 className="w-4 h-4 text-sage-600" />
           Información del Restaurante
         </h3>
@@ -79,7 +79,7 @@ export function RestaurantForm({ onSubmit, isLoading, initialData }: RestaurantF
 
       {/* Sección: Usuario Administrador */}
       <div className="space-y-4">
-        <h3 className="text-sm font-bold text-carbon-900 uppercase tracking-wider flex items-center gap-2">
+        <h3 className="text-sm font-bold text-carbon-900 tracking-wide flex items-center gap-2">
           <User className="w-4 h-4 text-sage-600" />
           Primer Usuario Administrador
         </h3>

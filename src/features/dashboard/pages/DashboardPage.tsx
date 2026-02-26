@@ -40,7 +40,7 @@ export function DashboardPage() {
         <header>
           <div className="flex items-center gap-2 text-primary-600 mb-1">
             <LayoutDashboard className="w-5 h-5" />
-            <span className="text-sm font-bold uppercase tracking-widest">Panel de Control Global</span>
+            <span className="text-sm font-medium tracking-wide">Panel de Control Global</span>
           </div>
           <h1 className="text-4xl font-black text-carbon-900 tracking-tight">
             Bienvenido, SuperAdmin
@@ -181,7 +181,7 @@ export function DashboardPage() {
         <div>
           <div className="flex items-center gap-2 text-primary-600 mb-1">
             <LayoutDashboard className="w-5 h-5" />
-            <span className="text-sm font-bold uppercase tracking-widest">Panel Principal</span>
+            <span className="text-sm font-medium tracking-wide">Panel Principal</span>
           </div>
           <h1 className="text-4xl font-black text-carbon-900 tracking-tight">
             {greeting}, Admin
@@ -338,7 +338,7 @@ export function DashboardPage() {
                   </div>
                   <div className="flex flex-col">
                     <span className={cn(
-                      "text-[10px] font-black uppercase tracking-widest",
+                      "text-[10px] font-semibold tracking-wide",
                       isOccupied ? "text-rose-600" : isCleaning ? "text-amber-600" : "text-carbon-400"
                     )}>
                       {isOccupied ? "Ocupada" : isCleaning ? "Limpieza" : "Libre"}

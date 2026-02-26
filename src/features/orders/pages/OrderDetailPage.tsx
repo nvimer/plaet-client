@@ -178,7 +178,7 @@ export function OrderDetailPage() {
             <div className="grid grid-cols-2 gap-4">
               {order.table && (
                 <div className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-sage-green-600" />
+                  <MapPin className="w-4 h-4 text-sage-600" />
                   <span className="text-carbon-700">
                     Mesa <strong>{order.table.number}</strong>
                   </span>
@@ -242,7 +242,7 @@ export function OrderDetailPage() {
           <Card
             variant="elevated"
             padding="md"
-            className="bg-gradient-to-r from-sage-green-50 to-sage-green-100"
+            className="bg-gradient-to-r from-sage-50 to-sage-100"
           >
             <div className="space-y-2">
               <div className="flex justify-between text-carbon-700">
@@ -255,7 +255,7 @@ export function OrderDetailPage() {
                   <span>-${paidAmount.toLocaleString("es-CO")}</span>
                 </div>
               )}
-              <div className="flex justify-between text-2xl font-bold text-carbon-900 pt-2 border-t border-sage-green-200">
+              <div className="flex justify-between text-2xl font-bold text-carbon-900 pt-2 border-t border-sage-200">
                 <span>Total</span>
                 <span>${remainingAmount.toLocaleString("es-CO")}</span>
               </div>

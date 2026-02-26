@@ -118,7 +118,7 @@ export function GroupedOrderCard({
             <div className="flex flex-wrap gap-2">
               <OrderTypeBadge type={groupedOrder.type} />
               <OrderStatusBadge status={groupedOrder.status} />
-              <div className="px-2.5 py-0.5 rounded-full bg-carbon-100 text-carbon-600 text-xs font-bold border border-carbon-200 uppercase tracking-wider">
+              <div className="px-2.5 py-0.5 rounded-full bg-carbon-100 text-carbon-600 text-xs font-bold border border-carbon-200 tracking-wide">
                 {groupedOrder.orders.length} {groupedOrder.orders.length === 1 ? 'Pedido' : 'Pedidos'}
               </div>
             </div>
@@ -126,7 +126,7 @@ export function GroupedOrderCard({
 
           <div className="flex flex-col items-end gap-2">
             <div className="text-right">
-              <p className="text-xs text-carbon-400 font-bold uppercase tracking-widest">Total Mesa</p>
+              <p className="text-xs text-carbon-400 font-medium tracking-wide">Total Mesa</p>
               <p className="text-2xl font-black text-sage-700">
                 ${groupedOrder.totalAmount.toLocaleString("es-CO")}
               </p>

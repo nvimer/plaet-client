@@ -149,7 +149,7 @@ export function CategoryEditPage() {
                     {...register("description")}
                     placeholder="Describe la categoría..."
                     rows={4}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 placeholder:text-carbon-400 focus:outline-none focus:ring-2 focus:ring-sage-green-400 focus:border-sage-green-400"
+                    className="w-full px-4 py-3 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 placeholder:text-carbon-400 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:border-sage-400"
                   />
                   {errors.description && (
                     <p className="text-sm text-red-600 mt-1">

@@ -17,7 +17,7 @@ interface FilterSelectProps {
 }
 
 const inputClass =
-  "min-h-[44px] w-full px-4 py-2.5 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 text-sm font-medium placeholder:text-carbon-400 focus:outline-none focus:ring-2 focus:ring-sage-green-400 focus:border-sage-green-400 touch-manipulation transition-colors";
+  "min-h-[44px] w-full px-4 py-2.5 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 text-sm font-medium placeholder:text-carbon-400 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:border-sage-400 touch-manipulation transition-colors";
 
 /**
  * Select de filtro unificado. Mismo estilo en mesas, productos, categorías.

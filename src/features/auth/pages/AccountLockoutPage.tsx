@@ -80,7 +80,7 @@ export default function AccountLockoutPage() {
   if (isChecking) {
     return (
       <div className="min-h-screen bg-sage-50 flex items-center justify-center">
-        <div className="animate-spin w-8 h-8 border-4 border-sage-green-600 border-t-transparent rounded-full" />
+        <div className="animate-spin w-8 h-8 border-4 border-sage-600 border-t-transparent rounded-full" />
       </div>
     );
   }
@@ -98,7 +98,7 @@ export default function AccountLockoutPage() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-20 left-10 w-96 h-96 bg-sage-green-200 rounded-full blur-3xl opacity-30"
+          className="absolute top-20 left-10 w-96 h-96 bg-sage-200 rounded-full blur-3xl opacity-30"
         />
         <motion.div
           animate={{
@@ -111,7 +111,7 @@ export default function AccountLockoutPage() {
             ease: "easeInOut",
             delay: 1,
           }}
-          className="absolute bottom-20 right-10 w-[32rem] h-[32rem] bg-sage-green-100 rounded-full blur-3xl opacity-20"
+          className="absolute bottom-20 right-10 w-[32rem] h-[32rem] bg-sage-100 rounded-full blur-3xl opacity-20"
         />
       </div>
 
@@ -130,7 +130,7 @@ export default function AccountLockoutPage() {
               className="inline-flex items-center justify-center mb-6"
             >
               <div className="w-16 h-16 rounded-2xl bg-gradient-sage flex items-center justify-center shadow-soft-md">
-                <ChefHat className="w-8 h-8 text-sage-green-600" />
+                <ChefHat className="w-8 h-8 text-sage-600" />
               </div>
             </motion.div>
 
@@ -153,7 +153,7 @@ export default function AccountLockoutPage() {
 
           <div className="bg-carbon-50 rounded-2xl p-6 mb-6">
             <div className="flex items-center justify-center gap-2 mb-4">
-              <Clock className="w-5 h-5 text-sage-green-600" />
+              <Clock className="w-5 h-5 text-sage-600" />
               <span className="text-sm font-semibold text-carbon-700">
                 Tiempo restante
               </span>

@@ -144,7 +144,7 @@ export function StockManagementPage() {
         <div className="bg-white rounded-2xl border border-sage-200 p-4 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm text-carbon-500 mr-1 font-bold uppercase tracking-wider">Filtrar por stock:</span>
+              <span className="text-sm text-carbon-500 mr-1 font-medium tracking-wide">Filtrar por stock:</span>
               <Button
                 variant={filter === "ALL" ? "primary" : "outline"}
                 size="sm"
@@ -300,7 +300,7 @@ function StockItemCard({
             {item.name}
           </h3>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-carbon-400 uppercase tracking-widest bg-carbon-100 px-2 py-0.5 rounded">
+            <span className="text-xs font-bold text-carbon-400 tracking-wide bg-carbon-100 px-2 py-0.5 rounded">
               ID: {item.id}
             </span>
             {item.categoryId && (

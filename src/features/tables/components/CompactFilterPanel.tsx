@@ -40,7 +40,7 @@ export const CompactFilterPanel = ({
       label: 'Disponibles', 
       value: TableStatus.AVAILABLE, 
       count: counts.available,
-      color: 'bg-sage-green-50 text-sage-green-700 hover:bg-sage-green-100 border-sage-green-200'
+      color: 'bg-sage-50 text-sage-700 hover:bg-sage-100 border-sage-200'
     },
     { 
       label: 'Ocupadas', 
@@ -97,7 +97,7 @@ export const CompactFilterPanel = ({
                   className={`
                     inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg border transition-all duration-150
                     ${isActive 
-                      ? status.color + ' ring-2 ring-offset-1 ring-sage-green-500' 
+                      ? status.color + ' ring-2 ring-offset-1 ring-sage-500' 
                       : 'bg-white text-carbon-600 hover:bg-carbon-50 border-sage-border-subtle'
                     }
                   `}

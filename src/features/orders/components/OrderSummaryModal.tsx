@@ -45,7 +45,7 @@ export function OrderSummaryModal({
                 <h2 className="text-white font-black text-lg sm:text-2xl tracking-tight">
                   Revisar Pedido
                 </h2>
-                <p className="text-carbon-400 text-xs sm:text-sm font-bold uppercase tracking-widest">
+                <p className="text-carbon-400 text-xs sm:text-sm font-medium tracking-wide">
                   {orderType === OrderType.DINE_IN
                     ? `Mesa ${tableId} • ${orders.length} servicios`
                     : `Para Llevar • ${orders.length} servicios`}
@@ -123,7 +123,7 @@ export function OrderSummaryModal({
                       <div className="bg-amber-50/50 rounded-2xl p-3 border border-amber-100">
                         <div className="flex items-center gap-2 mb-1.5">
                           <ArrowRightLeft className="w-3.5 h-3.5 text-amber-600" />
-                          <span className="text-[10px] font-black uppercase tracking-wider text-amber-700">Cambios Solicitados</span>
+                          <span className="text-[10px] font-semibold tracking-wide text-amber-700">Cambios Solicitados</span>
                         </div>
                         <div className="space-y-1">
                           {order.lunch.replacements.map((r) => (
@@ -142,7 +142,7 @@ export function OrderSummaryModal({
                       <div className="bg-sage-50/50 rounded-2xl p-3 border border-sage-100">
                         <div className="flex items-center gap-2 mb-1.5">
                           <PackagePlus className="w-3.5 h-3.5 text-sage-600" />
-                          <span className="text-[10px] font-black uppercase tracking-wider text-sage-700">Adiciones / Extras</span>
+                          <span className="text-[10px] font-semibold tracking-wide text-sage-700">Adiciones / Extras</span>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {order.looseItems.map((i) => (
@@ -172,7 +172,7 @@ export function OrderSummaryModal({
         {/* Total & Actions - Fixed Bottom */}
         <div className="px-6 py-6 sm:px-8 border-t border-carbon-100 bg-white shadow-[0_-8px_30px_rgb(0,0,0,0.04)]">
           <div className="flex items-center justify-between mb-6">
-            <span className="text-sm font-bold text-carbon-400 uppercase tracking-widest">Total del Pedido</span>
+            <span className="text-sm font-bold text-carbon-400 tracking-wide">Total del Pedido</span>
             <span className="text-3xl sm:text-4xl font-black text-carbon-900 tracking-tight">
               ${tableTotal.toLocaleString("es-CO")}
             </span>

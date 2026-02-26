@@ -96,11 +96,11 @@ export function ProductGrid({
 
               {/* Price and Quantity */}
               <div className="mt-auto flex items-center justify-between">
-                <p className="text-2xl font-bold text-sage-green-600">
+                <p className="text-2xl font-bold text-sage-600">
                   ${Number(product.price).toLocaleString("es-CO")}
                 </p>
                 {showQuantity && quantity > 0 && (
-                  <span className="bg-sage-green-100 text-sage-green-700 px-3 py-1 rounded-full text-sm font-semibold">
+                  <span className="bg-sage-100 text-sage-700 px-3 py-1 rounded-full text-sm font-semibold">
                     {quantity}
                   </span>
                 )}

@@ -36,7 +36,7 @@ function ErrorPage(): React.ReactNode {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-20 left-10 w-96 h-96 bg-sage-green-200 rounded-full blur-3xl opacity-30"
+          className="absolute top-20 left-10 w-96 h-96 bg-sage-200 rounded-full blur-3xl opacity-30"
         />
         <motion.div
           animate={{
@@ -49,7 +49,7 @@ function ErrorPage(): React.ReactNode {
             ease: "easeInOut",
             delay: 1,
           }}
-          className="absolute bottom-20 right-10 w-[32rem] h-[32rem] bg-sage-green-100 rounded-full blur-3xl opacity-20"
+          className="absolute bottom-20 right-10 w-[32rem] h-[32rem] bg-sage-100 rounded-full blur-3xl opacity-20"
         />
       </div>
 
@@ -68,7 +68,7 @@ function ErrorPage(): React.ReactNode {
               className="inline-flex items-center justify-center mb-6"
             >
               <div className="w-20 h-20 rounded-2xl bg-gradient-sage flex items-center justify-center shadow-soft-md">
-                <ChefHat className="w-10 h-10 text-sage-green-600" />
+                <ChefHat className="w-10 h-10 text-sage-600" />
               </div>
             </motion.div>
 

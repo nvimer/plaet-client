@@ -66,7 +66,7 @@ export function TestimonialsSection() {
               <Card
                 variant="bordered"
                 padding="lg"
-                className="h-full flex flex-col hover:border-sage-green-300 transition-colors"
+                className="h-full flex flex-col hover:border-sage-300 transition-colors"
               >
                 <div className="flex gap-1 mb-6">
                   {[...Array(t.stars)].map((_, i) => (

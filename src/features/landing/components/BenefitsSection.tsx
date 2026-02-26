@@ -84,10 +84,10 @@ export function BenefitsSection() {
               >
                 {/* Step Number */}
                 <div className="inline-flex items-center gap-6 mb-10 group">
-                  <span className="text-8xl md:text-9xl font-black text-sage-green-100/60 leading-none group-hover:text-sage-green-200 transition-colors duration-500">
+                  <span className="text-8xl md:text-9xl font-black text-sage-100/60 leading-none group-hover:text-sage-200 transition-colors duration-500">
                     {step.number}
                   </span>
-                  <div className="w-24 h-2 bg-gradient-to-r from-sage-green-300 to-sage-green-500 rounded-full group-hover:w-32 transition-all duration-700"></div>
+                  <div className="w-24 h-2 bg-gradient-to-r from-sage-300 to-sage-500 rounded-full group-hover:w-32 transition-all duration-700"></div>
                 </div>
 
                 {/* Title */}
@@ -110,13 +110,13 @@ export function BenefitsSection() {
                       transition={{ delay: 0.3 + bIndex * 0.1 }}
                       className="flex items-center gap-5 group/item"
                     >
-                      <div className="flex-shrink-0 w-8 h-8 rounded-2xl bg-sage-green-100 flex items-center justify-center group-hover/item:bg-sage-green-200 transition-colors">
+                      <div className="flex-shrink-0 w-8 h-8 rounded-2xl bg-sage-100 flex items-center justify-center group-hover/item:bg-sage-200 transition-colors">
                         <Check
-                          className="w-5 h-5 text-sage-green-600"
+                          className="w-5 h-5 text-sage-600"
                           strokeWidth={3}
                         />
                       </div>
-                      <span className="text-xl text-carbon-800 font-medium group-hover/item:text-sage-green-700 transition-colors">
+                      <span className="text-xl text-carbon-800 font-medium group-hover/item:text-sage-700 transition-colors">
                         {benefit}
                       </span>
                     </motion.li>
@@ -148,7 +148,7 @@ export function BenefitsSection() {
                   <motion.div 
                     animate={{ rotate: index % 2 === 1 ? [-2, 2, -2] : [2, -2, 2] }}
                     transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                    className="absolute -top-10 -bottom-10 -left-10 -right-10 bg-sage-green-100/50 rounded-5xl -z-10 border border-sage-green-200/50"
+                    className="absolute -top-10 -bottom-10 -left-10 -right-10 bg-sage-100/50 rounded-5xl -z-10 border border-sage-200/50"
                   />
 
                   {/* Floating element */}
@@ -162,7 +162,7 @@ export function BenefitsSection() {
                     className="absolute -bottom-12 -right-8 lg:-right-16 bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-2xl border border-white/80 z-20"
                   >
                     <div className="flex items-center gap-5">
-                      <div className="w-14 h-14 bg-gradient-to-br from-sage-green-400 to-sage-green-500 rounded-2xl flex items-center justify-center shadow-lg shadow-sage-green-200/50">
+                      <div className="w-14 h-14 bg-gradient-to-br from-sage-400 to-sage-500 rounded-2xl flex items-center justify-center shadow-lg shadow-sage-200/50">
                         <ArrowRight className="w-8 h-8 text-white" />
                       </div>
                       <div>

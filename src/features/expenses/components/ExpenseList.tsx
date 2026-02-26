@@ -39,7 +39,7 @@ export const ExpenseList: React.FC = () => {
     <div className="bg-white rounded-3xl shadow-sm border border-sage-100 overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full text-left">
-          <thead className="bg-sage-50 text-carbon-500 text-xs uppercase tracking-wider font-black">
+          <thead className="bg-sage-50 text-carbon-500 text-xs tracking-wide font-black">
             <tr>
               <th className="px-6 py-4">Concepto</th>
               <th className="px-6 py-4">Categoría</th>

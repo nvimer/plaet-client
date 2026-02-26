@@ -75,7 +75,7 @@ export function TableGrid({
 
               {/* Selected indicator */}
               {isSelected && (
-                <span className="text-xs text-sage-green-600 font-semibold mt-2">
+                <span className="text-xs text-sage-600 font-semibold mt-2">
                   Seleccionada
                 </span>
               )}

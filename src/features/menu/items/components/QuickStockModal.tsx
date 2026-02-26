@@ -99,13 +99,13 @@ export function QuickStockModal({ item, isOpen, onClose }: QuickStockModalProps)
               <Package className="w-6 h-6 text-sage-600" />
             </div>
             <div>
-              <p className="text-xs text-carbon-500 font-bold uppercase tracking-wider">Stock Actual</p>
+              <p className="text-xs text-carbon-500 font-medium tracking-wide">Stock Actual</p>
               <p className="text-2xl font-black text-carbon-900">{currentStock}</p>
             </div>
           </div>
           
           <div className="text-right">
-            <p className="text-xs text-carbon-400 font-bold uppercase tracking-wider">Resultado</p>
+            <p className="text-xs text-carbon-400 font-medium tracking-wide">Resultado</p>
             <p className={cn(
               "text-2xl font-black",
               adjustment > 0 ? "text-emerald-600" : adjustment < 0 ? "text-rose-600" : "text-carbon-400"

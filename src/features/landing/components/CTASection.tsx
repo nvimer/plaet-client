@@ -28,7 +28,7 @@ export function CTASection() {
             repeat: Infinity,
             ease: "linear",
           }}
-          className="absolute top-1/4 -left-48 w-96 h-96 bg-sage-green-200 rounded-full blur-3xl opacity-30"
+          className="absolute top-1/4 -left-48 w-96 h-96 bg-sage-200 rounded-full blur-3xl opacity-30"
         />
         <motion.div
           animate={{
@@ -40,7 +40,7 @@ export function CTASection() {
             repeat: Infinity,
             ease: "linear",
           }}
-          className="absolute bottom-1/4 -right-48 w-[32rem] h-[32rem] bg-sage-green-300 rounded-full blur-3xl opacity-20"
+          className="absolute bottom-1/4 -right-48 w-[32rem] h-[32rem] bg-sage-300 rounded-full blur-3xl opacity-20"
         />
       </div>
 
@@ -104,7 +104,7 @@ export function CTASection() {
                 key={feature}
                 className="flex items-center gap-2 justify-center lg:justify-start"
               >
-                <div className="w-2 h-2 rounded-full bg-sage-green-400"></div>
+                <div className="w-2 h-2 rounded-full bg-sage-400"></div>
                 <span className="text-carbon-700 font-medium">{feature}</span>
               </div>
             ))}

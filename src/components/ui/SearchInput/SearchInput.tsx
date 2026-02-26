@@ -62,7 +62,7 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
         {/* Search icon */}
         <div className="absolute left-3 top-1/2 transform -translate-y-1/2 text-carbon-400">
           {loading ? (
-            <div className="w-4 h-4 border-2 border-sage-green-500 border-t-transparent rounded-full animate-spin" />
+            <div className="w-4 h-4 border-2 border-sage-500 border-t-transparent rounded-full animate-spin" />
           ) : (
             <Search className="w-4 h-4" />
           )}
@@ -77,10 +77,10 @@ export const SearchInput = forwardRef<HTMLInputElement, SearchInputProps>(
           className={`
             w-full pl-10 pr-10 py-2.5 text-sm text-carbon-900
             bg-white border-2 border-sage-border-subtle rounded-xl
-            focus:border-sage-green-300 focus:ring-2 focus:ring-sage-green-100
+            focus:border-sage-300 focus:ring-2 focus:ring-sage-100
             placeholder:text-carbon-400
             transition-all duration-200
-            ${hasValue ? 'border-sage-green-300' : ''}
+            ${hasValue ? 'border-sage-300' : ''}
             ${className}
           `.trim().replace(/\s+/g, ' ')}
           {...props}

@@ -148,7 +148,7 @@ export default function ChangePasswordPage() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-20 left-10 w-96 h-96 bg-sage-green-200 rounded-full blur-3xl opacity-30"
+          className="absolute top-20 left-10 w-96 h-96 bg-sage-200 rounded-full blur-3xl opacity-30"
         />
         <motion.div
           animate={{
@@ -161,7 +161,7 @@ export default function ChangePasswordPage() {
             ease: "easeInOut",
             delay: 1,
           }}
-          className="absolute bottom-20 right-10 w-[32rem] h-[32rem] bg-sage-green-100 rounded-full blur-3xl opacity-20"
+          className="absolute bottom-20 right-10 w-[32rem] h-[32rem] bg-sage-100 rounded-full blur-3xl opacity-20"
         />
       </div>
 
@@ -180,7 +180,7 @@ export default function ChangePasswordPage() {
               className="inline-flex items-center justify-center mb-6"
             >
               <div className="w-16 h-16 rounded-2xl bg-gradient-sage flex items-center justify-center shadow-soft-md">
-                <ChefHat className="w-8 h-8 text-sage-green-600" />
+                <ChefHat className="w-8 h-8 text-sage-600" />
               </div>
             </motion.div>
 
@@ -212,7 +212,7 @@ export default function ChangePasswordPage() {
                   className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all ${
                     errors.currentPassword
                       ? "border-red-500 focus:ring-red-200"
-                      : "border-carbon-200 focus:ring-sage-green-200 focus:border-sage-green-500"
+                      : "border-carbon-200 focus:ring-sage-200 focus:border-sage-500"
                   }`}
                   required
                   autoComplete="current-password"
@@ -256,7 +256,7 @@ export default function ChangePasswordPage() {
                   className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all ${
                     errors.newPassword
                       ? "border-red-500 focus:ring-red-200"
-                      : "border-carbon-200 focus:ring-sage-green-200 focus:border-sage-green-500"
+                      : "border-carbon-200 focus:ring-sage-200 focus:border-sage-500"
                   }`}
                   required
                   autoComplete="new-password"
@@ -334,7 +334,7 @@ export default function ChangePasswordPage() {
                   className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all ${
                     errors.confirmPassword
                       ? "border-red-500 focus:ring-red-200"
-                      : "border-carbon-200 focus:ring-sage-green-200 focus:border-sage-green-500"
+                      : "border-carbon-200 focus:ring-sage-200 focus:border-sage-500"
                   }`}
                   required
                   autoComplete="new-password"

@@ -26,13 +26,13 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variantStyles = {
       primary:
-        "bg-sage-green-300 text-carbon-900 hover:bg-sage-green-400 active:bg-sage-green-500 focus:ring-sage-green-300 shadow-soft-sm hover:shadow-soft-md",
+        "bg-sage-300 text-carbon-900 hover:bg-sage-400 active:bg-sage-500 focus:ring-sage-300 shadow-soft-sm hover:shadow-soft-md",
       secondary:
-        "bg-sage-50 text-carbon-900 hover:bg-sage-green-100 active:bg-sage-200 focus:ring-sage-green-200 border border-sage-border-subtle",
+        "bg-sage-50 text-carbon-900 hover:bg-sage-100 active:bg-sage-200 focus:ring-sage-200 border border-sage-border-subtle",
       outline:
-        "bg-transparent text-sage-green-600 border-2 border-sage-green-300 hover:bg-sage-green-50 active:bg-sage-green-100 focus:ring-sage-green-300",
+        "bg-transparent text-sage-600 border-2 border-sage-300 hover:bg-sage-50 active:bg-sage-100 focus:ring-sage-300",
       ghost:
-        "bg-transparent text-carbon-700 hover:bg-sage-50 active:bg-sage-100 focus:ring-sage-green-200",
+        "bg-transparent text-carbon-700 hover:bg-sage-50 active:bg-sage-100 focus:ring-sage-200",
     };
 
     const sizeStyles = {

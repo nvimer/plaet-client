@@ -146,7 +146,7 @@ export default function RegisterForm() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-20 left-10 w-96 h-96 bg-sage-green-200 rounded-full blur-3xl opacity-30"
+          className="absolute top-20 left-10 w-96 h-96 bg-sage-200 rounded-full blur-3xl opacity-30"
         />
         <motion.div
           animate={{
@@ -159,7 +159,7 @@ export default function RegisterForm() {
             ease: "easeInOut",
             delay: 1,
           }}
-          className="absolute bottom-20 right-10 w-[32rem] h-[32rem] bg-sage-green-100 rounded-full blur-3xl opacity-20"
+          className="absolute bottom-20 right-10 w-[32rem] h-[32rem] bg-sage-100 rounded-full blur-3xl opacity-20"
         />
       </div>
 
@@ -180,7 +180,7 @@ export default function RegisterForm() {
               className="inline-flex items-center justify-center mb-6"
             >
               <div className="w-16 h-16 rounded-2xl bg-gradient-sage flex items-center justify-center shadow-soft-md">
-                <UserPlus className="w-8 h-8 text-sage-green-600" />
+                <UserPlus className="w-8 h-8 text-sage-600" />
               </div>
             </motion.div>
 
@@ -364,7 +364,7 @@ export default function RegisterForm() {
             {/* Password requirements hint */}
             <div className="bg-sage-50 rounded-lg p-4 text-sm text-carbon-600">
               <div className="flex items-center gap-2 mb-2">
-                <ShieldCheck className="w-4 h-4 text-sage-green-600" />
+                <ShieldCheck className="w-4 h-4 text-sage-600" />
                 <span className="font-semibold">Requisitos de contraseña:</span>
               </div>
               <ul className="space-y-1 ml-6">
@@ -401,7 +401,7 @@ export default function RegisterForm() {
               ¿Ya tienes cuenta?{" "}
               <Link
                 to="/login"
-                className="text-sage-green-600 font-semibold hover:to-sage-green-700 transition-colors"
+                className="text-sage-600 font-semibold hover:to-sage-700 transition-colors"
               >
                 Inicia Sesión
               </Link>

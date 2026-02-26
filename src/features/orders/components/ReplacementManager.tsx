@@ -240,7 +240,7 @@ export function ReplacementManager({
                       <FromIcon className="w-5 h-5" />
                     </div>
                     <div className="flex flex-col">
-                      <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-amber-600">
+                      <div className="flex items-center gap-2 text-[10px] font-semibold tracking-wide text-amber-600">
                         <span>Sin {replacement.fromName}</span>
                         <ArrowRight className="w-3 h-3 opacity-50" />
                         <span>Extra {replacement.toName}</span>
@@ -312,7 +312,7 @@ export function ReplacementManager({
                           <div key={s} className={cn("w-2 h-2 rounded-full transition-colors", s === currentStep ? "bg-amber-400" : "bg-white/20")} />
                         ))}
                       </div>
-                      <span className="text-carbon-400 text-[10px] font-black uppercase tracking-widest">
+                      <span className="text-carbon-400 text-[10px] font-semibold tracking-wide">
                         Paso {currentStep + 1} de 3
                       </span>
                     </div>
@@ -349,7 +349,7 @@ export function ReplacementManager({
                             <span className="font-black text-carbon-900 text-lg block tracking-tight">
                               {cat.name}
                             </span>
-                            <span className="text-xs font-bold text-amber-600 uppercase tracking-widest">
+                            <span className="text-xs font-bold text-amber-600 tracking-wide">
                               Quitar del almuerzo
                             </span>
                           </div>
@@ -369,7 +369,7 @@ export function ReplacementManager({
                       <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 opacity-50">
                         {React.createElement(CATEGORY_ICONS[selectedFrom!], { className: "w-5 h-5" })}
                       </div>
-                      <span className="text-carbon-400 font-black uppercase tracking-widest text-xs line-through">
+                      <span className="text-carbon-400 font-semibold tracking-wide text-xs line-through">
                         {CATEGORY_NAMES[selectedFrom!]}
                       </span>
                     </div>
@@ -399,7 +399,7 @@ export function ReplacementManager({
                               <span className="font-black text-carbon-900 text-lg block tracking-tight">
                                 {cat.name}
                               </span>
-                              <span className="text-xs font-bold text-sage-600 uppercase tracking-widest">
+                              <span className="text-xs font-bold text-sage-600 tracking-wide">
                                 Agregar como extra
                               </span>
                             </div>
@@ -410,7 +410,7 @@ export function ReplacementManager({
                     </div>
                   ) : (
                     <div className="p-10 bg-amber-50 rounded-3xl border-2 border-dashed border-amber-200 text-center">
-                      <p className="text-amber-700 font-black uppercase tracking-widest text-sm">
+                      <p className="text-amber-700 font-semibold tracking-wide text-sm">
                         No hay más opciones
                       </p>
                       <p className="text-amber-600/70 text-xs font-medium mt-2">
@@ -427,11 +427,11 @@ export function ReplacementManager({
                   {/* Summary breadcrumb */}
                   <div className="flex items-center justify-between p-4 bg-white rounded-2xl border-2 border-sage-100 shadow-sm">
                     <div className="flex items-center gap-3">
-                      <span className="text-carbon-400 font-black uppercase tracking-widest text-[10px] line-through">
+                      <span className="text-carbon-400 font-semibold tracking-wide text-[10px] line-through">
                         {CATEGORY_NAMES[selectedFrom!]}
                       </span>
                       <ArrowRightLeft className="w-3.5 h-3.5 text-carbon-300" />
-                      <span className="text-sage-600 font-black uppercase tracking-widest text-[10px]">
+                      <span className="text-sage-600 font-semibold tracking-wide text-[10px]">
                         EXTRA {CATEGORY_NAMES[selectedTo!]}
                       </span>
                     </div>

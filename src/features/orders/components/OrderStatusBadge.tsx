@@ -59,7 +59,7 @@ export function OrderStatusBadge({
       label: "Listo",
       variant: "success",
       icon: CheckCircle,
-      className: "bg-sage-green-50 text-sage-green-700 border-sage-green-300",
+      className: "bg-sage-50 text-sage-700 border-sage-300",
     },
     [OrderStatus.DELIVERED]: {
       label: "Entregado",

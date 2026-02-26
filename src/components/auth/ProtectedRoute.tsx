@@ -59,7 +59,7 @@ const LoadingScreen = ({
               onClick={onRetry}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-sage-green-600 text-white font-semibold rounded-xl hover:bg-sage-green-700 transition-colors"
+              className="inline-flex items-center gap-2 px-6 py-3 bg-sage-600 text-white font-semibold rounded-xl hover:bg-sage-700 transition-colors"
             >
               <RefreshCw className="w-5 h-5" />
               Reintentar
@@ -70,7 +70,7 @@ const LoadingScreen = ({
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="w-12 h-12 border-3 border-sage-green-600 border-t-transparent rounded-full mx-auto mb-6"
+              className="w-12 h-12 border-3 border-sage-600 border-t-transparent rounded-full mx-auto mb-6"
             />
             <p className="text-carbon-600">Verificando sesión...</p>
           </>
@@ -114,7 +114,7 @@ const AccessDenied = ({
           onClick={onBack}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="inline-flex items-center px-6 py-3 bg-sage-green-600 text-white font-semibold rounded-xl hover:bg-sage-green-700 transition-colors"
+          className="inline-flex items-center px-6 py-3 bg-sage-600 text-white font-semibold rounded-xl hover:bg-sage-700 transition-colors"
         >
           Regresar
         </motion.button>
@@ -154,7 +154,7 @@ const SessionExpiredScreen = ({ onGoToLogin }: { onGoToLogin: () => void }) => (
           onClick={onGoToLogin}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="inline-flex items-center gap-2 px-6 py-3 bg-sage-green-600 text-white font-semibold rounded-xl hover:bg-sage-green-700 transition-colors"
+          className="inline-flex items-center gap-2 px-6 py-3 bg-sage-600 text-white font-semibold rounded-xl hover:bg-sage-700 transition-colors"
         >
           <LogOut className="w-5 h-5" />
           Ir al inicio de sesión

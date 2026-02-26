@@ -33,7 +33,7 @@ export function FilterSearch({
         fullWidth
         className={cn(
           "min-h-[44px] py-2.5 border-2 border-sage-300 bg-sage-50/80 rounded-xl",
-          "focus:border-sage-green-400 focus:ring-2 focus:ring-sage-green-400/20",
+          "focus:border-sage-400 focus:ring-2 focus:ring-sage-400/20",
           "touch-manipulation"
         )}
       />
