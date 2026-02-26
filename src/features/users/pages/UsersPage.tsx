@@ -179,29 +179,30 @@ export function UsersPage() {
 
   // =============== MAIN RENDER =================
   return (
-    <>
+    <div className="px-4 sm:px-6 lg:px-8 pb-12">
       {/* ============ PAGE HEADER =============== */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-carbon-900 tracking-tight">
-            Gestión de Usuarios
-          </h1>
-          <p className="text-sm text-carbon-500 mt-1">
-            Administra los usuarios del sistema
-          </p>
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 text-sage-600">
+            <UsersIcon className="w-5 h-5" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Recursos Humanos</span>
+          </div>
+          <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Gestión de Usuarios</h1>
+          <p className="text-sm text-carbon-500 font-medium">Administra el personal, roles y accesos del sistema.</p>
         </div>
+        
         {isAdmin() && (
           <Button
             size="lg"
             variant="primary"
             onClick={handleCreateUser}
-            className="w-full sm:w-auto min-h-[44px]"
+            className="rounded-2xl h-14 px-8 shadow-soft-lg transition-all active:scale-95 font-bold"
           >
-            <Plus className="w-5 h-5 mr-2" />
+            <Plus className="w-5 h-5 mr-2 stroke-[3px]" />
             Nuevo Usuario
           </Button>
         )}
-      </div>
+      </header>
 
       {/* ================ STATS CARDS ================== */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">

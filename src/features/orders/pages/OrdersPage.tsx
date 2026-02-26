@@ -305,27 +305,47 @@ export function OrdersPage() {
 
   // =============== MAIN RENDER =================
   return (
-    <div className="px-4 sm:px-6 lg:px-8">
+    <div className="px-4 sm:px-6 lg:px-8 pb-24">
       {/* ============ PAGE HEADER =============== */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-carbon-900 tracking-tight">
-            Gestión de Pedidos
-          </h1>
-          <p className="text-sm text-carbon-500 mt-1">
-            Administra los pedidos del restaurante
-          </p>
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 text-sage-600">
+            <ShoppingCart className="w-5 h-5" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Registro de Ventas</span>
+          </div>
+          <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Gestión de Pedidos</h1>
+          <p className="text-sm text-carbon-500 font-medium">Administra y monitorea todas las órdenes del restaurante.</p>
         </div>
-        <Button
-          size="lg"
-          variant="primary"
-          onClick={handleCreateOrder}
-          className="w-full sm:w-auto min-h-[44px]"
-        >
-          <Plus className="w-5 h-5 mr-2" />
-          Nuevo Pedido
-        </Button>
-      </div>
+        
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl shadow-smooth-md border border-sage-100 ring-4 ring-sage-50/50">
+            <div className="flex items-center gap-2 px-3 py-2 bg-sage-50 rounded-xl text-sage-700">
+              <Calendar className="w-4 h-4" />
+              <span className="text-xs font-bold uppercase tracking-wider">Fecha</span>
+            </div>
+            <select
+              value={dateFilter}
+              onChange={(e) => setDateFilter(e.target.value as DateFilterType)}
+              className="bg-transparent border-none text-carbon-900 font-bold text-sm focus:ring-0 cursor-pointer pr-8"
+            >
+              <option value="TODAY">Hoy</option>
+              <option value="YESTERDAY">Ayer</option>
+              <option value="WEEK">Esta Semana</option>
+              <option value="CUSTOM">Personalizado</option>
+            </select>
+          </div>
+
+          <Button
+            size="lg"
+            variant="primary"
+            onClick={handleCreateOrder}
+            className="rounded-2xl h-14 px-8 shadow-soft-lg transition-all active:scale-95 font-bold"
+          >
+            <Plus className="w-5 h-5 mr-2 stroke-[3px]" />
+            Nuevo Pedido
+          </Button>
+        </div>
+      </header>
 
       {/* ================ STATS CARDS ================== */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">

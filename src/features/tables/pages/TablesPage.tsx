@@ -98,19 +98,28 @@ export function TablesPage() {
   }
 
   return (
-    <>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold text-carbon-900 tracking-tight">
-            Gestión de Mesas
-          </h1>
-          <p className="text-sm text-carbon-500 mt-1">Administra las mesas del restaurante</p>
+    <div className="px-4 sm:px-6 lg:px-8 pb-12">
+      {/* ============ PAGE HEADER =============== */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 text-sage-600">
+            <TableIcon className="w-5 h-5" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Operación Local</span>
+          </div>
+          <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Gestión de Mesas</h1>
+          <p className="text-sm text-carbon-500 font-medium">Administra la ocupación y ubicación de las mesas en tiempo real.</p>
         </div>
-        <Button size="lg" variant="primary" onClick={handleCreateTable} className="w-full sm:w-auto min-h-[44px]">
-          <Plus className="w-5 h-5 mr-2" />
+        
+        <Button 
+          size="lg" 
+          variant="primary" 
+          onClick={handleCreateTable} 
+          className="rounded-2xl h-14 px-8 shadow-soft-lg transition-all active:scale-95 font-bold"
+        >
+          <Plus className="w-5 h-5 mr-2 stroke-[3px]" />
           Nueva Mesa
         </Button>
-      </div>
+      </header>
 
       <div className="space-y-4 mb-6">
         <FilterBar>

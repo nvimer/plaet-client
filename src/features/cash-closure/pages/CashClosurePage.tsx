@@ -24,11 +24,15 @@ export const CashClosurePage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 p-4 max-w-4xl mx-auto">
-      <header className="flex justify-between items-center">
-        <div>
-          <h1 className="text-2xl font-bold text-carbon-900">Cuadre de Caja</h1>
-          <p className="text-carbon-500">Gestionar apertura y cierre de turnos</p>
+    <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-5xl mx-auto pb-24">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 text-sage-600">
+            <LogIn className="w-5 h-5" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Tesorería</span>
+          </div>
+          <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Control de Caja</h1>
+          <p className="text-sm text-carbon-500 font-medium">Gestiona la apertura y cierre de turnos para asegurar tus ingresos.</p>
         </div>
       </header>
 
