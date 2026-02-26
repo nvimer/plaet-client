@@ -851,9 +851,13 @@ export function OrderForm({
       </Card>
 
       {/* Add/update button - Hidden on mobile (handled by FixedOrderSummaryBar), Sticky on desktop */}
-      <div className="hidden sm:block sticky bottom-6 z-40 mt-8">
-        <div className="max-w-4xl mx-auto px-0 sm:px-0 bg-white/80 backdrop-blur-md p-4 rounded-3xl border border-sage-200 shadow-xl">
-          <Button onClick={onAddToTable} size="lg" className="w-full h-14 rounded-2xl text-base font-bold shadow-sm">
+      <div className="hidden sm:block sticky bottom-0 z-40 mt-12 -mx-6 -mb-6">
+        <div className="bg-white/95 backdrop-blur-md p-6 border-t border-sage-200 shadow-[0_-10px_40px_rgba(0,0,0,0.06)] rounded-b-2xl">
+          <Button 
+            onClick={onAddToTable} 
+            size="lg" 
+            className="w-full h-16 rounded-2xl text-lg font-bold shadow-soft-lg active:scale-[0.99] transition-all"
+          >
             {currentOrderIndex !== null
               ? "Actualizar Pedido"
               : "Agregar a la Orden"}
