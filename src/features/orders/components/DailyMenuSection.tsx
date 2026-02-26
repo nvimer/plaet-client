@@ -5,6 +5,7 @@ import {
   CircleDot,
   Sparkles,
   Check,
+  ChefHat,
 } from "lucide-react";
 import { Card } from "@/components";
 import { cn } from "@/utils/cn";
