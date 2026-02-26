@@ -253,249 +253,254 @@ export function OrdersPage() {
   // ============ LOADING STATE ===========
   if (isLoading) {
     return (
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <Skeleton variant="text" width={240} height={32} className="mb-2" />
-          <Skeleton variant="text" width={320} height={20} />
+      <SidebarLayout hideHeader fullWidth>
+        <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+          <div className="mb-8">
+            <Skeleton variant="text" width={240} height={32} className="mb-2" />
+            <Skeleton variant="text" width={320} height={20} />
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} variant="card" height={80} />
+            ))}
+          </div>
+          <Skeleton variant="card" height={80} className="mb-6" />
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <Skeleton key={i} variant="card" />
+            ))}
+          </div>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} variant="card" height={80} />
-          ))}
-        </div>
-        <Skeleton variant="card" height={80} className="mb-6" />
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <Skeleton key={i} variant="card" />
-          ))}
-                </div>
-              </div>
-            </SidebarLayout>
-          );
-        }
-          // ========== ERROR STATE =============
+      </SidebarLayout>
+    );
+  }
+
+  // ========== ERROR STATE =============
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-[50vh] px-4 sm:px-6 lg:px-8">
-        <Card
-          variant="elevated"
-          padding="lg"
-          className="max-w-md w-full border border-sage-200 shadow-sm rounded-2xl"
-        >
-          <div className="text-center">
-            <div className="w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-rose-500">
-              <ShoppingCart className="w-7 h-7" />
+      <SidebarLayout hideHeader fullWidth>
+        <div className="flex items-center justify-center min-h-[50vh] px-4 sm:px-6 lg:px-8 py-8">
+          <Card
+            variant="elevated"
+            padding="lg"
+            className="max-w-md w-full border border-sage-200 shadow-sm rounded-2xl"
+          >
+            <div className="text-center">
+              <div className="w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-rose-500">
+                <ShoppingCart className="w-7 h-7" />
+              </div>
+              <h2 className="text-lg font-semibold text-carbon-900 mb-2">
+                Error al cargar pedidos
+              </h2>
+              <p className="text-carbon-500 text-sm mb-6">{error.message}</p>
+              <Button
+                variant="primary"
+                size="lg"
+                onClick={() => window.location.reload()}
+                fullWidth
+                className="min-h-[44px]"
+              >
+                Reintentar
+              </Button>
             </div>
-            <h2 className="text-lg font-semibold text-carbon-900 mb-2">
-              Error al cargar pedidos
-            </h2>
-            <p className="text-carbon-500 text-sm mb-6">{error.message}</p>
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={() => window.location.reload()}
-              fullWidth
-              className="min-h-[44px]"
-            >
-              Reintentar
-            </Button>
-          </div>
-        </Card>
-      </div>
+          </Card>
+        </div>
+      </SidebarLayout>
     );
   }
 
   // =============== MAIN RENDER =================
   return (
     <SidebarLayout hideHeader fullWidth>
-      <div className="px-4 sm:px-6 lg:px-8 pb-24">
-      {/* ============ PAGE HEADER =============== */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2 text-sage-600">
-            <ShoppingCart className="w-5 h-5" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Registro de Ventas</span>
-          </div>
-          <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Gestión de Pedidos</h1>
-          <p className="text-sm text-carbon-500 font-medium">Administra y monitorea todas las órdenes del restaurante.</p>
-        </div>
-        
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl shadow-smooth-md border border-sage-100 ring-4 ring-sage-50/50">
-            <div className="flex items-center gap-2 px-3 py-2 bg-sage-50 rounded-xl text-sage-700">
-              <Calendar className="w-4 h-4" />
-              <span className="text-xs font-bold uppercase tracking-wider">Fecha</span>
-            </div>
-            <select
-              value={dateFilter}
-              onChange={(e) => setDateFilter(e.target.value as DateFilterType)}
-              className="bg-transparent border-none text-carbon-900 font-bold text-sm focus:ring-0 cursor-pointer pr-8"
-            >
-              <option value="TODAY">Hoy</option>
-              <option value="YESTERDAY">Ayer</option>
-              <option value="WEEK">Esta Semana</option>
-              <option value="CUSTOM">Personalizado</option>
-            </select>
-          </div>
-
-          <Button
-            size="lg"
-            variant="primary"
-            onClick={handleCreateOrder}
-            className="rounded-2xl h-14 px-8 shadow-soft-lg transition-all active:scale-95 font-bold"
-          >
-            <Plus className="w-5 h-5 mr-2 stroke-[3px]" />
-            Nuevo Pedido
-          </Button>
-        </div>
-      </header>
-
-      {/* ================ STATS CARDS ================== */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-        <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-sage-100 flex items-center justify-center text-sage-600">
+      <div className="px-4 sm:px-6 lg:px-8 pb-24 py-8">
+        {/* ============ PAGE HEADER =============== */}
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 text-sage-600">
               <ShoppingCart className="w-5 h-5" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Registro de Ventas</span>
             </div>
-            <div>
-              <p className="text-sm text-carbon-500">Total</p>
-              <p className="text-xl font-bold text-carbon-900">{counts.all}</p>
-            </div>
+            <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Gestión de Pedidos</h1>
+            <p className="text-sm text-carbon-500 font-medium">Administra y monitorea todas las órdenes del restaurante.</p>
           </div>
-        </div>
-        <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
-              <Clock className="w-5 h-5" />
+          
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl shadow-smooth-md border border-sage-100 ring-4 ring-sage-50/50">
+              <div className="flex items-center gap-2 px-3 py-2 bg-sage-50 rounded-xl text-sage-700">
+                <Calendar className="w-4 h-4" />
+                <span className="text-xs font-bold uppercase tracking-wider">Fecha</span>
+              </div>
+              <select
+                value={dateFilter}
+                onChange={(e) => setDateFilter(e.target.value as DateFilterType)}
+                className="bg-transparent border-none text-carbon-900 font-bold text-sm focus:ring-0 cursor-pointer pr-8"
+              >
+                <option value="TODAY">Hoy</option>
+                <option value="YESTERDAY">Ayer</option>
+                <option value="WEEK">Esta Semana</option>
+                <option value="CUSTOM">Personalizado</option>
+              </select>
             </div>
-            <div>
-              <p className="text-sm text-carbon-500">Pendientes</p>
-              <p className="text-xl font-bold text-carbon-900">
-                {counts.pending}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
-              <CheckCircle className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-sm text-carbon-500">Listos</p>
-              <p className="text-xl font-bold text-carbon-900">
-                {counts.ready}
-              </p>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-sage-100 flex items-center justify-center text-sage-600">
-              <TrendingUp className="w-5 h-5" />
-            </div>
-            <div>
-              <p className="text-sm text-carbon-500">Ventas hoy</p>
-              <p className="text-xl font-bold text-sage-700">
-                ${todayTotal.toLocaleString("es-CO")}
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
 
-      {/* ================ FILTERS ================= */}
-      <div className="mb-6">
-        <OrderFilters
-          statusFilter={statusFilter}
-          typeFilter={typeFilter}
-          dateFilter={dateFilter}
-          customDateRange={customDateRange}
-          onStatusChange={setStatusFilter}
-          onTypeChange={setTypeFilter}
-          onDateChange={setDateFilter}
-          onCustomDateRangeChange={setCustomDateRange}
-          onClearFilter={handleClearFilter}
-          onClearAll={handleClearAll}
-          counts={counts}
-          resultCount={filteredOrders.length}
-        />
-      </div>
+            <Button
+              size="lg"
+              variant="primary"
+              onClick={handleCreateOrder}
+              className="rounded-2xl h-14 px-8 shadow-soft-lg transition-all active:scale-95 font-bold bg-carbon-900 hover:bg-carbon-800"
+            >
+              <Plus className="w-5 h-5 mr-2 stroke-[3px]" />
+              Nuevo Pedido
+            </Button>
+          </div>
+        </header>
 
-      {/* Result count and View Toggle */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
-        <p className="text-sm font-medium text-carbon-600">
-          {isGrouped ? groupedOrders.length : filteredOrders.length}{" "}
-          { (isGrouped ? groupedOrders.length : filteredOrders.length) === 1 ? (isGrouped ? "mesa" : "pedido") : (isGrouped ? "mesas" : "pedidos")}
-          {hasActiveFilters && " encontrados"}
-        </p>
+        {/* ================ STATS CARDS ================== */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+          <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-sage-100 flex items-center justify-center text-sage-600">
+                <ShoppingCart className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm text-carbon-500">Total</p>
+                <p className="text-xl font-bold text-carbon-900">{counts.all}</p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
+                <Clock className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm text-carbon-500">Pendientes</p>
+                <p className="text-xl font-bold text-carbon-900">
+                  {counts.pending}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
+                <CheckCircle className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm text-carbon-500">Listos</p>
+                <p className="text-xl font-bold text-carbon-900">
+                  {counts.ready}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-sage-100 flex items-center justify-center text-sage-600">
+                <TrendingUp className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="text-sm text-carbon-500">Ventas hoy</p>
+                <p className="text-xl font-bold text-sage-700">
+                  ${todayTotal.toLocaleString("es-CO")}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
 
-        <div className="flex items-center gap-1 bg-carbon-100 p-1 rounded-xl border border-carbon-200">
-          <button
-            onClick={() => setIsGrouped(true)}
-            className={cn(
-              "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
-              isGrouped 
-                ? "bg-white text-sage-700 shadow-soft-sm" 
-                : "text-carbon-500 hover:text-carbon-700"
+        {/* ================ FILTERS ================= */}
+        <div className="mb-6">
+          <OrderFilters
+            statusFilter={statusFilter}
+            typeFilter={typeFilter}
+            dateFilter={dateFilter}
+            customDateRange={customDateRange}
+            onStatusChange={setStatusFilter}
+            onTypeChange={setTypeFilter}
+            onDateChange={setDateFilter}
+            onCustomDateRangeChange={setCustomDateRange}
+            onClearFilter={handleClearFilter}
+            onClearAll={handleClearAll}
+            counts={counts}
+            resultCount={filteredOrders.length}
+          />
+        </div>
+
+        {/* Result count and View Toggle */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+          <p className="text-sm font-medium text-carbon-600">
+            {isGrouped ? groupedOrders.length : filteredOrders.length}{" "}
+            { (isGrouped ? groupedOrders.length : filteredOrders.length) === 1 ? (isGrouped ? "mesa" : "pedido") : (isGrouped ? "mesas" : "pedidos")}
+            {hasActiveFilters && " encontrados"}
+          </p>
+
+          <div className="flex items-center gap-1 bg-carbon-100 p-1 rounded-xl border border-carbon-200">
+            <button
+              onClick={() => setIsGrouped(true)}
+              className={cn(
+                "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
+                isGrouped 
+                  ? "bg-white text-sage-700 shadow-soft-sm" 
+                  : "text-carbon-500 hover:text-carbon-700"
+              )}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" />
+              VISTA AGRUPADA
+            </button>
+            <button
+              onClick={() => setIsGrouped(false)}
+              className={cn(
+                "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
+                !isGrouped 
+                  ? "bg-white text-sage-700 shadow-soft-sm" 
+                  : "text-carbon-500 hover:text-carbon-700"
+              )}
+            >
+              <List className="w-3.5 h-3.5" />
+              INDIVIDUAL
+            </button>
+          </div>
+        </div>
+
+        {/* ============ ORDERS GRID ============= */}
+        {(isGrouped ? groupedOrders.length : filteredOrders.length) > 0 ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+            {isGrouped ? (
+              groupedOrders.map((group) => (
+                <GroupedOrderCard
+                  key={group.id}
+                  groupedOrder={group}
+                  onViewDetail={handleViewDetail}
+                />
+              ))
+            ) : (
+              filteredOrders.map((order) => (
+                <OrderCard
+                  key={order.id}
+                  order={order}
+                  onViewDetail={handleViewDetail}
+                />
+              ))
             )}
-          >
-            <LayoutGrid className="w-3.5 h-3.5" />
-            VISTA AGRUPADA
-          </button>
-          <button
-            onClick={() => setIsGrouped(false)}
-            className={cn(
-              "flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all",
-              !isGrouped 
-                ? "bg-white text-sage-700 shadow-soft-sm" 
-                : "text-carbon-500 hover:text-carbon-700"
-            )}
-          >
-            <List className="w-3.5 h-3.5" />
-            INDIVIDUAL
-          </button>
-        </div>
+          </div>
+        ) : (
+          <EmptyState
+            icon={<ShoppingCart />}
+            title={
+              hasActiveFilters
+                ? "No hay pedidos con estos filtros"
+                : "No hay pedidos"
+            }
+            description={
+              hasActiveFilters
+                ? "Ajusta los filtros para ver más resultados"
+                : "Crea tu primer pedido para comenzar"
+            }
+            actionLabel={!hasActiveFilters ? "Crear primer pedido" : undefined}
+            onAction={!hasActiveFilters ? handleCreateOrder : undefined}
+          />
+        )}
       </div>
-
-      {/* ============ ORDERS GRID ============= */}
-      {(isGrouped ? groupedOrders.length : filteredOrders.length) > 0 ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-          {isGrouped ? (
-            groupedOrders.map((group) => (
-              <GroupedOrderCard
-                key={group.id}
-                groupedOrder={group}
-                onViewDetail={handleViewDetail}
-              />
-            ))
-          ) : (
-            filteredOrders.map((order) => (
-              <OrderCard
-                key={order.id}
-                order={order}
-                onViewDetail={handleViewDetail}
-              />
-            ))
-          )}
-        </div>
-      ) : (
-        <EmptyState
-          icon={<ShoppingCart />}
-          title={
-            hasActiveFilters
-              ? "No hay pedidos con estos filtros"
-              : "No hay pedidos"
-          }
-          description={
-            hasActiveFilters
-              ? "Ajusta los filtros para ver más resultados"
-              : "Crea tu primer pedido para comenzar"
-          }
-          actionLabel={!hasActiveFilters ? "Crear primer pedido" : undefined}
-          onAction={!hasActiveFilters ? handleCreateOrder : undefined}
-        />
-      )}
-    </div>
+    </SidebarLayout>
   );
 }
