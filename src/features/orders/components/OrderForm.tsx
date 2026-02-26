@@ -184,7 +184,7 @@ export function OrderForm({
               )}
             </div>
             <div>
-              <h2 className="text-carbon-900 font-black text-base sm:text-xl tracking-tight leading-tight">
+              <h2 className="text-carbon-900 font-semibold text-lg sm:text-xl tracking-tight leading-tight">
                 {currentOrderIndex !== null
                   ? `Editando Pedido #${currentOrderIndex + 1}`
                   : `Nuevo Pedido #${tableOrdersLength + 1}`}
@@ -194,7 +194,7 @@ export function OrderForm({
                   "w-2 h-2 rounded-full animate-pulse",
                   currentOrderIndex !== null ? "bg-amber-500" : "bg-sage-500"
                 )} />
-                <p className="text-carbon-500 text-[10px] sm:text-xs font-black uppercase tracking-widest">
+                <p className="text-carbon-500 text-sm font-medium">
                   {currentOrderIndex !== null
                     ? "Modificando selección"
                     : "Configuración en curso"}
@@ -216,7 +216,7 @@ export function OrderForm({
               title="Ver Menú del Día"
             >
               <ChefHat className="w-5 h-5" />
-              <span className="hidden md:inline text-xs font-black uppercase tracking-wider">Menú de Hoy</span>
+              <span className="hidden md:inline text-sm font-semibold">Menú de Hoy</span>
               {showDailyMenu ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
 

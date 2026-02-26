@@ -208,8 +208,8 @@ export function ReplacementManager({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h3 className="font-black text-carbon-900 tracking-tight uppercase text-sm">Cambios Personalizados</h3>
-          <p className="text-xs text-carbon-500 font-bold uppercase tracking-widest mt-0.5">Gestión de reemplazos</p>
+          <h3 className="font-semibold text-carbon-900 text-lg">Cambios personalizados</h3>
+          <p className="text-sm text-carbon-500 mt-0.5">Gestión de reemplazos</p>
         </div>
         {replacements.length < replaceableCategories.length - 1 && (
           <Button
@@ -276,8 +276,8 @@ export function ReplacementManager({
               <Plus className="w-6 h-6" />
             </div>
             <div>
-              <p className="font-black text-carbon-800 uppercase tracking-tight">Agregar cambio</p>
-              <p className="text-xs text-carbon-500 font-medium mt-0.5 tracking-wide">Sin costo adicional en el menú</p>
+              <p className="font-semibold text-carbon-800 text-lg">Agregar cambio</p>
+              <p className="text-sm text-carbon-500 mt-0.5">Sin costo adicional en el menú</p>
             </div>
           </div>
         </button>

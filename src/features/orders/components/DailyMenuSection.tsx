@@ -149,13 +149,13 @@ export function DailyMenuSection({
           <Sparkles className="w-12 h-12 text-white" />
         </div>
 
-        <h3 className="relative text-white font-black text-lg sm:text-xl flex items-center gap-3 tracking-tight">
+        <h3 className="relative text-white font-semibold text-lg sm:text-xl flex items-center gap-3 tracking-tight">
           <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
             <ChefHat className="w-6 h-6 text-sage-400" />
           </div>
           Menú del Día
         </h3>
-        <p className="relative text-carbon-400 text-[10px] sm:text-xs mt-1 font-bold uppercase tracking-[0.2em]">
+        <p className="relative text-carbon-400 text-sm mt-1 font-medium">
           Opciones disponibles para el servicio de hoy
         </p>
       </div>
