@@ -291,12 +291,12 @@ export function StockManagementPage() {
             setSelectedItem(null);
           }}
         />
-      )}
-    </SidebarLayout>
-  );
-}
-
-/**
+              )}
+            </div>
+          </SidebarLayout>
+        );
+      }
+      /**
  * StockItemCard Component
  *
  * Card displaying item stock information with unified design.
