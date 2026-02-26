@@ -28,6 +28,7 @@ import { TodaySalesChart } from "../components/TodaySalesChart";
 import { useAuth, usePermissions } from "@/hooks";
 
 export function DashboardPage() {
+  const { user } = useAuth();
   const { isSuperAdmin } = usePermissions();
   const navigate = useNavigate();
 
