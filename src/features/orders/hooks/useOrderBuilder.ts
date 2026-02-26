@@ -362,32 +362,19 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const buildOrderNotes = useCallback((): string => {
     if (!selectedProtein) return orderNotes || "";
     
-    const components = [
-      selectedRice?.name || dailyMenuDisplay.riceOption?.name,
-      selectedSoup?.name,
-      selectedPrinciple?.name,
-      selectedSalad?.name,
-      selectedDrink?.name,
-      selectedExtra?.name,
-    ].filter(Boolean);
-    
-    let note = `Lunch: ${selectedProtein.name}`;
-    
-    if (components.length > 0) {
-      note += ` + ${components.join(", ")}`;
-    }
+    let note = "";
     
     if (replacements.length > 0) {
-      const replText = replacements.map(r => `${r.fromName}→${r.itemName}`).join(", ");
-      note += ` | Swap: ${replText}`;
+      const replText = replacements.map(r => `[-] Sin ${r.fromName} [+] Extra ${r.itemName}`).join(" | ");
+      note += `${replText}`;
     }
     
     if (orderNotes) {
-      note += ` | Note: ${orderNotes}`;
+      note += note ? `\n📝 ${orderNotes}` : `📝 ${orderNotes}`;
     }
     
     return note;
-  }, [selectedProtein, selectedRice, dailyMenuDisplay.riceOption, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, replacements, orderNotes]);
+  }, [selectedProtein, replacements, orderNotes]);
 
   // Handlers
   const handleAddLooseItem = useCallback((item: { id: number; name: string; price: number }) => {
