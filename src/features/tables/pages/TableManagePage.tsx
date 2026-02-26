@@ -197,27 +197,103 @@ export function TableManagePage() {
     { value: TableStatus.NEEDS_CLEANING, label: "Limpieza", icon: Clock },
   ] as const;
 
-  return (
-    <>
-      <SidebarLayout
-        title={`Mesa ${table.number}`}
-        subtitle={table.location || "Sin ubicación"}
-        backRoute={ROUTES.TABLES}
-        contentClassName="p-6 lg:p-8"
-      >
-        <div className="max-w-2xl mx-auto">
-          {/* Status pill */}
-          <div className="mb-8">
-            <span
-              className={cn(
-                "inline-flex items-center gap-2 px-3 py-1.5 rounded-full",
-                "text-sm font-medium border",
-                config.pill
-              )}
-            >
-              <StatusIcon className="w-4 h-4" />
-              {config.label}
-            </span>
+      return (
+
+        <>
+
+          <SidebarLayout
+
+            title={`Mesa ${table.number}`}
+
+            backRoute={ROUTES.TABLES}
+
+            hideHeader
+
+          >
+
+            <div className="max-w-4xl mx-auto space-y-10 pb-24">
+
+              {/* ============ PAGE HEADER =============== */}
+
+              <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+
+                <div className="space-y-1.5">
+
+                  <div className="flex items-center gap-2 text-sage-600">
+
+                    <TableIcon className="w-5 h-5" />
+
+                    <span className="text-[10px] font-black uppercase tracking-[0.2em]">Configuración de Mesa</span>
+
+                  </div>
+
+                  <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Administrar Mesa {table.number}</h1>
+
+                  <p className="text-sm text-carbon-500 font-medium">Gestiona el estado, ubicación y detalles técnicos de esta mesa.</p>
+
+                </div>
+
+                
+
+                <Button 
+
+                  variant="outline" 
+
+                  onClick={() => navigate(ROUTES.TABLES)}
+
+                  className="rounded-2xl h-14 px-6 border-sage-200 text-sage-700 hover:bg-sage-50 transition-all font-bold"
+
+                >
+
+                  <ArrowLeft className="w-5 h-5 mr-2" />
+
+                  Volver
+
+                </Button>
+
+              </header>
+
+  
+
+              <div className="space-y-8">
+
+                {/* Status Overview */}
+
+                <div className="bg-white p-6 rounded-3xl border-2 border-sage-100 shadow-smooth-md flex flex-wrap items-center justify-between gap-6">
+
+                  <div className="flex items-center gap-4">
+
+                    <div className={cn("w-16 h-16 rounded-2xl flex items-center justify-center shadow-inner", config.bg)}>
+
+                      <StatusIcon className={cn("w-8 h-8", config.text)} />
+
+                    </div>
+
+                    <div>
+
+                      <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest leading-none mb-1.5">Estado Actual</p>
+
+                      <div className={cn("inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border-2", config.pill)}>
+
+                        {STATUS_LABELS[table.status]}
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                  <div className="text-right">
+
+                    <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest mb-1">Ubicación</p>
+
+                    <p className="text-xl font-bold text-carbon-900">{table.location || "Principal"}</p>
+
+                  </div>
+
+                </div>
+
+  
           </div>
 
           <div className="bg-white rounded-2xl border border-sage-200 shadow-sm overflow-hidden">

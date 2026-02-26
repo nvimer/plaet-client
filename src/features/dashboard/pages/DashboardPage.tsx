@@ -177,21 +177,21 @@ export function DashboardPage() {
       className="space-y-8 pb-12"
     >
       {/* 1. Header Section */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2 text-primary-600 mb-1">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 text-sage-600">
             <LayoutDashboard className="w-5 h-5" />
-            <span className="text-sm font-medium tracking-wide">Panel Principal</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Panel Principal</span>
           </div>
-          <h1 className="text-4xl font-black text-carbon-900 tracking-tight">
-            {greeting}, Admin
+          <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">
+            {greeting}, {user?.firstName || 'Admin'}
           </h1>
-          <p className="text-carbon-500 font-medium capitalize">
+          <p className="text-sm text-carbon-500 font-medium capitalize">
             {formattedDate}
           </p>
         </div>
         
-        <div className="w-full md:w-72">
+        <div className="w-full md:w-80">
           <ActiveShiftWidget />
         </div>
       </header>

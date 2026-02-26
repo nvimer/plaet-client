@@ -256,20 +256,33 @@ export function KitchenKanban({
       onDragEnd={handleDragEnd}
     >
       <div className="h-full flex flex-col">
-        <div className="flex items-center justify-between px-4 lg:px-6 py-3 lg:py-4 bg-white border-b border-sage-200">
-          <div className="flex items-center gap-3 lg:gap-4">
-            <h1 className="text-xl lg:text-2xl font-bold text-carbon-900">
-              Vista de Cocina
-            </h1>
-            <div className="hidden sm:flex items-center gap-2 text-sm text-carbon-500 bg-sage-50 px-3 py-1.5 rounded-lg">
-              <RefreshCw className="w-4 h-4" />
-              <span>Auto-refresh: 30s</span>
+        {/* ============ PAGE HEADER =============== */}
+        <header className="flex items-center justify-between px-4 lg:px-8 py-4 lg:py-6 bg-white border-b border-sage-200 flex-shrink-0">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-sage-600">
+              <ChefHat className="w-5 h-5" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Operación en Tiempo Real</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <h1 className="text-2xl lg:text-3xl font-bold text-carbon-900 tracking-tight">
+                Vista de Cocina
+              </h1>
+              <div className="hidden sm:flex items-center gap-2 text-[10px] font-bold text-carbon-400 bg-sage-50 px-2 py-1 rounded-lg uppercase tracking-widest border border-sage-100">
+                <RefreshCw className="w-3 h-3 animate-spin-slow" />
+                <span>Auto-refresh: 30s</span>
+              </div>
             </div>
           </div>
-          <div className="text-sm lg:text-lg font-semibold text-carbon-700">
-            Total: <span className="text-sage-700">{totalOrders}</span>
+
+          <div className="flex items-center gap-6">
+            <div className="text-right hidden sm:block">
+              <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest leading-none mb-1">Órdenes Activas</p>
+              <p className="text-2xl font-bold text-sage-700 tracking-tight leading-none">{totalOrders}</p>
+            </div>
+            
+            {/* Desktop Only: Quick Filter Info or similar could go here */}
           </div>
-        </div>
+        </header>
 
         <div className="flex-1 overflow-hidden">
           {totalOrders === 0 ? (

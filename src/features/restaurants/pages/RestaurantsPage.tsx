@@ -59,17 +59,28 @@ export function RestaurantsPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-carbon-900">Gestión de Restaurantes</h1>
-          <p className="text-carbon-500">Panel de administración global de Plaet SaaS</p>
+    <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-24">
+      {/* ============ PAGE HEADER =============== */}
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 text-sage-600">
+            <Building2 className="w-5 h-5" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Administración SaaS</span>
+          </div>
+          <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Gestión de Restaurantes</h1>
+          <p className="text-sm text-carbon-500 font-medium">Panel de control global para la red de comercios asociados.</p>
         </div>
-        <Button onClick={() => setIsModalOpen(true)}>
-          <Plus className="w-4 h-4 mr-2" />
+        
+        <Button 
+          size="lg" 
+          variant="primary" 
+          onClick={() => setIsModalOpen(true)} 
+          className="rounded-2xl h-14 px-8 shadow-soft-lg transition-all active:scale-95 font-bold"
+        >
+          <Plus className="w-5 h-5 mr-2 stroke-[3px]" />
           Nuevo Restaurante
         </Button>
-      </div>
+      </header>
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">

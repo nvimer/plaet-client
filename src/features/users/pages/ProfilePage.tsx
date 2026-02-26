@@ -106,41 +106,69 @@ export function ProfilePage() {
     );
   }
 
-  return (
-    <SidebarLayout
-      title="Mi Perfil"
-      subtitle="Actualiza tu información personal"
-      backRoute={ROUTES.DASHBOARD}
-      fullWidth
-      contentClassName="p-4 sm:p-6 lg:p-10"
-    >
-      <div className="max-w-2xl mx-auto">
-        {/* User Header Card */}
-        <Card variant="elevated" padding="lg" className="rounded-2xl mb-6">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 rounded-2xl bg-sage-100 text-sage-700 flex items-center justify-center text-2xl font-bold">
-              {getInitials()}
+    return (
+      <SidebarLayout
+        title="Mi Perfil"
+        backRoute={ROUTES.DASHBOARD}
+        fullWidth
+        hideHeader
+        contentClassName="p-0"
+      >
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 pb-24 py-8">
+          {/* ============ PAGE HEADER =============== */}
+          <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2 text-sage-600">
+                <User className="w-5 h-5" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Configuración Personal</span>
+              </div>
+              <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Mi Perfil de Usuario</h1>
+              <p className="text-sm text-carbon-500 font-medium">Gestiona tu información de contacto y preferencias de cuenta.</p>
             </div>
-            <div>
-              <h2 className="text-xl font-semibold text-carbon-900">
-                {user.firstName} {user.lastName}
-              </h2>
-              <p className="text-carbon-500">{user.email}</p>
+            
+            <Button 
+              variant="outline" 
+              onClick={() => navigate(ROUTES.DASHBOARD)}
+              className="rounded-2xl h-14 px-6 border-sage-200 text-sage-700 hover:bg-sage-50 transition-all font-bold"
+            >
+              <ArrowLeft className="w-5 h-5 mr-2" />
+              Volver
+            </Button>
+          </header>
+  
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            {/* Left: Brief Info */}
+            <div className="space-y-6">
+              <Card variant="elevated" padding="lg" className="rounded-3xl border-none shadow-smooth-lg overflow-hidden relative">
+                <div className="relative z-10 flex flex-col items-center text-center space-y-4">
+                  <div className="w-24 h-24 rounded-3xl bg-sage-100 text-sage-700 flex items-center justify-center text-4xl font-black shadow-inner">
+                    {getInitials()}
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-bold text-carbon-900 tracking-tight">
+                      {user.firstName} {user.lastName}
+                    </h2>
+                    <p className="text-sm text-carbon-500 font-medium">{user.email}</p>
+                  </div>
+                  <div className="px-3 py-1 rounded-full bg-sage-50 border border-sage-100 text-[10px] font-bold text-sage-600 uppercase tracking-widest">
+                    Usuario Activo
+                  </div>
+                </div>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-sage-500/5 rounded-full -mr-16 -mt-16 blur-3xl" />
+              </Card>
             </div>
-          </div>
-        </Card>
-
-        {/* Edit Form Card */}
-        <Card variant="elevated" padding="lg" className="rounded-2xl">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-            {/* Personal Information Section */}
-            <div>
-              <h3 className="text-lg font-semibold text-carbon-900 mb-4 flex items-center gap-2">
-                <User className="w-5 h-5 text-sage-600" />
-                Información Personal
-              </h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  
+            {/* Right: Edit Form */}
+            <div className="lg:col-span-2">
+              <Card variant="elevated" padding="lg" className="rounded-3xl border-none shadow-smooth-md">
+                <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
+                  {/* Personal Information Section */}
+                  <div className="space-y-6">
+                    <h3 className="text-lg font-bold text-carbon-900 tracking-tight flex items-center gap-2">
+                      <div className="w-1.5 h-4 bg-sage-500 rounded-full" />
+                      Detalles Personales
+                    </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* First Name */}
                 <Input
                   label="Nombre"

@@ -202,19 +202,41 @@ export function OrderDetailPage() {
     <>
       <SidebarLayout
         title={`Pedido ${shortId}`}
-        subtitle={`Creado ${createdDate} a las ${createdTime}`}
         backRoute={ROUTES.ORDERS}
+        hideHeader
       >
-        <div className="max-w-4xl mx-auto space-y-6">
-          {/* Status & Type Banner */}
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border border-sage-200 shadow-sm">
-            <div className="flex items-center gap-3">
+        <div className="max-w-4xl mx-auto space-y-8 pb-24">
+          {/* ============ PAGE HEADER =============== */}
+          <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+            <div className="space-y-1.5">
+              <div className="flex items-center gap-2 text-sage-600">
+                <Receipt className="w-5 h-5" />
+                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Detalle de Transacción</span>
+              </div>
+              <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Pedido {shortId}</h1>
+              <p className="text-sm text-carbon-500 font-medium">Creado el {createdDate} a las {createdTime}</p>
+            </div>
+            
+            <div className="flex items-center gap-2">
               <OrderStatusBadge status={order.status} size="lg" />
               <OrderTypeBadge type={order.type} size="md" />
             </div>
+          </header>
+
+          {/* Status & Type Banner - Refined */}
+          <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border-2 border-sage-100 shadow-smooth-md">
+            <div className="flex items-center gap-3">
+              <div className="w-12 h-12 rounded-xl bg-sage-50 flex items-center justify-center text-sage-600 shadow-inner">
+                <Receipt className="w-6 h-6" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest leading-none mb-1.5">Estado Actual</p>
+                <OrderStatusBadge status={order.status} />
+              </div>
+            </div>
             <div className="text-right">
               <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest mb-0.5">Total del Pedido</p>
-              <p className="text-2xl font-black text-carbon-900">${Number(order.totalAmount).toLocaleString("es-CO")}</p>
+              <p className="text-3xl font-bold text-carbon-900 tracking-tight">${Number(order.totalAmount).toLocaleString("es-CO")}</p>
             </div>
           </div>
 

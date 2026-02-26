@@ -8,22 +8,15 @@ import { useTables } from "@/features/tables";
 import { useOrder, useUpdateOrder } from "../hooks";
 import { ROUTES, getOrderDetailRoute } from "@/app/routes";
 import { toast } from "sonner";
-import { Bike, ShoppingBag, UtensilsCrossed } from "lucide-react";
+import { Bike, ShoppingBag, UtensilsCrossed, Edit2, ArrowLeft } from "lucide-react";
 
 /**
  * OrderEditPage Component
- *
- * Full-screen page for editing existing orders.
- * Simplified version focused on basic order modifications.
- *
- * Features:
- * - Load existing order data
- * - Edit order type, table and notes
- * - Update order with validation
  */
 export function OrderEditPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  // ... rest of the component
   const { data: tablesData } = useTables();
   const tables = tablesData?.tables;
   const { data: order, isLoading, error } = useOrder(id);
@@ -119,16 +112,39 @@ export function OrderEditPage() {
   return (
     <SidebarLayout
       title="Editar Orden"
-      subtitle={`Orden #${order.id.slice(-6).toUpperCase()}`}
       backRoute={getOrderDetailRoute(order.id)}
+      hideHeader
     >
-      <div className="max-w-4xl mx-auto space-y-8">
-        {/* Order Type */}
-        <div>
-          <h3 className="text-lg font-semibold text-carbon-900 mb-4">
-            Tipo de Orden
-          </h3>
-          <div className="grid grid-cols-2 gap-4">
+      <div className="max-w-4xl mx-auto space-y-10 pb-24">
+        {/* ============ PAGE HEADER =============== */}
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 text-sage-600">
+              <Edit2 className="w-5 h-5" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Modificación de Registro</span>
+            </div>
+            <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Editar Orden #{order.id.slice(-6).toUpperCase()}</h1>
+            <p className="text-sm text-carbon-500 font-medium">Actualiza el tipo de servicio o las notas del pedido.</p>
+          </div>
+          
+          <Button 
+            variant="outline" 
+            onClick={() => navigate(getOrderDetailRoute(order.id))}
+            className="rounded-2xl h-14 px-6 border-sage-200 text-sage-700 hover:bg-sage-50 transition-all font-bold"
+          >
+            <ArrowLeft className="w-5 h-5 mr-2" />
+            Volver
+          </Button>
+        </header>
+
+        <div className="space-y-8">
+          {/* Order Type */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-bold text-carbon-900 tracking-tight flex items-center gap-2">
+              <div className="w-1.5 h-4 bg-sage-500 rounded-full" />
+              Tipo de Orden
+            </h3>
+            <div className="grid grid-cols-2 gap-4">
             <Button
               variant={orderType === OrderType.DINE_IN ? "primary" : "ghost"}
               size="lg"
@@ -216,28 +232,53 @@ export function OrderEditPage() {
           </p>
         </div>
 
-        {/* Actions */}
-        <div className="flex gap-4 p-6 bg-sage-50 rounded-xl border-2 border-sage-border-subtle">
-          <Button
-            variant="primary"
-            size="lg"
-            onClick={handleSubmit}
-            isLoading={isPending}
-            disabled={isPending}
-            className="flex-1"
-          >
-            {!isPending && <ShoppingBag className="w-5 h-5 mr-2" />}
-            Actualizar Orden
-          </Button>
-          <Button
-            variant="ghost"
-            size="lg"
-            onClick={() => navigate(getOrderDetailRoute(order.id))}
-            disabled={isPending}
-          >
-            Cancelar
-          </Button>
-        </div>
+                  {/* Actions */}
+
+                  <div className="flex gap-4 pt-8 border-t border-sage-100">
+
+                    <Button
+
+                      variant="primary"
+
+                      size="lg"
+
+                      onClick={handleSubmit}
+
+                      isLoading={isPending}
+
+                      disabled={isPending}
+
+                      className="flex-1 h-16 rounded-2xl font-bold bg-carbon-900 hover:bg-carbon-800 text-white shadow-xl shadow-carbon-200"
+
+                    >
+
+                      {!isPending && <CheckCircle className="w-5 h-5 mr-2 stroke-[3px]" />}
+
+                      Guardar Cambios
+
+                    </Button>
+
+                    <Button
+
+                      variant="ghost"
+
+                      size="lg"
+
+                      onClick={() => navigate(getOrderDetailRoute(order.id))}
+
+                      disabled={isPending}
+
+                      className="h-16 px-8 rounded-2xl font-bold text-carbon-400"
+
+                    >
+
+                      Cancelar
+
+                    </Button>
+
+                  </div>
+
+        
       </div>
     </SidebarLayout>
   );
