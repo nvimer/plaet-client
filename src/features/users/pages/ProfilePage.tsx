@@ -292,8 +292,11 @@ export function ProfilePage() {
               </Button>
             </div>
           </form>
-        </Card>
-      </div>
-    </SidebarLayout>
-  );
-}
+                  </Card>
+                </div>
+              </div>
+            </div>
+          </SidebarLayout>
+        );
+        }
+        
