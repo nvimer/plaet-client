@@ -21,6 +21,19 @@ export const getCurrentShift = async (): Promise<CashClosure | null> => {
   return data.data;
 };
 
+export interface CashShiftSummary {
+  openingBalance: number;
+  cashSales: number;
+  totalExpenses: number;
+  expectedBalance: number;
+  openingDate: string;
+}
+
+export const getShiftSummary = async (id: string): Promise<CashShiftSummary> => {
+  const { data } = await axiosClient.get<ApiResponse<CashShiftSummary>>(`/cash-closures/${id}/summary`);
+  return data.data;
+};
+
 export const getShiftHistory = async (page: number = 1, limit: number = 10): Promise<CashClosure[]> => {
   const { data } = await axiosClient.get<ApiResponse<CashClosure[]>>(`/cash-closures`, {
     params: { page, limit }

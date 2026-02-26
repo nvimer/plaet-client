@@ -17,6 +17,13 @@ export const useCashClosure = () => {
     staleTime: 1000 * 60 * 5, // 5 minutes
   });
 
+  // Fetch summary only if shift is open
+  const { data: summary, isLoading: isLoadingSummary } = useQuery({
+    queryKey: ["cash-closure", "summary", currentShift?.id],
+    queryFn: () => cashClosureApi.getShiftSummary(currentShift!.id),
+    enabled: !!currentShift && currentShift.status === "OPEN",
+  });
+
   // Mutation to open a new shift
   const openShiftMutation = useMutation({
     mutationFn: (dto: CreateCashClosureDTO) => cashClosureApi.openShift(dto),
@@ -44,7 +51,8 @@ export const useCashClosure = () => {
 
   return {
     currentShift,
-    isLoading,
+    summary,
+    isLoading: isLoading || isLoadingSummary,
     error,
     openShift: openShiftMutation.mutate,
     isOpening: openShiftMutation.isPending,
