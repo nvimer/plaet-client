@@ -1,4 +1,5 @@
-import { ShoppingBag } from "lucide-react";
+import { ShoppingBag, Receipt } from "lucide-react";
+import { cn } from "@/utils/cn";
 
 interface LooseItem {
   id: number;
@@ -9,90 +10,83 @@ interface LooseItem {
 
 interface FixedOrderSummaryBarProps {
   looseItems: LooseItem[];
-  total: number;
+  currentOrderTotal: number;
+  tableTotal: number;
   hasProtein?: boolean;
   currentProteinName?: string;
-  onOrder: () => void;
+  onAddOrder: () => void;
+  onShowSummary: () => void;
   scrollToOrder: () => void;
+  ordersCount: number;
 }
 
 export function FixedOrderSummaryBar({
   looseItems,
-  total,
+  currentOrderTotal,
+  tableTotal,
   hasProtein = false,
   currentProteinName,
-  onOrder,
+  onAddOrder,
+  onShowSummary,
   scrollToOrder,
+  ordersCount,
 }: FixedOrderSummaryBarProps) {
-  const itemCount = looseItems.reduce((sum, item) => sum + item.quantity, 0);
+  const currentItemCount = looseItems.reduce((sum, item) => sum + item.quantity, 0);
+  const hasCurrentOrder = currentItemCount > 0 || hasProtein;
 
-  if (itemCount === 0 && !hasProtein) {
+  if (!hasCurrentOrder && ordersCount === 0) {
     return null;
   }
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)] bg-white">
-      {/* Bottom bar */}
-      <div className="bg-white border-t border-sage-200 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
-        {/* Clickable summary row */}
-        <div
-          onClick={scrollToOrder}
-          role="button"
-          tabIndex={0}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              scrollToOrder();
-            }
-          }}
-          className="w-full px-4 py-3 sm:py-4 flex items-center justify-between active:bg-sage-50 transition-colors cursor-pointer"
+    <div className="fixed bottom-0 left-0 right-0 z-50 pb-[env(safe-area-inset-bottom)] bg-white border-t border-sage-200 shadow-[0_-8px_30px_rgba(0,0,0,0.12)]">
+      {/* 1. Botón de Agregar a la orden (Visible solo si hay un pedido en curso) */}
+      {hasCurrentOrder && (
+        <div className="p-4 bg-white/95 backdrop-blur-md">
+          <button
+            onClick={onAddOrder}
+            className="w-full h-14 bg-sage-600 text-white font-bold rounded-2xl shadow-lg hover:bg-sage-700 active:scale-[0.98] transition-all flex items-center justify-center gap-2"
+          >
+            <span>Agregar a la Orden</span>
+            <span className="bg-sage-700 px-2 py-1 rounded-lg text-sm">
+              ${currentOrderTotal.toLocaleString("es-CO")}
+            </span>
+          </button>
+        </div>
+      )}
+
+      {/* 2. Botón de Ver Resumen (Visible solo si hay pedidos confirmados en la mesa) */}
+      {ordersCount > 0 && (
+        <div className={cn(
+          "p-4 bg-carbon-900 text-white flex items-center justify-between cursor-pointer active:bg-carbon-800 transition-colors",
+          hasCurrentOrder ? "border-t border-carbon-800" : ""
+        )}
+        onClick={onShowSummary}
         >
           <div className="flex items-center gap-3">
-            {/* Items badge */}
             <div className="relative">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-sage-100 flex items-center justify-center">
-                <ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 text-sage-700" />
+              <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+                <Receipt className="w-5 h-5 text-white" />
               </div>
-              {(itemCount > 0 || hasProtein) && (
-                <div className="absolute -top-1 -right-1 w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-rose-500 flex items-center justify-center shadow-md border-2 border-white">
-                  <span className="text-[10px] sm:text-xs font-bold text-white">
-                    {itemCount + (hasProtein ? 1 : 0)}
-                  </span>
-                </div>
-              )}
+              <div className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-emerald-500 flex items-center justify-center shadow-md border-2 border-carbon-900">
+                <span className="text-[10px] font-bold text-white">
+                  {ordersCount}
+                </span>
+              </div>
             </div>
-
-            {/* Text */}
-            <div className="text-left min-w-0">
-              <p className="text-sm font-bold text-carbon-900 truncate max-w-[120px] sm:max-w-none">
-                {hasProtein
-                  ? currentProteinName || "Almuerzo"
-                  : `${itemCount} productos`}
-              </p>
-              <p className="text-[10px] sm:text-xs text-carbon-500 flex items-center gap-1">
-                {itemCount > 0 && hasProtein
-                  ? `+ ${itemCount} extras`
-                  : "Tu pedido actual"}
-              </p>
+            <div>
+              <p className="text-sm font-semibold tracking-wide">Ver Resumen</p>
+              <p className="text-xs text-carbon-400 font-medium">Confirmar y enviar a cocina</p>
             </div>
           </div>
-
-          {/* Price and button */}
-          <div className="flex items-center gap-2 sm:gap-4">
-            <p className="text-lg sm:text-xl font-black text-sage-800 whitespace-nowrap">
-              ${total.toLocaleString("es-CO")}
+          
+          <div className="text-right">
+            <p className="text-xl font-bold tracking-tight">
+              ${tableTotal.toLocaleString("es-CO")}
             </p>
-            <button
-              onClick={(e) => {
-                e.stopPropagation();
-                onOrder();
-              }}
-              className="px-5 sm:px-8 py-2.5 sm:py-3 bg-sage-600 text-white font-bold rounded-xl shadow-lg hover:bg-sage-700 active:scale-95 transition-all text-sm sm:text-base whitespace-nowrap"
-            >
-              ORDENAR
-            </button>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
