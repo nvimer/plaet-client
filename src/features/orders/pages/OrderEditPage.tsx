@@ -145,140 +145,117 @@ export function OrderEditPage() {
               Tipo de Orden
             </h3>
             <div className="grid grid-cols-2 gap-4">
-            <Button
-              variant={orderType === OrderType.DINE_IN ? "primary" : "ghost"}
-              size="lg"
-              onClick={() => setOrderType(OrderType.DINE_IN)}
-              className="h-20 flex-col gap-2"
-            >
-              <UtensilsCrossed className="w-6 h-6" />
-              <span>Mesa</span>
-            </Button>
-            <Button
-              variant={orderType === OrderType.TAKE_OUT ? "primary" : "ghost"}
-              size="lg"
-              onClick={() => setOrderType(OrderType.TAKE_OUT)}
-              className="h-20 flex-col gap-2"
-            >
-              <Bike className="w-6 h-6" />
-              <span>Para Llevar</span>
-            </Button>
-          </div>
-        </div>
-
-        {/* Table Selection */}
-        {orderType === OrderType.DINE_IN && (
-          <div>
-            <h3 className="text-lg font-semibold text-carbon-900 mb-4">
-              Seleccione Mesa
-            </h3>
-            <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
-              {availableTables?.map((table) => (
-                <Button
-                  key={table.id}
-                  variant={selectedTable === table.id ? "primary" : "ghost"}
-                  size="md"
-                  onClick={() => setSelectedTable(table.id)}
-                  className="h-16"
-                >
-                  {table.number}
-                </Button>
-              ))}
+              <Button
+                variant={orderType === OrderType.DINE_IN ? "primary" : "ghost"}
+                size="lg"
+                onClick={() => setOrderType(OrderType.DINE_IN)}
+                className="h-20 flex-col gap-2"
+              >
+                <UtensilsCrossed className="w-6 h-6" />
+                <span>Mesa</span>
+              </Button>
+              <Button
+                variant={orderType === OrderType.TAKE_OUT ? "primary" : "ghost"}
+                size="lg"
+                onClick={() => setOrderType(OrderType.TAKE_OUT)}
+                className="h-20 flex-col gap-2"
+              >
+                <Bike className="w-6 h-6" />
+                <span>Para Llevar</span>
+              </Button>
             </div>
           </div>
-        )}
 
-        {/* Order Notes */}
-        <div>
-          <Input
-            label="Notas de la Orden (opcional)"
-            placeholder="Ej: Sin cebolla, extra picante..."
-            value={orderNotes}
-            onChange={(e) => setOrderNotes(e.target.value)}
-            fullWidth
-          />
-        </div>
-
-        {/* Current Order Items (Read-only for now) */}
-        <div>
-          <h3 className="text-lg font-semibold text-carbon-900 mb-4">
-            Items Actuales de la Orden
-          </h3>
-          <div className="space-y-3">
-            {order.items?.map((item) => (
-              <div
-                key={item.id}
-                className="flex items-center justify-between p-4 bg-sage-50 rounded-xl"
-              >
-                <div>
-                  <div className="font-medium text-carbon-900">
-                    {item.quantity}x{" "}
-                    {item.menuItem?.name || `Item #${item.menuItemId}`}
-                  </div>
-                  {item.notes && (
-                    <div className="text-sm text-carbon-600">{item.notes}</div>
-                  )}
-                </div>
-                <div className="font-semibold text-carbon-900">
-                  $
-                  {(Number(item.priceAtOrder) * item.quantity).toLocaleString()}
-                </div>
+          {/* Table Selection */}
+          {orderType === OrderType.DINE_IN && (
+            <div>
+              <h3 className="text-lg font-semibold text-carbon-900 mb-4">
+                Seleccione Mesa
+              </h3>
+              <div className="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-3">
+                {availableTables?.map((table) => (
+                  <Button
+                    key={table.id}
+                    variant={selectedTable === table.id ? "primary" : "ghost"}
+                    size="md"
+                    onClick={() => setSelectedTable(table.id)}
+                    className="h-16"
+                  >
+                    {table.number}
+                  </Button>
+                ))}
               </div>
-            ))}
+            </div>
+          )}
+
+          {/* Order Notes */}
+          <div>
+            <Input
+              label="Notas de la Orden (opcional)"
+              placeholder="Ej: Sin cebolla, extra picante..."
+              value={orderNotes}
+              onChange={(e) => setOrderNotes(e.target.value)}
+              fullWidth
+            />
           </div>
-          <p className="text-sm text-carbon-500 mt-4">
-            Nota: Los items de la orden no pueden ser modificados desde esta
-            vista. Para cambiar items, contacte al administrador.
-          </p>
-        </div>
 
-                  {/* Actions */}
-
-                  <div className="flex gap-4 pt-8 border-t border-sage-100">
-
-                    <Button
-
-                      variant="primary"
-
-                      size="lg"
-
-                      onClick={handleSubmit}
-
-                      isLoading={isPending}
-
-                      disabled={isPending}
-
-                      className="flex-1 h-16 rounded-2xl font-bold bg-carbon-900 hover:bg-carbon-800 text-white shadow-xl shadow-carbon-200"
-
-                    >
-
-                      {!isPending && <CheckCircle className="w-5 h-5 mr-2 stroke-[3px]" />}
-
-                      Guardar Cambios
-
-                    </Button>
-
-                    <Button
-
-                      variant="ghost"
-
-                      size="lg"
-
-                      onClick={() => navigate(getOrderDetailRoute(order.id))}
-
-                      disabled={isPending}
-
-                      className="h-16 px-8 rounded-2xl font-bold text-carbon-400"
-
-                    >
-
-                      Cancelar
-
-                    </Button>
-
+          {/* Current Order Items (Read-only for now) */}
+          <div>
+            <h3 className="text-lg font-semibold text-carbon-900 mb-4">
+              Items Actuales de la Orden
+            </h3>
+            <div className="space-y-3">
+              {order.items?.map((item) => (
+                <div
+                  key={item.id}
+                  className="flex items-center justify-between p-4 bg-sage-50 rounded-xl"
+                >
+                  <div>
+                    <div className="font-medium text-carbon-900">
+                      {item.quantity}x{" "}
+                      {item.menuItem?.name || `Item #${item.menuItemId}`}
+                    </div>
+                    {item.notes && (
+                      <div className="text-sm text-carbon-600">{item.notes}</div>
+                    )}
                   </div>
+                  <div className="font-semibold text-carbon-900">
+                    $
+                    {(Number(item.priceAtOrder) * item.quantity).toLocaleString()}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="text-sm text-carbon-500 mt-4">
+              Nota: Los items de la orden no pueden ser modificados desde esta
+              vista. Para cambiar items, contacte al administrador.
+            </p>
+          </div>
 
-        
+          {/* Actions */}
+          <div className="flex gap-4 pt-8 border-t border-sage-100">
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={handleSubmit}
+              isLoading={isPending}
+              disabled={isPending}
+              className="flex-1 h-16 rounded-2xl font-bold bg-carbon-900 hover:bg-carbon-800 text-white shadow-xl shadow-carbon-200"
+            >
+              {!isPending && <CheckCircle className="w-5 h-5 mr-2 stroke-[3px]" />}
+              Guardar Cambios
+            </Button>
+            <Button
+              variant="ghost"
+              size="lg"
+              onClick={() => navigate(getOrderDetailRoute(order.id))}
+              disabled={isPending}
+              className="h-16 px-8 rounded-2xl font-bold text-carbon-400"
+            >
+              Cancelar
+            </Button>
+          </div>
+        </div>
       </div>
     </SidebarLayout>
   );
