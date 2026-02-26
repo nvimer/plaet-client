@@ -10,16 +10,17 @@ import { BaseModal } from "@/components/ui/BaseModal/BaseModal";
 import { Pagination } from "@/components/ui/Pagination/Pagination";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog/ConfirmDialog";
 import type { RestaurantFormValues } from "../schemas/restaurant.schema";
-import { Plus, Building2, MapPin, Phone, Globe, Trash2, Edit } from "lucide-react";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 
 /**
  * SuperAdmin page to manage all restaurant tenants.
-
+ */
 import { RestaurantStatus } from "@/types";
+import { Plus, Building2, MapPin, Phone, Globe, Trash2, Edit, CheckCircle2, Clock, AlertCircle } from "lucide-react";
 
 export function RestaurantsPage() {
   const [page, setPage] = useState(1);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   
@@ -159,5 +160,6 @@ export function RestaurantsPage() {
         />
       </div>
     </SidebarLayout>
-  );
-};
+      );
+  }
+  
