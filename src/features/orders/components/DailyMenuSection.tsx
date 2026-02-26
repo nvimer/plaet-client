@@ -139,38 +139,25 @@ export function DailyMenuSection({
   extraOptions,
   drinkOptions,
   dessertOptions,
-  basePrice,
   className,
 }: DailyMenuSectionProps) {
-  const hasPrices = !!basePrice;
-
   return (
-    <Card className={cn("overflow-hidden shadow-lg", className)}>
-      {/* Header with gradient background */}
-      <div className="relative bg-gradient-to-r from-sage-600 via-sage-500 to-sage-600 px-4 py-4 sm:px-6 sm:py-5">
-        <div className="absolute top-3 right-4 opacity-20">
-          <Sparkles className="w-8 h-8 text-white" />
+    <Card className={cn("overflow-hidden border-none shadow-smooth-lg rounded-2xl", className)}>
+      {/* Header with dark gradient background */}
+      <div className="relative bg-gradient-to-br from-carbon-900 to-carbon-800 px-6 py-5">
+        <div className="absolute top-3 right-4 opacity-10">
+          <Sparkles className="w-12 h-12 text-white" />
         </div>
 
-        <h3 className="relative text-white font-bold text-lg sm:text-xl flex items-center gap-2">
-          <CircleDot className="w-5 h-5 sm:w-6 sm:h-6" />
-          Menú del Día Configurado
-        </h3>
-        <p className="relative text-sage-100 text-xs sm:text-sm mt-1.5 font-medium">
-          Todas las opciones disponibles para hoy
-        </p>
-
-        {hasPrices && (
-          <div className="flex gap-3 mt-3">
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-white/20 text-white text-sm font-semibold">
-              <Check className="w-3 h-3" />
-              Margen Base: ${basePrice?.toLocaleString()}
-            </span>
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-400/30 text-white text-xs font-medium">
-              + Precio de proteína
-            </span>
+        <h3 className="relative text-white font-black text-lg sm:text-xl flex items-center gap-3 tracking-tight">
+          <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+            <ChefHat className="w-6 h-6 text-sage-400" />
           </div>
-        )}
+          Menú del Día
+        </h3>
+        <p className="relative text-carbon-400 text-[10px] sm:text-xs mt-1 font-bold uppercase tracking-[0.2em]">
+          Opciones disponibles para el servicio de hoy
+        </p>
       </div>
 
       {/* Menu categories with all options */}

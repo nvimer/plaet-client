@@ -161,20 +161,20 @@ export function OrderForm({
 
   return (
     <div className="space-y-6 pb-24 sm:pb-0">
-      {/* Header */}
+      {/* Professional Header Banner */}
       <Card
         variant="elevated"
         className={cn(
-          "overflow-hidden rounded-2xl border-2",
+          "overflow-hidden rounded-2xl border-2 transition-all duration-300",
           currentOrderIndex !== null
-            ? "border-amber-200 bg-amber-50"
-            : "border-sage-200 bg-white"
+            ? "border-amber-200 bg-white shadow-soft-xl"
+            : "border-sage-200 bg-white shadow-smooth-md"
         )}
       >
         <div className="px-4 py-4 sm:px-6 sm:py-5 flex items-center justify-between">
           <div className="flex items-center gap-3 sm:gap-4">
             <div className={cn(
-              "w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-inner",
+              "w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-inner transition-colors",
               currentOrderIndex !== null ? "bg-amber-100 text-amber-600" : "bg-sage-100 text-sage-600"
             )}>
               {currentOrderIndex !== null ? (
@@ -184,89 +184,66 @@ export function OrderForm({
               )}
             </div>
             <div>
-              <h2 className="text-carbon-900 font-black text-base sm:text-lg tracking-tight">
+              <h2 className="text-carbon-900 font-black text-base sm:text-xl tracking-tight leading-tight">
                 {currentOrderIndex !== null
                   ? `Editando Pedido #${currentOrderIndex + 1}`
                   : `Nuevo Pedido #${tableOrdersLength + 1}`}
               </h2>
-              <p className="text-carbon-500 text-xs sm:text-sm font-medium">
-                {currentOrderIndex !== null
-                  ? "Modifica los detalles"
-                  : "Configura el pedido"}
-              </p>
+              <div className="flex items-center gap-2 mt-0.5">
+                <span className={cn(
+                  "w-2 h-2 rounded-full animate-pulse",
+                  currentOrderIndex !== null ? "bg-amber-500" : "bg-sage-500"
+                )} />
+                <p className="text-carbon-500 text-[10px] sm:text-xs font-black uppercase tracking-widest">
+                  {currentOrderIndex !== null
+                    ? "Modificando selección"
+                    : "Configuración en curso"}
+                </p>
+              </div>
             </div>
           </div>
-          {currentOrderIndex !== null && (
-            <button
-              onClick={onCancelEdit}
-              className="p-2 sm:p-3 bg-white hover:bg-amber-100 rounded-lg sm:rounded-xl text-carbon-500 hover:text-amber-700 transition-colors shadow-sm"
-            >
-              <X className="w-5 h-5 sm:w-6 sm:h-6" />
-            </button>
-          )}
-        </div>
-      </Card>
-
-      {/* Collapsible daily menu */}
-      <Card variant="elevated" className="overflow-hidden rounded-2xl">
-        <button
-          onClick={() => setShowDailyMenu(!showDailyMenu)}
-          className="w-full bg-gradient-to-r from-amber-500 to-amber-400 px-6 py-4 flex items-center justify-between hover:from-amber-600 hover:to-amber-500 transition-colors"
-        >
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-white/20 flex items-center justify-center">
-              <ChefHat className="w-6 h-6 text-white" />
-            </div>
-            <div className="text-left">
-              <span className="text-white font-semibold block text-lg">
-                Menú del Día
-              </span>
-              <span className="text-amber-100 text-sm hidden sm:inline">
-                {dailyMenuDisplay.isConfigured
-                  ? `${dailyMenuDisplay.soupOptions.length} sopas, ${dailyMenuDisplay.drinkOptions.length} bebidas`
-                  : "Usando configuración por defecto"}
-              </span>
-            </div>
-          </div>
-          {showDailyMenu ? (
-            <ChevronUp className="w-6 h-6 text-white" />
-          ) : (
-            <ChevronDown className="w-6 h-6 text-white" />
-          )}
-        </button>
-        {showDailyMenu && (
-          <DailyMenuSection
-            soupOptions={dailyMenuDisplay.soupOptions}
-            principleOptions={dailyMenuDisplay.principleOptions}
-            saladOptions={dailyMenuDisplay.saladOptions}
-            extraOptions={dailyMenuDisplay.extraOptions}
-            drinkOptions={dailyMenuDisplay.drinkOptions}
-            dessertOptions={dailyMenuDisplay.dessertOptions}
-            basePrice={dailyMenuDisplay.basePrice}
-          />
-        )}
-      </Card>
-
-      {/* Daily Menu Prices Info */}
-      {dailyMenuPrices.isConfigured && (
-        <div className="flex items-center justify-between p-4 bg-sage-50 rounded-xl border border-sage-200">
+          
           <div className="flex items-center gap-2">
-            <Receipt className="w-5 h-5 text-sage-600" />
-            <span className="text-sm font-medium text-carbon-700">
-              Margen base del almuerzo:
-            </span>
-          </div>
-          <div className="text-sm">
-            <span className="text-carbon-600">
-              <strong className="text-carbon-900">
-                ${dailyMenuPrices.basePrice.toLocaleString()}
-              </strong>
-              <span className="text-carbon-400 ml-2">
-                (se suma al precio de la proteína)
-              </span>
-            </span>
+            {/* Daily Menu Toggle integrated into header */}
+            <button
+              onClick={() => setShowDailyMenu(!showDailyMenu)}
+              className={cn(
+                "p-2.5 sm:p-3 rounded-xl transition-all flex items-center gap-2 border-2 active:scale-95",
+                showDailyMenu 
+                  ? "bg-carbon-900 border-carbon-900 text-white shadow-lg" 
+                  : "bg-white border-sage-100 text-sage-600 hover:bg-sage-50"
+              )}
+              title="Ver Menú del Día"
+            >
+              <ChefHat className="w-5 h-5" />
+              <span className="hidden md:inline text-xs font-black uppercase tracking-wider">Menú de Hoy</span>
+              {showDailyMenu ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </button>
+
+            {currentOrderIndex !== null && (
+              <button
+                onClick={onCancelEdit}
+                className="p-2.5 sm:p-3 bg-rose-50 border-2 border-rose-100 rounded-xl text-rose-500 hover:bg-rose-100 transition-all shadow-sm active:scale-90"
+                title="Cancelar edición"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            )}
           </div>
         </div>
+      </Card>
+
+      {/* Daily menu overview */}
+      {showDailyMenu && dailyMenuDisplay.isConfigured && (
+        <DailyMenuSection
+          soupOptions={dailyMenuDisplay.soupOptions}
+          principleOptions={dailyMenuDisplay.principleOptions}
+          saladOptions={dailyMenuDisplay.saladOptions}
+          extraOptions={dailyMenuDisplay.extraOptions}
+          drinkOptions={dailyMenuDisplay.drinkOptions}
+          dessertOptions={dailyMenuDisplay.dessertOptions}
+          className="animate-in fade-in slide-in-from-top-4 duration-300 border-2 border-sage-200"
+        />
       )}
 
       {/* Lunch configuration - Conditional selectors */}
