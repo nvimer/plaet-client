@@ -322,7 +322,7 @@ export function DailyMenuConfigForm({
             <UtensilsCrossed className="w-6 h-6" />
           </div>
           <div>
-            <h2 className="text-xl font-black text-carbon-900 tracking-tight">
+            <h2 className="text-xl font-semibold text-carbon-900 tracking-tight">
               {selectedDate ? `Menú para ${selectedDate}` : "Menú del Día"}
             </h2>
             <p className="text-sm text-carbon-500 font-medium">
@@ -346,7 +346,7 @@ export function DailyMenuConfigForm({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {/* Soup Section */}
           <div className="space-y-4">
-            <label className="flex items-center gap-2 text-sm font-black text-carbon-800 tracking-wide">
+            <label className="flex items-center gap-2 text-sm font-semibold text-carbon-800 tracking-wide">
               <span className="w-1.5 h-4 bg-sage-500 rounded-full" />
               Sopas
             </label>
@@ -398,7 +398,7 @@ export function DailyMenuConfigForm({
 
           {/* Principle Section */}
           <div className="space-y-4">
-            <label className="flex items-center gap-2 text-sm font-black text-carbon-800 tracking-wide">
+            <label className="flex items-center gap-2 text-sm font-semibold text-carbon-800 tracking-wide">
               <span className="w-1.5 h-4 bg-sage-500 rounded-full" />
               Principios
             </label>
@@ -450,7 +450,7 @@ export function DailyMenuConfigForm({
 
           {/* Salad Section */}
           <div className="space-y-4">
-            <label className="flex items-center gap-2 text-sm font-black text-carbon-800 tracking-wide">
+            <label className="flex items-center gap-2 text-sm font-semibold text-carbon-800 tracking-wide">
               <span className="w-1.5 h-4 bg-sage-500 rounded-full" />
               Ensaladas
             </label>
@@ -502,7 +502,7 @@ export function DailyMenuConfigForm({
 
           {/* Extra Section */}
           <div className="space-y-4">
-            <label className="flex items-center gap-2 text-sm font-black text-carbon-800 tracking-wide">
+            <label className="flex items-center gap-2 text-sm font-semibold text-carbon-800 tracking-wide">
               <span className="w-1.5 h-4 bg-sage-500 rounded-full" />
               Extras
             </label>
@@ -554,7 +554,7 @@ export function DailyMenuConfigForm({
 
           {/* Drink Section */}
           <div className="space-y-4 md:col-span-2">
-            <label className="flex items-center gap-2 text-sm font-black text-carbon-800 tracking-wide">
+            <label className="flex items-center gap-2 text-sm font-semibold text-carbon-800 tracking-wide">
               <span className="w-1.5 h-4 bg-sage-500 rounded-full" />
               Bebidas
             </label>
@@ -607,7 +607,7 @@ export function DailyMenuConfigForm({
           {/* Protein Section */}
           <div className="space-y-4 md:col-span-2">
             <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 text-sm font-black text-carbon-800 tracking-wide">
+              <label className="flex items-center gap-2 text-sm font-semibold text-carbon-800 tracking-wide">
                 <span className="w-1.5 h-4 bg-sage-500 rounded-full" />
                 Proteínas Disponibles
               </label>
@@ -693,7 +693,7 @@ export function DailyMenuConfigForm({
           <div className="space-y-4 md:col-span-2 pt-4 border-t border-carbon-50">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4">
-                <label className="flex items-center gap-2 text-sm font-black text-carbon-800 tracking-wide">
+                <label className="flex items-center gap-2 text-sm font-semibold text-carbon-800 tracking-wide">
                   <span className="w-1.5 h-4 bg-sage-500 rounded-full" />
                   Postres
                 </label>
@@ -837,7 +837,7 @@ export function DailyMenuConfigForm({
                 <div className="flex items-center justify-between mb-4">
                   <div>
                     <span className="text-xs font-semibold text-sage-600 tracking-widest">Margen Base</span>
-                    <p className="text-2xl font-black text-carbon-900">${formState.basePrice.toLocaleString()}</p>
+                    <p className="text-2xl font-semibold text-carbon-900">${formState.basePrice.toLocaleString()}</p>
                   </div>
                   <Settings2 className="w-8 h-8 text-sage-300" />
                 </div>

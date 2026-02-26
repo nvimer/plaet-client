@@ -51,14 +51,14 @@ export function ProteinSelector({
               <Beef className="w-6 h-6 text-sage-400" />
             </div>
             <div>
-              <h3 className="text-base sm:text-lg font-black tracking-tight uppercase">Precio del Almuerzo</h3>
-              <p className="text-xs text-carbon-400 font-medium tracking-wide">
+              <h3 className="text-base sm:text-lg font-semibold tracking-tight">Precio del Almuerzo</h3>
+              <p className="text-xs text-carbon-400 font-medium">
                 Incluye todos los componentes
               </p>
             </div>
           </div>
           <div className="text-right">
-            <p className="text-3xl sm:text-4xl font-black text-sage-400 tracking-tighter">
+            <p className="text-2xl sm:text-3xl font-bold text-sage-400 tracking-tight">
               {selectedProteinTotal
                 ? `$${selectedProteinTotal.toLocaleString("es-CO")}`
                 : `$${minPrice.toLocaleString("es-CO")}${minPrice !== maxPrice ? ` - $${maxPrice.toLocaleString("es-CO")}` : ""}`}
@@ -105,7 +105,7 @@ export function ProteinSelector({
                 {/* Price Tag Overlay */}
                 <div className="absolute bottom-2 right-2">
                   <div className="bg-carbon-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg shadow-lg border border-white/10">
-                    <span className="text-xs sm:text-sm font-black text-white">
+                    <span className="text-xs sm:text-sm font-bold text-white">
                       ${totalPrice.toLocaleString("es-CO")}
                     </span>
                   </div>
@@ -114,7 +114,7 @@ export function ProteinSelector({
                 {/* Higher Price Badge */}
                 {isHigherPrice && !isSelected && (
                   <div className="absolute top-2 right-2">
-                    <span className="text-[9px] font-semibold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-200">
+                    <span className="text-[9px] font-semibold text-warning-700 bg-warning-100 px-2 py-0.5 rounded-full border border-warning-200">
                       Extra + ${(totalPrice - minPrice).toLocaleString()}
                     </span>
                   </div>
@@ -134,12 +134,12 @@ export function ProteinSelector({
               {/* Protein Info */}
               <div className="p-4 flex flex-col items-center text-center justify-center flex-1">
                 {protein.categoryName && (
-                  <span className="text-[8px] font-black text-carbon-300 tracking-wide block mb-1">
+                  <span className="text-[10px] font-medium text-carbon-400 block mb-1">
                     {protein.categoryName}
                   </span>
                 )}
                 <h4 className={cn(
-                  "font-black text-sm sm:text-base leading-tight uppercase tracking-tight",
+                  "font-semibold text-sm sm:text-base leading-tight tracking-tight",
                   isSelected ? "text-carbon-900" : "text-carbon-700"
                 )}>
                   {protein.name}

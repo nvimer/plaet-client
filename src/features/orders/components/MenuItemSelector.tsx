@@ -174,7 +174,7 @@ export function MenuItemSelector({
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center gap-2">
           {icon && <span className={cn("text-lg", colors.text)}>{icon}</span>}
-          <span className={cn("font-bold text-sm sm:text-base", colors.text)}>
+          <span className={cn("font-semibold text-sm sm:text-base", colors.text)}>
             {label}
           </span>
           {required && (
@@ -235,7 +235,7 @@ export function MenuItemSelector({
               <div className="p-2 sm:p-3 flex flex-col justify-center flex-1">
                 <span
                   className={cn(
-                    "font-bold text-xs sm:text-sm leading-tight text-center",
+                    "font-semibold text-xs sm:text-sm leading-tight text-center",
                     isSelected ? "text-carbon-900" : "text-carbon-700",
                   )}
                 >

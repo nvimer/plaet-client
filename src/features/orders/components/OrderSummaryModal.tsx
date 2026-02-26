@@ -42,7 +42,7 @@ export function OrderSummaryModal({
                 <Receipt className="w-6 h-6 text-sage-400" />
               </div>
               <div>
-                <h2 className="text-white font-black text-lg sm:text-2xl tracking-tight">
+                <h2 className="text-white font-semibold text-lg sm:text-2xl tracking-tight">
                   Revisar Pedido
                 </h2>
                 <p className="text-carbon-400 text-xs sm:text-sm font-medium tracking-wide">
@@ -72,16 +72,16 @@ export function OrderSummaryModal({
                 {/* Order Item Header */}
                 <div className="p-4 sm:p-5 border-b border-sage-50 flex items-start justify-between bg-white">
                   <div className="flex items-center gap-3">
-                    <span className="w-8 h-8 rounded-xl bg-carbon-900 text-white flex items-center justify-center font-black text-xs">
+                    <span className="w-8 h-8 rounded-xl bg-carbon-900 text-white flex items-center justify-center font-semibold text-xs">
                       {index + 1}
                     </span>
-                    <h3 className="font-black text-base sm:text-lg text-carbon-900">
+                    <h3 className="font-semibold text-base sm:text-lg text-carbon-900">
                       {order.protein
                         ? `Almuerzo ${order.protein.name}`
                         : "Productos a la Carta"}
                     </h3>
                   </div>
-                  <span className="font-black text-base sm:text-xl text-sage-600">
+                  <span className="font-semibold text-base sm:text-xl text-sage-600">
                     ${order.total.toLocaleString("es-CO")}
                   </span>
                 </div>
@@ -173,7 +173,7 @@ export function OrderSummaryModal({
         <div className="px-6 py-6 sm:px-8 border-t border-carbon-100 bg-white shadow-[0_-8px_30px_rgb(0,0,0,0.04)]">
           <div className="flex items-center justify-between mb-6">
             <span className="text-sm font-bold text-carbon-400 tracking-wide">Total del Pedido</span>
-            <span className="text-3xl sm:text-4xl font-black text-carbon-900 tracking-tight">
+            <span className="text-3xl sm:text-4xl font-semibold text-carbon-900 tracking-tight">
               ${tableTotal.toLocaleString("es-CO")}
             </span>
           </div>
@@ -195,7 +195,7 @@ export function OrderSummaryModal({
               onClick={onConfirm}
               disabled={isPending}
               isLoading={isPending}
-              className="rounded-2xl h-14 sm:h-16 bg-carbon-900 hover:bg-carbon-800 text-white font-black shadow-xl shadow-carbon-200"
+              className="rounded-2xl h-14 sm:h-16 bg-carbon-900 hover:bg-carbon-800 text-white font-semibold shadow-xl shadow-carbon-200"
             >
               <Check className="w-5 h-5 mr-2 stroke-[3px]" />
               Confirmar Orden
