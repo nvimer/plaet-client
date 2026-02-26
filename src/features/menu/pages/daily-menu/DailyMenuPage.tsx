@@ -292,9 +292,10 @@ export function DailyMenuPage() {
                 Configurar Menú del Día
               </Button>
             </Card>
-          )}
-        </motion.div>
-      )}
-    </>
-  );
-}
+                      )}
+                    </motion.div>
+                  )}
+                </div>
+              );
+            }
+          
