@@ -311,7 +311,7 @@ export function OrderCard({
     <article
       className={cn(
         "group relative overflow-hidden rounded-2xl border-2 bg-white",
-        "transition-all duration-200",
+        "transition-all duration-200 flex flex-col h-full",
         "hover:shadow-lg hover:border-sage-200",
         "active:scale-[0.99]",
         config.border,
@@ -321,19 +321,19 @@ export function OrderCard({
       )}
     >
       {/* Status accent bar */}
-      <div className={cn("h-1.5 w-full", config.accent)} aria-hidden />
+      <div className={cn("h-1.5 w-full flex-shrink-0", config.accent)} aria-hidden />
 
       {/* Urgent badge for long waits */}
       {waitTime.isUrgent && waitTime.minutes > 30 && (
-        <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-bold animate-pulse">
+        <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-bold animate-pulse z-10">
           <Flame className="w-3 h-3" />
           Retrasado
         </div>
       )}
 
-      <div className="p-5 sm:p-6">
+      <div className="p-5 sm:p-6 flex flex-col flex-1">
         {/* Header: Wait Time + ID + Status */}
-        <div className="flex items-start justify-between gap-4 mb-5">
+        <div className="flex items-start justify-between gap-4 mb-5 flex-shrink-0">
           {/* Left: Wait Time (Prominent) */}
           <div className="flex-1 min-w-0">
             {/* Large Wait Time Display */}
@@ -364,7 +364,7 @@ export function OrderCard({
             {/* Location & Waiter */}
             <div className="flex flex-wrap items-center gap-3 text-sm">
               {order.table && (
-                <div className="flex items-center gap-1.5 text-carbon-600 bg-carbon-50 px-2 py-1 rounded-lg">
+                <div className="flex items-center gap-1.5 text-carbon-600 bg-carbon-50 px-2 py-1 rounded-lg border border-carbon-100">
                   <MapPin className="w-4 h-4 text-sage-600" />
                   <span className="font-medium">Mesa {order.table.number}</span>
                 </div>
@@ -372,7 +372,7 @@ export function OrderCard({
               {order.waiter && (
                 <div className="flex items-center gap-1.5 text-carbon-600">
                   <User className="w-4 h-4" />
-                  <span className="text-sm">{order.waiter.firstName}</span>
+                  <span className="text-sm font-medium">{order.waiter.firstName}</span>
                 </div>
               )}
             </div>
@@ -385,34 +385,34 @@ export function OrderCard({
         </div>
 
         {/* Order Type Badge */}
-        <div className="mb-4">
+        <div className="mb-4 flex-shrink-0">
           <OrderTypeBadge type={order.type} />
         </div>
 
-        {/* Items Preview with Emojis */}
+        {/* Items Preview with Emojis - Fixed Height/Scrollable if needed */}
         <div
-          className={cn("mb-5 p-4 rounded-xl border", config.bg, config.border)}
+          className={cn("mb-5 p-4 rounded-xl border flex-1 min-h-[140px]", config.bg, config.border)}
         >
-          <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center justify-between mb-3 flex-shrink-0">
             <p className="text-sm font-medium text-carbon-700">
               <span className={cn("font-bold", config.text)}>{itemsCount}</span>{" "}
               productos
             </p>
             {waitTime.isUrgent && (
-              <div className="flex items-center gap-1 text-xs text-rose-600">
+              <div className="flex items-center gap-1 text-xs text-error-600">
                 <AlertCircle className="w-3.5 h-3.5" />
                 <span>Puede estar frío</span>
               </div>
             )}
           </div>
 
-          <div className="space-y-2">
-            {order.items?.slice(0, 3).map((item) => (
+          <div className="space-y-2 overflow-y-auto max-h-[120px] scrollbar-hide">
+            {order.items?.map((item) => (
               <div key={item.id} className="flex items-center gap-2 text-sm">
-                <span className="text-lg">
+                <span className="text-lg flex-shrink-0">
                   {getItemEmoji(item.menuItem?.name || "")}
                 </span>
-                <span className="text-carbon-700 font-medium">
+                <span className="text-carbon-700 font-bold flex-shrink-0">
                   {item.quantity}x
                 </span>
                 <span className="text-carbon-600 truncate flex-1">
@@ -420,34 +420,43 @@ export function OrderCard({
                 </span>
               </div>
             ))}
-            {(order.items?.length || 0) > 3 && (
-              <p className="text-sm text-carbon-500 italic pl-7">
-                +{(order.items?.length || 0) - 3} más...
-              </p>
-            )}
           </div>
         </div>
 
         {/* Total - More Prominent */}
-        <div className="flex items-center justify-between mb-5 p-4 bg-gradient-to-r from-sage-50 to-sage-100/50 rounded-xl border border-sage-200">
+        <div className="flex items-center justify-between mb-5 p-4 bg-gradient-to-r from-sage-50 to-sage-100/50 rounded-xl border border-sage-200 mt-auto flex-shrink-0">
           <span className="text-sm font-medium text-carbon-600">Total</span>
-          <span className="text-2xl font-black text-sage-700">
+          <span className="text-2xl font-bold text-carbon-900 tracking-tight">
             ${order.totalAmount.toLocaleString("es-CO")}
           </span>
         </div>
 
         {/* Actions - Swipe-friendly layout */}
-        <div className="flex gap-3 pt-4 border-t border-sage-100">
+        <div className="flex gap-3 pt-4 border-t border-sage-100 flex-shrink-0">
           <Button
             variant="ghost"
             size="lg"
             onClick={() => onViewDetail(order.id)}
-            className="flex-1 min-h-[48px]"
+            className="flex-1 min-h-[48px] rounded-xl font-bold"
           >
             <Eye className="w-5 h-5 mr-2" />
             Ver Detalle
           </Button>
           {nextStatus && (
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={handleStatusChange}
+              disabled={isPending}
+              className="flex-1 min-h-[48px] rounded-xl font-bold shadow-soft-md"
+            >
+              <nextStatus.icon className="w-5 h-5 mr-2" />
+              {nextStatus.label}
+            </Button>
+          )}
+        </div>
+      </div>
+    </article>
             <Button
               variant="primary"
               size="lg"

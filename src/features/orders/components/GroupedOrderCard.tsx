@@ -95,19 +95,19 @@ export function GroupedOrderCard({
     <Card
       variant="elevated"
       className={cn(
-        "overflow-hidden border-2 transition-all duration-300 rounded-3xl",
+        "overflow-hidden border-2 transition-all duration-300 rounded-3xl h-full flex flex-col",
         isExpanded ? "border-sage-300 shadow-soft-xl" : "border-sage-100 hover:border-sage-300 hover:shadow-soft-lg"
       )}
     >
       {/* Header: Table Info & Group Stats */}
       <div 
         className={cn(
-          "p-5 cursor-pointer transition-colors duration-300",
+          "p-5 cursor-pointer transition-colors duration-300 flex-1 flex flex-col",
           isExpanded ? "bg-sage-50/50" : "bg-white"
         )}
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex items-start justify-between gap-4">
+        <div className="flex items-start justify-between gap-4 flex-shrink-0">
           <div className="flex-1 min-w-0">
             {/* Table / Location Info */}
             <div className="flex items-center gap-4 mb-4">
@@ -157,20 +157,31 @@ export function GroupedOrderCard({
           </div>
         </div>
 
-        {/* Quick Action Button for PENDING orders */}
-        {!isExpanded && canSendToKitchen && (
-          <div className="mt-5 pt-5 border-t border-sage-100 flex gap-2">
-            <Button
-              variant="primary"
-              className="w-full bg-sage-600 hover:bg-sage-700 text-white rounded-xl h-12 shadow-md active:scale-[0.98] transition-all"
-              onClick={handleSendAllToKitchen}
-              disabled={isUpdating}
-            >
-              <ChefHat className="w-5 h-5 mr-2" />
-              Enviar todo a Cocina
-            </Button>
-          </div>
-        )}
+        {/* Quick Action Button for PENDING orders - Pushed to bottom of the main area */}
+        <div className="mt-auto pt-5">
+          {!isExpanded && canSendToKitchen && (
+            <div className="pt-5 border-t border-sage-100">
+              <Button
+                variant="primary"
+                className="w-full bg-sage-600 hover:bg-sage-700 text-white rounded-xl h-12 shadow-md active:scale-[0.98] transition-all"
+                onClick={handleSendAllToKitchen}
+                disabled={isUpdating}
+              >
+                <ChefHat className="w-5 h-5 mr-2" />
+                Enviar todo a Cocina
+              </Button>
+            </div>
+          )}
+          
+          {!isExpanded && !canSendToKitchen && (
+            <div className="bg-sage-50/50 rounded-xl p-3 border border-sage-100">
+              <p className="text-xs text-carbon-500 font-medium flex items-center gap-2">
+                <Info className="w-3.5 h-3.5" />
+                Contiene {totalItems} productos en total
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Expanded Details: List of individual orders */}
