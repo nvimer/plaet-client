@@ -35,9 +35,16 @@ export function FixedOrderSummaryBar({
       {/* Bottom bar */}
       <div className="bg-white border-t border-sage-200 shadow-[0_-4px_20px_rgba(0,0,0,0.1)]">
         {/* Clickable summary row */}
-        <button
+        <div
           onClick={scrollToOrder}
-          className="w-full px-4 py-3 sm:py-4 flex items-center justify-between active:bg-sage-50 transition-colors"
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              scrollToOrder();
+            }
+          }}
+          className="w-full px-4 py-3 sm:py-4 flex items-center justify-between active:bg-sage-50 transition-colors cursor-pointer"
         >
           <div className="flex items-center gap-3">
             {/* Items badge */}
@@ -84,7 +91,7 @@ export function FixedOrderSummaryBar({
               ORDENAR
             </button>
           </div>
-        </button>
+        </div>
       </div>
     </div>
   );

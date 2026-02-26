@@ -4,7 +4,7 @@ import { DailyMenuConfigForm } from "./DailyMenuConfigForm";
 import { useDailyMenuToday, useDailyMenuByDate } from "@/features/menu/hooks/useDailyMenu";
 import { useAuth } from "@/hooks";
 import { RoleName } from "@/types";
-import { Calendar, RefreshCw, UtensilsCrossed, Edit2, ArrowLeft, Beef, Salad, CupSoda, IceCream, PlusCircle, type LucideIcon } from "lucide-react";
+import { Calendar, RefreshCw, UtensilsCrossed, Edit2, ArrowLeft, Beef, Salad, CupSoda, IceCream, PlusCircle, Settings2, type LucideIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
@@ -179,10 +179,10 @@ export function DailyMenuPage() {
         <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-carbon-900 flex items-center gap-2">
-              <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
-                <Edit2 className="w-4 h-4" />
+              <div className="w-8 h-8 rounded-lg bg-sage-100 text-sage-600 flex items-center justify-center">
+                <Settings2 className="w-4 h-4" />
               </div>
-              Modo Edición
+              Configuración del Menú
             </h2>
             <Button variant="ghost" onClick={() => setIsEditing(false)} className="text-carbon-500 hover:text-carbon-800">
               <ArrowLeft className="w-4 h-4 mr-2" />

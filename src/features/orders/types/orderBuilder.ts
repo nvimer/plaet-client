@@ -11,6 +11,7 @@ import type { Replacement } from "../components";
 export interface MenuOption {
   id: number;
   name: string;
+  imageUrl?: string | null;
 }
 
 /**
@@ -20,6 +21,7 @@ export interface ProteinOption {
   id: number;
   name: string;
   price: number;
+  imageUrl?: string | null;
   icon?: "beef" | "fish" | "chicken" | "pork" | "other";
   isAvailable: boolean;
   categoryName?: string;
@@ -33,6 +35,7 @@ export interface LooseItem {
   name: string;
   price: number;
   quantity: number;
+  imageUrl?: string | null;
 }
 
 /**

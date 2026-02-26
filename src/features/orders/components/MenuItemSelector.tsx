@@ -1,11 +1,7 @@
 import { Card } from "@/components";
 import { cn } from "@/utils/cn";
-import { AlertCircle, Check } from "lucide-react";
-
-interface MenuOption {
-  id: number;
-  name: string;
-}
+import { AlertCircle, Check, ImageIcon } from "lucide-react";
+import type { MenuOption } from "../types/orderBuilder";
 
 interface MenuItemSelectorProps {
   label: string;
@@ -109,7 +105,15 @@ export function MenuItemSelector({
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            {icon && <div className={cn("text-2xl", colors.text)}>{icon}</div>}
+            <div className="relative w-12 h-12 rounded-lg bg-white overflow-hidden border border-carbon-100 flex-shrink-0">
+              {onlyOption.imageUrl ? (
+                <img src={onlyOption.imageUrl} alt={onlyOption.name} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-carbon-300">
+                  <ImageIcon className="w-6 h-6" />
+                </div>
+              )}
+            </div>
             <div>
               <div className="flex items-center gap-2">
                 <p className={cn("font-semibold", colors.text)}>{label}</p>
@@ -135,7 +139,7 @@ export function MenuItemSelector({
             {isSelected ? (
               <Check className="w-6 h-6" />
             ) : (
-              <span className="text-sage-400 text-xs">Elegir</span>
+              <span className="text-sage-400 text-xs font-bold">ELEGIR</span>
             )}
           </div>
         </div>
@@ -144,7 +148,7 @@ export function MenuItemSelector({
         {showRiceInfo && riceName && (
           <div className="mt-3 pt-3 border-t border-sage-200">
             <p className="text-sm text-carbon-600">
-              <span className="font-medium">Arroz:</span> {riceName}
+              <span className="font-medium">🍚 Arroz incluido:</span> {riceName}
             </p>
           </div>
         )}
@@ -195,38 +199,48 @@ export function MenuItemSelector({
               key={option.id}
               onClick={() => onSelect(option)}
               className={cn(
-                "relative p-3 sm:p-4 rounded-xl border-2 transition-all duration-200 text-left",
-                "min-h-[70px] sm:min-h-[80px] flex flex-col justify-center",
+                "group relative overflow-hidden rounded-2xl border-2 transition-all duration-300 text-left",
+                "min-h-[100px] sm:min-h-[120px] flex flex-col",
                 "active:scale-95 touch-manipulation",
                 isSelected
                   ? cn(
                       colors.selected,
-                      "border-sage-green-500 shadow-md ring-2 ring-sage-green-500/20",
+                      "border-sage-green-500 shadow-md ring-4 ring-sage-green-500/10",
                     )
                   : cn("bg-white border-sage-200", colors.hover),
               )}
             >
-              <span
-                className={cn(
-                  "font-bold text-sm sm:text-base leading-tight pr-6",
-                  isSelected ? "text-carbon-900" : "text-carbon-700",
+              {/* Product Image in Selector */}
+              <div className="relative h-16 sm:h-20 w-full bg-sage-50/50 overflow-hidden border-b border-sage-100">
+                {option.imageUrl ? (
+                  <img src={option.imageUrl} alt={option.name} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-sage-200">
+                    <ImageIcon className="w-8 h-8" />
+                  </div>
                 )}
-              >
-                {option.name}
-              </span>
+                {/* Selection indicator */}
+                <div
+                  className={cn(
+                    "absolute top-2 right-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all backdrop-blur-sm",
+                    isSelected
+                      ? "bg-sage-green-500 border-sage-green-500 text-white shadow-md"
+                      : "bg-white/80 border-sage-300 text-transparent",
+                  )}
+                >
+                  <Check className="w-4 h-4 stroke-[3px]" />
+                </div>
+              </div>
 
-              {/* Selection indicator */}
-              <div
-                className={cn(
-                  "absolute top-2 right-2 w-5 h-5 sm:w-6 sm:h-6 rounded-full border-2 flex items-center justify-center transition-all",
-                  isSelected
-                    ? "bg-sage-green-500 border-sage-green-500 shadow-sm"
-                    : "bg-white border-sage-300",
-                )}
-              >
-                {isSelected && (
-                  <Check className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
-                )}
+              <div className="p-2 sm:p-3 flex flex-col justify-center flex-1">
+                <span
+                  className={cn(
+                    "font-bold text-xs sm:text-sm leading-tight text-center",
+                    isSelected ? "text-carbon-900" : "text-carbon-700",
+                  )}
+                >
+                  {option.name}
+                </span>
               </div>
             </button>
           );
@@ -253,3 +267,4 @@ export function MenuItemSelector({
 }
 
 export default MenuItemSelector;
+

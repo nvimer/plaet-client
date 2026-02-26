@@ -12,6 +12,7 @@ import { cn } from "@/utils/cn";
 interface MenuOption {
   id: number;
   name: string;
+  imageUrl?: string | null;
 }
 
 interface DailyMenuCategoryProps {

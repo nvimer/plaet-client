@@ -1,3 +1,4 @@
+import { ImageIcon } from "lucide-react";
 import { TouchableCard } from "@/components";
 import type { MenuItem } from "@/types";
 
@@ -77,7 +78,7 @@ export function ProductGrid({
                 </div>
               ) : (
                 <div className="w-full h-32 mb-3 rounded-xl bg-sage-100 flex items-center justify-center">
-                  <span className="text-4xl">🍽️</span>
+                  <ImageIcon className="w-10 h-10 text-sage-300" />
                 </div>
               )}
 

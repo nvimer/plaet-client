@@ -40,14 +40,14 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
       <article
         className={cn(
           "group relative flex flex-col h-full overflow-hidden",
-          "bg-white rounded-[2rem] border-2 border-transparent shadow-sm",
+          "bg-white rounded-3xl border-2 border-transparent shadow-sm",
           "transition-all duration-300 hover:shadow-soft-xl hover:border-sage-200 sm:hover:-translate-y-1",
           !item.isAvailable && "opacity-75 grayscale-[0.5]"
         )}
       >
-        {/* IMAGEN SUPERIOR - Estilo Limpio/Kiosko */}
+        {/* ÁREA DE IMAGEN - Estilo Limpio/Kiosko */}
         <div className="relative w-full pt-5 px-5 overflow-hidden">
-          <div className="relative aspect-square w-full rounded-[1.5rem] bg-sage-50/50 overflow-hidden group-hover:bg-sage-50 transition-colors duration-300">
+          <div className="relative aspect-square w-full rounded-2xl bg-sage-50/50 overflow-hidden group-hover:bg-sage-50 transition-colors duration-300">
             {item.imageUrl ? (
               <img
                 src={item.imageUrl}

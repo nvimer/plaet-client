@@ -160,33 +160,36 @@ export function OrderForm({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-24 sm:pb-0">
       {/* Header */}
       <Card
         variant="elevated"
         className={cn(
-          "overflow-hidden rounded-2xl",
+          "overflow-hidden rounded-2xl border-2",
           currentOrderIndex !== null
-            ? "bg-gradient-to-r from-amber-500 to-amber-400"
-            : "bg-gradient-to-r from-sage-600 to-sage-500",
+            ? "border-amber-200 bg-amber-50"
+            : "border-sage-200 bg-white"
         )}
       >
         <div className="px-4 py-4 sm:px-6 sm:py-5 flex items-center justify-between">
           <div className="flex items-center gap-3 sm:gap-4">
-            <div className="w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center bg-white/20">
+            <div className={cn(
+              "w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-inner",
+              currentOrderIndex !== null ? "bg-amber-100 text-amber-600" : "bg-sage-100 text-sage-600"
+            )}>
               {currentOrderIndex !== null ? (
-                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
               ) : (
-                <Plus className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
               )}
             </div>
             <div>
-              <h2 className="text-white font-bold text-base sm:text-lg">
+              <h2 className="text-carbon-900 font-black text-base sm:text-lg tracking-tight">
                 {currentOrderIndex !== null
                   ? `Editando Pedido #${currentOrderIndex + 1}`
                   : `Nuevo Pedido #${tableOrdersLength + 1}`}
               </h2>
-              <p className="text-white/80 text-xs sm:text-sm">
+              <p className="text-carbon-500 text-xs sm:text-sm font-medium">
                 {currentOrderIndex !== null
                   ? "Modifica los detalles"
                   : "Configura el pedido"}
@@ -196,7 +199,7 @@ export function OrderForm({
           {currentOrderIndex !== null && (
             <button
               onClick={onCancelEdit}
-              className="p-2 sm:p-3 bg-white/20 hover:bg-white/30 rounded-lg sm:rounded-xl text-white transition-colors"
+              className="p-2 sm:p-3 bg-white hover:bg-amber-100 rounded-lg sm:rounded-xl text-carbon-500 hover:text-amber-700 transition-colors shadow-sm"
             >
               <X className="w-5 h-5 sm:w-6 sm:h-6" />
             </button>
@@ -870,12 +873,16 @@ export function OrderForm({
         />
       </Card>
 
-      {/* Add/update button */}
-      <Button onClick={onAddToTable} size="lg" className="w-full">
-        {currentOrderIndex !== null
-          ? "Actualizar Pedido"
-          : "Agregar a la Orden"}
-      </Button>
+      {/* Add/update button - Sticky Bottom for Mobile */}
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-white/95 backdrop-blur-md border-t border-sage-200 z-40 sm:relative sm:p-0 sm:bg-transparent sm:border-t-0 sm:block shadow-[0_-8px_30px_rgba(0,0,0,0.08)] sm:shadow-none pb-[env(safe-area-inset-bottom,16px)]">
+        <div className="max-w-4xl mx-auto px-0 sm:px-0">
+          <Button onClick={onAddToTable} size="lg" className="w-full h-14 rounded-2xl text-base font-black shadow-lg sm:shadow-none">
+            {currentOrderIndex !== null
+              ? "Actualizar Pedido"
+              : "Agregar a la Orden"}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
-import { Card, Button } from "@/components";
+import { Card, Button, Input } from "@/components";
 import { FilterSelect } from "@/components/filters/FilterSelect";
-import { Save, UtensilsCrossed, Check } from "lucide-react";
+import { Save, UtensilsCrossed, Check, Settings2, Lock, ListChecks } from "lucide-react";
 import {
   useUpdateDailyMenu,
   useUpdateDailyMenuByDate,
@@ -12,6 +12,7 @@ import {
   type UpdateDailyMenuData,
 } from "@/services/dailyMenuApi";
 import { useCategories } from "@/features/menu/categories/hooks";
+import { BaseModal } from "@/components/ui/BaseModal/BaseModal";
 import { toast } from "sonner";
 import { cn } from "@/utils/cn";
 
@@ -53,7 +54,6 @@ const defaultPrices = {
   basePrice: 4000,
 };
 
-// Default category names that should be auto-selected
 const DEFAULT_CATEGORY_NAMES = {
   soup: "Sopas",
   principle: "Principios",
@@ -73,7 +73,11 @@ export function DailyMenuConfigForm({
   const updateMenuByDate = useUpdateDailyMenuByDate();
   const { data: categories } = useCategories();
 
-  // Helper to find category ID by name - memoized to avoid ESLint warning
+  // Price Modal State
+  const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
+  const [showPriceFields, setShowPriceFields] = useState(false);
+  const [password, setPassword] = useState("");
+
   const findCategoryIdByName = useCallback(
     (name: string): number | null => {
       if (!categories) return null;
@@ -118,7 +122,6 @@ export function DailyMenuConfigForm({
 
   const [isSaved, setIsSaved] = useState(false);
 
-  // Auto-set default categories when categories load and no initial data
   useEffect(() => {
     if (categories && !initialData) {
       setFormState((prev) => ({
@@ -146,7 +149,6 @@ export function DailyMenuConfigForm({
     }
   }, [categories, initialData, findCategoryIdByName, selectedDate]);
 
-  // Fetch items for each selected category
   const soupItems = useItemsByCategory(formState.soupCategoryId || 0);
   const principleItems = useItemsByCategory(formState.principleCategoryId || 0);
   const proteinItems = useItemsByCategory(formState.proteinCategoryId || 0);
@@ -165,13 +167,11 @@ export function DailyMenuConfigForm({
         proteinCategoryId: initialData.proteinCategory?.id || null,
         drinkCategoryId: initialData.drinkCategory?.id || null,
         extraCategoryId: initialData.extraCategory?.id || null,
-        // If saladCategory is null in initialData but categories are loaded, try to find it by name
         saladCategoryId:
           initialData.saladCategory?.id ||
           (categories
             ? findCategoryIdByName(DEFAULT_CATEGORY_NAMES.salad)
             : null),
-        // Same for dessert
         dessertCategoryId:
           initialData.dessertCategory?.id ||
           (categories
@@ -198,11 +198,9 @@ export function DailyMenuConfigForm({
 
   const handleSubmit = async () => {
     try {
-      // Build a robust Date string for Zod coercing
       let submissionDate = formState.createdAt;
       if (!submissionDate) {
         if (selectedDate) {
-          // If we have "YYYY-MM-DD", make it a valid ISO string at noon UTC to avoid timezone shifts
           submissionDate = `${selectedDate}T12:00:00.000Z`;
         } else {
           submissionDate = new Date().toISOString();
@@ -246,7 +244,6 @@ export function DailyMenuConfigForm({
               option2Id: formState.dessertOption2Id,
             }
           : undefined,
-        // All selected proteins
         createdAt: submissionDate,
         allProteinIds:
           formState.selectedProteinIds.length > 0
@@ -269,7 +266,6 @@ export function DailyMenuConfigForm({
   };
 
   const getItemOptions = (items: { id: number; name: string }[]) => [
-    { value: "", label: "Seleccionar..." },
     ...items.map((item) => ({
       value: item.id.toString(),
       label: item.name,
@@ -285,6 +281,28 @@ export function DailyMenuConfigForm({
     }));
   };
 
+  const selectAllProteins = () => {
+    if (proteinItems.data) {
+      const allIds = proteinItems.data.map(p => p.id);
+      setFormState(prev => ({
+        ...prev,
+        selectedProteinIds: allIds
+      }));
+      toast.success("Todas las proteínas seleccionadas");
+    }
+  };
+
+  const handlePriceUnlock = () => {
+    // Basic security check - replace with real password validation if needed
+    if (password === "1234") {
+      setShowPriceFields(true);
+      setPassword("");
+      toast.success("Configuración de precios desbloqueada");
+    } else {
+      toast.error("Contraseña incorrecta");
+    }
+  };
+
   const isLoading =
     soupItems.isLoading ||
     principleItems.isLoading ||
@@ -297,120 +315,44 @@ export function DailyMenuConfigForm({
   const isMutationPending = updateMenuToday.isPending || updateMenuByDate.isPending;
 
   return (
-    <Card variant="elevated" className="p-6 rounded-2xl">
-      <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center">
-          <UtensilsCrossed className="w-5 h-5" />
+    <Card variant="elevated" className="p-6 rounded-3xl border-none shadow-smooth-lg">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <div className="flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-sage-100 text-sage-600 flex items-center justify-center shadow-inner">
+            <UtensilsCrossed className="w-6 h-6" />
+          </div>
+          <div>
+            <h2 className="text-xl font-black text-carbon-900 tracking-tight">
+              {selectedDate ? `Menú para ${selectedDate}` : "Menú del Día"}
+            </h2>
+            <p className="text-sm text-carbon-500 font-medium">
+              Gestiona las opciones disponibles para el almuerzo
+            </p>
+          </div>
         </div>
-        <div>
-          <h2 className="text-lg font-bold text-carbon-900">
-            {selectedDate ? `Configurar Menú para ${selectedDate}` : "Configurar Menú del Día"}
-          </h2>
-          <p className="text-sm text-carbon-500">
-            Selecciona las categorías y opciones disponibles
-          </p>
-        </div>
+
+        <Button 
+          variant="outline" 
+          onClick={() => setIsPriceModalOpen(true)}
+          className="rounded-xl border-sage-200 text-sage-700 hover:bg-sage-50"
+        >
+          <Settings2 className="w-4 h-4 mr-2" />
+          Ajustar Precios
+        </Button>
       </div>
 
-      <div className="space-y-6">
-
-        {/* Prices Section - Margen Base Configuration */}
-        <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-carbon-800 flex items-center gap-2">
-            <span className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center text-xs font-bold">
-              $
-            </span>
-            Precios del Almuerzo
-          </h3>
-
-          {/* Margen Base Card */}
-          <div
-            className={cn(
-              "relative p-4 rounded-xl border-2 transition-all",
-              "bg-gradient-to-br from-sage-50 to-white",
-              "border-sage-200 hover:border-sage-300",
-            )}
-          >
-            <div className="flex items-start justify-between mb-3">
-              <div>
-                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sage-100 text-sage-700 text-xs font-medium">
-                  <span className="w-1.5 h-1.5 rounded-full bg-sage-500" />
-                  Margen Base
-                </span>
-                <p className="text-xs text-carbon-500 mt-1.5">
-                  Base del precio para todos los almuerzos
-                </p>
-              </div>
-              <div className="text-right">
-                <span className="text-2xl font-bold text-carbon-900">
-                  ${formState.basePrice.toLocaleString()}
-                </span>
-              </div>
-            </div>
-
-            {/* Quick presets */}
-            <div className="flex gap-2 mb-3">
-              {[3000, 4000, 5000].map((price) => (
-                <button
-                  key={price}
-                  type="button"
-                  onClick={() =>
-                    setFormState((prev) => ({ ...prev, basePrice: price }))
-                  }
-                  className={cn(
-                    "flex-1 py-2 px-1 rounded-lg text-xs font-medium transition-all",
-                    formState.basePrice === price
-                      ? "bg-sage-500 text-white shadow-md"
-                      : "bg-white border border-carbon-200 text-carbon-600 hover:border-sage-300",
-                  )}
-                >
-                  ${(price / 1000).toFixed(0)}k
-                </button>
-              ))}
-            </div>
-
-            {/* Custom input */}
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-carbon-400 text-sm">
-                $
-              </span>
-              <input
-                type="number"
-                value={formState.basePrice}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                  setFormState({
-                    ...formState,
-                    basePrice: Number(e.target.value),
-                  })
-                }
-                className="w-full pl-7 pr-3 py-2.5 border border-carbon-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-sage-500 text-sm font-medium"
-                placeholder="Precio personalizado"
-              />
-            </div>
-          </div>
-
-          {/* Price calculation explanation */}
-          <div className="bg-sage-50 p-3 rounded-lg border border-sage-200 text-xs text-carbon-600">
-            <p className="font-medium text-carbon-800 mb-1">
-              Precio = ${formState.basePrice.toLocaleString()} + Proteína
-            </p>
-            <p className="text-carbon-500">
-              Ej: Pollo $6,000 → Total $
-              {(formState.basePrice + 6000).toLocaleString()}
-            </p>
-          </div>
-        </div>
-
-        {/* Categories and Items */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Soup Section - Pre-selected category */}
-          <div className="space-y-3">
-            <label className="block text-sm font-medium text-carbon-700">
+      <div className="space-y-8">
+        {/* Categories and Items Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {/* Soup Section */}
+          <div className="space-y-4">
+            <label className="flex items-center gap-2 text-sm font-black text-carbon-800 uppercase tracking-widest">
+              <span className="w-1.5 h-4 bg-sage-500 rounded-full" />
               Sopas
             </label>
 
             {formState.soupCategoryId ? (
-              <div className="space-y-2 pl-4 border-l-2 border-sage-200">
+              <div className="grid grid-cols-1 gap-3">
                 <FilterSelect
                   value={formState.soupOption1Id?.toString() || ""}
                   onChange={(value: string) =>
@@ -420,7 +362,7 @@ export function DailyMenuConfigForm({
                     })
                   }
                   options={getItemOptions(soupItems.data || [])}
-                  placeholder="Opción 1"
+                  placeholder="Opción 1 (Desmarcar)"
                 />
                 <FilterSelect
                   value={formState.soupOption2Id?.toString() || ""}
@@ -431,25 +373,25 @@ export function DailyMenuConfigForm({
                     })
                   }
                   options={getItemOptions(soupItems.data || [])}
-                  placeholder="Opción 2"
+                  placeholder="Opción 2 (Desmarcar)"
                 />
               </div>
             ) : (
-              <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
-                No se encontró la categoría &quot;Sopas&quot;. Por favor, créala
-                primero.
+              <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100">
+                Categoría "Sopas" no encontrada.
               </p>
             )}
           </div>
 
-          {/* Principle Section - Pre-selected category */}
-          <div className="space-y-3">
-            <label className="block text-sm font-medium text-carbon-700">
+          {/* Principle Section */}
+          <div className="space-y-4">
+            <label className="flex items-center gap-2 text-sm font-black text-carbon-800 uppercase tracking-widest">
+              <span className="w-1.5 h-4 bg-sage-500 rounded-full" />
               Principios
             </label>
 
             {formState.principleCategoryId ? (
-              <div className="space-y-2 pl-4 border-l-2 border-sage-200">
+              <div className="grid grid-cols-1 gap-3">
                 <FilterSelect
                   value={formState.principleOption1Id?.toString() || ""}
                   onChange={(value: string) =>
@@ -474,21 +416,21 @@ export function DailyMenuConfigForm({
                 />
               </div>
             ) : (
-              <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
-                No se encontró la categoría &quot;Principios&quot;. Por favor,
-                créala primero.
+              <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100">
+                Categoría "Principios" no encontrada.
               </p>
             )}
           </div>
 
-          {/* Salad Section - Pre-selected category */}
-          <div className="space-y-3">
-            <label className="block text-sm font-medium text-carbon-700">
+          {/* Salad Section */}
+          <div className="space-y-4">
+            <label className="flex items-center gap-2 text-sm font-black text-carbon-800 uppercase tracking-widest">
+              <span className="w-1.5 h-4 bg-sage-500 rounded-full" />
               Ensaladas
             </label>
 
             {formState.saladCategoryId ? (
-              <div className="space-y-2 pl-4 border-l-2 border-sage-200">
+              <div className="grid grid-cols-1 gap-3">
                 <FilterSelect
                   value={formState.saladOption1Id?.toString() || ""}
                   onChange={(value: string) =>
@@ -513,21 +455,21 @@ export function DailyMenuConfigForm({
                 />
               </div>
             ) : (
-              <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
-                No se encontró la categoría &quot;Ensaladas&quot;. Por favor,
-                créala primero.
+              <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100">
+                Categoría "Ensaladas" no encontrada.
               </p>
             )}
           </div>
 
-          {/* Extra Section - Pre-selected category */}
-          <div className="space-y-3">
-            <label className="block text-sm font-medium text-carbon-700">
+          {/* Extra Section */}
+          <div className="space-y-4">
+            <label className="flex items-center gap-2 text-sm font-black text-carbon-800 uppercase tracking-widest">
+              <span className="w-1.5 h-4 bg-sage-500 rounded-full" />
               Extras
             </label>
 
             {formState.extraCategoryId ? (
-              <div className="space-y-2 pl-4 border-l-2 border-sage-200">
+              <div className="grid grid-cols-1 gap-3">
                 <FilterSelect
                   value={formState.extraOption1Id?.toString() || ""}
                   onChange={(value: string) =>
@@ -552,21 +494,21 @@ export function DailyMenuConfigForm({
                 />
               </div>
             ) : (
-              <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
-                No se encontró la categoría &quot;Extras&quot;. Por favor,
-                créala primero.
+              <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100">
+                Categoría "Extras" no encontrada.
               </p>
             )}
           </div>
 
-          {/* Drink Section - Pre-selected category */}
-          <div className="space-y-3 md:col-span-2">
-            <label className="block text-sm font-medium text-carbon-700">
+          {/* Drink Section */}
+          <div className="space-y-4 md:col-span-2">
+            <label className="flex items-center gap-2 text-sm font-black text-carbon-800 uppercase tracking-widest">
+              <span className="w-1.5 h-4 bg-sage-500 rounded-full" />
               Bebidas
             </label>
 
             {formState.drinkCategoryId ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-4 border-l-2 border-sage-200">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <FilterSelect
                   value={formState.drinkOption1Id?.toString() || ""}
                   onChange={(value: string) =>
@@ -591,27 +533,35 @@ export function DailyMenuConfigForm({
                 />
               </div>
             ) : (
-              <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
-                No se encontró la categoría &quot;Bebidas&quot;. Por favor, créala
-                primero.
+              <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100">
+                Categoría "Bebidas" no encontrada.
               </p>
             )}
           </div>
 
-          {/* Protein Section - All proteins available */}
-          <div className="space-y-3 md:col-span-2">
-            <label className="block text-sm font-medium text-carbon-700">
-              Proteínas Disponibles
-            </label>
+          {/* Protein Section */}
+          <div className="space-y-4 md:col-span-2">
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 text-sm font-black text-carbon-800 uppercase tracking-widest">
+                <span className="w-1.5 h-4 bg-sage-500 rounded-full" />
+                Proteínas Disponibles
+              </label>
+              <button
+                type="button"
+                onClick={selectAllProteins}
+                className="text-xs font-bold text-sage-600 hover:text-sage-700 flex items-center gap-1.5 px-3 py-1.5 bg-sage-50 rounded-lg transition-colors"
+              >
+                <ListChecks className="w-3.5 h-3.5" />
+                Añadir todas
+              </button>
+            </div>
 
             {formState.proteinCategoryId ? (
-              <div className="pl-4 border-l-2 border-sage-200">
+              <div className="">
                 {proteinItems.isLoading ? (
-                  <p className="text-sm text-carbon-500">
-                    Cargando proteínas...
-                  </p>
+                  <p className="text-xs text-carbon-400 animate-pulse">Cargando proteínas...</p>
                 ) : proteinItems.data && proteinItems.data.length > 0 ? (
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                     {proteinItems.data.map((protein) => {
                       const isSelected = formState.selectedProteinIds.includes(
                         protein.id,
@@ -622,26 +572,26 @@ export function DailyMenuConfigForm({
                           type="button"
                           onClick={() => toggleProtein(protein.id)}
                           className={cn(
-                            "flex items-center gap-2 p-3 rounded-lg border-2 text-left transition-all",
-                            "hover:shadow-md active:scale-95",
+                            "flex items-center gap-2 p-3 rounded-2xl border-2 text-left transition-all",
+                            "active:scale-95",
                             isSelected
-                              ? "border-sage-500 bg-sage-50 text-carbon-900"
-                              : "border-carbon-200 bg-white text-carbon-600 hover:border-sage-300",
+                              ? "border-sage-500 bg-sage-50 text-carbon-900 shadow-sm"
+                              : "border-carbon-100 bg-white text-carbon-500 hover:border-sage-200",
                           )}
                         >
                           <div
                             className={cn(
-                              "w-5 h-5 rounded border-2 flex items-center justify-center transition-colors",
+                              "w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-colors",
                               isSelected
                                 ? "bg-sage-500 border-sage-500"
-                                : "border-carbon-300",
+                                : "border-carbon-200",
                             )}
                           >
                             {isSelected && (
-                              <Check className="w-3 h-3 text-white" />
+                              <Check className="w-3 h-3 text-white stroke-[4px]" />
                             )}
                           </div>
-                          <span className="text-sm font-medium truncate">
+                          <span className="text-[11px] font-bold truncate">
                             {protein.name}
                           </span>
                         </button>
@@ -649,44 +599,48 @@ export function DailyMenuConfigForm({
                     })}
                   </div>
                 ) : (
-                  <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
-                    No hay proteínas disponibles en esta categoría.
+                  <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl">
+                    No hay proteínas en esta categoría.
                   </p>
                 )}
               </div>
             ) : (
-              <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
-                No se encontró la categoría &quot;Proteínas&quot;. Por favor,
-                créala primero.
+              <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl">
+                Categoría "Proteínas" no encontrada.
               </p>
             )}
           </div>
 
-          {/* Dessert Section - Optional */}
-          <div className="space-y-3 md:col-span-2">
+          {/* Dessert Section */}
+          <div className="space-y-4 md:col-span-2 pt-4 border-t border-carbon-50">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <label className="block text-sm font-medium text-carbon-700">
+              <div className="flex items-center gap-4">
+                <label className="flex items-center gap-2 text-sm font-black text-carbon-800 uppercase tracking-widest">
+                  <span className="w-1.5 h-4 bg-sage-500 rounded-full" />
                   Postres
                 </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={formState.includeDessert}
-                    onChange={(e) =>
-                      setFormState((prev) => ({
-                        ...prev,
-                        includeDessert: e.target.checked,
-                        dessertCategoryId: e.target.checked
-                          ? prev.dessertCategoryId ||
-                            findCategoryIdByName(DEFAULT_CATEGORY_NAMES.dessert)
-                          : null,
-                      }))
-                    }
-                    className="w-4 h-4 text-sage-600 rounded focus:ring-sage-500"
-                  />
-                  <span className="text-sm text-carbon-600">
-                    Incluir postres
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={formState.includeDessert}
+                      onChange={(e) =>
+                        setFormState((prev) => ({
+                          ...prev,
+                          includeDessert: e.target.checked,
+                          dessertCategoryId: e.target.checked
+                            ? prev.dessertCategoryId ||
+                              findCategoryIdByName(DEFAULT_CATEGORY_NAMES.dessert)
+                            : null,
+                        }))
+                      }
+                      className="sr-only peer"
+                    />
+                    <div className="w-10 h-6 bg-carbon-200 rounded-full peer peer-checked:bg-sage-500 transition-colors" />
+                    <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4" />
+                  </div>
+                  <span className="text-xs font-bold text-carbon-500 group-hover:text-carbon-700 transition-colors">
+                    Incluir en el menú
                   </span>
                 </label>
               </div>
@@ -695,7 +649,7 @@ export function DailyMenuConfigForm({
             {formState.includeDessert && (
               <>
                 {formState.dessertCategoryId ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2 pl-4 border-l-2 border-sage-200">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <FilterSelect
                       value={formState.dessertOption1Id?.toString() || ""}
                       onChange={(value: string) =>
@@ -720,9 +674,8 @@ export function DailyMenuConfigForm({
                     />
                   </div>
                 ) : (
-                  <p className="text-sm text-amber-600 bg-amber-50 p-3 rounded-lg">
-                    No se encontró la categoría &quot;Postres&quot;. Por favor,
-                    créala primero.
+                  <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl">
+                    Categoría "Postres" no encontrada.
                   </p>
                 )}
               </>
@@ -730,27 +683,113 @@ export function DailyMenuConfigForm({
           </div>
         </div>
 
-        <div className="flex justify-end pt-4 border-t border-carbon-100">
+        {/* Footer Actions */}
+        <div className="flex justify-end pt-6 border-t border-carbon-100">
           <Button
             onClick={handleSubmit}
             isLoading={isMutationPending || isLoading}
             disabled={isSaved}
-            className="inline-flex items-center gap-2"
+            className="rounded-2xl px-10 h-14 shadow-smooth-md"
           >
             {isSaved ? (
               <>
-                <Check className="w-4 h-4" />
-                Guardado
+                <Check className="w-5 h-5 mr-2" />
+                Menú Guardado
               </>
             ) : (
               <>
-                <Save className="w-4 h-4" />
-                Guardar Configuración
+                <Save className="w-5 h-5 mr-2" />
+                Publicar Menú
               </>
             )}
           </Button>
         </div>
       </div>
+
+      {/* Price Configuration Modal */}
+      <BaseModal
+        isOpen={isPriceModalOpen}
+        onClose={() => {
+          setIsPriceModalOpen(false);
+          setShowPriceFields(false);
+          setPassword("");
+        }}
+        title="Ajuste de Precios"
+        size="md"
+      >
+        <div className="p-6 space-y-6">
+          {!showPriceFields ? (
+            <div className="space-y-4">
+              <div className="flex flex-col items-center text-center space-y-2 mb-4">
+                <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center">
+                  <Lock className="w-6 h-6" />
+                </div>
+                <h3 className="font-bold text-carbon-900 text-lg">Zona Restringida</h3>
+                <p className="text-sm text-carbon-500">Ingresa la contraseña de administrador para modificar los precios base.</p>
+              </div>
+              <Input
+                label="Contraseña"
+                type="password"
+                placeholder="••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handlePriceUnlock()}
+                className="text-center text-2xl tracking-[1em]"
+              />
+              <Button onClick={handlePriceUnlock} fullWidth size="lg">
+                Desbloquear
+              </Button>
+            </div>
+          ) : (
+            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-2">
+              <div className="p-4 rounded-2xl bg-sage-50 border-2 border-sage-200">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <span className="text-xs font-black uppercase text-sage-600 tracking-widest">Margen Base</span>
+                    <p className="text-2xl font-black text-carbon-900">${formState.basePrice.toLocaleString()}</p>
+                  </div>
+                  <Settings2 className="w-8 h-8 text-sage-300" />
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  {[3000, 4000, 5000].map((price) => (
+                    <button
+                      key={price}
+                      type="button"
+                      onClick={() => setFormState((prev) => ({ ...prev, basePrice: price }))}
+                      className={cn(
+                        "py-2 rounded-xl text-xs font-bold transition-all",
+                        formState.basePrice === price
+                          ? "bg-sage-500 text-white shadow-md"
+                          : "bg-white border border-carbon-200 text-carbon-600"
+                      )}
+                    >
+                      ${(price / 1000).toFixed(0)}k
+                    </button>
+                  ))}
+                </div>
+
+                <Input
+                  type="number"
+                  value={formState.basePrice}
+                  onChange={(e) => setFormState({ ...formState, basePrice: Number(e.target.value) })}
+                  placeholder="Precio personalizado"
+                  className="bg-white"
+                />
+              </div>
+
+              <div className="bg-carbon-50 p-4 rounded-xl text-xs text-carbon-600 space-y-1">
+                <p className="font-bold text-carbon-800">Fórmula de cálculo:</p>
+                <p>Precio Final = ${formState.basePrice.toLocaleString()} (Base) + Precio Proteína</p>
+              </div>
+
+              <Button onClick={() => setIsPriceModalOpen(false)} fullWidth variant="primary" size="lg">
+                Confirmar y Cerrar
+              </Button>
+            </div>
+          )}
+        </div>
+      </BaseModal>
     </Card>
   );
 }

@@ -1,14 +1,7 @@
 import { TouchableCard } from "@/components";
 import { cn } from "@/utils/cn";
-import { Beef, Fish, Drumstick, AlertCircle, Check } from "lucide-react";
-
-export interface ProteinOption {
-  id: number;
-  name: string;
-  price: number; // Individual protein portion price
-  icon?: "beef" | "fish" | "chicken" | "pork" | "other";
-  isAvailable: boolean;
-}
+import { Beef, Fish, Drumstick, AlertCircle, Check, ImageIcon } from "lucide-react";
+import type { ProteinOption } from "../types/orderBuilder";
 
 export interface ProteinSelectorProps {
   proteins: ProteinOption[];
@@ -51,16 +44,21 @@ export function ProteinSelector({
   return (
     <div className={cn("space-y-4", className)}>
       {/* Header with total lunch price */}
-      <div className="bg-gradient-to-r from-sage-600 to-sage-500 rounded-2xl p-4 text-white transition-all duration-500">
+      <div className="bg-gradient-to-br from-carbon-900 to-carbon-800 rounded-2xl p-5 text-white transition-all shadow-xl border border-white/5">
         <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-bold">Precio del Almuerzo</h3>
-            <p className="text-sm text-sage-100">
-              Incluye todos los componentes
-            </p>
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center">
+              <Beef className="w-6 h-6 text-sage-400" />
+            </div>
+            <div>
+              <h3 className="text-base sm:text-lg font-black tracking-tight uppercase">Precio del Almuerzo</h3>
+              <p className="text-xs text-carbon-400 font-bold uppercase tracking-widest">
+                Incluye todos los componentes
+              </p>
+            </div>
           </div>
           <div className="text-right">
-            <p className="text-3xl font-black">
+            <p className="text-3xl sm:text-4xl font-black text-sage-400 tracking-tighter">
               {selectedProteinTotal
                 ? `$${selectedProteinTotal.toLocaleString("es-CO")}`
                 : `$${minPrice.toLocaleString("es-CO")}${minPrice !== maxPrice ? ` - $${maxPrice.toLocaleString("es-CO")}` : ""}`}
@@ -69,8 +67,8 @@ export function ProteinSelector({
         </div>
       </div>
 
-      {/* Protein Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3">
+      {/* Protein Grid / Scroll Row */}
+      <div className="flex overflow-x-auto sm:grid sm:grid-cols-3 lg:grid-cols-4 gap-3 pb-4 sm:pb-0 snap-x snap-mandatory hide-scrollbar">
         {availableProteins.map((protein) => {
           const isSelected = selectedProteinId === protein.id;
           const totalPrice = basePrice + protein.price;
@@ -78,102 +76,86 @@ export function ProteinSelector({
           const Icon = iconMap[protein.icon || "other"];
 
           return (
-            <TouchableCard
+            <button
               key={protein.id}
-              onPress={() => {
-                if (isSelected) {
-                  onSelect(null);
-                } else {
-                  onSelect(protein);
-                }
-              }}
-              size="medium"
-              hapticFeedback
-              selected={isSelected}
+              onClick={() => onSelect(isSelected ? null : protein)}
               className={cn(
-                "relative overflow-hidden transition-all duration-300",
+                "group relative flex flex-col overflow-hidden transition-all duration-300",
+                "bg-white rounded-2xl border-2 shadow-sm touch-manipulation active:scale-[0.98]",
+                "min-w-[160px] sm:min-w-0 flex-shrink-0 snap-center",
                 isSelected
-                  ? "bg-gradient-to-br from-sage-100 to-sage-50 border-2 border-sage-500 shadow-md ring-2 ring-sage-500/20 scale-[1.02]"
-                  : isHigherPrice
-                    ? "bg-gradient-to-br from-white to-amber-50 border-2 border-amber-200 hover:border-amber-400"
-                    : "bg-white border-2 border-sage-100 hover:border-sage-400",
+                  ? "border-sage-500 shadow-md ring-4 ring-sage-500/10"
+                  : "border-sage-100 hover:border-sage-300",
               )}
             >
-              <div className="flex items-center gap-3 p-2.5 sm:p-3">
-                {/* Icon */}
-                <div
-                  className={cn(
-                    "flex-shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center transition-all duration-300",
-                    isSelected
-                      ? "bg-sage-500 text-white shadow-inner scale-110"
-                      : isHigherPrice
-                        ? "bg-amber-100 text-amber-700"
-                        : "bg-sage-50 text-sage-600",
-                  )}
-                >
-                  <Icon
-                    className={cn(
-                      "w-5 h-5 sm:w-6 sm:h-6 transition-transform",
-                      isSelected && "rotate-12",
-                    )}
+              {/* Protein Image Area */}
+              <div className="relative w-full h-24 sm:aspect-[16/10] sm:h-auto bg-sage-50 overflow-hidden border-b border-sage-50">
+                {protein.imageUrl ? (
+                  <img
+                    src={protein.imageUrl}
+                    alt={protein.name}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
-                </div>
-
-                {/* Protein info */}
-                <div className="flex-1 min-w-0">
-                  <h4
-                    className={cn(
-                      "font-bold text-sm sm:text-base truncate",
-                      isSelected ? "text-sage-900" : "text-carbon-900",
-                    )}
-                  >
-                    {protein.name}
-                  </h4>
-
-                  <div className="flex items-baseline gap-1">
-                    <span
-                      className={cn(
-                        "text-base sm:text-lg font-black",
-                        isSelected
-                          ? "text-sage-700"
-                          : isHigherPrice
-                            ? "text-amber-700"
-                            : "text-carbon-900",
-                      )}
-                    >
-                      ${totalPrice.toLocaleString("es-CO")}
-                    </span>
-                    {isHigherPrice && !isSelected && (
-                      <span className="text-[10px] font-bold text-amber-600 bg-amber-100 px-1 rounded">
-                        + ${(totalPrice - minPrice).toLocaleString()}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                {/* Selection indicator */}
-                {isSelected && (
-                  <div className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-sage-500 flex items-center justify-center shadow-lg animate-in zoom-in-50 duration-300">
-                    <Check className="w-4 h-4 sm:w-5 sm:h-5 text-white stroke-[3]" />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <Icon className="w-10 h-10 text-sage-200/60" />
                   </div>
                 )}
+                
+                {/* Price Tag Overlay */}
+                <div className="absolute bottom-2 right-2">
+                  <div className="bg-carbon-900/80 backdrop-blur-md px-2.5 py-1 rounded-lg shadow-lg border border-white/10">
+                    <span className="text-xs sm:text-sm font-black text-white">
+                      ${totalPrice.toLocaleString("es-CO")}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Higher Price Badge */}
+                {isHigherPrice && !isSelected && (
+                  <div className="absolute top-2 right-2">
+                    <span className="text-[9px] font-black uppercase text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-200">
+                      Extra + ${(totalPrice - minPrice).toLocaleString()}
+                    </span>
+                  </div>
+                )}
+
+                {/* Selection Indicator */}
+                <div className={cn(
+                  "absolute top-2 left-2 w-7 h-7 rounded-full border-2 flex items-center justify-center transition-all",
+                  isSelected
+                    ? "bg-sage-500 border-sage-500 text-white shadow-md"
+                    : "bg-white/80 border-sage-200 text-transparent",
+                )}>
+                  <Check className="w-4 h-4 stroke-[4px]" />
+                </div>
               </div>
 
-              {/* Higher price accent bar */}
-              {isHigherPrice && !isSelected && (
-                <div className="absolute top-0 right-0 w-1.5 h-full bg-amber-400/30" />
-              )}
+              {/* Protein Info */}
+              <div className="p-4 flex flex-col items-center text-center justify-center flex-1">
+                {protein.categoryName && (
+                  <span className="text-[8px] font-black text-carbon-300 uppercase tracking-widest block mb-1">
+                    {protein.categoryName}
+                  </span>
+                )}
+                <h4 className={cn(
+                  "font-black text-sm sm:text-base leading-tight uppercase tracking-tight",
+                  isSelected ? "text-carbon-900" : "text-carbon-700"
+                )}>
+                  {protein.name}
+                </h4>
+              </div>
 
               {/* Unavailable overlay */}
               {!protein.isAvailable && (
-                <div className="absolute inset-0 bg-white/80 flex flex-col items-center justify-center rounded-2xl backdrop-blur-[1px]">
-                  <AlertCircle className="w-6 h-6 text-carbon-400 mb-1" />
-                  <span className="text-[10px] font-black uppercase text-carbon-500">
+                <div className="absolute inset-0 bg-white/80 flex flex-col items-center justify-center backdrop-blur-[1px]">
+                  <AlertCircle className="w-8 h-8 text-carbon-400 mb-1" />
+                  <span className="text-xs font-black uppercase text-carbon-500">
                     Agotado
                   </span>
                 </div>
               )}
-            </TouchableCard>
+            </button>
           );
         })}
       </div>
