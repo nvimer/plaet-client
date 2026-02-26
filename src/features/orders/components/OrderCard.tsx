@@ -457,21 +457,6 @@ export function OrderCard({
         </div>
       </div>
     </article>
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={handleStatusChange}
-              disabled={isPending}
-              isLoading={isPending}
-              className="flex-1 min-h-[48px]"
-            >
-              {!isPending && <nextStatus.icon className="w-5 h-5 mr-2" />}
-              {nextStatus.label}
-              {!isPending && <ArrowRight className="w-4 h-4 ml-1" />}
-            </Button>
-          )}
-        </div>
-      </div>
-    </article>
   );
 }
+
