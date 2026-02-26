@@ -52,42 +52,37 @@ export function DashboardPage() {
               Gestión global de la plataforma Plaet POS
             </p>
           </header>
-          {/* ... SuperAdmin content ... */}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <Card 
+              variant="elevated" 
+              padding="lg" 
+              className="flex flex-col items-center text-center p-12 hover:shadow-xl transition-shadow cursor-pointer"
+              onClick={() => navigate(ROUTES.RESTAURANTS)}
+            >
+              <div className="w-16 h-16 rounded-2xl bg-sage-100 text-sage-600 flex items-center justify-center mb-4">
+                <Building2 className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-bold text-carbon-900 mb-2">Gestión de Restaurantes</h3>
+              <p className="text-carbon-500 mb-6">Administra los clientes, sus suscripciones y estados.</p>
+              <Button>Ver Restaurantes</Button>
+            </Card>
+
+            <Card 
+              variant="elevated" 
+              padding="lg" 
+              className="flex flex-col items-center text-center p-12 hover:shadow-xl transition-shadow opacity-50 cursor-not-allowed"
+            >
+              <div className="w-16 h-16 rounded-2xl bg-carbon-100 text-carbon-600 flex items-center justify-center mb-4">
+                <Users className="w-8 h-8" />
+              </div>
+              <h3 className="text-xl font-bold text-carbon-900 mb-2">Soporte Global</h3>
+              <p className="text-carbon-500 mb-6">Próximamente: Tickets de soporte y ayuda técnica.</p>
+              <Button disabled>Próximamente</Button>
+            </Card>
+          </div>
         </div>
       </SidebarLayout>
-    );
-  }
-        </header>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card 
-            variant="elevated" 
-            padding="lg" 
-            className="flex flex-col items-center text-center p-12 hover:shadow-xl transition-shadow cursor-pointer"
-            onClick={() => navigate(ROUTES.RESTAURANTS)}
-          >
-            <div className="w-16 h-16 rounded-2xl bg-sage-100 text-sage-600 flex items-center justify-center mb-4">
-              <Building2 className="w-8 h-8" />
-            </div>
-            <h3 className="text-xl font-bold text-carbon-900 mb-2">Gestión de Restaurantes</h3>
-            <p className="text-carbon-500 mb-6">Administra los clientes, sus suscripciones y estados.</p>
-            <Button>Ver Restaurantes</Button>
-          </Card>
-
-          <Card 
-            variant="elevated" 
-            padding="lg" 
-            className="flex flex-col items-center text-center p-12 hover:shadow-xl transition-shadow opacity-50 cursor-not-allowed"
-          >
-            <div className="w-16 h-16 rounded-2xl bg-carbon-100 text-carbon-600 flex items-center justify-center mb-4">
-              <Users className="w-8 h-8" />
-            </div>
-            <h3 className="text-xl font-bold text-carbon-900 mb-2">Soporte Global</h3>
-            <p className="text-carbon-500 mb-6">Próximamente: Tickets de soporte y ayuda técnica.</p>
-            <Button disabled>Próximamente</Button>
-          </Card>
-        </div>
-      </div>
     );
   }
 
