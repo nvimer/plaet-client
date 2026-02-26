@@ -377,9 +377,22 @@ export function DailyMenuConfigForm({
                 />
               </div>
             ) : (
-              <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100">
-                Categoría "Sopas" no encontrada.
-              </p>
+              <div className="space-y-2">
+                <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100 font-medium">
+                  Categoría no detectada. Por favor asígnala manualmente:
+                </p>
+                <FilterSelect
+                  value=""
+                  onChange={(value: string) =>
+                    setFormState({
+                      ...formState,
+                      soupCategoryId: value ? Number(value) : null,
+                    })
+                  }
+                  options={categories?.map(c => ({ value: c.id.toString(), label: c.name })) || []}
+                  placeholder="Vincular categoría..."
+                />
+              </div>
             )}
           </div>
 
@@ -416,9 +429,22 @@ export function DailyMenuConfigForm({
                 />
               </div>
             ) : (
-              <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100">
-                Categoría "Principios" no encontrada.
-              </p>
+              <div className="space-y-2">
+                <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100 font-medium">
+                  Categoría no detectada. Por favor asígnala manualmente:
+                </p>
+                <FilterSelect
+                  value=""
+                  onChange={(value: string) =>
+                    setFormState({
+                      ...formState,
+                      principleCategoryId: value ? Number(value) : null,
+                    })
+                  }
+                  options={categories?.map(c => ({ value: c.id.toString(), label: c.name })) || []}
+                  placeholder="Vincular categoría..."
+                />
+              </div>
             )}
           </div>
 
@@ -455,9 +481,22 @@ export function DailyMenuConfigForm({
                 />
               </div>
             ) : (
-              <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100">
-                Categoría "Ensaladas" no encontrada.
-              </p>
+              <div className="space-y-2">
+                <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100 font-medium">
+                  Categoría no detectada. Por favor asígnala manualmente:
+                </p>
+                <FilterSelect
+                  value=""
+                  onChange={(value: string) =>
+                    setFormState({
+                      ...formState,
+                      saladCategoryId: value ? Number(value) : null,
+                    })
+                  }
+                  options={categories?.map(c => ({ value: c.id.toString(), label: c.name })) || []}
+                  placeholder="Vincular categoría..."
+                />
+              </div>
             )}
           </div>
 
@@ -494,9 +533,22 @@ export function DailyMenuConfigForm({
                 />
               </div>
             ) : (
-              <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100">
-                Categoría "Extras" no encontrada.
-              </p>
+              <div className="space-y-2">
+                <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100 font-medium">
+                  Categoría no detectada. Por favor asígnala manualmente:
+                </p>
+                <FilterSelect
+                  value=""
+                  onChange={(value: string) =>
+                    setFormState({
+                      ...formState,
+                      extraCategoryId: value ? Number(value) : null,
+                    })
+                  }
+                  options={categories?.map(c => ({ value: c.id.toString(), label: c.name })) || []}
+                  placeholder="Vincular categoría..."
+                />
+              </div>
             )}
           </div>
 
@@ -533,9 +585,22 @@ export function DailyMenuConfigForm({
                 />
               </div>
             ) : (
-              <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100">
-                Categoría "Bebidas" no encontrada.
-              </p>
+              <div className="space-y-2">
+                <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100 font-medium">
+                  Categoría no detectada. Por favor asígnala manualmente:
+                </p>
+                <FilterSelect
+                  value=""
+                  onChange={(value: string) =>
+                    setFormState({
+                      ...formState,
+                      drinkCategoryId: value ? Number(value) : null,
+                    })
+                  }
+                  options={categories?.map(c => ({ value: c.id.toString(), label: c.name })) || []}
+                  placeholder="Vincular categoría..."
+                />
+              </div>
             )}
           </div>
 
@@ -605,9 +670,22 @@ export function DailyMenuConfigForm({
                 )}
               </div>
             ) : (
-              <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl">
-                Categoría "Proteínas" no encontrada.
-              </p>
+              <div className="space-y-2">
+                <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100 font-medium">
+                  Categoría no detectada. Por favor asígnala manualmente:
+                </p>
+                <FilterSelect
+                  value=""
+                  onChange={(value: string) =>
+                    setFormState({
+                      ...formState,
+                      proteinCategoryId: value ? Number(value) : null,
+                    })
+                  }
+                  options={categories?.map(c => ({ value: c.id.toString(), label: c.name })) || []}
+                  placeholder="Vincular categoría..."
+                />
+              </div>
             )}
           </div>
 
@@ -674,9 +752,22 @@ export function DailyMenuConfigForm({
                     />
                   </div>
                 ) : (
-                  <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl">
-                    Categoría "Postres" no encontrada.
-                  </p>
+                  <div className="space-y-2">
+                    <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100 font-medium">
+                      Categoría no detectada. Por favor asígnala manualmente:
+                    </p>
+                    <FilterSelect
+                      value=""
+                      onChange={(value: string) =>
+                        setFormState({
+                          ...formState,
+                          dessertCategoryId: value ? Number(value) : null,
+                        })
+                      }
+                      options={categories?.map(c => ({ value: c.id.toString(), label: c.name })) || []}
+                      placeholder="Vincular categoría..."
+                    />
+                  </div>
                 )}
               </>
             )}
