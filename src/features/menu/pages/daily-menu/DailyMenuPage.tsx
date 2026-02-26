@@ -300,9 +300,10 @@ export function DailyMenuPage() {
               </Button>
             </Card>
           )}
-                </motion.div>
-              )}
-            </SidebarLayout>
-          );
-        }
+        </motion.div>
+      )}
+    </div>
+  </SidebarLayout>
+);
+}
         
