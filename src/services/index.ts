@@ -21,3 +21,4 @@ export * as permissionsApi from "./permissionsApi";
 export * as analyticsApi from "./analyticsApi";
 export * as cashClosureApi from "./cashClosureApi";
 export * as expensesApi from "./expensesApi";
+export * as paymentApi from "./paymentApi";

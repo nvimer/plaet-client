@@ -1,5 +1,5 @@
 import { queryKeys } from "@/lib";
-import { orderApi } from "@/services";
+import { paymentApi } from "@/services";
 import { PaymentMethod } from "@/types";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
@@ -9,6 +9,7 @@ interface AddPaymentParams {
     method: PaymentMethod;
     amount: number;
     transactionRef?: string;
+    phone?: string;
   };
 }
 
@@ -22,7 +23,7 @@ export function useAddPayment() {
 
   return useMutation({
     mutationFn: async ({ orderId, paymentData }: AddPaymentParams) => {
-      const response = await orderApi.addPayment(orderId, paymentData);
+      const response = await paymentApi.createPayment(orderId, paymentData);
       return response.data;
     },
 

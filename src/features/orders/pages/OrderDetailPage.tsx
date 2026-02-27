@@ -152,13 +152,14 @@ export function OrderDetailPage() {
     );
   };
 
-  const handleConfirmPayment = (method: PaymentMethod, amount: number, reference?: string) => {
+  const handleConfirmPayment = (method: PaymentMethod, amount: number, options?: { reference?: string; phone?: string }) => {
     addPayment({
       orderId: order!.id,
       paymentData: {
         method,
         amount,
-        transactionRef: reference
+        transactionRef: options?.reference,
+        phone: options?.phone
       }
     }, {
       onSuccess: () => {
