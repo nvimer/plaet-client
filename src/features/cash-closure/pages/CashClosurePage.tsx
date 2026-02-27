@@ -1,9 +1,13 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useCashClosure } from "../hooks/useCashClosure";
+import { useOrders } from "@/features/orders/hooks";
+import { OrderStatus } from "@/types";
 import { OpenShiftModal } from "../components/OpenShiftModal";
 import { CloseShiftModal } from "../components/CloseShiftModal";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
-import { Wallet as _Wallet, LogIn, LogOut, AlertCircle, CheckCircle2 } from "lucide-react";
+import { LogIn, LogOut, AlertCircle, CheckCircle2, ShoppingBag } from "lucide-react";
+import { cn } from "@/utils/cn";
+import { ROUTES } from "@/app/routes";
 
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 
@@ -12,8 +16,22 @@ import { SidebarLayout } from "@/layouts/SidebarLayout";
  */
 export const CashClosurePage: React.FC = () => {
   const { currentShift, isLoading, isOpen } = useCashClosure();
+  const { data: orders } = useOrders();
   const [isOpenModalOpen, setIsOpenModalOpen] = useState(false);
   const [isCloseModalOpen, setIsCloseModalOpen] = useState(false);
+
+  // Check for active orders (anything not PAID, DELIVERED or CANCELLED)
+  const activeOrders = useMemo(() => {
+    if (!orders) return [];
+    return orders.filter(
+      (order) => 
+        order.status !== OrderStatus.PAID && 
+        order.status !== OrderStatus.DELIVERED && 
+        order.status !== OrderStatus.CANCELLED
+    );
+  }, [orders]);
+
+  const hasActiveOrders = activeOrders.length > 0;
 
   if (isLoading) {
     return (
@@ -79,6 +97,27 @@ export const CashClosurePage: React.FC = () => {
             </div>
 
             <div className="p-8 space-y-8">
+              {hasActiveOrders && (
+                <div className="bg-rose-50 border-2 border-rose-100 rounded-2xl p-5 flex items-start gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                  <div className="w-10 h-10 rounded-xl bg-rose-500 flex items-center justify-center text-white flex-shrink-0 shadow-lg animate-pulse">
+                    <ShoppingBag className="w-5 h-5" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-bold text-rose-900 text-sm uppercase tracking-wider">No se puede cerrar caja</h4>
+                    <p className="text-sm text-rose-700 mt-1 leading-relaxed">
+                      Hay <strong>{activeOrders.length} pedido(s) activos</strong> en el sistema. 
+                      Todos los pedidos deben estar Pagados, Entregados o Cancelados antes de realizar el cierre.
+                    </p>
+                    <button 
+                      onClick={() => window.location.href = ROUTES.ORDERS}
+                      className="mt-3 text-xs font-black text-rose-600 uppercase tracking-widest hover:underline flex items-center gap-1"
+                    >
+                      Resolver pedidos ahora &rarr;
+                    </button>
+                  </div>
+                </div>
+              )}
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-2">
                   <p className="text-sm font-medium text-carbon-500">Ventas Registradas</p>
@@ -97,10 +136,16 @@ export const CashClosurePage: React.FC = () => {
               <div className="pt-8 border-t border-sage-100">
                 <button
                   onClick={() => setIsCloseModalOpen(true)}
-                  className="w-full flex items-center justify-center gap-2 py-4 bg-carbon-900 text-white rounded-2xl font-bold text-lg hover:bg-carbon-800 transition-all active:scale-95"
+                  disabled={hasActiveOrders}
+                  className={cn(
+                    "w-full flex items-center justify-center gap-2 py-4 rounded-2xl font-bold text-lg transition-all active:scale-95",
+                    hasActiveOrders 
+                      ? "bg-carbon-100 text-carbon-400 cursor-not-allowed border-2 border-dashed border-carbon-200" 
+                      : "bg-carbon-900 text-white hover:bg-carbon-800 shadow-xl shadow-carbon-100"
+                  )}
                 >
                   <LogOut className="w-5 h-5" />
-                  Cerrar Turno de Caja
+                  {hasActiveOrders ? "Finalice los pedidos para cerrar" : "Cerrar Turno de Caja"}
                 </button>
               </div>
             </div>

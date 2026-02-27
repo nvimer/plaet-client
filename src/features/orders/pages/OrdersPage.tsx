@@ -13,6 +13,8 @@ import {
   ShoppingCart,
   TrendingUp,
   Calendar,
+  DollarSign,
+  ChefHat,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { OrderCard, OrderFilters, GroupedOrderCard } from "../components";
@@ -152,6 +154,7 @@ export function OrdersPage() {
   const navigate = useNavigate();
 
   // ============ STATE =============
+  const [activeTab, setActiveTab] = useState<"BILLING" | "PREPARATION" | "READY">("BILLING");
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "ALL">("ALL");
   const [typeFilter, setTypeFilter] = useState<OrderType | "ALL">("ALL");
   const [dateFilter, setDateFilter] = useState<DateFilterType>("TODAY");
@@ -168,6 +171,17 @@ export function OrdersPage() {
   const filteredOrders = useMemo(() => {
     if (!orders) return [];
     return orders.filter((order) => {
+      // 1. Tab Filtering (Operational Life Cycle)
+      const matchesTab = (() => {
+        if (activeTab === "BILLING") return order.status === OrderStatus.PENDING || order.status === OrderStatus.SENT_TO_CASHIER;
+        if (activeTab === "PREPARATION") return order.status === OrderStatus.PAID || order.status === OrderStatus.IN_KITCHEN;
+        if (activeTab === "READY") return order.status === OrderStatus.READY || order.status === OrderStatus.DELIVERED;
+        return true;
+      })();
+
+      if (!matchesTab) return false;
+
+      // 2. Regular Filters
       const matchesStatus =
         statusFilter === "ALL" || order.status === statusFilter;
       const matchesType = typeFilter === "ALL" || order.type === typeFilter;
@@ -198,7 +212,7 @@ export function OrdersPage() {
 
       return matchesStatus && matchesType && matchesDate && matchesSearch;
     });
-  }, [orders, statusFilter, typeFilter, dateFilter, customDateRange, searchTerm]);
+  }, [orders, activeTab, statusFilter, typeFilter, dateFilter, customDateRange, searchTerm]);
 
   const groupedOrders = useMemo(() => {
     return groupOrders(filteredOrders);
@@ -399,6 +413,66 @@ export function OrdersPage() {
               </div>
             </div>
           </div>
+        </div>
+
+        {/* ================ OPERATIONAL TABS ================== */}
+        <div className="flex items-center gap-2 p-1.5 bg-sage-50 rounded-2xl border border-sage-100 mb-2 overflow-x-auto no-scrollbar">
+          <button
+            onClick={() => setActiveTab("BILLING")}
+            className={cn(
+              "flex-1 min-w-[140px] flex items-center justify-center gap-2.5 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
+              activeTab === "BILLING"
+                ? "bg-carbon-900 text-white shadow-soft-lg"
+                : "text-carbon-400 hover:text-carbon-600 hover:bg-white/50"
+            )}
+          >
+            <DollarSign className="w-4 h-4" />
+            Por Cobrar
+            <span className={cn(
+              "px-2 py-0.5 rounded-lg text-[10px]",
+              activeTab === "BILLING" ? "bg-white/20 text-white" : "bg-sage-100 text-sage-600"
+            )}>
+              {counts.pending + counts.sentToCashier}
+            </span>
+          </button>
+          
+          <button
+            onClick={() => setActiveTab("PREPARATION")}
+            className={cn(
+              "flex-1 min-w-[140px] flex items-center justify-center gap-2.5 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
+              activeTab === "PREPARATION"
+                ? "bg-amber-500 text-white shadow-soft-lg"
+                : "text-carbon-400 hover:text-carbon-600 hover:bg-white/50"
+            )}
+          >
+            <ChefHat className="w-4 h-4" />
+            En Cocina
+            <span className={cn(
+              "px-2 py-0.5 rounded-lg text-[10px]",
+              activeTab === "PREPARATION" ? "bg-white/20 text-white" : "bg-sage-100 text-sage-600"
+            )}>
+              {counts.paid + counts.inKitchen}
+            </span>
+          </button>
+
+          <button
+            onClick={() => setActiveTab("READY")}
+            className={cn(
+              "flex-1 min-w-[140px] flex items-center justify-center gap-2.5 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
+              activeTab === "READY"
+                ? "bg-emerald-600 text-white shadow-soft-lg"
+                : "text-carbon-400 hover:text-carbon-600 hover:bg-white/50"
+            )}
+          >
+            <CheckCircle className="w-4 h-4" />
+            Listos
+            <span className={cn(
+              "px-2 py-0.5 rounded-lg text-[10px]",
+              activeTab === "READY" ? "bg-white/20 text-white" : "bg-sage-100 text-sage-600"
+            )}>
+              {counts.ready}
+            </span>
+          </button>
         </div>
 
         {/* ================ FILTERS ================= */}
