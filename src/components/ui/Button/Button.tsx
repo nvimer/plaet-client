@@ -1,12 +1,17 @@
 import { forwardRef, type ButtonHTMLAttributes } from "react";
+import { cn } from "@/utils/cn";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: "primary" | "secondary" | "outline" | "ghost";
-  size?: "sm" | "md" | "lg";
+  variant?: "primary" | "secondary" | "outline" | "ghost" | "danger";
+  size?: "sm" | "md" | "lg" | "xl";
   fullWidth?: boolean;
   isLoading?: boolean;
 }
 
+/**
+ * Premium Button Component
+ * Enhanced with high-contrast variants and tactile feedback.
+ */
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
     {
@@ -22,48 +27,45 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
     ref,
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2";
+      "inline-flex items-center justify-center font-bold transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-[0.97] tracking-tight";
 
     const variantStyles = {
+      // High contrast primary - Dark background, crisp white text
       primary:
-        "bg-sage-300 text-carbon-900 hover:bg-sage-400 active:bg-sage-500 focus:ring-sage-300 shadow-soft-sm hover:shadow-soft-md",
+        "bg-carbon-900 text-white hover:bg-carbon-800 focus:ring-carbon-500 shadow-soft-md hover:shadow-soft-lg",
+      // Clean secondary - Sage accent with dark text
       secondary:
-        "bg-sage-50 text-carbon-900 hover:bg-sage-100 active:bg-sage-200 focus:ring-sage-200 border border-sage-border-subtle",
+        "bg-sage-100 text-carbon-900 hover:bg-sage-200 active:bg-sage-300 focus:ring-sage-400 border border-sage-200",
+      // Modern outline
       outline:
-        "bg-transparent text-sage-600 border-2 border-sage-300 hover:bg-sage-50 active:bg-sage-100 focus:ring-sage-300",
+        "bg-white text-carbon-700 border-2 border-sage-100 hover:border-carbon-200 hover:bg-sage-50 active:bg-sage-100 focus:ring-sage-300",
+      // Minimal ghost
       ghost:
-        "bg-transparent text-carbon-700 hover:bg-sage-50 active:bg-sage-100 focus:ring-sage-200",
+        "bg-transparent text-carbon-600 hover:bg-sage-50 active:bg-sage-100 focus:ring-sage-200",
+      // Urgent danger
+      danger:
+        "bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-500 shadow-soft-sm",
     };
 
     const sizeStyles = {
-      sm: "px-4 py-2 text-sm",
-      md: "px-6 py-2.5 text-base",
-      lg: "px-8 py-3 text-lg",
+      sm: "px-4 py-2 text-xs h-10 rounded-xl",
+      md: "px-6 py-2.5 text-sm h-12 rounded-2xl",
+      lg: "px-8 py-3 text-base h-14 rounded-2xl",
+      xl: "px-10 py-4 text-lg h-16 rounded-[1.25rem]",
     };
-
-    const widthStyles = fullWidth ? "w-full" : "";
-
-    const disabledStyles =
-      disabled || isLoading
-        ? "opacity-50 cursor-not-allowed"
-        : "cursor-pointer";
-
-    const buttonStyles = `
-${baseStyles}
-${variantStyles[variant]}
-${sizeStyles[size]}
-${widthStyles}
-${disabledStyles}
-${className}
-`
-      .trim()
-      .replace(/\s+g/, " ");
 
     return (
       <button
         ref={ref}
-        className={buttonStyles}
         disabled={disabled || isLoading}
+        className={cn(
+          baseStyles,
+          variantStyles[variant],
+          sizeStyles[size],
+          fullWidth && "w-full",
+          (disabled || isLoading) && "opacity-50 cursor-not-allowed active:scale-100",
+          className
+        )}
         {...props}
       >
         {isLoading && (
@@ -87,7 +89,9 @@ ${className}
             ></path>
           </svg>
         )}
-        {children}
+        <span className="relative flex items-center justify-center">
+          {children}
+        </span>
       </button>
     );
   },
