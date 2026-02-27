@@ -10,7 +10,7 @@ import {
   Plus,
   BarChart3,
   Wallet,
-  Receipt,
+  ReceiptText,
   Settings,
   Building2,
   ShieldCheck,
@@ -123,7 +123,7 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean): NavItem
       description: "Control de insumos",
       children: [
         { type: "link", path: ROUTES.STOCK_MANAGEMENT, name: "Stock Actual", icon: Package2 },
-        { type: "link", path: ROUTES.INVENTORY_HISTORY, name: "Movimientos", icon: Receipt },
+        { type: "link", path: ROUTES.INVENTORY_HISTORY, name: "Movimientos", icon: ReceiptText },
       ]
     },
     {
@@ -147,7 +147,7 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean): NavItem
       children: [
         { type: "link", path: ROUTES.ADMIN_DASHBOARD, name: "Analítica", icon: BarChart3 },
         { type: "link", path: ROUTES.CASH_CLOSURE, name: "Cuadre de Caja", icon: Wallet },
-        { type: "link", path: ROUTES.EXPENSES, name: "Gestión de Gastos", icon: Receipt },
+        { type: "link", path: ROUTES.EXPENSES, name: "Gestión de Gastos", icon: ReceiptText },
       ],
     },
     {

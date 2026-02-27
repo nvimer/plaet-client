@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, Receipt, History, Wallet, Filter } from "lucide-react";
+import { Plus, History, Wallet, Filter } from "lucide-react";
 import { ExpenseList } from "../components/ExpenseList";
 import { ExpenseFormModal } from "../components/ExpenseFormModal";
 import { Button } from "@/components";

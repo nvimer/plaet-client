@@ -5,7 +5,7 @@ import {
   ChefHat,
   Clock,
   CreditCard,
-  Receipt,
+  ReceiptText,
   Truck,
   XCircle,
 } from "lucide-react";
@@ -46,7 +46,7 @@ export function OrderStatusBadge({
     [OrderStatus.SENT_TO_CASHIER]: {
       label: "En caja",
       variant: "info",
-      icon: Receipt,
+      icon: ReceiptText,
       className: "bg-blue-50 text-blue-700 border-blue-300",
     },
     [OrderStatus.IN_KITCHEN]: {

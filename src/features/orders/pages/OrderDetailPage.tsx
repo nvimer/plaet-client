@@ -16,7 +16,7 @@ import {
   XCircle,
   Calculator,
   Info,
-  Receipt,
+  ReceiptText,
 } from "lucide-react";
 import { toast } from "sonner";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
@@ -210,7 +210,7 @@ export function OrderDetailPage() {
           <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border-2 border-sage-100 shadow-smooth-md">
             <div className="flex items-center gap-3">
               <div className="w-12 h-12 rounded-xl bg-sage-50 flex items-center justify-center text-sage-600 shadow-inner">
-                <Receipt className="w-6 h-6" />
+                <ReceiptText className="w-6 h-6" />
               </div>
               <div>
                 <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest leading-none mb-1.5">Estado Actual</p>

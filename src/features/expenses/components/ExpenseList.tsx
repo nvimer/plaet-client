@@ -1,5 +1,5 @@
 import React from "react";
-import { Trash2, Receipt, Calendar, User, Tag, ArrowDownCircle } from "lucide-react";
+import { Trash2, ReceiptText, Calendar, User, Tag, ArrowDownCircle } from "lucide-react";
 import { useExpenses } from "../hooks/useExpenses";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog/ConfirmDialog";
@@ -26,7 +26,7 @@ export const ExpenseList: React.FC = () => {
     return (
       <div className="bg-white rounded-3xl border-2 border-dashed border-sage-200 p-16 flex flex-col items-center justify-center text-center space-y-4">
         <div className="w-20 h-20 bg-sage-50 rounded-3xl flex items-center justify-center text-sage-300 shadow-inner">
-          <Receipt className="w-10 h-10" />
+          <ReceiptText className="w-10 h-10" />
         </div>
         <div>
           <h3 className="text-xl font-bold text-carbon-800 tracking-tight">Sin egresos registrados</h3>

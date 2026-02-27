@@ -4,7 +4,7 @@
  */
 
 import { Button } from "@/components";
-import { X, Check, Receipt, Soup, Salad, CupSoda, IceCream, Utensils, CircleOff, ArrowRightLeft, Info, PackagePlus } from "lucide-react";
+import { X, Check, ReceiptText, Soup, Salad, CupSoda, IceCream, Utensils, CircleOff, ArrowRightLeft, Info, PackagePlus } from "lucide-react";
 import type { TableOrder } from "../types/orderBuilder";
 import { OrderType } from "@/types";
 
@@ -39,7 +39,7 @@ export function OrderSummaryModal({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center shadow-inner">
-                <Receipt className="w-6 h-6 text-sage-400" />
+                <ReceiptText className="w-6 h-6 text-sage-400" />
               </div>
               <div>
                 <h2 className="text-white font-semibold text-lg sm:text-2xl tracking-tight">

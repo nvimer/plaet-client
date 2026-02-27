@@ -5,7 +5,7 @@
 
 import { Card, Button } from "@/components";
 import { cn } from "@/utils/cn";
-import { Receipt, ShoppingBag, Edit2, Trash2, PackagePlus, Info, Check } from "lucide-react";
+import { ReceiptText, ShoppingBag, Edit2, Trash2, PackagePlus, Info, Check } from "lucide-react";
 import type { TableOrder } from "../types/orderBuilder";
 
 interface OrdersListPanelProps {
@@ -41,7 +41,7 @@ export function OrdersListPanel({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 sm:gap-4">
             <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-white/10 flex items-center justify-center shadow-inner">
-              <Receipt className="w-5 h-5 sm:w-6 sm:h-6 text-sage-400" />
+              <ReceiptText className="w-5 h-5 sm:w-6 sm:h-6 text-sage-400" />
             </div>
             <div>
               <h2 className="text-white font-semibold text-lg sm:text-xl tracking-tight">

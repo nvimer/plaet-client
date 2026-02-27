@@ -10,7 +10,7 @@ import {
   Clock,
   ChevronDown,
   ChevronUp,
-  Receipt,
+  ReceiptText,
   Eye,
   ArrowRight,
   UtensilsCrossed,
@@ -272,7 +272,7 @@ export function GroupedOrderCard({
                 onViewDetail(groupedOrder.orders[0].id);
               }}
             >
-              <Receipt className="w-5 h-5 mr-2" />
+              <ReceiptText className="w-5 h-5 mr-2" />
               Ver Factura de Mesa
             </Button>
           </div>

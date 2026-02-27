@@ -18,7 +18,6 @@ import {
   ChevronUp,
   ChefHat,
   UtensilsCrossed,
-  Receipt,
   Sparkles,
   ShoppingBag,
   Search,
