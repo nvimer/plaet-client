@@ -27,7 +27,7 @@ export function useAuth() {
   const context = useContext(AuthContext)
 
   // Verificar que estamos dentro de un Provider
-  if (context === undefined) {
+  if (!context) {
     throw new Error(
       'useAuth debe usarse dentro de un AuthProvider. ' +
       'Asegúrate de envolver tu app con <AuthProvider>.'
