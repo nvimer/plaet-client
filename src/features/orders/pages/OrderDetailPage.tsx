@@ -16,6 +16,7 @@ import {
   XCircle,
   Calculator,
   Info,
+  Receipt,
 } from "lucide-react";
 import { toast } from "sonner";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
