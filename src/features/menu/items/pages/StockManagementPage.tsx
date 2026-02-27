@@ -116,16 +116,16 @@ export function StockManagementPage() {
 
   return (
     <SidebarLayout hideTitle fullWidth>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 pb-24 py-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
         {/* Header */}
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <div className="flex items-center gap-2 text-sage-600">
               <Package className="w-5 h-5" />
               <span className="text-[10px] font-black uppercase tracking-[0.2em]">Control de Existencias</span>
             </div>
-            <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Stock de Productos</h1>
-            <p className="text-sm text-carbon-500 font-medium">Monitorea y ajusta el inventario de tus insumos en tiempo real.</p>
+            <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Stock de Productos</h1>
+            <p className="text-lg text-carbon-500 font-medium">Monitorea y ajusta el inventario de tus insumos en tiempo real.</p>
           </div>
           
           <div className="flex flex-wrap items-center gap-3">

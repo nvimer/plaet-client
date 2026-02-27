@@ -262,7 +262,7 @@ export function OrdersPage() {
   if (isLoading) {
     return (
       <SidebarLayout hideTitle fullWidth>
-        <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
           <div className="mb-8">
             <Skeleton variant="text" width={240} height={32} className="mb-2" />
             <Skeleton variant="text" width={320} height={20} />
@@ -287,31 +287,33 @@ export function OrdersPage() {
   if (error) {
     return (
       <SidebarLayout hideTitle fullWidth>
-        <div className="flex items-center justify-center min-h-[50vh] px-4 sm:px-6 lg:px-8 py-8">
-          <Card
-            variant="elevated"
-            padding="lg"
-            className="max-w-md w-full border border-sage-200 shadow-sm rounded-2xl"
-          >
-            <div className="text-center">
-              <div className="w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-rose-500">
-                <ShoppingCart className="w-7 h-7" />
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <Card
+              variant="elevated"
+              padding="lg"
+              className="max-w-md w-full border border-sage-200 shadow-sm rounded-2xl"
+            >
+              <div className="text-center">
+                <div className="w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-rose-500">
+                  <ShoppingCart className="w-7 h-7" />
+                </div>
+                <h2 className="text-lg font-semibold text-carbon-900 mb-2">
+                  Error al cargar pedidos
+                </h2>
+                <p className="text-carbon-500 text-sm mb-6">{error.message}</p>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={() => window.location.reload()}
+                  fullWidth
+                  className="min-h-[44px]"
+                >
+                  Reintentar
+                </Button>
               </div>
-              <h2 className="text-lg font-semibold text-carbon-900 mb-2">
-                Error al cargar pedidos
-              </h2>
-              <p className="text-carbon-500 text-sm mb-6">{error.message}</p>
-              <Button
-                variant="primary"
-                size="lg"
-                onClick={() => window.location.reload()}
-                fullWidth
-                className="min-h-[44px]"
-              >
-                Reintentar
-              </Button>
-            </div>
-          </Card>
+            </Card>
+          </div>
         </div>
       </SidebarLayout>
     );
@@ -320,16 +322,16 @@ export function OrdersPage() {
   // =============== MAIN RENDER =================
   return (
     <SidebarLayout hideTitle fullWidth>
-      <div className="px-4 sm:px-6 lg:px-8 pb-24 py-8">
-        {/* ============ PAGE HEADER =============== */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-          <div className="space-y-1.5">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+        {/* Header */}
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
             <div className="flex items-center gap-2 text-sage-600">
               <ShoppingCart className="w-5 h-5" />
               <span className="text-[10px] font-black uppercase tracking-[0.2em]">Registro de Ventas</span>
             </div>
-            <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Gestión de Pedidos</h1>
-            <p className="text-sm text-carbon-500 font-medium">Administra y monitorea todas las órdenes del restaurante.</p>
+            <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Gestión de Pedidos</h1>
+            <p className="text-lg text-carbon-500 font-medium">Administra y monitorea todas las órdenes del restaurante.</p>
           </div>
           
           <div className="flex flex-wrap items-center gap-3">

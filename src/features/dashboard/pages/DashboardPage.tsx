@@ -213,7 +213,7 @@ export function DashboardPage() {
       <motion.div 
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="space-y-10 pb-20 p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto"
+        className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-12 space-y-10 pb-20"
       >
         {/* 1. Greeting & Shift Info */}
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-8">

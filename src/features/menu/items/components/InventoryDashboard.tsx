@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Card } from "@/components";
+import { Card, StatCard } from "@/components";
 import {
   BarChart,
   Bar,
@@ -23,11 +23,9 @@ interface InventoryDashboardProps {
 
 /**
  * InventoryDashboard Component
- *
- * Displays comprehensive inventory analytics with charts and statistics
+ * Refined design with premium cards and consistent spacing.
  */
 export function InventoryDashboard({ items }: InventoryDashboardProps) {
-  // Calculate statistics
   const stats = useMemo(() => {
     const tracked = items.filter(
       (item) => item.inventoryType === InventoryType.TRACKED,
@@ -60,20 +58,17 @@ export function InventoryDashboard({ items }: InventoryDashboardProps) {
     };
   }, [items]);
 
-  // Data for pie chart (inventory type distribution)
   const inventoryTypeData = [
-    { name: "Rastreado", value: stats.tracked, color: "#22c55e" },
-    { name: "Ilimitado", value: stats.unlimited, color: "#6b7280" },
+    { name: "Rastreado", value: stats.tracked, color: "#769B86" },
+    { name: "Ilimitado", value: stats.unlimited, color: "#9CA3AF" },
   ];
 
-  // Data for pie chart (stock status distribution - only tracked items)
   const stockStatusData = [
     { name: "Stock OK", value: stats.healthyStock, color: "#22c55e" },
     { name: "Stock Bajo", value: stats.lowStock, color: "#f59e0b" },
     { name: "Sin Stock", value: stats.outOfStock, color: "#ef4444" },
   ].filter((item) => item.value > 0);
 
-  // Mock data for weekly movements (in real app, this would come from API)
   const weeklyMovementsData = [
     { day: "Lun", entradas: 45, salidas: 38 },
     { day: "Mar", entradas: 52, salidas: 42 },
@@ -85,199 +80,103 @@ export function InventoryDashboard({ items }: InventoryDashboardProps) {
   ];
 
   return (
-    <div className="space-y-6">
-      {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card variant="elevated" className="p-4 border-l-4 border-l-sage-500">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-sage-100 rounded-lg">
-              <Package className="w-5 h-5 text-sage-600" />
-            </div>
-            <div>
-              <p className="text-sm text-carbon-500">Total Items</p>
-              <p className="text-2xl font-bold text-carbon-900">
-                {stats.total}
-              </p>
-            </div>
-          </div>
-        </Card>
-
-        <Card variant="elevated" className="p-4 border-l-4 border-l-blue-500">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <CheckCircle2 className="w-5 h-5 text-blue-600" />
-            </div>
-            <div>
-              <p className="text-sm text-carbon-500">Stock OK</p>
-              <p className="text-2xl font-bold text-carbon-900">
-                {stats.healthyStock}
-              </p>
-            </div>
-          </div>
-        </Card>
-
-        <Card variant="elevated" className="p-4 border-l-4 border-l-amber-500">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-amber-100 rounded-lg">
-              <TrendingUp className="w-5 h-5 text-amber-600" />
-            </div>
-            <div>
-              <p className="text-sm text-carbon-500">Stock Bajo</p>
-              <p className="text-2xl font-bold text-carbon-900">
-                {stats.lowStock}
-              </p>
-            </div>
-          </div>
-        </Card>
-
-        <Card variant="elevated" className="p-4 border-l-4 border-l-rose-500">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-rose-100 rounded-lg">
-              <AlertTriangle className="w-5 h-5 text-rose-600" />
-            </div>
-            <div>
-              <p className="text-sm text-carbon-500">Sin Stock</p>
-              <p className="text-2xl font-bold text-carbon-900">
-                {stats.outOfStock}
-              </p>
-            </div>
-          </div>
-        </Card>
+    <div className="space-y-8">
+      {/* Primary Stats Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <StatCard
+          title="Total Items"
+          value={stats.total.toString()}
+          variant="info"
+          icon={<Package className="w-6 h-6" />}
+        />
+        <StatCard
+          title="Stock OK"
+          value={stats.healthyStock.toString()}
+          variant="success"
+          icon={<CheckCircle2 className="w-6 h-6" />}
+        />
+        <StatCard
+          title="Stock Bajo"
+          value={stats.lowStock.toString()}
+          variant="warning"
+          icon={<TrendingUp className="w-6 h-6" />}
+        />
+        <StatCard
+          title="Sin Stock"
+          value={stats.outOfStock.toString()}
+          variant="error"
+          icon={<AlertTriangle className="w-6 h-6" />}
+        />
       </div>
 
       {/* Charts Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Weekly Movements Chart */}
-        <Card variant="elevated" className="p-6">
-          <h3 className="text-lg font-semibold text-carbon-800 mb-4">
-            Movimientos de Stock - Últimos 7 días
-          </h3>
-          <div className="h-64">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Weekly Movements - Main Chart */}
+        <Card variant="elevated" padding="lg" className="lg:col-span-2 shadow-smooth-lg border-none rounded-3xl bg-white">
+          <div className="mb-6">
+            <h3 className="text-xl font-bold text-carbon-900 tracking-tight">Movimientos Recientes</h3>
+            <p className="text-sm text-carbon-500 font-medium">Histórico de entradas y salidas de stock</p>
+          </div>
+          <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={weeklyMovementsData}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis
-                  dataKey="day"
-                  tick={{ fill: "#6b7280", fontSize: 12 }}
-                  axisLine={{ stroke: "#e5e7eb" }}
-                />
-                <YAxis
-                  tick={{ fill: "#6b7280", fontSize: 12 }}
-                  axisLine={{ stroke: "#e5e7eb" }}
-                />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
+                <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: "#94A3B8", fontSize: 12, fontWeight: 600 }} dy={10} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94A3B8", fontSize: 12, fontWeight: 600 }} />
                 <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#fff",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-                  }}
+                  cursor={{ fill: '#F8FAFC' }}
+                  contentStyle={{ backgroundColor: "#111827", borderRadius: "16px", border: "none", color: "#fff", boxShadow: "0 20px 25px -5px rgb(0 0 0 / 0.1)" }}
+                  itemStyle={{ color: "#fff", fontSize: "12px", fontWeight: "bold" }}
                 />
-                <Legend />
-                <Bar
-                  dataKey="entradas"
-                  name="Entradas"
-                  fill="#22c55e"
-                  radius={[4, 4, 0, 0]}
-                />
-                <Bar
-                  dataKey="salidas"
-                  name="Salidas"
-                  fill="#ef4444"
-                  radius={[4, 4, 0, 0]}
-                />
+                <Bar dataKey="entradas" name="Entradas" fill="#769B86" radius={[6, 6, 0, 0]} barSize={20} />
+                <Bar dataKey="salidas" name="Salidas" fill="#EF4444" radius={[6, 6, 0, 0]} barSize={20} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </Card>
 
-        {/* Inventory Distribution Chart */}
-        <Card variant="elevated" className="p-6">
-          <h3 className="text-lg font-semibold text-carbon-800 mb-4">
-            Distribución de Inventario
+        {/* Distribution Card */}
+        <Card variant="elevated" padding="lg" className="shadow-smooth-lg border-none rounded-3xl bg-carbon-900 text-white">
+          <h3 className="text-lg font-bold mb-6 flex items-center gap-2">
+            <Package className="w-5 h-5 text-sage-400" />
+            Estado de Rastreo
           </h3>
-          <div className="h-64">
+          <div className="h-56">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
                   data={inventoryTypeData}
                   cx="50%"
                   cy="50%"
-                  innerRadius={60}
-                  outerRadius={80}
-                  paddingAngle={5}
+                  innerRadius={65}
+                  outerRadius={85}
+                  paddingAngle={8}
                   dataKey="value"
+                  stroke="none"
                 >
                   {inventoryTypeData.map((entry, index) => (
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#fff",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-                  }}
+                <Tooltip 
+                  contentStyle={{ backgroundColor: "#1F2937", border: "none", borderRadius: "12px", fontSize: "12px" }}
                 />
-                <Legend verticalAlign="bottom" height={36} />
               </PieChart>
             </ResponsiveContainer>
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-4 text-center">
-            <div className="p-3 bg-sage-50 rounded-lg">
-              <p className="text-2xl font-bold text-sage-600">
-                {stats.tracked}
-              </p>
-              <p className="text-sm text-carbon-600">Rastreados</p>
-            </div>
-            <div className="p-3 bg-gray-50 rounded-lg">
-              <p className="text-2xl font-bold text-gray-600">
-                {stats.unlimited}
-              </p>
-              <p className="text-sm text-carbon-600">Ilimitados</p>
-            </div>
+          <div className="space-y-3 mt-4">
+            {inventoryTypeData.map((item) => (
+              <div key={item.name} className="flex items-center justify-between p-3 rounded-2xl bg-white/5 border border-white/10">
+                <div className="flex items-center gap-3">
+                  <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }} />
+                  <span className="text-xs font-bold text-white/80">{item.name}</span>
+                </div>
+                <span className="text-sm font-black text-white">{item.value} ud.</span>
+              </div>
+            ))}
           </div>
         </Card>
       </div>
-
-      {/* Stock Status Distribution */}
-      {stats.tracked > 0 && (
-        <Card variant="elevated" className="p-6">
-          <h3 className="text-lg font-semibold text-carbon-800 mb-4">
-            Estado del Stock (Items Rastreados)
-          </h3>
-          <div className="h-48">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={stockStatusData}
-                  cx="50%"
-                  cy="50%"
-                  outerRadius={70}
-                  dataKey="value"
-                  label={({ name, percent }) =>
-                    `${name}: ${((percent || 0) * 100).toFixed(0)}%`
-                  }
-                >
-                  {stockStatusData.map((entry, index) => (
-                    <Cell key={`cell-${index}`} fill={entry.color} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    backgroundColor: "#fff",
-                    border: "1px solid #e5e7eb",
-                    borderRadius: "8px",
-                    boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
-                  }}
-                />
-                <Legend />
-              </PieChart>
-            </ResponsiveContainer>
-          </div>
-        </Card>
-      )}
     </div>
   );
 }

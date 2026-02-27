@@ -115,8 +115,8 @@ export function DailyMenuPage() {
 
   if (isLoading) {
     return (
-      <SidebarLayout fullWidth>
-        <div className="px-4 sm:px-6 lg:px-8 space-y-8 pb-24">
+      <SidebarLayout hideTitle fullWidth>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
           <div className="mb-8">
             <Skeleton variant="text" width={280} height={36} className="mb-2" />
             <Skeleton variant="text" width={400} height={20} />
@@ -129,13 +129,15 @@ export function DailyMenuPage() {
 
   if (error) {
     return (
-      <SidebarLayout fullWidth>
-        <div className="px-4 sm:px-6 lg:px-8 space-y-8 pb-24 text-center">
-          <div className="mb-8">
-            <h1 className="text-2xl sm:text-3xl font-semibold text-carbon-900 tracking-tight text-left">
-              Menú Diario
-            </h1>
-          </div>
+      <SidebarLayout hideTitle fullWidth>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8 text-center">
+          <header className="space-y-2 text-left">
+            <div className="flex items-center gap-2 text-sage-600">
+              <UtensilsCrossed className="w-5 h-5" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Operación Diaria</span>
+            </div>
+            <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Menú del Día</h1>
+          </header>
           <div className="flex items-center justify-center min-h-[50vh]">
             <ErrorState onRetry={() => refetch()} />
           </div>
@@ -145,18 +147,18 @@ export function DailyMenuPage() {
   }
 
   return (
-    <SidebarLayout fullWidth>
-      <div className="px-4 sm:px-6 lg:px-8 space-y-8 pb-24">
-      {/* ============ PAGE HEADER =============== */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2 text-sage-600">
-            <UtensilsCrossed className="w-5 h-5" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Configuración Diaria</span>
+    <SidebarLayout hideTitle fullWidth>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+        {/* Header */}
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sage-600">
+              <UtensilsCrossed className="w-5 h-5" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Operación Diaria</span>
+            </div>
+            <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Menú del Día</h1>
+            <p className="text-lg text-carbon-500 font-medium">Gestiona el "Corrientazo" y las ofertas diarias de tu restaurante.</p>
           </div>
-          <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Menú del Día</h1>
-          <p className="text-sm text-carbon-500 font-medium">Visualiza y administra las opciones de almuerzo para tu equipo.</p>
-        </div>
         
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl shadow-smooth-md border border-sage-100 ring-4 ring-sage-50/50">
