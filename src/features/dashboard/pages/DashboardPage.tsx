@@ -38,7 +38,7 @@ export function DashboardPage() {
   // mostraremos un Dashboard simplificado para evitar errores de carga.
   if (isSuperAdmin()) {
     return (
-      <SidebarLayout hideHeader fullWidth>
+      <SidebarLayout hideTitle fullWidth>
         <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
           <header>
             <div className="flex items-center gap-2 text-primary-600 mb-1">
@@ -174,7 +174,7 @@ export function DashboardPage() {
   };
 
   return (
-    <SidebarLayout hideHeader fullWidth>
+    <SidebarLayout hideTitle fullWidth>
       <motion.div 
         variants={containerVariants}
         initial="hidden"

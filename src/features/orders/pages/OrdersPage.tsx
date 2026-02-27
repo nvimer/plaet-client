@@ -253,7 +253,7 @@ export function OrdersPage() {
   // ============ LOADING STATE ===========
   if (isLoading) {
     return (
-      <SidebarLayout hideHeader fullWidth>
+      <SidebarLayout hideTitle fullWidth>
         <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8">
           <div className="mb-8">
             <Skeleton variant="text" width={240} height={32} className="mb-2" />
@@ -278,7 +278,7 @@ export function OrdersPage() {
   // ========== ERROR STATE =============
   if (error) {
     return (
-      <SidebarLayout hideHeader fullWidth>
+      <SidebarLayout hideTitle fullWidth>
         <div className="flex items-center justify-center min-h-[50vh] px-4 sm:px-6 lg:px-8 py-8">
           <Card
             variant="elevated"
@@ -311,7 +311,7 @@ export function OrdersPage() {
 
   // =============== MAIN RENDER =================
   return (
-    <SidebarLayout hideHeader fullWidth>
+    <SidebarLayout hideTitle fullWidth>
       <div className="px-4 sm:px-6 lg:px-8 pb-24 py-8">
         {/* ============ PAGE HEADER =============== */}
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">

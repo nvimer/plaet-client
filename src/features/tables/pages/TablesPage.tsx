@@ -99,7 +99,7 @@ export function TablesPage() {
   }
 
   return (
-    <SidebarLayout hideHeader fullWidth>
+    <SidebarLayout hideTitle fullWidth>
       <div className="px-4 sm:px-6 lg:px-8 space-y-8 pb-24">
       {/* ============ PAGE HEADER =============== */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">

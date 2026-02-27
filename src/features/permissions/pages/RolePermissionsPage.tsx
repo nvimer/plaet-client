@@ -49,7 +49,7 @@ export function RolePermissionsPage() {
   const isLoading = loadingRoles || loadingPerms;
 
   return (
-    <SidebarLayout hideHeader fullWidth>
+    <SidebarLayout hideTitle fullWidth>
       <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-24">
       {/* ============ PAGE HEADER =============== */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">

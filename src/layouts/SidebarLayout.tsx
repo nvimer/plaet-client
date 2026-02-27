@@ -19,6 +19,8 @@ export interface SidebarLayoutProps {
   fullWidth?: boolean;
   /** Hide the header */
   hideHeader?: boolean;
+  /** Hide the title inside TopBar */
+  hideTitle?: boolean;
 }
 
 /**
@@ -36,6 +38,7 @@ export function SidebarLayout({
   contentClassName,
   fullWidth = false,
   hideHeader = false,
+  hideTitle = false,
 }: SidebarLayoutProps) {
   const { isCollapsed, isMobile } = useSidebar();
 
@@ -57,6 +60,7 @@ export function SidebarLayout({
             title={title}
             subtitle={subtitle}
             actions={actions}
+            hideTitle={hideTitle}
           />
         )}
 

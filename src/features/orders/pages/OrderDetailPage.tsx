@@ -203,7 +203,6 @@ export function OrderDetailPage() {
       <SidebarLayout
         title={`Pedido ${shortId}`}
         backRoute={ROUTES.ORDERS}
-        hideHeader
       >
         <div className="max-w-4xl mx-auto space-y-8 pb-24">
           {/* ============ PAGE HEADER =============== */}

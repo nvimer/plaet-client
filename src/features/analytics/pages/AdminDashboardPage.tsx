@@ -19,7 +19,7 @@ export const AdminDashboardPage: React.FC = () => {
 
   if (isLoading) {
     return (
-      <SidebarLayout hideHeader fullWidth>
+      <SidebarLayout hideTitle fullWidth>
         <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <Skeleton className="h-12 w-64 rounded-2xl" />
@@ -39,7 +39,7 @@ export const AdminDashboardPage: React.FC = () => {
 
   if (isError) {
     return (
-      <SidebarLayout hideHeader fullWidth>
+      <SidebarLayout hideTitle fullWidth>
         <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-6 text-center px-4">
           <div className="w-20 h-20 bg-error-50 rounded-3xl flex items-center justify-center shadow-inner">
             <AlertCircle className="w-10 h-10 text-error-500" />
@@ -59,7 +59,7 @@ export const AdminDashboardPage: React.FC = () => {
   const hasSales = (dailySummary?.salesSummary?.totalSold || 0) > 0;
 
   return (
-    <SidebarLayout hideHeader fullWidth>
+    <SidebarLayout hideTitle fullWidth>
       <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-24">
       {/* Professional Header */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">

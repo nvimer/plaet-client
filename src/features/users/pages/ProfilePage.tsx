@@ -106,14 +106,21 @@ export function ProfilePage() {
     );
   }
 
-    return (
-      <SidebarLayout
-        title="Mi Perfil"
-        backRoute={ROUTES.DASHBOARD}
-        fullWidth
-        hideHeader
-        contentClassName="p-0"
-      >
+      return (
+
+        <SidebarLayout
+
+          title="Mi Perfil"
+
+          backRoute={ROUTES.DASHBOARD}
+
+          fullWidth
+
+          contentClassName="p-0"
+
+        >
+
+    
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 pb-24 py-8">
           {/* ============ PAGE HEADER =============== */}
           <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">

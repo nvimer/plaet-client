@@ -14,7 +14,7 @@ export const ExpensesPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   return (
-    <SidebarLayout hideHeader fullWidth>
+    <SidebarLayout hideTitle fullWidth>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 pb-12 py-6">
         {/* Header with main CTA */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">

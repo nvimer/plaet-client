@@ -115,7 +115,7 @@ export function DailyMenuPage() {
 
   if (isLoading) {
     return (
-      <SidebarLayout hideHeader fullWidth>
+      <SidebarLayout fullWidth>
         <div className="px-4 sm:px-6 lg:px-8 space-y-8 pb-24">
           <div className="mb-8">
             <Skeleton variant="text" width={280} height={36} className="mb-2" />
@@ -129,7 +129,7 @@ export function DailyMenuPage() {
 
   if (error) {
     return (
-      <SidebarLayout hideHeader fullWidth>
+      <SidebarLayout fullWidth>
         <div className="px-4 sm:px-6 lg:px-8 space-y-8 pb-24 text-center">
           <div className="mb-8">
             <h1 className="text-2xl sm:text-3xl font-semibold text-carbon-900 tracking-tight text-left">
@@ -145,7 +145,7 @@ export function DailyMenuPage() {
   }
 
   return (
-    <SidebarLayout hideHeader fullWidth>
+    <SidebarLayout fullWidth>
       <div className="px-4 sm:px-6 lg:px-8 space-y-8 pb-24">
       {/* ============ PAGE HEADER =============== */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">

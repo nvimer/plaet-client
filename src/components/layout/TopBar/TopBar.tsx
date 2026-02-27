@@ -24,6 +24,8 @@ export interface TopBarProps {
   breadcrumbs?: BreadcrumbItem[];
   /** Custom action buttons (e.g. "Guardar", "Nueva mesa") */
   actions?: React.ReactNode;
+  /** Hide the main title (useful when page has its own header) */
+  hideTitle?: boolean;
 }
 
 /**
@@ -38,6 +40,7 @@ export function TopBar({
   subtitle,
   breadcrumbs: breadcrumbsProp,
   actions,
+  hideTitle = false,
 }: TopBarProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -113,11 +116,13 @@ export function TopBar({
 
         <div className="min-w-0 flex-1">
           <div className="flex flex-col gap-1">
-            <h1 className="text-base sm:text-lg font-semibold text-carbon-900 truncate">
-              {title}
-            </h1>
+            {!hideTitle && (
+              <h1 className="text-base sm:text-lg font-semibold text-carbon-900 truncate">
+                {title}
+              </h1>
+            )}
             {breadcrumbs.length > 1 && <Breadcrumbs items={breadcrumbs} />}
-            {subtitle && (
+            {!hideTitle && subtitle && (
               <p className="text-xs sm:text-sm text-carbon-400 truncate hidden sm:block">
                 {subtitle}
               </p>

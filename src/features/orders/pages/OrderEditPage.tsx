@@ -113,7 +113,6 @@ export function OrderEditPage() {
     <SidebarLayout
       title="Editar Orden"
       backRoute={getOrderDetailRoute(order.id)}
-      hideHeader
     >
       <div className="max-w-4xl mx-auto space-y-10 pb-24">
         {/* ============ PAGE HEADER =============== */}
