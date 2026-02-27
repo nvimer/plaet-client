@@ -166,17 +166,8 @@ export function OrderDetailPage() {
         setIsPaymentModalOpen(false);
         toast.success("Pago registrado correctamente");
         
-        // Auto-send to kitchen if fully paid
-        if (amount >= remainingAmount) {
-          updateStatus({ 
-            id: order!.id, 
-            orderStatus: OrderStatus.IN_KITCHEN 
-          }, {
-            onSuccess: () => {
-              toast.success("Pedido enviado a Cocina automáticamente");
-            }
-          });
-        }
+        // Removed auto-send to kitchen. 
+        // The backend automatically marks as PAID, which puts it in the first column of the Kitchen Kanban.
       },
       onError: (error: AxiosErrorWithResponse) => {
         toast.error("Error al registrar pago", {

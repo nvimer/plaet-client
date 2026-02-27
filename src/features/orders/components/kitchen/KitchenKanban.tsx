@@ -36,11 +36,11 @@ interface KitchenKanbanProps {
 const TABS_CONFIG = [
   {
     id: "pending" as TabType,
-    label: "Pendientes",
+    label: "Nuevos",
     icon: Clock,
-    color: "bg-amber-500",
-    textColor: "text-amber-700",
-    bgColor: "bg-amber-50",
+    color: "bg-blue-500",
+    textColor: "text-blue-700",
+    bgColor: "bg-blue-50",
   },
   {
     id: "inKitchen" as TabType,
@@ -102,7 +102,7 @@ export function KitchenKanban({
     if (!allOrders) return { pending: [], inKitchen: [], ready: [] };
 
     const pending = allOrders
-      .filter((o) => o.status === OrderStatus.PENDING)
+      .filter((o) => o.status === OrderStatus.PAID) // Now PAID is the entry point for kitchen
       .sort(
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
@@ -400,10 +400,10 @@ export function KitchenKanban({
             <div className="flex-1 p-6 overflow-y-auto">
               <div className="grid grid-cols-3 gap-6 min-h-0 h-full">
                 <KitchenColumn
-                  id={OrderStatus.PENDING}
-                  title="Pendientes"
+                  id={OrderStatus.PAID}
+                  title="Nuevos"
                   icon={<Clock className="w-6 h-6" />}
-                  color="bg-amber-100 text-amber-800"
+                  color="bg-blue-100 text-blue-800"
                   orders={ordersByStatus.pending}
                   readyItemIds={readyItemIds}
                   onToggleItemReady={handleToggleItemReady}
@@ -413,7 +413,7 @@ export function KitchenKanban({
                 />
                 <KitchenColumn
                   id={OrderStatus.IN_KITCHEN}
-                  title="Cocinando"
+                  title="Preparando"
                   icon={<ChefHat className="w-6 h-6" />}
                   color="bg-orange-100 text-orange-800"
                   orders={ordersByStatus.inKitchen}
