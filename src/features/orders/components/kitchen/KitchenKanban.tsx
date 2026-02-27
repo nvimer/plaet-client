@@ -7,8 +7,12 @@ import {
   PointerSensor,
   useSensor,
   useSensors,
+  pointerWithin,
+  rectIntersection,
+  getFirstCollision,
   type DragStartEvent,
   type DragEndEvent,
+  type CollisionDetection,
 } from "@dnd-kit/core";
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { Clock, ChefHat, CheckCircle, RefreshCw } from "lucide-react";
@@ -151,18 +155,28 @@ export function KitchenKanban({
       if (!over) return;
 
       const orderId = active.id as string;
-      const newStatus = over.id as OrderStatus;
+      
+      // Smart status detection: check if over is a column or another card
+      let newStatus: OrderStatus | null = null;
+      
+      if (over.data.current?.type === "column") {
+        newStatus = over.data.current.status as OrderStatus;
+      } else if (over.data.current?.type === "order") {
+        newStatus = over.data.current.order.status as OrderStatus;
+      } else {
+        // Fallback to ID if it's a valid status
+        const possibleStatus = over.id as OrderStatus;
+        if ([OrderStatus.PENDING, OrderStatus.IN_KITCHEN, OrderStatus.READY].includes(possibleStatus)) {
+          newStatus = possibleStatus;
+        }
+      }
 
-      if (
-        newStatus === OrderStatus.PENDING ||
-        newStatus === OrderStatus.IN_KITCHEN ||
-        newStatus === OrderStatus.READY
-      ) {
+      if (newStatus && newStatus !== active.data.current?.order?.status) {
         updateStatus(
           { id: orderId, orderStatus: newStatus },
           {
             onSuccess: () => {
-              toast.success(`Pedido movido a ${getStatusLabel(newStatus)}`);
+              toast.success(`Pedido movido a ${getStatusLabel(newStatus!)}`);
             },
             onError: () => {
               toast.error("Error al mover el pedido");
@@ -208,6 +222,23 @@ export function KitchenKanban({
     setActiveTab(tab);
   };
 
+  /**
+   * Custom collision detection strategy
+   * Solves the bug where dropping on a non-empty column is difficult.
+   */
+  const customCollisionDetection: CollisionDetection = useCallback((args) => {
+    // 1. First try pointerWithin (most intuitive)
+    const pointerCollisions = pointerWithin(args);
+    if (pointerCollisions.length > 0) return pointerCollisions;
+
+    // 2. Fallback to rectIntersection
+    const rectCollisions = rectIntersection(args);
+    if (rectCollisions.length > 0) return rectCollisions;
+
+    // 3. Last resort: closest corners for sorting within list
+    return closestCorners(args);
+  }, []);
+
   const categoryConfig = useMemo(() => ({
     proteinCategoryIds: proteinCategoryIds || [],
     extraCategoryIds: extraCategoryIds || [],
@@ -251,7 +282,7 @@ export function KitchenKanban({
   return (
     <DndContext
       sensors={sensors}
-      collisionDetection={closestCorners}
+      collisionDetection={customCollisionDetection}
       onDragStart={handleDragStart}
       onDragEnd={handleDragEnd}
     >

@@ -48,21 +48,23 @@ export function KitchenColumn({
   return (
     <div
       className={cn(
-        "flex flex-col h-full rounded-2xl bg-slate-50 border-2 transition-colors",
-        isOver ? "border-sage-400 bg-sage-50" : "border-transparent",
+        "flex flex-col h-full rounded-[2rem] bg-sage-50/30 border-2 transition-all duration-300",
+        isOver ? "border-carbon-900 bg-sage-100/50 shadow-soft-xl scale-[1.01]" : "border-sage-100",
       )}
     >
-      <div className={cn("flex items-center gap-3 p-4 rounded-t-2xl", color)}>
-        {icon}
-        <h2 className="text-xl font-bold text-carbon-900">{title}</h2>
-        <span className="ml-auto bg-white/30 px-3 py-1 rounded-full text-lg font-bold">
+      <div className={cn("flex items-center gap-3 p-5 rounded-t-[1.9rem] border-b border-black/5 shadow-sm", color)}>
+        <div className="p-2 bg-white/20 rounded-xl backdrop-blur-md shadow-inner">
+          {icon}
+        </div>
+        <h2 className="text-lg font-black uppercase tracking-widest text-carbon-900">{title}</h2>
+        <span className="ml-auto bg-carbon-900/10 px-3 py-1 rounded-xl text-base font-black text-carbon-900">
           {orders.length}
         </span>
       </div>
 
       <div
         ref={setNodeRef}
-        className="flex-1 p-4 overflow-y-auto space-y-4 min-h-[300px] max-h-[calc(100vh-280px)]"
+        className="flex-1 p-4 overflow-y-auto space-y-4 min-h-[400px] max-h-[calc(100vh-220px)] custom-scrollbar"
       >
         <SortableContext
           items={orderIds}
