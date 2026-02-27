@@ -1,3 +1,3 @@
-export { MenuPage } from "./pages/MenuPage";
+export * from "./pages";
 export * from "./items";
 export * from "./categories";

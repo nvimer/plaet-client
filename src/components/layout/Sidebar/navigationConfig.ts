@@ -15,6 +15,8 @@ import {
   Building2,
   ShieldCheck,
   Package,
+  Calendar,
+  UtensilsCrossed,
 } from "lucide-react";
 import { ROUTES } from "@/app/routes";
 import type { LucideIcon } from "lucide-react";
@@ -35,7 +37,7 @@ export interface NavChild {
 }
 
 export interface NavItem {
-  id: string; // Added unique ID
+  id: string;
   path: string;
   name: string;
   icon: LucideIcon;
@@ -71,83 +73,69 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean): NavItem
     ];
   }
 
-  const menuChildren: NavChild[] = [
-    {
-      type: "link",
-      path: ROUTES.MENU,
-      name: "Catálogo completo",
-      icon: Grid3x3,
-    },
-    {
-      type: "link",
-      path: ROUTES.DAILY_MENU,
-      name: "Menú del Día",
-      icon: ChefHat,
-    },
-    {
-      type: "divider",
-      path: "",
-      name: "divider",
-      icon: Package,
-    },
-    {
-      type: "link",
-      path: ROUTES.MENU_ITEM_CREATE,
-      name: "Nuevo producto",
-      icon: Plus,
-    },
-  ];
-
   return [
     {
       id: "dashboard",
       path: ROUTES.DASHBOARD,
-      name: "Dashboard",
+      name: "Inicio",
       icon: Home,
-      description: "Vista general",
+      description: "Centro de control",
     },
     {
-      id: "tables",
+      id: "tables-hub",
       path: ROUTES.TABLES,
       name: "Mesas",
       icon: LayoutGrid,
-      description: "Mapa de sala",
+      description: "Gestión de sala",
+      children: [
+        { type: "link", path: ROUTES.TABLES_MAP, name: "Mapa de Sala", icon: LayoutGrid },
+        { type: "link", path: ROUTES.TABLE_CREATE, name: "Nueva Mesa", icon: Plus },
+      ]
     },
     {
-      id: "inventory",
-      path: ROUTES.STOCK_MANAGEMENT,
-      name: "Inventario",
-      icon: Package2,
-      description: "Stock y alertas",
-    },
-    {
-      id: "menu-group",
-      path: ROUTES.MENU,
-      name: "Menú",
-      icon: Menu,
-      description: "Carta y categorías",
-      children: menuChildren,
-    },
-    {
-      id: "orders-group",
+      id: "orders-hub",
       path: ROUTES.ORDERS,
       name: "Ventas",
       icon: ShoppingCart,
       description: "Pedidos y facturación",
       children: [
-        {
-          type: "link",
-          path: ROUTES.ORDERS,
-          name: "Historial de Pedidos",
-          icon: ShoppingCart,
-        },
+        { type: "link", path: ROUTES.ORDERS_LIST, name: "Historial de Pedidos", icon: ShoppingCart },
         { type: "link", path: ROUTES.KITCHEN, name: "Monitor de Cocina", icon: ChefHat },
-        {
-          type: "link",
-          path: ROUTES.ORDER_CREATE,
-          name: "Nuevo Pedido",
-          icon: Plus,
-        },
+        { type: "link", path: ROUTES.ORDER_CREATE, name: "Nuevo Pedido", icon: Plus },
+      ],
+    },
+    {
+      id: "daily-menu-hub",
+      path: ROUTES.DAILY_MENU,
+      name: "Menú del Día",
+      icon: UtensilsCrossed,
+      description: "Configuración diaria",
+      children: [
+        { type: "link", path: ROUTES.DAILY_MENU_SETUP, name: "Configurar Hoy", icon: ChefHat },
+        { type: "link", path: ROUTES.DAILY_MENU_HISTORY, name: "Historial", icon: Calendar },
+      ]
+    },
+    {
+      id: "inventory-hub",
+      path: ROUTES.INVENTORY,
+      name: "Inventario",
+      icon: Package2,
+      description: "Control de insumos",
+      children: [
+        { type: "link", path: ROUTES.STOCK_MANAGEMENT, name: "Stock Actual", icon: Package2 },
+        { type: "link", path: ROUTES.INVENTORY_HISTORY, name: "Movimientos", icon: Receipt },
+      ]
+    },
+    {
+      id: "menu-commercial",
+      path: ROUTES.MENU,
+      name: "Catálogo",
+      icon: Menu,
+      description: "Productos y precios",
+      children: [
+        { type: "link", path: ROUTES.MENU, name: "Todos los productos", icon: Grid3x3 },
+        { type: "link", path: ROUTES.MENU_CATEGORY_CREATE, name: "Nueva Categoría", icon: Plus },
+        { type: "link", path: ROUTES.MENU_ITEM_CREATE, name: "Nuevo Producto", icon: Plus },
       ],
     },
     {
@@ -155,26 +143,11 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean): NavItem
       path: "/admin",
       name: "Administración",
       icon: Settings,
-      description: "Finanzas y cierres",
+      description: "Finanzas y reportes",
       children: [
-        {
-          type: "link",
-          path: ROUTES.ADMIN_DASHBOARD,
-          name: "Analítica",
-          icon: BarChart3,
-        },
-        {
-          type: "link",
-          path: ROUTES.CASH_CLOSURE,
-          name: "Cuadre de Caja",
-          icon: Wallet,
-        },
-        {
-          type: "link",
-          path: ROUTES.EXPENSES,
-          name: "Gestión de Gastos",
-          icon: Receipt,
-        },
+        { type: "link", path: ROUTES.ADMIN_DASHBOARD, name: "Analítica", icon: BarChart3 },
+        { type: "link", path: ROUTES.CASH_CLOSURE, name: "Cuadre de Caja", icon: Wallet },
+        { type: "link", path: ROUTES.EXPENSES, name: "Gestión de Gastos", icon: Receipt },
       ],
     },
     {

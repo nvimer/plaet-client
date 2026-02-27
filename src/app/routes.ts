@@ -24,8 +24,9 @@ export const ROUTES = {
   CASH_CLOSURE: "/admin/cash-closure",
   EXPENSES: "/admin/expenses",
 
-  // Orders - Full page routes (no modals)
+  // Orders Hub
   ORDERS: "/orders",
+  ORDERS_LIST: "/orders/list",
   ORDER_CREATE: "/orders/new",
   ORDER_DETAIL: "/orders/:id",
   ORDER_EDIT: "/orders/:id/edit",
@@ -37,11 +38,20 @@ export const ROUTES = {
   MENU_ITEM_EDIT: "/menu/items/:id/edit",
   MENU_CATEGORY_CREATE: "/menu/categories/new",
   MENU_CATEGORY_EDIT: "/menu/categories/:id/edit",
-  DAILY_MENU: "/menu/daily",
-  STOCK_MANAGEMENT: "/menu/stock",
+  
+  // Inventory Hub
+  INVENTORY: "/inventory",
+  STOCK_MANAGEMENT: "/inventory/stock",
+  INVENTORY_HISTORY: "/inventory/history",
+  
+  // Daily Menu Hub
+  DAILY_MENU: "/daily-menu",
+  DAILY_MENU_SETUP: "/daily-menu/setup",
+  DAILY_MENU_HISTORY: "/daily-menu/history",
 
-  // Tables
+  // Tables Hub
   TABLES: "/tables",
+  TABLES_MAP: "/tables/map",
   TABLE_CREATE: "/tables/new",
   TABLE_MANAGE: "/tables/:id",
 

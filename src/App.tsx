@@ -16,11 +16,16 @@ import { ErrorBoundary } from "./components/GlobalErrorBoundary";
 import NetworkStatusManager from "./components/NetworkStatusManager";
 import ErrorPage from "./pages/ErrorPage";
 import { DashboardPage } from "./features/dashboard/pages/DashboardPage";
-import { TablesPage } from "./features/tables";
+import { TablesPage, TablesHubPage } from "./features/tables";
 import { LandingPage, PrivacyPage, TermsPage } from "./features/landing/pages";
-import { MenuPage } from "./features/menu";
-import { StockManagementPage } from "./features/menu/items/pages/StockManagementPage";
-import { OrdersPage } from "./features/orders";
+import { 
+  MenuPage, 
+  StockManagementPage, 
+  InventoryHubPage,
+  DailyMenuPage,
+  DailyMenuHubPage
+} from "./features/menu";
+import { OrdersPage, OrdersHubPage } from "./features/orders";
 import { OrderCreatePage } from "./features/orders/pages/OrderCreatePage";
 import { OrderDetailPage } from "./features/orders/pages/OrderDetailPage";
 import { OrderEditPage } from "./features/orders/pages/OrderEditPage";
@@ -31,7 +36,6 @@ import { CategoryCreatePage } from "./features/menu/categories/pages/CategoryCre
 import { CategoryEditPage } from "./features/menu/categories/pages/CategoryEditPage";
 import { MenuItemCreatePage } from "./features/menu/items/pages/MenuItemCreatePage";
 import { MenuItemEditPage } from "./features/menu/items/pages/MenuItemEditPage";
-import { DailyMenuPage } from "./features/menu/pages/daily-menu/DailyMenuPage";
 import {
   UsersPage,
   UserCreatePage,
@@ -196,6 +200,15 @@ const App = () => {
               path={ROUTES.TABLES}
               element={
                 <PrivateRoute>
+                  <TablesHubPage />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path={ROUTES.TABLES_MAP}
+              element={
+                <PrivateRoute>
                   <TablesPage />
                 </PrivateRoute>
               }
@@ -214,6 +227,15 @@ const App = () => {
             {/* Orders - List */}
             <Route
               path={ROUTES.ORDERS}
+              element={
+                <PrivateRoute>
+                  <OrdersHubPage />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path={ROUTES.ORDERS_LIST}
               element={
                 <PrivateRoute>
                   <OrdersPage />
@@ -327,7 +349,20 @@ const App = () => {
               }
             />
 
-            {/* Menu - Stock Management (Dashboard Layout, Admin & Kitchen Manager only) */}
+            {/* Menu - Stock Management (Hub + List) */}
+            <Route
+              path={ROUTES.INVENTORY}
+              element={
+                <PrivateRoute>
+                  <RoleProtectedRoute
+                    allowedRoles={[RoleName.ADMIN, RoleName.KITCHEN_MANAGER]}
+                  >
+                    <InventoryHubPage />
+                  </RoleProtectedRoute>
+                </PrivateRoute>
+              }
+            />
+
             <Route
               path={ROUTES.STOCK_MANAGEMENT}
               element={
@@ -341,9 +376,18 @@ const App = () => {
               }
             />
 
-            {/* Menu - Daily Menu Configuration */}
+            {/* Menu - Daily Menu Configuration (Hub + Setup) */}
             <Route
               path={ROUTES.DAILY_MENU}
+              element={
+                <PrivateRoute>
+                  <DailyMenuHubPage />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path={ROUTES.DAILY_MENU_SETUP}
               element={
                 <PrivateRoute>
                   <DailyMenuPage />

@@ -20,10 +20,19 @@ const BREADCRUMB_MAP: Array<{ path: string; items: BreadcrumbItem[] }> = [
     path: "/dashboard",
     items: [{ label: "Inicio" }],
   },
-  // Tables
+  
+  // Tables Hub
   {
     path: "/tables",
     items: [{ label: "Inicio", path: "/dashboard" }, { label: "Mesas" }],
+  },
+  {
+    path: "/tables/map",
+    items: [
+      { label: "Inicio", path: "/dashboard" },
+      { label: "Mesas", path: "/tables" },
+      { label: "Mapa de Sala" },
+    ],
   },
   {
     path: "/tables/new",
@@ -33,6 +42,51 @@ const BREADCRUMB_MAP: Array<{ path: string; items: BreadcrumbItem[] }> = [
       { label: "Nueva mesa" },
     ],
   },
+
+  // Inventory Hub
+  {
+    path: "/inventory",
+    items: [{ label: "Inicio", path: "/dashboard" }, { label: "Inventario" }],
+  },
+  {
+    path: "/inventory/stock",
+    items: [
+      { label: "Inicio", path: "/dashboard" },
+      { label: "Inventario", path: "/inventory" },
+      { label: "Stock Actual" },
+    ],
+  },
+  {
+    path: "/inventory/history",
+    items: [
+      { label: "Inicio", path: "/dashboard" },
+      { label: "Inventario", path: "/inventory" },
+      { label: "Historial de Movimientos" },
+    ],
+  },
+
+  // Daily Menu Hub
+  {
+    path: "/daily-menu",
+    items: [{ label: "Inicio", path: "/dashboard" }, { label: "Menú del Día" }],
+  },
+  {
+    path: "/daily-menu/setup",
+    items: [
+      { label: "Inicio", path: "/dashboard" },
+      { label: "Menú del Día", path: "/daily-menu" },
+      { label: "Configuración" },
+    ],
+  },
+  {
+    path: "/daily-menu/history",
+    items: [
+      { label: "Inicio", path: "/dashboard" },
+      { label: "Menú del Día", path: "/daily-menu" },
+      { label: "Historial" },
+    ],
+  },
+
   // Orders
   {
     path: "/orders",
@@ -54,7 +108,8 @@ const BREADCRUMB_MAP: Array<{ path: string; items: BreadcrumbItem[] }> = [
       { label: "Cocina" },
     ],
   },
-  // Menu
+
+  // Menu (Commercial)
   {
     path: "/menu",
     items: [{ label: "Inicio", path: "/dashboard" }, { label: "Menú" }],
@@ -75,22 +130,7 @@ const BREADCRUMB_MAP: Array<{ path: string; items: BreadcrumbItem[] }> = [
       { label: "Nueva categoría" },
     ],
   },
-  {
-    path: "/menu/stock",
-    items: [
-      { label: "Inicio", path: "/dashboard" },
-      { label: "Menú", path: "/menu" },
-      { label: "Inventario" },
-    ],
-  },
-  {
-    path: "/menu/daily",
-    items: [
-      { label: "Inicio", path: "/dashboard" },
-      { label: "Menú", path: "/menu" },
-      { label: "Menú del Día" },
-    ],
-  },
+
   // Users
   {
     path: "/users",
@@ -123,25 +163,29 @@ export function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
   const exact = BREADCRUMB_MAP.find((entry) => entry.path === normalized);
   if (exact) return exact.items;
 
-  // Dynamic routes: match by prefix
-  // /tables/123 -> Tables > Manage table
-  // /tables/123/edit -> not used (we don't have edit for tables)
-  // /orders/123 -> Orders > Order #123
-  // /orders/123/edit -> Orders > Order #123 > Edit
-  // /menu/items/123/edit -> Menu > Products > Edit
-  // /menu/categories/123/edit -> Menu > Categories > Edit
-  // /users/123/edit -> Users > Edit user
-
+  // Dynamic routes logic
   const segments = normalized.split("/").filter(Boolean);
 
   if (segments[0] === "tables" && segments.length >= 2) {
     const id = segments[1];
+    if (id === "map" || id === "new") return BREADCRUMB_MAP.find(b => b.path === `/tables/${id}`)?.items || [];
     return [
       { label: "Inicio", path: "/dashboard" },
       { label: "Mesas", path: "/tables" },
-      { label: id === "new" ? "Nueva mesa" : `Mesa ${id}` },
+      { label: `Mesa ${id}` },
     ];
   }
+
+  if (segments[0] === "inventory" && segments.length >= 2) {
+    const sub = segments[1];
+    return BREADCRUMB_MAP.find(b => b.path === `/inventory/${sub}`)?.items || [];
+  }
+
+  if (segments[0] === "daily-menu" && segments.length >= 2) {
+    const sub = segments[1];
+    return BREADCRUMB_MAP.find(b => b.path === `/daily-menu/${sub}`)?.items || [];
+  }
+
   if (segments[0] === "orders" && segments.length >= 2) {
     const id = segments[1];
     const base = [
@@ -149,24 +193,21 @@ export function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
       { label: "Pedidos", path: "/orders" },
     ];
     if (id === "new") return [...base, { label: "Nuevo pedido" }];
-    if (segments[2] === "edit") return [...base, { label: `Pedido #${id}` }, { label: "Editar" }];
-    return [...base, { label: `Pedido #${id}` }];
+    if (segments[2] === "edit") return [...base, { label: `Pedido #${id.slice(-6).toUpperCase()}` }, { label: "Editar" }];
+    return [...base, { label: `Pedido #${id.slice(-6).toUpperCase()}` }];
   }
+
   if (segments[0] === "menu") {
     const base = [{ label: "Inicio", path: "/dashboard" }, { label: "Menú", path: "/menu" }];
-    if (segments[1] === "items") {
-      if (segments[2] === "new") return [...base, { label: "Nuevo producto" }];
-      if (segments[3] === "edit") return [...base, { label: "Editar producto" }];
-      return [...base, { label: "Productos" }];
+    if (segments[1] === "items" && segments[3] === "edit") {
+      return [...base, { label: "Editar producto" }];
     }
-    if (segments[1] === "categories") {
-      if (segments[2] === "new") return [...base, { label: "Nueva categoría" }];
-      if (segments[3] === "edit") return [...base, { label: "Editar categoría" }];
-      return [...base, { label: "Categorías" }];
+    if (segments[1] === "categories" && segments[3] === "edit") {
+      return [...base, { label: "Editar categoría" }];
     }
-    if (segments[1] === "stock") return [...base, { label: "Inventario" }];
     return base;
   }
+
   if (segments[0] === "users" && segments.length >= 2) {
     const id = segments[1];
     const base = [{ label: "Inicio", path: "/dashboard" }, { label: "Usuarios", path: "/users" }];
