@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { OrderStatus, OrderType } from "@/types";
+import { OrderStatus, OrderType, PaymentMethod } from "@/types";
 import {
   FilterBar,
   FilterPills,
@@ -10,16 +10,18 @@ import {
   FilterDrawer,
 } from "@/components";
 import type { DateFilterType, DateRange } from "@/components";
-import { SlidersHorizontal, Search } from "lucide-react";
+import { SlidersHorizontal, Search, Wallet } from "lucide-react";
 import { Button } from "@/components";
 
 interface OrderFiltersProps {
   statusFilter: OrderStatus | "ALL";
   typeFilter: OrderType | "ALL";
+  paymentMethodFilter?: PaymentMethod | "ALL";
   dateFilter: DateFilterType;
   customDateRange?: DateRange;
   onStatusChange: (status: OrderStatus | "ALL") => void;
   onTypeChange: (type: OrderType | "ALL") => void;
+  onPaymentMethodChange?: (method: PaymentMethod | "ALL") => void;
   onDateChange: (date: DateFilterType) => void;
   onCustomDateRangeChange?: (range: DateRange) => void;
   onClearFilter: (key: string) => void;
@@ -58,6 +60,13 @@ const TYPE_LABELS: Record<string, string> = {
   [OrderType.WHATSAPP]: "WhatsApp",
 };
 
+const PAYMENT_LABELS: Record<string, string> = {
+  ALL: "Todos",
+  [PaymentMethod.CASH]: "Efectivo",
+  [PaymentMethod.NEQUI]: "Nequi",
+  [PaymentMethod.TICKET_BOOK]: "Tiquetera",
+};
+
 /**
  * Premium Order Filters
  * Combined quick pills + advanced drawer system.
@@ -65,10 +74,12 @@ const TYPE_LABELS: Record<string, string> = {
 export function OrderFilters({
   statusFilter,
   typeFilter,
+  paymentMethodFilter = "ALL",
   dateFilter,
   customDateRange,
   onStatusChange,
   onTypeChange,
+  onPaymentMethodChange,
   onDateChange,
   onCustomDateRangeChange,
   onClearFilter,
@@ -96,11 +107,24 @@ export function OrderFilters({
     { value: OrderType.WHATSAPP, label: "WhatsApp" },
   ];
 
-  const hasActiveFilters = statusFilter !== "ALL" || typeFilter !== "ALL" || dateFilter !== "TODAY" || searchTerm !== "";
+  const paymentSelectOptions = [
+    { value: "ALL", label: "Todos los medios" },
+    { value: PaymentMethod.CASH, label: "Efectivo" },
+    { value: PaymentMethod.NEQUI, label: "Nequi" },
+    { value: PaymentMethod.TICKET_BOOK, label: "Tiquetera / Vales" },
+  ];
+
+  const hasActiveFilters = 
+    statusFilter !== "ALL" || 
+    typeFilter !== "ALL" || 
+    paymentMethodFilter !== "ALL" ||
+    dateFilter !== "TODAY" || 
+    searchTerm !== "";
 
   const activeChips = [
     ...(statusFilter !== "ALL" ? [{ key: "status", label: "Estado", value: STATUS_LABELS[statusFilter] }] : []),
     ...(typeFilter !== "ALL" ? [{ key: "type", label: "Tipo", value: TYPE_LABELS[typeFilter] }] : []),
+    ...(paymentMethodFilter !== "ALL" ? [{ key: "payment", label: "Pago", value: PAYMENT_LABELS[paymentMethodFilter] }] : []),
     ...(searchTerm !== "" ? [{ key: "search", label: "Búsqueda", value: searchTerm }] : []),
     ...(dateFilter !== "TODAY" ? [{ key: "date", label: "Fecha", value: getDateLabel(dateFilter, customDateRange) }] : []),
   ];
@@ -189,11 +213,20 @@ export function OrderFilters({
             placeholder="Seleccionar tipo..."
           />
 
+          <FilterSelect
+            label="Medio de Pago"
+            value={paymentMethodFilter}
+            onChange={(v) => onPaymentMethodChange?.(v as PaymentMethod | "ALL")}
+            options={paymentSelectOptions}
+            placeholder="Seleccionar pago..."
+          />
+
           <div className="pt-4 p-5 rounded-2xl bg-sage-50 border border-sage-100">
             <h4 className="text-[10px] font-black text-carbon-400 uppercase tracking-widest mb-3 ml-1">Resumen de Filtros</h4>
             <div className="text-sm font-medium text-carbon-600 leading-relaxed">
               Estás visualizando los pedidos con estado <span className="font-bold text-carbon-900">"{STATUS_LABELS[statusFilter]}"</span> 
-              {typeFilter !== "ALL" && <> del tipo <span className="font-bold text-carbon-900">"{TYPE_LABELS[typeFilter]}"</span></>}.
+              {typeFilter !== "ALL" && <> del tipo <span className="font-bold text-carbon-900">"{TYPE_LABELS[typeFilter]}"</span></>}
+              {paymentMethodFilter !== "ALL" && <> pagados con <span className="font-bold text-carbon-900">"{PAYMENT_LABELS[paymentMethodFilter]}"</span></>}.
             </div>
           </div>
         </div>
