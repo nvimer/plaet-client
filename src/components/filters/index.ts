@@ -8,3 +8,4 @@ export type { ActiveFilterChipItem } from "./ActiveFilterChips";
 export { FilterSearch } from "./FilterSearch";
 export { DateFilter } from "./DateFilter";
 export type { DateFilterType, DateRange } from "./DateFilter";
+export * from "./FilterDrawer";

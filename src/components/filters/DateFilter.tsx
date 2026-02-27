@@ -21,6 +21,7 @@ interface DateFilterProps {
   customRange?: DateRange;
   onCustomRangeChange?: (range: DateRange) => void;
   className?: string;
+  label?: string;
 }
 
 const DATE_OPTIONS: DateFilterOption[] = [
@@ -31,16 +32,8 @@ const DATE_OPTIONS: DateFilterOption[] = [
 ];
 
 /**
- * DateFilter Component
- *
- * Modern date filtering with quick options and custom range picker.
- * Designed for touch-friendly interaction with clear visual hierarchy.
- *
- * Features:
- * - Quick date options (Today, Yesterday, Week)
- * - Custom date range picker
- * - Visual indicators for active selection
- * - Mobile-optimized dropdown
+ * Premium Date Filter
+ * Refined dropdown with quick options and range selection.
  */
 export function DateFilter({
   value,
@@ -48,6 +41,7 @@ export function DateFilter({
   customRange,
   onCustomRangeChange,
   className,
+  label,
 }: DateFilterProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [showCustomPicker, setShowCustomPicker] = useState(value === "CUSTOM");
@@ -72,152 +66,132 @@ export function DateFilter({
   };
 
   return (
-    <div className={cn("relative", className)}>
-      {/* Trigger Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={cn(
-          "flex items-center gap-2 px-4 py-2.5 rounded-xl border-2 transition-all duration-200",
-          "min-h-[44px] w-full sm:w-auto",
-          "bg-white border-sage-200 hover:border-sage-400",
-          "focus:outline-none focus:ring-2 focus:ring-sage-500/20",
-          isOpen && "border-sage-400 ring-2 ring-sage-500/20"
-        )}
-      >
-        <Calendar className="w-4 h-4 text-sage-600 flex-shrink-0" />
-        <span className="text-sm font-medium text-carbon-700 truncate">
-          {selectedOption?.label || "Seleccionar fecha"}
+    <div className={cn("flex flex-col gap-2", className)}>
+      {label && (
+        <span className="text-[10px] font-black text-carbon-400 uppercase tracking-[0.2em] ml-1">
+          {label}
         </span>
-        <ChevronDown
+      )}
+      <div className="relative">
+        {/* Trigger Button */}
+        <button
+          onClick={() => setIsOpen(!isOpen)}
           className={cn(
-            "w-4 h-4 text-carbon-400 transition-transform duration-200 flex-shrink-0",
-            isOpen && "rotate-180"
+            "flex items-center gap-3 px-5 py-3 rounded-2xl border-2 transition-all duration-300",
+            "min-h-[48px] w-full sm:w-auto",
+            "bg-white border-sage-100 hover:border-sage-400",
+            isOpen ? "border-sage-400 shadow-soft-lg" : "shadow-soft-sm"
           )}
-        />
-      </button>
-
-      {/* Dropdown Menu */}
-      {isOpen && (
-        <>
-          {/* Backdrop for mobile */}
-          <div
-            className="fixed inset-0 bg-black/20 z-40 sm:hidden"
-            onClick={() => setIsOpen(false)}
-          />
-
-          {/* Menu */}
-          <div
-            className={cn(
-              "absolute z-50 mt-2 bg-white rounded-2xl border-2 border-sage-200 shadow-xl",
-              "min-w-[280px] sm:min-w-[320px]",
-              "right-0 sm:left-0",
-              "animate-in fade-in slide-in-from-top-2 duration-200"
-            )}
-          >
-            {/* Quick Options */}
-            <div className="p-2">
-              {DATE_OPTIONS.map((option) => (
-                <button
-                  key={option.value}
-                  onClick={() => handleSelect(option.value)}
-                  className={cn(
-                    "flex items-center justify-between w-full px-4 py-3 rounded-xl transition-all duration-200",
-                    "min-h-[44px]",
-                    value === option.value
-                      ? "bg-sage-100 text-sage-900 border border-sage-200"
-                      : "hover:bg-sage-50 text-carbon-700"
-                  )}
-                >
-                  <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium">{option.label}</span>
-                    {option.shortcut && (
-                      <kbd className="hidden sm:inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium text-carbon-500 bg-carbon-100 rounded">
-                        {option.shortcut}
-                      </kbd>
-                    )}
-                  </div>
-                  {value === option.value && (
-                    <div className="w-2 h-2 rounded-full bg-sage-600" />
-                  )}
-                </button>
-              ))}
-            </div>
-
-            {/* Custom Range Picker */}
-            {showCustomPicker && (
-              <div className="border-t border-sage-200 p-4 space-y-3">
-                <p className="text-sm font-medium text-carbon-700 mb-3">
-                  Rango personalizado
-                </p>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-xs font-medium text-carbon-500 mb-1.5">
-                      Desde
-                    </label>
-                    <input
-                      type="date"
-                      value={customRange?.start || getDefaultCustomRange().start}
-                      onChange={(e) =>
-                        onCustomRangeChange?.({
-                          ...(customRange || getDefaultCustomRange()),
-                          start: e.target.value,
-                        })
-                      }
-                      className={cn(
-                        "w-full px-3 py-2 rounded-xl border-2 text-sm",
-                        "border-sage-200 focus:border-sage-400 focus:outline-none",
-                        "min-h-[44px]"
-                      )}
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-medium text-carbon-500 mb-1.5">
-                      Hasta
-                    </label>
-                    <input
-                      type="date"
-                      value={customRange?.end || getDefaultCustomRange().end}
-                      onChange={(e) =>
-                        onCustomRangeChange?.({
-                          ...(customRange || getDefaultCustomRange()),
-                          end: e.target.value,
-                        })
-                      }
-                      className={cn(
-                        "w-full px-3 py-2 rounded-xl border-2 text-sm",
-                        "border-sage-200 focus:border-sage-400 focus:outline-none",
-                        "min-h-[44px]"
-                      )}
-                    />
-                  </div>
-                </div>
-                <button
-                  onClick={() => setIsOpen(false)}
-                  className="w-full py-2.5 px-4 bg-sage-600 text-white rounded-xl text-sm font-medium hover:bg-sage-700 transition-colors min-h-[44px]"
-                >
-                  Aplicar
-                </button>
-              </div>
-            )}
-          </div>
-        </>
-      )}
-
-      {/* Selected Range Display */}
-      {value === "CUSTOM" && customRange && (
-        <div className="flex items-center gap-2 mt-2 text-xs text-carbon-500">
-          <span>
-            {new Date(customRange.start).toLocaleDateString("es-CO")} -
-            {new Date(customRange.end).toLocaleDateString("es-CO")}
+        >
+          <Calendar className="w-4 h-4 text-sage-600 flex-shrink-0" />
+          <span className="text-sm font-bold text-carbon-900 truncate">
+            {selectedOption?.label || "Seleccionar fecha"}
           </span>
-          <button
-            onClick={() => onChange("TODAY")}
-            className="p-1 hover:bg-sage-100 rounded-full transition-colors"
-          >
-            <X className="w-3 h-3" />
-          </button>
-        </div>
-      )}
+          <ChevronDown
+            className={cn(
+              "w-4 h-4 text-carbon-300 transition-transform duration-300 flex-shrink-0 ml-2",
+              isOpen && "rotate-180 text-carbon-900"
+            )}
+          />
+        </button>
+
+        {/* Dropdown Menu */}
+        {isOpen && (
+          <>
+            <div
+              className="fixed inset-0 z-40"
+              onClick={() => setIsOpen(false)}
+            />
+
+            <div
+              className={cn(
+                "absolute z-50 mt-3 bg-white rounded-3xl border border-sage-100 shadow-2xl",
+                "min-w-[280px] sm:min-w-[320px]",
+                "right-0 sm:left-0",
+                "animate-in fade-in slide-in-from-top-3 duration-300"
+              )}
+            >
+              {/* Quick Options */}
+              <div className="p-3">
+                {DATE_OPTIONS.map((option) => (
+                  <button
+                    key={option.value}
+                    onClick={() => handleSelect(option.value)}
+                    className={cn(
+                      "flex items-center justify-between w-full px-4 py-3 rounded-xl transition-all duration-200",
+                      value === option.value
+                        ? "bg-sage-100 text-sage-900 font-bold"
+                        : "hover:bg-sage-50 text-carbon-600 font-medium"
+                    )}
+                  >
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm">{option.label}</span>
+                    </div>
+                    {value === option.value && (
+                      <div className="w-1.5 h-1.5 rounded-full bg-sage-600 shadow-sm" />
+                    )}
+                  </button>
+                ))}
+              </div>
+
+              {/* Custom Range Picker */}
+              {showCustomPicker && (
+                <div className="border-t border-sage-50 p-5 space-y-4 bg-sage-50/20 rounded-b-3xl">
+                  <p className="text-[10px] font-black text-carbon-400 uppercase tracking-widest">
+                    Rango personalizado
+                  </p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className="block text-[10px] font-bold text-carbon-400 uppercase ml-1">
+                        Desde
+                      </label>
+                      <input
+                        type="date"
+                        value={customRange?.start || getDefaultCustomRange().start}
+                        onChange={(e) =>
+                          onCustomRangeChange?.({
+                            ...(customRange || getDefaultCustomRange()),
+                            start: e.target.value,
+                          })
+                        }
+                        className={cn(
+                          "w-full px-3 py-2 rounded-xl border-2 text-sm font-bold text-carbon-900 bg-white",
+                          "border-sage-100 focus:border-sage-400 focus:outline-none transition-colors"
+                        )}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className="block text-[10px] font-bold text-carbon-400 uppercase ml-1">
+                        Hasta
+                      </label>
+                      <input
+                        type="date"
+                        value={customRange?.end || getDefaultCustomRange().end}
+                        onChange={(e) =>
+                          onCustomRangeChange?.({
+                            ...(customRange || getDefaultCustomRange()),
+                            end: e.target.value,
+                          })
+                        }
+                        className={cn(
+                          "w-full px-3 py-2 rounded-xl border-2 text-sm font-bold text-carbon-900 bg-white",
+                          "border-sage-100 focus:border-sage-400 focus:outline-none transition-colors"
+                        )}
+                      />
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setIsOpen(false)}
+                    className="w-full py-3 px-4 bg-carbon-900 text-white rounded-2xl text-sm font-bold hover:bg-carbon-800 transition-all shadow-soft-lg active:scale-95"
+                  >
+                    Aplicar Rango
+                  </button>
+                </div>
+              )}
+            </div>
+          </>
+        )}
+      </div>
     </div>
   );
 }

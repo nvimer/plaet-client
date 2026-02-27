@@ -8,11 +8,12 @@ interface FilterSearchProps {
   placeholder?: string;
   "aria-label"?: string;
   className?: string;
+  label?: string;
 }
 
 /**
- * Búsqueda dentro de filtros. Mismo estilo que FilterSelect (44px, bordes).
- * Usa SearchInput con clases unificadas.
+ * Premium Filter Search
+ * Clean, high-contrast search input for filter sections.
  */
 export function FilterSearch({
   value,
@@ -21,9 +22,15 @@ export function FilterSearch({
   placeholder = "Buscar...",
   "aria-label": ariaLabel,
   className,
+  label,
 }: FilterSearchProps) {
   return (
     <div className={cn("flex flex-col gap-2", className)}>
+      {label && (
+        <span className="text-[10px] font-black text-carbon-400 uppercase tracking-[0.2em] ml-1">
+          {label}
+        </span>
+      )}
       <SearchInput
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -32,8 +39,9 @@ export function FilterSearch({
         aria-label={ariaLabel ?? "Buscar"}
         fullWidth
         className={cn(
-          "min-h-[44px] py-2.5 border-2 border-sage-300 bg-sage-50/80 rounded-xl",
-          "focus:border-sage-400 focus:ring-2 focus:ring-sage-400/20",
+          "min-h-[48px] py-3 px-4 border-2 border-sage-100 bg-white rounded-2xl transition-all duration-300",
+          "focus:border-sage-400 focus:shadow-soft-lg focus:scale-[1.01]",
+          "placeholder:text-carbon-300 placeholder:font-medium",
           "touch-manipulation"
         )}
       />

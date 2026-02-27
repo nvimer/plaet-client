@@ -4,23 +4,23 @@ import { cn } from "@/utils/cn";
 interface FilterBarProps {
   children: ReactNode;
   className?: string;
+  variant?: "inline" | "card";
 }
 
 /**
- * Contenedor unificado para filtros en todos los módulos.
- * Mismo diseño: bordes redondeados, borde sage, fondo blanco, touch-friendly.
+ * Premium Filter Bar Container
+ * A layout wrapper for organizing search and filter components.
  */
-export function FilterBar({ children, className }: FilterBarProps) {
+export function FilterBar({ children, className, variant = "inline" }: FilterBarProps) {
   return (
     <div
       className={cn(
-        "rounded-2xl border-2 border-sage-200 bg-white shadow-sm",
-        "p-4 sm:p-5",
-        "min-h-[52px]",
+        "flex flex-col md:flex-row md:items-end justify-between gap-6",
+        variant === "card" && "bg-white p-6 rounded-3xl border border-sage-100 shadow-smooth-sm",
         className
       )}
       role="search"
-      aria-label="Filtros"
+      aria-label="Contenedor de filtros"
     >
       {children}
     </div>

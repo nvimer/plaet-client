@@ -1,5 +1,6 @@
-import { Filter, X } from "lucide-react";
+import { X, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/utils/cn";
+import { motion, AnimatePresence } from "framer-motion";
 
 export interface ActiveFilterChipItem {
   key: string;
@@ -17,8 +18,8 @@ interface ActiveFilterChipsProps {
 }
 
 /**
- * Chips de filtros activos + contador + "Limpiar todos".
- * Mismo diseño en mesas, productos y cualquier módulo.
+ * Premium Active Filter Chips
+ * Animated labels showing current filters with quick removal.
  */
 export function ActiveFilterChips({
   chips,
@@ -33,48 +34,53 @@ export function ActiveFilterChips({
   return (
     <div
       className={cn(
-        "flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl border-2 border-sage-200 bg-sage-50/60",
+        "flex flex-wrap items-center justify-between gap-4 py-2",
         className
       )}
-      role="status"
-      aria-live="polite"
     >
-      <div className="flex flex-wrap items-center gap-2 flex-1 min-w-0">
-        <span className="flex items-center gap-2 text-sm font-bold text-sage-800 shrink-0 w-full sm:w-auto mb-1 sm:mb-0">
-          <Filter className="w-4 h-4" />
-          Filtros activos
-        </span>
-        <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="flex items-center gap-2 mr-2 px-3 py-1.5 bg-carbon-900 rounded-full text-white">
+          <SlidersHorizontal className="w-3 h-3 stroke-[3px]" />
+          <span className="text-[10px] font-black uppercase tracking-widest">Activos</span>
+        </div>
+        
+        <AnimatePresence mode="popLayout">
           {chips.map((chip) => (
-            <span
+            <motion.span
               key={chip.key}
-              className="inline-flex items-center gap-2 pl-3 pr-2 py-1.5 rounded-xl bg-white border-2 border-sage-200 text-sm font-medium text-carbon-800 shadow-sm"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              className="inline-flex items-center gap-2 pl-3 pr-1.5 py-1.5 rounded-full bg-white border border-sage-200 text-xs font-bold text-carbon-700 shadow-soft-sm"
             >
-              <span className="text-carbon-500">{chip.label}:</span>
-              <span className="truncate max-w-[120px]">{chip.value}</span>
+              <span className="text-carbon-400 font-medium">{chip.label}:</span>
+              <span>{chip.value}</span>
               <button
                 type="button"
                 onClick={() => onClearFilter(chip.key)}
-                className="p-1 rounded-lg text-carbon-400 hover:text-rose-600 hover:bg-rose-50 transition-colors min-w-[28px] min-h-[28px] flex items-center justify-center touch-manipulation"
+                className="p-1 rounded-full text-carbon-300 hover:text-rose-600 hover:bg-rose-50 transition-all active:scale-90"
                 aria-label={`Quitar filtro ${chip.label}`}
               >
-                <X className="w-4 h-4" />
+                <X className="w-3 h-3 stroke-[3px]" />
               </button>
-            </span>
+            </motion.span>
           ))}
-        </div>
-      </div>
-      <div className="flex items-center justify-between sm:justify-end gap-4 shrink-0 border-t sm:border-t-0 pt-3 sm:pt-0 border-sage-200/60">
-        <span className="text-sm font-medium text-carbon-600">
-          <strong>{resultCount}</strong> {resultLabel}
-        </span>
+        </AnimatePresence>
+
         <button
           type="button"
           onClick={onClearAll}
-          className="text-sm font-bold text-sage-700 hover:text-sage-900 hover:underline transition-colors touch-manipulation px-2 py-1 bg-white/50 rounded-lg sm:bg-transparent sm:p-0"
+          className="text-[10px] font-black text-sage-600 uppercase tracking-widest hover:text-carbon-900 transition-colors ml-2 px-2 py-1"
         >
-          Limpiar todos
+          Limpiar Todo
         </button>
+      </div>
+
+      <div className="flex items-center gap-2 bg-sage-50 px-4 py-1.5 rounded-full border border-sage-100">
+        <span className="text-[10px] font-black text-carbon-400 uppercase tracking-widest">Resultados:</span>
+        <span className="text-xs font-black text-carbon-900">
+          {resultCount} {resultLabel}
+        </span>
       </div>
     </div>
   );

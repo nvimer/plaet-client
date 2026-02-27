@@ -1,4 +1,5 @@
 import { cn } from "@/utils/cn";
+import { motion } from "framer-motion";
 
 export interface FilterPillOption {
   value: string;
@@ -16,8 +17,8 @@ interface FilterPillsProps {
 }
 
 /**
- * Pills horizontales para filtros (estado, ubicación, etc.).
- * Mismo diseño en todos los módulos. Touch-friendly 44px.
+ * Premium Filter Pills
+ * Modern, tactile-first pills with smooth animations and high-contrast active states.
  */
 export function FilterPills({
   label,
@@ -28,9 +29,11 @@ export function FilterPills({
   className,
 }: FilterPillsProps) {
   return (
-    <div className={cn("flex flex-col gap-2", className)} role="group" aria-label={ariaLabel ?? label ?? "Opciones"}>
+    <div className={cn("flex flex-col gap-3", className)} role="group" aria-label={ariaLabel ?? label ?? "Opciones de filtrado"}>
       {label && (
-        <span className="text-sm font-semibold text-carbon-800">{label}</span>
+        <span className="text-[10px] font-black text-carbon-400 uppercase tracking-[0.2em] ml-1">
+          {label}
+        </span>
       )}
       <div className="flex flex-wrap gap-2">
         {options.map((opt) => {
@@ -41,20 +44,30 @@ export function FilterPills({
               type="button"
               onClick={() => onChange(opt.value)}
               className={cn(
-                "inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium min-h-[44px] touch-manipulation transition-all duration-200",
+                "relative inline-flex items-center gap-2.5 px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 min-h-[44px] touch-manipulation",
                 "border-2",
                 isSelected
-                  ? "bg-sage-100 border-sage-400 text-sage-900 ring-2 ring-sage-400/20"
-                  : "bg-white border-sage-200 text-carbon-600 hover:bg-sage-50 hover:border-sage-300"
+                  ? "bg-carbon-900 border-carbon-900 text-white shadow-soft-lg shadow-carbon-200 z-10 scale-105"
+                  : "bg-white border-sage-100 text-carbon-500 hover:border-sage-300 hover:bg-sage-50/50 hover:text-carbon-800"
               )}
               aria-pressed={isSelected}
             >
-              <span>{opt.label}</span>
+              {isSelected && (
+                <motion.span
+                  layoutId="active-pill-glow"
+                  className="absolute inset-0 rounded-full bg-carbon-900 -z-10"
+                  initial={false}
+                  transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                />
+              )}
+              
+              <span className="relative z-10">{opt.label}</span>
+              
               {opt.count !== undefined && (
                 <span
                   className={cn(
-                    "inline-flex items-center justify-center min-w-[22px] h-5 px-1.5 rounded-full text-xs font-semibold",
-                    isSelected ? "bg-sage-200 text-sage-800" : "bg-sage-100 text-carbon-600"
+                    "inline-flex items-center justify-center min-w-[20px] h-5 px-1.5 rounded-full text-[10px] font-black transition-colors",
+                    isSelected ? "bg-white/20 text-white" : "bg-sage-100 text-carbon-500"
                   )}
                 >
                   {opt.count}

@@ -1,4 +1,5 @@
 import { cn } from "@/utils/cn";
+import { ChevronDown } from "lucide-react";
 
 export interface FilterSelectOption {
   value: string;
@@ -17,11 +18,11 @@ interface FilterSelectProps {
 }
 
 const inputClass =
-  "min-h-[44px] w-full px-4 py-2.5 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 text-sm font-medium placeholder:text-carbon-400 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:border-sage-400 touch-manipulation transition-colors";
+  "appearance-none min-h-[48px] w-full px-5 py-3 rounded-2xl border-2 border-sage-100 bg-white text-carbon-900 text-sm font-bold placeholder:text-carbon-300 focus:outline-none focus:border-sage-400 focus:shadow-soft-lg transition-all duration-300 touch-manipulation cursor-pointer";
 
 /**
- * Select de filtro unificado. Mismo estilo en mesas, productos, categorías.
- * Touch-friendly 44px, accesible.
+ * Premium Filter Select
+ * Elegant dropdown for filtering categories, roles or types.
  */
 export function FilterSelect({
   label,
@@ -40,27 +41,32 @@ export function FilterSelect({
       {label && (
         <label
           htmlFor={selectId}
-          className="text-sm font-semibold text-carbon-800"
+          className="text-[10px] font-black text-carbon-400 uppercase tracking-[0.2em] ml-1"
         >
           {label}
         </label>
       )}
-      <select
-        id={selectId}
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className={inputClass}
-        aria-label={ariaLabel ?? label ?? "Filtrar"}
-      >
-        {placeholder && (
-          <option value="">{placeholder}</option>
-        )}
-        {options.map((opt) => (
-          <option key={opt.value} value={opt.value}>
-            {opt.label}
-          </option>
-        ))}
-      </select>
+      <div className="relative group">
+        <select
+          id={selectId}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className={inputClass}
+          aria-label={ariaLabel ?? label ?? "Filtrar"}
+        >
+          {placeholder && (
+            <option value="">{placeholder}</option>
+          )}
+          {options.map((opt) => (
+            <option key={opt.value} value={opt.value}>
+              {opt.label}
+            </option>
+          ))}
+        </select>
+        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-carbon-300 group-hover:text-carbon-900 transition-colors">
+          <ChevronDown className="w-4 h-4" />
+        </div>
+      </div>
     </div>
   );
 }

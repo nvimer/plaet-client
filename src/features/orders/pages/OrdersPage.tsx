@@ -17,7 +17,7 @@ import {
 import { cn } from "@/utils/cn";
 import { OrderCard, OrderFilters, GroupedOrderCard } from "../components";
 import { ROUTES, getOrderDetailRoute } from "@/app/routes";
-import type { Order } from "@/types";
+import type { Order, OrderItem } from "@/types";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 
 /**
@@ -159,6 +159,7 @@ export function OrdersPage() {
     undefined,
   );
   const [isGrouped, setIsGrouped] = useState(true);
+  const [searchTerm, setSearchTerm] = useState("");
 
   // ============== QUERIES ===============
   const { data: orders, isLoading, error } = useOrders();
@@ -170,6 +171,11 @@ export function OrdersPage() {
       const matchesStatus =
         statusFilter === "ALL" || order.status === statusFilter;
       const matchesType = typeFilter === "ALL" || order.type === typeFilter;
+
+      // Search filtering (by ID or Customer Name)
+      const matchesSearch = searchTerm === "" || 
+        order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (order.user && `${order.user.firstName} ${order.user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()));
 
       // Date filtering
       let matchesDate = true;
@@ -190,9 +196,9 @@ export function OrdersPage() {
           break;
       }
 
-      return matchesStatus && matchesType && matchesDate;
+      return matchesStatus && matchesType && matchesDate && matchesSearch;
     });
-  }, [orders, statusFilter, typeFilter, dateFilter, customDateRange]);
+  }, [orders, statusFilter, typeFilter, dateFilter, customDateRange, searchTerm]);
 
   const groupedOrders = useMemo(() => {
     return groupOrders(filteredOrders);
@@ -226,7 +232,7 @@ export function OrdersPage() {
   }, [orders]);
 
   const hasActiveFilters =
-    statusFilter !== "ALL" || typeFilter !== "ALL" || dateFilter !== "TODAY";
+    statusFilter !== "ALL" || typeFilter !== "ALL" || dateFilter !== "TODAY" || searchTerm !== "";
 
   // ============= HANDLERS ===============
   const handleViewDetail = (orderId: string) => {
@@ -241,12 +247,14 @@ export function OrdersPage() {
     if (key === "status") setStatusFilter("ALL");
     if (key === "type") setTypeFilter("ALL");
     if (key === "date") setDateFilter("TODAY");
+    if (key === "search") setSearchTerm("");
   };
 
   const handleClearAll = () => {
     setStatusFilter("ALL");
     setTypeFilter("ALL");
     setDateFilter("TODAY");
+    setSearchTerm("");
     setCustomDateRange(undefined);
   };
 
@@ -325,23 +333,6 @@ export function OrdersPage() {
           </div>
           
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl shadow-smooth-md border border-sage-100 ring-4 ring-sage-50/50">
-              <div className="flex items-center gap-2 px-3 py-2 bg-sage-50 rounded-xl text-sage-700">
-                <Calendar className="w-4 h-4" />
-                <span className="text-xs font-bold uppercase tracking-wider">Fecha</span>
-              </div>
-              <select
-                value={dateFilter}
-                onChange={(e) => setDateFilter(e.target.value as DateFilterType)}
-                className="bg-transparent border-none text-carbon-900 font-bold text-sm focus:ring-0 cursor-pointer pr-8"
-              >
-                <option value="TODAY">Hoy</option>
-                <option value="YESTERDAY">Ayer</option>
-                <option value="WEEK">Esta Semana</option>
-                <option value="CUSTOM">Personalizado</option>
-              </select>
-            </div>
-
             <Button
               size="lg"
               variant="primary"
@@ -356,50 +347,50 @@ export function OrdersPage() {
 
         {/* ================ STATS CARDS ================== */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
+          <div className="bg-white rounded-2xl border border-sage-100 p-4 shadow-soft-sm">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-sage-100 flex items-center justify-center text-sage-600">
+              <div className="w-10 h-10 rounded-xl bg-sage-50 flex items-center justify-center text-sage-600">
                 <ShoppingCart className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-sm text-carbon-500">Total</p>
+                <p className="text-[10px] font-black text-carbon-400 uppercase tracking-widest leading-none mb-1">Total</p>
                 <p className="text-xl font-bold text-carbon-900">{counts.all}</p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
+          <div className="bg-white rounded-2xl border border-sage-100 p-4 shadow-soft-sm">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-amber-600">
+              <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
                 <Clock className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-sm text-carbon-500">Pendientes</p>
+                <p className="text-[10px] font-black text-carbon-400 uppercase tracking-widest leading-none mb-1">Pendientes</p>
                 <p className="text-xl font-bold text-carbon-900">
                   {counts.pending}
                 </p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
+          <div className="bg-white rounded-2xl border border-sage-100 p-4 shadow-soft-sm">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-600">
+              <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
                 <CheckCircle className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-sm text-carbon-500">Listos</p>
+                <p className="text-[10px] font-black text-carbon-400 uppercase tracking-widest leading-none mb-1">Listos</p>
                 <p className="text-xl font-bold text-carbon-900">
                   {counts.ready}
                 </p>
               </div>
             </div>
           </div>
-          <div className="bg-white rounded-2xl border-2 border-sage-200 p-4 shadow-sm">
+          <div className="bg-white rounded-2xl border border-sage-100 p-4 shadow-soft-sm">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-sage-100 flex items-center justify-center text-sage-600">
+              <div className="w-10 h-10 rounded-xl bg-sage-50 flex items-center justify-center text-sage-600">
                 <TrendingUp className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-sm text-carbon-500">Ventas hoy</p>
+                <p className="text-[10px] font-black text-carbon-400 uppercase tracking-widest leading-none mb-1">Ventas hoy</p>
                 <p className="text-xl font-bold text-sage-700">
                   ${todayTotal.toLocaleString("es-CO")}
                 </p>
@@ -409,7 +400,7 @@ export function OrdersPage() {
         </div>
 
         {/* ================ FILTERS ================= */}
-        <div className="mb-6">
+        <div className="mb-8">
           <OrderFilters
             statusFilter={statusFilter}
             typeFilter={typeFilter}
@@ -423,18 +414,14 @@ export function OrdersPage() {
             onClearAll={handleClearAll}
             counts={counts}
             resultCount={filteredOrders.length}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
           />
         </div>
 
-        {/* Result count and View Toggle */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
-          <p className="text-sm font-medium text-carbon-600">
-            {isGrouped ? groupedOrders.length : filteredOrders.length}{" "}
-            { (isGrouped ? groupedOrders.length : filteredOrders.length) === 1 ? (isGrouped ? "mesa" : "pedido") : (isGrouped ? "mesas" : "pedidos")}
-            {hasActiveFilters && " encontrados"}
-          </p>
-
-          <div className="flex items-center gap-1 bg-carbon-100 p-1 rounded-xl border border-carbon-200">
+        {/* View Toggle */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-end gap-4 mb-6">
+          <div className="flex items-center gap-1 bg-carbon-100 p-1 rounded-xl border border-carbon-200 self-end sm:self-auto">
             <button
               onClick={() => setIsGrouped(true)}
               className={cn(
@@ -485,19 +472,19 @@ export function OrdersPage() {
           </div>
         ) : (
           <EmptyState
-            icon={<ShoppingCart />}
+            icon={<ShoppingCart className="w-12 h-12" />}
             title={
               hasActiveFilters
                 ? "No hay pedidos con estos filtros"
-                : "No hay pedidos"
+                : "No hay pedidos registrados"
             }
             description={
               hasActiveFilters
-                ? "Ajusta los filtros para ver más resultados"
-                : "Crea tu primer pedido para comenzar"
+                ? "Prueba ajustando los filtros o la búsqueda para encontrar lo que necesitas."
+                : "Aún no hay transacciones para este periodo."
             }
-            actionLabel={!hasActiveFilters ? "Crear primer pedido" : undefined}
-            onAction={!hasActiveFilters ? handleCreateOrder : undefined}
+            actionLabel={!hasActiveFilters ? "Crear primer pedido" : "Limpiar filtros"}
+            onAction={!hasActiveFilters ? handleCreateOrder : handleClearAll}
           />
         )}
       </div>

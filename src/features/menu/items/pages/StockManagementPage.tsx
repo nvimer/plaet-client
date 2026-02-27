@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
-import { Button, Card, Badge, Skeleton, EmptyState } from "@/components";
+import { Button, Card, Badge, Skeleton, EmptyState, FilterBar, FilterPills, FilterSearch, FilterSelect, FilterDrawer, ActiveFilterChips } from "@/components";
 import { useItems } from "../hooks";
 import {
   DailyResetModal,
@@ -8,20 +8,16 @@ import {
   InventoryDashboard,
 } from "../components";
 import { usePermissions } from "@/hooks/usePermissions";
-import { ROUTES } from "@/app/routes";
-import { Package, RotateCcw, Search, Plus, AlertTriangle, Settings2 } from "lucide-react";
+import { Package, RotateCcw, Plus, AlertTriangle, Settings2, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/utils/cn";
 import type { MenuItem } from "@/types";
 import { QuickStockModal } from "../components/QuickStockModal";
-import { Input } from "@/components/ui/Input/Input";
 
 type StockFilter = "ALL" | "LOW_STOCK" | "OUT_OF_STOCK" | "TRACKED";
 
 /**
- * StockManagementPage Component
- *
- * Comprehensive stock management page for restaurant inventory.
- * Uses DashboardLayout (from App.tsx) and unified premium design system.
+ * Premium Stock Management Page
+ * Redesigned with advanced filter system and launchpad consistency.
  */
 export function StockManagementPage() {
   const { isAdmin } = usePermissions();
@@ -30,28 +26,33 @@ export function StockManagementPage() {
   const [filter, setFilter] = useState<StockFilter>("ALL");
   const [searchTerm, setSearchTerm] = useState("");
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
-  const [isInventoryTypeModalOpen, setIsInventoryTypeModalOpen] =
-    useState(false);
+  const [isInventoryTypeModalOpen, setIsInventoryTypeModalOpen] = useState(false);
   const [isQuickStockOpen, setIsQuickStockOpen] = useState(false);
+  const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState<MenuItem | null>(null);
 
   // Queries
   const { data: allItems, isLoading: loadingItems } = useItems();
 
-  // Filter items
+  // Filter options
+  const filterOptions = [
+    { value: "ALL", label: "Todo" },
+    { value: "LOW_STOCK", label: "Stock Bajo" },
+    { value: "OUT_OF_STOCK", label: "Agotado" },
+  ];
+
+  // Filter items logic
   const filteredItems = useMemo(() => {
     if (!allItems) return [];
 
     let items = allItems;
 
-    // Apply search filter
     if (searchTerm) {
       items = items.filter((item) =>
         item.name.toLowerCase().includes(searchTerm.toLowerCase()),
       );
     }
 
-    // Apply stock filter
     switch (filter) {
       case "LOW_STOCK":
         items = items.filter(
@@ -77,6 +78,11 @@ export function StockManagementPage() {
     return items;
   }, [allItems, filter, searchTerm]);
 
+  const activeChips = [
+    ...(filter !== "ALL" ? [{ key: "filter", label: "Nivel", value: filter === "LOW_STOCK" ? "Bajo" : "Agotado" }] : []),
+    ...(searchTerm !== "" ? [{ key: "search", label: "Búsqueda", value: searchTerm }] : []),
+  ];
+
   // Handlers
   const handleDailyReset = () => {
     if (!isAdmin) return;
@@ -91,7 +97,7 @@ export function StockManagementPage() {
   // Loading state
   if (loadingItems) {
     return (
-      <SidebarLayout hideHeader fullWidth>
+      <SidebarLayout hideTitle fullWidth>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => (
@@ -111,30 +117,19 @@ export function StockManagementPage() {
   return (
     <SidebarLayout hideTitle fullWidth>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 pb-24 py-8">
-      {/* ============ PAGE HEADER =============== */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1.5">
-          <div className="flex items-center gap-2 text-sage-600">
-            <Package className="w-5 h-5" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Control de Existencias</span>
+        {/* Header */}
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-1.5">
+            <div className="flex items-center gap-2 text-sage-600">
+              <Package className="w-5 h-5" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Control de Existencias</span>
+            </div>
+            <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Stock de Productos</h1>
+            <p className="text-sm text-carbon-500 font-medium">Monitorea y ajusta el inventario de tus insumos en tiempo real.</p>
           </div>
-          <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Inventario de Productos</h1>
-          <p className="text-sm text-carbon-500 font-medium">Monitorea y ajusta el stock de tus insumos en tiempo real.</p>
-        </div>
-        
-        <div className="flex flex-wrap items-center gap-3">
-          {isAdmin && (
-            <>
-              <Button
-                variant="outline"
-                size="lg"
-                onClick={() => setIsInventoryTypeModalOpen(true)}
-                className="rounded-2xl h-14 px-6 border-sage-200 text-sage-700 hover:bg-sage-50 transition-all font-bold"
-              >
-                <Settings2 className="w-4 h-4 mr-2" />
-                Configurar
-              </Button>
-              
+          
+          <div className="flex flex-wrap items-center gap-3">
+            {isAdmin && (
               <Button
                 variant="primary"
                 size="lg"
@@ -144,139 +139,161 @@ export function StockManagementPage() {
                 <RotateCcw className="w-5 h-5 mr-2 stroke-[3px]" />
                 Reinicio Diario
               </Button>
-            </>
-          )}
-        </div>
-      </header>
+            )}
+          </div>
+        </header>
 
-      {/* Dashboard */}
-      <div className="mb-2">
+        {/* Dashboard Analytics */}
         <InventoryDashboard items={allItems || []} />
-      </div>
 
-      {/* Search and Filters */}
-      <div className="space-y-4 mb-6">
-        {/* Search Bar */}
-        <div className="relative">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-carbon-400" />
-          <Input
-            placeholder="Buscar producto por nombre..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-12 h-14 text-lg bg-white shadow-soft-sm border-sage-200"
-            fullWidth
+        {/* Unified Filter System */}
+        <div className="space-y-6">
+          <FilterBar>
+            <div className="flex flex-col lg:flex-row lg:items-center gap-6 flex-1 min-w-0">
+              <div className="w-full lg:w-72 flex-shrink-0">
+                <FilterSearch
+                  value={searchTerm}
+                  onChange={setSearchTerm}
+                  placeholder="Buscar producto..."
+                  onClear={() => setSearchTerm("")}
+                />
+              </div>
+              
+              <div className="flex-1 min-w-0 overflow-x-auto custom-scrollbar-hide">
+                <FilterPills
+                  options={filterOptions}
+                  value={filter}
+                  onChange={(v) => setFilter(v as StockFilter)}
+                />
+              </div>
+            </div>
+
+            <div className="flex-shrink-0">
+              <Button
+                variant="outline"
+                size="lg"
+                onClick={() => setIsFilterDrawerOpen(true)}
+                className="rounded-2xl h-12 px-6 border-sage-100 text-carbon-600 hover:border-sage-400 hover:text-carbon-900 transition-all font-bold group shadow-soft-sm bg-white"
+              >
+                <SlidersHorizontal className="w-4 h-4 mr-2 text-carbon-400 group-hover:text-carbon-900 transition-colors" />
+                Filtros
+                {(filter !== "ALL" || searchTerm !== "") && (
+                  <span className="ml-2 w-2 h-2 rounded-full bg-sage-500 animate-pulse" />
+                )}
+              </Button>
+            </div>
+          </FilterBar>
+
+          <ActiveFilterChips
+            chips={activeChips}
+            resultCount={filteredItems.length}
+            resultLabel="productos"
+            onClearFilter={(key) => {
+              if (key === "filter") setFilter("ALL");
+              if (key === "search") setSearchTerm("");
+            }}
+            onClearAll={() => {
+              setFilter("ALL");
+              setSearchTerm("");
+            }}
           />
         </div>
 
-        {/* Filters */}
-        <div className="bg-white rounded-2xl border border-sage-200 p-4 shadow-sm">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm text-carbon-500 mr-1 font-medium tracking-wide">Filtrar por stock:</span>
-              <Button
-                variant={filter === "ALL" ? "primary" : "outline"}
-                size="sm"
-                onClick={() => setFilter("ALL")}
-                className="rounded-lg px-4"
-              >
-                Todos
-              </Button>
-              <Button
-                variant={filter === "LOW_STOCK" ? "primary" : "outline"}
-                size="sm"
-                onClick={() => setFilter("LOW_STOCK")}
-                className="rounded-lg px-4"
-              >
-                Stock Bajo
-              </Button>
-              <Button
-                variant={filter === "OUT_OF_STOCK" ? "primary" : "outline"}
-                size="sm"
-                onClick={() => setFilter("OUT_OF_STOCK")}
-                className="rounded-lg px-4"
-              >
-                Sin Stock
-              </Button>
-              <Button
-                variant={filter === "TRACKED" ? "primary" : "outline"}
-                size="sm"
-                onClick={() => setFilter("TRACKED")}
-                className="rounded-lg px-4"
-              >
-                Solo Rastreados
-              </Button>
+        {/* Items Grid */}
+        {filteredItems.length === 0 ? (
+          <EmptyState
+            title="No se encontraron productos"
+            description={searchTerm ? `No hay resultados para "${searchTerm}"` : "No hay productos con los filtros seleccionados"}
+            icon={<Package className="w-12 h-12" />}
+            actionLabel={searchTerm || filter !== "ALL" ? "Limpiar filtros" : undefined}
+            onAction={() => {
+              setFilter("ALL");
+              setSearchTerm("");
+            }}
+          />
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredItems.map((item) => (
+              <StockItemCard
+                key={item.id}
+                item={item}
+                onAdjustStock={() => handleAdjustStock(item)}
+                onChangeInventoryType={() => {
+                  setSelectedItem(item);
+                  setIsInventoryTypeModalOpen(true);
+                }}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Modals & Drawers */}
+        <DailyResetModal
+          items={allItems || []}
+          isOpen={isResetModalOpen}
+          onClose={() => setIsResetModalOpen(false)}
+        />
+
+        <FilterDrawer
+          isOpen={isFilterDrawerOpen}
+          onClose={() => setIsFilterDrawerOpen(false)}
+          onApply={() => {}}
+          onClear={() => {
+            setFilter("ALL");
+            setSearchTerm("");
+          }}
+          isDirty={filter !== "ALL" || searchTerm !== ""}
+          title="Refinar Inventario"
+        >
+          <div className="space-y-8">
+            <FilterSelect
+              label="Tipo de Rastreo"
+              value={filter === "TRACKED" ? "TRACKED" : "ALL"}
+              onChange={(v) => setFilter(v === "TRACKED" ? "TRACKED" : "ALL")}
+              options={[
+                { value: "ALL", label: "Todos los productos" },
+                { value: "TRACKED", label: "Solo con seguimiento" },
+              ]}
+            />
+            
+            <div className="pt-4 p-5 rounded-2xl bg-sage-50 border border-sage-100">
+              <h4 className="text-[10px] font-black text-carbon-400 uppercase tracking-widest mb-3 ml-1">Estado de Inventario</h4>
+              <p className="text-sm font-medium text-carbon-600 leading-relaxed">
+                Usa las píldoras de acceso rápido para identificar productos críticos que requieren tu atención inmediata.
+              </p>
             </div>
           </div>
-        </div>
+        </FilterDrawer>
+
+        {selectedItem && (
+          <InventoryTypeModal
+            item={selectedItem}
+            isOpen={isInventoryTypeModalOpen}
+            onClose={() => {
+              setIsInventoryTypeModalOpen(false);
+              setSelectedItem(null);
+            }}
+          />
+        )}
+
+        {selectedItem && (
+          <QuickStockModal
+            item={selectedItem}
+            isOpen={isQuickStockOpen}
+            onClose={() => {
+              setIsQuickStockOpen(false);
+              setSelectedItem(null);
+            }}
+          />
+        )}
       </div>
+    </SidebarLayout>
+  );
+}
 
-      {/* Result count */}
-      <p className="text-sm font-medium text-carbon-600 mb-5">
-        Mostrando {filteredItems.length}{" "}
-        {filteredItems.length === 1 ? "producto" : "productos"}
-      </p>
-
-      {/* Items Grid */}
-      {filteredItems.length === 0 ? (
-        <EmptyState
-          title="No se encontraron productos"
-          description={searchTerm ? `No hay resultados para "${searchTerm}"` : "No hay productos con los filtros seleccionados"}
-          icon={<Package />}
-        />
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredItems.map((item) => (
-            <StockItemCard
-              key={item.id}
-              item={item}
-              onAdjustStock={() => handleAdjustStock(item)}
-              onChangeInventoryType={() => {
-                setSelectedItem(item);
-                setIsInventoryTypeModalOpen(true);
-              }}
-            />
-          ))}
-        </div>
-      )}
-
-      {/* Daily Reset Modal */}
-      <DailyResetModal
-        items={allItems || []}
-        isOpen={isResetModalOpen}
-        onClose={() => setIsResetModalOpen(false)}
-      />
-
-      {/* Inventory Type Modal */}
-      {selectedItem && (
-        <InventoryTypeModal
-          item={selectedItem}
-          isOpen={isInventoryTypeModalOpen}
-          onClose={() => {
-            setIsInventoryTypeModalOpen(false);
-            setSelectedItem(null);
-          }}
-        />
-      )}
-
-      {/* Quick Stock Modal */}
-      {selectedItem && (
-        <QuickStockModal
-          item={selectedItem}
-          isOpen={isQuickStockOpen}
-          onClose={() => {
-            setIsQuickStockOpen(false);
-            setSelectedItem(null);
-          }}
-        />
-              )}
-            </div>
-          </SidebarLayout>
-        );
-      }
-      /**
+/**
  * StockItemCard Component
- *
- * Card displaying item stock information with unified design.
+ * Refined design for inventory items.
  */
 interface StockItemCardProps {
   item: MenuItem;
@@ -301,66 +318,65 @@ function StockItemCard({
     <Card
       variant="elevated"
       padding="lg"
-      className={`transition-all hover:shadow-soft-lg group ${
+      className={cn(
+        "transition-all duration-300 hover:shadow-soft-lg group rounded-3xl",
         isOutOfStock
-          ? "border-2 border-rose-200 bg-rose-50/30"
+          ? "border-2 border-rose-100 bg-rose-50/20"
           : isLowStock
-            ? "border-2 border-amber-200 bg-amber-50/30"
-            : "border border-sage-200"
-      }`}
+            ? "border-2 border-amber-100 bg-amber-50/20"
+            : "border border-sage-100 hover:border-sage-300"
+      )}
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-4">
+      <div className="flex items-start justify-between mb-6">
         <div className="flex-1 min-w-0">
           <h3 className="text-lg font-bold text-carbon-900 mb-1 truncate group-hover:text-sage-700 transition-colors">
             {item.name}
           </h3>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-bold text-carbon-400 tracking-wide bg-carbon-100 px-2 py-0.5 rounded">
+            <span className="text-[10px] font-bold text-carbon-400 tracking-wider bg-carbon-50 px-2 py-0.5 rounded-lg border border-carbon-100 uppercase">
               ID: {item.id}
             </span>
-            {item.categoryId && (
-              <span className="text-xs font-medium text-sage-600 bg-sage-50 px-2 py-0.5 rounded border border-sage-100">
-                Categoría {item.categoryId}
-              </span>
-            )}
           </div>
+        </div>
+        <div className={cn(
+          "w-10 h-10 rounded-xl flex items-center justify-center shadow-inner",
+          isTracked ? "bg-sage-100 text-sage-600" : "bg-carbon-50 text-carbon-300"
+        )}>
+          <Package className="w-5 h-5" />
         </div>
       </div>
 
       {/* Stock Info */}
       {isTracked ? (
         <div className="mb-6 space-y-4">
-          <div className="flex items-center justify-between p-3 bg-white rounded-xl border border-sage-100 shadow-soft-xs">
-            <span className="text-sm font-semibold text-carbon-600">
-              Stock Actual:
+          <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-sage-50 shadow-soft-xs">
+            <span className="text-xs font-bold text-carbon-400 uppercase tracking-widest">
+              Stock Actual
             </span>
-            <Badge
-              variant={
-                isOutOfStock ? "error" : isLowStock ? "warning" : "success"
-              }
-              size="lg"
-              className="text-sm font-black px-3"
-            >
-              {currentStock} unidades
-            </Badge>
+            <span className={cn(
+              "text-lg font-black px-3 py-1 rounded-xl",
+              isOutOfStock ? "text-rose-600 bg-rose-50" : isLowStock ? "text-amber-600 bg-amber-50" : "text-sage-700 bg-sage-50"
+            )}>
+              {currentStock} ud.
+            </span>
           </div>
           {item.lowStockAlert !== undefined && (
-            <div className="flex items-center justify-between px-3">
+            <div className="flex items-center justify-between px-2">
               <div className="flex items-center gap-1.5">
                 <AlertTriangle className={cn("w-3.5 h-3.5", isLowStock ? "text-amber-500" : "text-carbon-300")} />
-                <span className="text-xs font-medium text-carbon-500 uppercase">Alerta en:</span>
+                <span className="text-[10px] font-black text-carbon-400 uppercase tracking-widest">Alerta en:</span>
               </div>
-              <span className="text-sm font-bold text-carbon-700">
+              <span className="text-xs font-bold text-carbon-700">
                 {item.lowStockAlert} ud.
               </span>
             </div>
           )}
         </div>
       ) : (
-        <div className="mb-6 p-4 bg-sage-50 rounded-xl border border-dashed border-sage-300">
-          <p className="text-sm font-medium text-carbon-500 text-center flex items-center justify-center gap-2">
-            <Package className="w-4 h-4 opacity-50" />
+        <div className="mb-6 p-6 bg-sage-50/50 rounded-2xl border border-dashed border-sage-200">
+          <p className="text-xs font-bold text-carbon-400 text-center flex flex-col items-center gap-2">
+            <Settings2 className="w-5 h-5 opacity-30" />
             Sin control de inventario
           </p>
         </div>
@@ -373,17 +389,17 @@ function StockItemCard({
             variant="primary"
             size="md"
             onClick={onAdjustStock}
-            className="flex-1 shadow-soft-md bg-sage-600 hover:bg-sage-700"
+            className="flex-1 rounded-xl shadow-soft-md bg-carbon-900 hover:bg-carbon-800 text-white font-bold h-12"
           >
-            <Plus className="w-4 h-4 mr-2" />
-            Ajustar Stock
+            <Plus className="w-4 h-4 mr-2 stroke-[3px]" />
+            Ajustar
           </Button>
         ) : (
           <Button
             variant="outline"
             size="md"
             onClick={onChangeInventoryType}
-            className="flex-1 border-sage-200 text-sage-700 hover:bg-sage-50"
+            className="flex-1 rounded-xl border-sage-200 text-sage-700 hover:bg-sage-50 font-bold h-12"
           >
             Activar Rastreo
           </Button>
@@ -393,10 +409,10 @@ function StockItemCard({
           variant="ghost"
           size="md"
           onClick={onChangeInventoryType}
-          className="px-3 text-carbon-400 hover:text-carbon-600 hover:bg-carbon-100"
+          className="w-12 h-12 rounded-xl text-carbon-400 hover:text-carbon-900 hover:bg-carbon-100 flex items-center justify-center p-0"
           title="Configuración de inventario"
         >
-          <Package className="w-5 h-5" />
+          <Settings2 className="w-5 h-5" />
         </Button>
       </div>
     </Card>
