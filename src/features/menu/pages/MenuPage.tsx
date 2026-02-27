@@ -115,7 +115,7 @@ export function MenuPage() {
     ...(categories ?? []).map(c => ({ value: String(c.id), label: c.name }))
   ], [categories]);
 
-  if (isLoading && !paginationData) {
+  if (loadingItems && !paginationData) {
     return (
       <SidebarLayout hideTitle fullWidth>
         <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8">
