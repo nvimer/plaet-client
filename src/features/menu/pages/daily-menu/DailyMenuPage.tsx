@@ -177,7 +177,7 @@ export function DailyMenuPage() {
             />
           </div>
 
-          {!isEditing && isAdmin && (
+          {!isEditing && isAdmin && hasOptions && (
             <Button
               size="lg"
               variant="primary"
