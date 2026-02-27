@@ -1,14 +1,5 @@
 /**
- * OrderCreatePage - Refactored Edition
- *
- * Major refactoring:
- * - Extracted useOrderBuilder hook for state management
- * - Extracted OrderForm component for lunch configuration
- * - Extracted OrdersListPanel component for order list
- * - Extracted OrderSummaryModal component for confirmation
- * - Reduced from ~1,600 lines to ~400 lines
- * - All comments in English
- * - User-facing text remains in Spanish
+ * OrderCreatePage - Premium Edition
  */
 
 import { useOrderBuilder } from "../hooks";
@@ -30,10 +21,13 @@ import {
   Bike,
   Sparkles,
   Calendar,
+  LayoutGrid,
 } from "lucide-react";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { TableSelector } from "@/features/tables/components/TableSelector";
-import { Card } from "@/components/ui/Card/Card";
+import { Card, Button } from "@/components";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/utils/cn";
 
 export function OrderCreatePage() {
   const { user } = useAuth();
@@ -41,7 +35,6 @@ export function OrderCreatePage() {
     (typeof r === 'object' && 'name' in r ? r.name : r) === RoleName.ADMIN
   );
 
-  // Use the order builder hook for all state and logic
   const orderBuilder = useOrderBuilder();
 
   const {
@@ -63,22 +56,18 @@ export function OrderCreatePage() {
     handleShowSummary,
     handleConfirmTableOrders,
     clearCurrentOrder,
-    // All the other state and handlers are available through orderBuilder
     ...formProps
   } = orderBuilder;
 
-  // Adapter for table selection
   const handleTableSelect = (table: { id: number }) => {
     setSelectedTable(table.id);
   };
 
-  // Handle cancel edit
   const handleCancelEdit = () => {
     clearCurrentOrder();
     toast.info("Edición cancelada");
   };
 
-  // Scroll to order section
   const scrollToOrder = () => {
     const orderSection = document.getElementById("current-order");
     if (orderSection) {
@@ -89,188 +78,167 @@ export function OrderCreatePage() {
   // Loading state
   if (isLoading) {
     return (
-      <SidebarLayout
-        title="Nuevo Pedido"
-        subtitle="Cargando..."
-        backRoute={ROUTES.ORDERS}
-      >
-        <div className="flex items-center justify-center h-96">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sage-600" />
+      <SidebarLayout title="Nuevo Pedido" backRoute={ROUTES.ORDERS}>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-sage-100 border-t-sage-600" />
+          <p className="text-carbon-400 font-bold text-sm uppercase tracking-widest">Preparando terminal...</p>
         </div>
       </SidebarLayout>
     );
   }
 
-  // Step 1: Select order type
+  // STEP 1: SELECT ORDER TYPE
   if (!selectedOrderType) {
     return (
-      <SidebarLayout
-        title="Nuevo Pedido"
-        subtitle="Selecciona el tipo de pedido"
-        backRoute={ROUTES.ORDERS}
-        fullWidth
-      >
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            {/* DINE_IN */}
-            <button
-              onClick={() => setSelectedOrderType(OrderType.DINE_IN)}
-              className="group flex flex-col items-center justify-center p-6 sm:p-8 rounded-2xl border-2 border-sage-200 bg-white hover:border-sage-400 hover:shadow-soft-lg transition-all duration-300 min-h-[160px] sm:min-h-[200px]"
-            >
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-sage-100 to-sage-200 text-sage-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">
-                <UtensilsCrossed className="w-8 h-8 sm:w-10 sm:h-10" />
-              </div>
-              <span className="text-lg sm:text-xl font-bold text-carbon-900">
-                Para Mesa
-              </span>
-              <span className="text-xs sm:text-sm text-carbon-500 mt-1 sm:mt-2">
-                Comer en el restaurante
-              </span>
-            </button>
+      <SidebarLayout title="Tipo de Pedido" backRoute={ROUTES.ORDERS}>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center min-h-[70vh]">
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-center mb-16 space-y-3"
+          >
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-sage-100 rounded-full text-sage-700 text-[10px] font-black uppercase tracking-[0.2em] mb-2">
+              <Sparkles className="w-3 h-3" />
+              Iniciando Pedido
+            </div>
+            <h1 className="text-5xl font-black text-carbon-900 tracking-tighter">¿Cómo desea ordenar?</h1>
+            <p className="text-xl text-carbon-500 font-medium">Seleccione el modo de servicio para continuar.</p>
+          </motion.div>
 
-            {/* TAKE_OUT */}
-            <button
-              onClick={() => setSelectedOrderType(OrderType.TAKE_OUT)}
-              className="group flex flex-col items-center justify-center p-6 sm:p-8 rounded-2xl border-2 border-sage-200 bg-white hover:border-amber-400 hover:shadow-soft-lg transition-all duration-300 min-h-[160px] sm:min-h-[200px]"
-            >
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">
-                <ShoppingBag className="w-8 h-8 sm:w-10 sm:h-10" />
-              </div>
-              <span className="text-lg sm:text-xl font-bold text-carbon-900">
-                Para Llevar
-              </span>
-              <span className="text-xs sm:text-sm text-carbon-500 mt-1 sm:mt-2">
-                Recoger en local
-              </span>
-            </button>
-
-            {/* DELIVERY */}
-            <button
-              onClick={() => setSelectedOrderType(OrderType.DELIVERY)}
-              className="group flex flex-col items-center justify-center p-6 sm:p-8 rounded-2xl border-2 border-sage-200 bg-white hover:border-blue-400 hover:shadow-soft-lg transition-all duration-300 min-h-[160px] sm:min-h-[200px]"
-            >
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600 flex items-center justify-center mb-3 sm:mb-4 group-hover:scale-110 transition-transform duration-300">
-                <Bike className="w-8 h-8 sm:w-10 sm:h-10" />
-              </div>
-              <span className="text-lg sm:text-xl font-bold text-carbon-900">
-                Domicilio
-              </span>
-              <span className="text-xs sm:text-sm text-carbon-500 mt-1 sm:mt-2">
-                Entrega a domicilio
-              </span>
-            </button>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 w-full max-w-4xl">
+            {[
+              { type: OrderType.DINE_IN, label: "Para Mesa", desc: "Comer en el local", icon: UtensilsCrossed, color: "text-sage-600", bg: "bg-sage-50" },
+              { type: OrderType.TAKE_OUT, label: "Llevar", desc: "Recoger pedido", icon: ShoppingBag, color: "text-amber-600", bg: "bg-amber-50" },
+              { type: OrderType.DELIVERY, label: "Domicilio", desc: "Entrega a casa", icon: Bike, color: "text-blue-600", bg: "bg-blue-50" },
+            ].map((opt, idx) => (
+              <motion.button
+                key={opt.type}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: idx * 0.1, type: "spring", stiffness: 300, damping: 25 }}
+                onClick={() => setSelectedOrderType(opt.type)}
+                className="group relative flex flex-col items-center p-10 rounded-[2.5rem] bg-white border-2 border-sage-100 hover:border-carbon-900 hover:shadow-soft-2xl transition-all duration-500 active:scale-95 overflow-hidden"
+              >
+                <div className={cn(
+                  "w-24 h-24 rounded-3xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-inner-lg",
+                  opt.bg, opt.color
+                )}>
+                  <opt.icon className="w-12 h-12 stroke-[1.5px]" />
+                </div>
+                <span className="text-2xl font-black text-carbon-900 tracking-tight">{opt.label}</span>
+                <span className="text-sm text-carbon-400 font-bold uppercase tracking-widest mt-2">{opt.desc}</span>
+                
+                <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-carbon-900 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
+              </motion.button>
+            ))}
           </div>
         </div>
       </SidebarLayout>
     );
   }
 
-  // Step 2: If DINE_IN and no table selected, show table selector
+  // STEP 2: TABLE SELECTOR (if DINE_IN)
   if (selectedOrderType === OrderType.DINE_IN && !selectedTable) {
     return (
       <SidebarLayout
-        title="Nuevo Pedido"
-        subtitle="Selecciona la mesa para tomar el pedido"
+        title="Seleccionar Mesa"
         backRoute={ROUTES.ORDERS}
-        fullWidth
         actions={
-          <button
+          <Button
+            variant="ghost"
+            size="sm"
             onClick={handleBackToOrderType}
-            className="flex items-center gap-2 px-4 py-2 bg-sage-100 text-sage-700 rounded-xl font-medium hover:bg-sage-200 transition-colors"
+            className="rounded-xl text-carbon-400 font-bold hover:text-carbon-900"
           >
-            <ArrowLeft className="w-4 h-4" />
+            <ArrowLeft className="w-4 h-4 mr-2" />
             Cambiar Tipo
-          </button>
+          </Button>
         }
       >
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Card variant="elevated" className="overflow-hidden rounded-2xl">
-            <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-4 py-6 sm:px-8 sm:py-8">
-              <h2 className="text-white font-semibold text-2xl flex items-center gap-3">
-                <Users className="w-7 h-7" />
-                Seleccionar Mesa
-              </h2>
-              <p className="text-sage-100 mt-2">
-                Elige la mesa donde vas a tomar los pedidos
-              </p>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <motion.div 
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="mb-10 space-y-2"
+          >
+            <div className="flex items-center gap-2 text-sage-600">
+              <LayoutGrid className="w-5 h-5" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Mapa de Sala</span>
             </div>
+            <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Elija una mesa disponible</h1>
+            <p className="text-lg text-carbon-500 font-medium">Toque el número de la mesa para iniciar la orden.</p>
+          </motion.div>
 
-            <div className="p-4 sm:p-8">
-              {availableTables.length === 0 ? (
-                <div className="text-center py-12">
-                  <div className="w-16 h-16 rounded-2xl bg-sage-100 text-sage-400 flex items-center justify-center mx-auto mb-4">
-                    <Sparkles className="w-8 h-8" />
-                  </div>
-                  <p className="text-carbon-700 font-medium">
-                    No hay mesas disponibles
-                  </p>
-                  <p className="text-sm text-carbon-500 mt-1">
-                    Todas las mesas están ocupadas
-                  </p>
-                </div>
-              ) : (
-                <TableSelector
-                  tables={tables as never}
-                  selectedTableId={selectedTable || undefined}
-                  onSelect={handleTableSelect}
-                  showOnlyAvailable={true}
-                />
-              )}
+          {availableTables.length === 0 ? (
+            <Card variant="elevated" className="py-20 flex flex-col items-center justify-center rounded-[3rem] border-dashed border-2 border-sage-200 bg-sage-50/20">
+              <div className="w-20 h-20 bg-white rounded-full shadow-soft-md flex items-center justify-center mb-6">
+                <Sparkles className="w-10 h-10 text-sage-300" />
+              </div>
+              <h2 className="text-2xl font-bold text-carbon-900 mb-2">Restaurante Lleno</h2>
+              <p className="text-carbon-500 max-w-xs text-center font-medium">Todas las mesas están ocupadas actualmente.</p>
+              <Button 
+                variant="outline" 
+                onClick={handleBackToOrderType}
+                className="mt-8 rounded-2xl border-sage-200"
+              >
+                Volver
+              </Button>
+            </Card>
+          ) : (
+            <div className="bg-white p-10 rounded-[3rem] border border-sage-100 shadow-smooth-xl">
+              <TableSelector
+                tables={tables as never}
+                selectedTableId={selectedTable || undefined}
+                onSelect={handleTableSelect}
+                showOnlyAvailable={true}
+              />
             </div>
-          </Card>
+          )}
         </div>
       </SidebarLayout>
     );
   }
 
-  // Step 3: Main order creation form
+  // STEP 3: MAIN ORDER BUILDER
   return (
     <>
       <SidebarLayout
-        title="Nuevo Pedido"
-        subtitle={
-          selectedOrderType === OrderType.DINE_IN
-            ? `Mesa ${selectedTable} - Configura los pedidos`
-            : "Configura los pedidos"
-        }
+        title={selectedOrderType === OrderType.DINE_IN ? `Orden · Mesa ${selectedTable}` : "Nuevo Pedido"}
         backRoute={ROUTES.ORDERS}
-        fullWidth
         actions={
-          <div className="flex flex-wrap items-center justify-end gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-2">
             {isAdmin && (
-              <div className="flex items-center gap-2 px-3 py-2 bg-white border-2 border-primary-100 rounded-xl shadow-sm flex-1 sm:flex-initial">
-                <Calendar className="w-4 h-4 text-primary-600 shrink-0" />
+              <div className="hidden sm:flex items-center gap-2 px-3 py-2 bg-white border border-sage-100 rounded-xl shadow-soft-sm mr-2">
+                <Calendar className="w-4 h-4 text-sage-500" />
                 <input
                   type="date"
                   value={backdatedDate || new Date().toISOString().split('T')[0]}
                   onChange={(e) => setBackdatedDate(e.target.value)}
-                  className="bg-transparent border-none text-xs font-bold text-carbon-900 focus:ring-0 cursor-pointer p-0 w-full sm:w-auto"
+                  className="bg-transparent border-none text-[11px] font-black text-carbon-900 focus:ring-0 cursor-pointer p-0 w-28 uppercase"
                 />
               </div>
             )}
-            <button
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={handleBackToOrderType}
-              className="flex items-center justify-center gap-2 px-3 py-2 bg-sage-100 text-sage-700 rounded-xl font-semibold text-xs hover:bg-sage-200 transition-colors flex-1 sm:flex-initial min-h-[40px]"
+              className="rounded-xl h-10 px-4"
             >
-              <ArrowLeft className="w-3.5 h-3.5" />
+              <ArrowLeft className="w-3.5 h-3.5 mr-2" />
               <span>Tipo</span>
-            </button>
-            {selectedOrderType === OrderType.DINE_IN && (
-              <button
-                onClick={() => setSelectedTable(null)}
-                className="flex items-center justify-center gap-2 px-3 py-2 bg-amber-100 text-amber-700 rounded-xl font-semibold text-xs hover:bg-amber-200 transition-colors flex-1 sm:flex-initial min-h-[40px]"
-              >
-                <Users className="w-3.5 h-3.5" />
-                <span>Mesa</span>
-              </button>
-            )}
+            </Button>
           </div>
         }
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-24">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-32">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
             {/* LEFT: Order Form */}
-            <div id="current-order" className="space-y-6">
+            <motion.div 
+              id="current-order"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="space-y-6"
+            >
               <OrderForm
                 currentOrderIndex={currentOrderIndex}
                 tableOrdersLength={tableOrders.length}
@@ -311,10 +279,14 @@ export function OrderCreatePage() {
                 onCancelEdit={handleCancelEdit}
                 isLoading={false}
               />
-            </div>
+            </motion.div>
 
             {/* RIGHT: Orders List */}
-            <div className="lg:sticky lg:top-6 h-fit">
+            <motion.div 
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="lg:sticky lg:top-6 h-fit"
+            >
               <OrdersListPanel
                 orders={tableOrders}
                 currentOrderIndex={currentOrderIndex}
@@ -326,12 +298,12 @@ export function OrderCreatePage() {
                 onDuplicate={formProps.handleDuplicateOrder}
                 onShowSummary={handleShowSummary}
               />
-            </div>
+            </motion.div>
           </div>
         </div>
 
-        {/* Fixed Order Summary Bar (Unified for Mobile & Desktop) */}
-        <div className="sticky bottom-0 z-50 w-full mt-auto">
+        {/* Fixed Order Summary Bar */}
+        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-t border-sage-100 shadow-soft-2xl lg:ml-[72px] transition-all duration-300">
           <FixedOrderSummaryBar
             looseItems={formProps.looseItems}
             currentOrderTotal={formProps.currentOrderTotal}

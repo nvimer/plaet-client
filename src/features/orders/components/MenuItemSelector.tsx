@@ -2,6 +2,7 @@ import { Card } from "@/components";
 import { cn } from "@/utils/cn";
 import { AlertCircle, Check, ImageIcon } from "lucide-react";
 import type { MenuOption } from "../types/orderBuilder";
+import { motion } from "framer-motion";
 
 interface MenuItemSelectorProps {
   label: string;
@@ -16,6 +17,10 @@ interface MenuItemSelectorProps {
   riceName?: string;
 }
 
+/**
+ * Premium MenuItemSelector
+ * High-density tactile selection for daily menu options.
+ */
 export function MenuItemSelector({
   label,
   options,
@@ -29,169 +34,62 @@ export function MenuItemSelector({
   riceName,
 }: MenuItemSelectorProps) {
   const colorClasses = {
-    amber: {
-      bg: "bg-amber-50",
-      border: "border-amber-200",
-      text: "text-amber-700",
-      selected: "bg-amber-100 border-amber-400",
-      hover: "hover:bg-amber-100 hover:border-amber-300",
-    },
-    emerald: {
-      bg: "bg-emerald-50",
-      border: "border-emerald-200",
-      text: "text-emerald-700",
-      selected: "bg-emerald-100 border-emerald-400",
-      hover: "hover:bg-emerald-100 hover:border-emerald-300",
-    },
-    sage: {
-      bg: "bg-sage-50",
-      border: "border-sage-200",
-      text: "text-sage-700",
-      selected: "bg-sage-100 border-sage-400",
-      hover: "hover:bg-sage-100 hover:border-sage-300",
-    },
-    blue: {
-      bg: "bg-blue-50",
-      border: "border-blue-200",
-      text: "text-blue-700",
-      selected: "bg-blue-100 border-blue-400",
-      hover: "hover:bg-blue-100 hover:border-blue-300",
-    },
-    purple: {
-      bg: "bg-purple-50",
-      border: "border-purple-200",
-      text: "text-purple-700",
-      selected: "bg-purple-100 border-purple-400",
-      hover: "hover:bg-purple-100 hover:border-purple-300",
-    },
+    amber: { text: "text-amber-600", bg: "bg-amber-50" },
+    emerald: { text: "text-success-600", bg: "bg-success-50" },
+    sage: { text: "text-sage-600", bg: "bg-sage-50" },
+    blue: { text: "text-blue-600", bg: "bg-blue-50" },
+    purple: { text: "text-purple-600", bg: "bg-purple-50" },
   };
 
   const colors = colorClasses[color];
 
-  // If no options configured
   if (options.length === 0) {
     return (
-      <Card
-        className={cn("p-4 border-2 border-dashed", colors.border, colors.bg)}
-      >
+      <Card variant="bordered" className="p-4 border-dashed border-sage-200 bg-sage-50/30">
         <div className="flex items-center gap-3">
-          {icon && <div className={cn("text-2xl", colors.text)}>{icon}</div>}
+          <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-xl shadow-soft-sm grayscale opacity-50">
+            {icon}
+          </div>
           <div>
-            <p className={cn("font-semibold", colors.text)}>{label}</p>
-            <p className="text-sm text-carbon-500">
-              No configurado en el menú del día
-            </p>
+            <p className="text-sm font-bold text-carbon-400 uppercase tracking-widest">{label}</p>
+            <p className="text-xs text-carbon-400 font-medium">No disponible hoy</p>
           </div>
         </div>
       </Card>
     );
   }
 
-  // If only one option - auto-selected display
-  if (options.length === 1) {
-    const onlyOption = options[0];
-    const isSelected = selectedOption?.id === onlyOption.id;
-
-    return (
-      <Card
-        className={cn(
-          "p-4 border-2 cursor-pointer transition-all duration-200",
-          colors.bg,
-          colors.border,
-          isSelected ? colors.selected : colors.hover,
-          error && "border-rose-400 bg-rose-50",
-        )}
-        onClick={() => onSelect(onlyOption)}
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="relative w-12 h-12 rounded-lg bg-white overflow-hidden border border-carbon-100 flex-shrink-0">
-              {onlyOption.imageUrl ? (
-                <img src={onlyOption.imageUrl} alt={onlyOption.name} className="w-full h-full object-cover" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-carbon-300">
-                  <ImageIcon className="w-6 h-6" />
-                </div>
-              )}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <p className={cn("font-semibold", colors.text)}>{label}</p>
-                {required && (
-                  <span className="text-[10px] bg-sage-200 text-sage-700 px-1.5 py-0.5 rounded-full">
-                    Requerido
-                  </span>
-                )}
-              </div>
-              <p className="text-lg font-bold text-carbon-900 mt-1">
-                {onlyOption.name}
-              </p>
-            </div>
-          </div>
-          <div
-            className={cn(
-              "w-12 h-12 rounded-full flex items-center justify-center transition-all",
-              isSelected
-                ? "bg-sage-500 text-white"
-                : "bg-white border-2 border-sage-200",
-            )}
-          >
-            {isSelected ? (
-              <Check className="w-6 h-6" />
-            ) : (
-              <span className="text-sage-400 text-xs font-bold">ELEGIR</span>
-            )}
-          </div>
-        </div>
-
-        {/* Show rice info if applicable */}
-        {showRiceInfo && riceName && (
-          <div className="mt-3 pt-3 border-t border-sage-200">
-            <p className="text-sm text-carbon-600">
-              <span className="font-medium">🍚 Arroz incluido:</span> {riceName}
-            </p>
-          </div>
-        )}
-
-        {error && (
-          <div className="mt-2 flex items-center gap-1 text-rose-600 text-sm">
-            <AlertCircle className="w-4 h-4" />
-            {error}
-          </div>
-        )}
-      </Card>
-    );
-  }
-
-  // Multiple options - show clickable cards
   return (
-    <div
-      className={cn(
-        "space-y-3",
-        error && "p-3 border-2 border-rose-300 rounded-xl bg-rose-50",
-      )}
-    >
-      <div className="flex items-center justify-between px-1">
-        <div className="flex items-center gap-2">
-          {icon && <span className={cn("text-lg", colors.text)}>{icon}</span>}
-          <span className={cn("font-semibold text-sm sm:text-base", colors.text)}>
-            {label}
-          </span>
-          {required && (
-            <span className="text-[10px] bg-white/50 text-carbon-500 border border-carbon-200 px-1.5 py-0.5 rounded-full tracking-wide font-bold">
-              Obligatorio
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-y-3 px-1">
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center text-base shadow-soft-sm", colors.bg)}>
+            {icon}
+          </div>
+          <div className="flex items-center gap-2">
+            <span className="font-black text-[11px] sm:text-xs text-carbon-900 uppercase tracking-[0.15em]">
+              {label}
             </span>
-          )}
+            {required && (
+              <span className="text-[9px] bg-carbon-900 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-tighter whitespace-nowrap">
+                Obligatorio
+              </span>
+            )}
+          </div>
         </div>
         {selectedOption && (
-          <span className="text-[10px] sm:text-xs text-emerald-600 bg-emerald-50 px-2 py-1 rounded-lg font-bold border border-emerald-100 animate-in fade-in zoom-in-95 duration-300">
-            ✓ Seleccionado
-          </span>
+          <motion.div 
+            initial={{ opacity: 0, x: 5 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="flex items-center gap-1.5 px-2.5 py-1 bg-success-50 rounded-lg border border-success-100"
+          >
+            <Check className="w-3.5 h-3.5 text-success-600 stroke-[4px]" />
+            <span className="text-[10px] text-success-700 font-black uppercase tracking-widest">Elegido</span>
+          </motion.div>
         )}
       </div>
 
-      {/* Selection Cards Grid */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
         {options.map((option) => {
           const isSelected = selectedOption?.id === option.id;
           return (
@@ -199,46 +97,46 @@ export function MenuItemSelector({
               key={option.id}
               onClick={() => onSelect(option)}
               className={cn(
-                "group relative overflow-hidden rounded-2xl border-2 transition-all duration-300 text-left",
-                "min-h-[100px] sm:min-h-[120px] flex flex-col",
-                "active:scale-95 touch-manipulation",
+                "group relative flex flex-col rounded-2xl border-2 transition-all duration-300 text-left overflow-hidden active:scale-95",
                 isSelected
-                  ? cn(
-                      colors.selected,
-                      "border-sage-500 shadow-md ring-4 ring-sage-500/10",
-                    )
-                  : cn("bg-white border-sage-200", colors.hover),
+                  ? "border-carbon-900 bg-white shadow-soft-xl z-10"
+                  : "border-sage-100 bg-white hover:border-sage-300 hover:shadow-soft-md"
               )}
             >
-              {/* Product Image in Selector */}
-              <div className="relative h-16 sm:h-20 w-full bg-sage-50/50 overflow-hidden border-b border-sage-100">
+              {/* Image Container */}
+              <div className="relative aspect-[16/10] w-full bg-sage-50 overflow-hidden">
                 {option.imageUrl ? (
-                  <img src={option.imageUrl} alt={option.name} className="w-full h-full object-cover transition-transform group-hover:scale-110" />
+                  <img 
+                    src={option.imageUrl} 
+                    alt={option.name} 
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
+                  />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-sage-200">
-                    <ImageIcon className="w-8 h-8" />
+                    <ImageIcon className="w-8 h-8 stroke-[1.5px]" />
                   </div>
                 )}
-                {/* Selection indicator */}
-                <div
-                  className={cn(
-                    "absolute top-2 right-2 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all backdrop-blur-sm",
-                    isSelected
-                      ? "bg-sage-500 border-sage-500 text-white shadow-md"
-                      : "bg-white/80 border-sage-300 text-transparent",
-                  )}
-                >
+                
+                {/* Visual Checkmark Overlay */}
+                <div className={cn(
+                  "absolute inset-0 bg-carbon-900/10 transition-opacity duration-300",
+                  isSelected ? "opacity-100" : "opacity-0"
+                )} />
+                
+                <div className={cn(
+                  "absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg",
+                  isSelected ? "bg-carbon-900 text-white scale-100" : "bg-white/90 text-transparent scale-75 opacity-0 group-hover:opacity-100 group-hover:scale-90"
+                )}>
                   <Check className="w-4 h-4 stroke-[3px]" />
                 </div>
               </div>
 
-              <div className="p-2 sm:p-3 flex flex-col justify-center flex-1">
-                <span
-                  className={cn(
-                    "font-semibold text-xs sm:text-sm leading-tight text-center",
-                    isSelected ? "text-carbon-900" : "text-carbon-700",
-                  )}
-                >
+              {/* Name Container */}
+              <div className="p-3 flex-1 flex items-center justify-center min-h-[56px]">
+                <span className={cn(
+                  "text-xs font-bold leading-tight text-center tracking-tight",
+                  isSelected ? "text-carbon-900" : "text-carbon-600"
+                )}>
                   {option.name}
                 </span>
               </div>
@@ -247,24 +145,27 @@ export function MenuItemSelector({
         })}
       </div>
 
-      {/* Show rice info if applicable */}
       {showRiceInfo && riceName && (
-        <div className="mt-2 p-3 bg-sage-50 rounded-lg border border-sage-200">
-          <p className="text-sm text-carbon-600">
-            <span className="font-medium">🍚 Arroz incluido:</span> {riceName}
+        <div className="p-3 bg-amber-50/50 rounded-xl border border-amber-100 flex items-center gap-2">
+          <span className="text-lg">🍚</span>
+          <p className="text-[10px] font-bold text-amber-800 uppercase tracking-widest">
+            Incluye: <span className="text-carbon-900">{riceName}</span>
           </p>
         </div>
       )}
 
       {error && (
-        <div className="flex items-center gap-1 text-rose-600 text-sm">
-          <AlertCircle className="w-4 h-4" />
-          {error}
-        </div>
+        <motion.div 
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex items-center gap-1.5 text-rose-600 bg-rose-50 px-3 py-2 rounded-lg border border-rose-100"
+        >
+          <AlertCircle className="w-3.5 h-3.5" />
+          <span className="text-[10px] font-black uppercase tracking-wider">{error}</span>
+        </motion.div>
       )}
     </div>
   );
 }
 
 export default MenuItemSelector;
-

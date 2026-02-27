@@ -204,22 +204,6 @@ export function OrderForm({
           </div>
           
           <div className="flex items-center gap-2">
-            {/* Daily Menu Toggle integrated into header */}
-            <button
-              onClick={() => setShowDailyMenu(!showDailyMenu)}
-              className={cn(
-                "p-2.5 sm:p-3 rounded-xl transition-all flex items-center gap-2 border-2 active:scale-95",
-                showDailyMenu 
-                  ? "bg-carbon-900 border-carbon-900 text-white shadow-lg" 
-                  : "bg-white border-sage-100 text-sage-600 hover:bg-sage-50"
-              )}
-              title="Ver Menú del Día"
-            >
-              <ChefHat className="w-5 h-5" />
-              <span className="hidden md:inline text-sm font-semibold">Menú de Hoy</span>
-              {showDailyMenu ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </button>
-
             {currentOrderIndex !== null && (
               <button
                 onClick={onCancelEdit}
@@ -232,19 +216,6 @@ export function OrderForm({
           </div>
         </div>
       </Card>
-
-      {/* Daily menu overview */}
-      {showDailyMenu && dailyMenuDisplay.isConfigured && (
-        <DailyMenuSection
-          soupOptions={dailyMenuDisplay.soupOptions}
-          principleOptions={dailyMenuDisplay.principleOptions}
-          saladOptions={dailyMenuDisplay.saladOptions}
-          extraOptions={dailyMenuDisplay.extraOptions}
-          drinkOptions={dailyMenuDisplay.drinkOptions}
-          dessertOptions={dailyMenuDisplay.dessertOptions}
-          className="animate-in fade-in slide-in-from-top-4 duration-300 border-2 border-sage-200"
-        />
-      )}
 
       {/* Lunch configuration - Conditional selectors */}
       <Card variant="elevated" className="p-6 rounded-2xl">
