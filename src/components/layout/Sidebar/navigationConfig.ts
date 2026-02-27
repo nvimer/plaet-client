@@ -151,11 +151,16 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean): NavItem
       ],
     },
     {
-      id: "users",
+      id: "users-hub",
       path: ROUTES.USERS,
       name: "Equipo",
       icon: Users,
       description: "Personal y roles",
+      children: [
+        { type: "link", path: ROUTES.USERS_LIST, name: "Lista de Equipo", icon: Users },
+        { type: "link", path: ROUTES.USER_CREATE, name: "Nuevo Usuario", icon: Plus },
+        { type: "link", path: ROUTES.PERMISSIONS, name: "Roles y Permisos", icon: ShieldCheck },
+      ]
     },
   ];
 };

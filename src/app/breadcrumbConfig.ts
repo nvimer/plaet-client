@@ -134,13 +134,21 @@ const BREADCRUMB_MAP: Array<{ path: string; items: BreadcrumbItem[] }> = [
   // Users
   {
     path: "/users",
-    items: [{ label: "Inicio", path: "/dashboard" }, { label: "Usuarios" }],
+    items: [{ label: "Inicio", path: "/dashboard" }, { label: "Equipo" }],
+  },
+  {
+    path: "/users/list",
+    items: [
+      { label: "Inicio", path: "/dashboard" },
+      { label: "Equipo", path: "/users" },
+      { label: "Lista de Personal" },
+    ],
   },
   {
     path: "/users/new",
     items: [
       { label: "Inicio", path: "/dashboard" },
-      { label: "Usuarios", path: "/users" },
+      { label: "Equipo", path: "/users" },
       { label: "Nuevo usuario" },
     ],
   },
@@ -210,8 +218,8 @@ export function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
 
   if (segments[0] === "users" && segments.length >= 2) {
     const id = segments[1];
-    const base = [{ label: "Inicio", path: "/dashboard" }, { label: "Usuarios", path: "/users" }];
-    if (id === "new") return [...base, { label: "Nuevo usuario" }];
+    if (id === "list" || id === "new") return BREADCRUMB_MAP.find(b => b.path === `/users/${id}`)?.items || [];
+    const base = [{ label: "Inicio", path: "/dashboard" }, { label: "Equipo", path: "/users" }];
     if (segments[2] === "edit") return [...base, { label: "Editar usuario" }];
     return base;
   }

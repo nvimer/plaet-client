@@ -146,11 +146,9 @@ export function UserEditPage() {
       title="Editar Usuario"
       subtitle={`${user.firstName} ${user.lastName}`}
       backRoute={ROUTES.USERS}
-      fullWidth
-      contentClassName="p-4 sm:p-6 lg:p-10"
     >
-      <div className="max-w-2xl mx-auto">
-        <Card variant="elevated" padding="lg" className="rounded-2xl">
+      <div className="max-w-2xl mx-auto py-12 px-4 sm:px-6">
+        <Card variant="elevated" padding="lg" className="rounded-3xl border-none shadow-smooth-lg">
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
             {/* Personal Information Section */}
             <div>

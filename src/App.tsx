@@ -38,6 +38,7 @@ import { MenuItemCreatePage } from "./features/menu/items/pages/MenuItemCreatePa
 import { MenuItemEditPage } from "./features/menu/items/pages/MenuItemEditPage";
 import {
   UsersPage,
+  UsersHubPage,
   UserCreatePage,
   UserEditPage,
   ProfilePage,
@@ -395,9 +396,20 @@ const App = () => {
               }
             />
 
-            {/* Users - List (Admin only) */}
+            {/* Users module */}
             <Route
               path={ROUTES.USERS}
+              element={
+                <PrivateRoute>
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
+                    <UsersHubPage />
+                  </RoleProtectedRoute>
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path={ROUTES.USERS_LIST}
               element={
                 <PrivateRoute>
                   <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
@@ -413,9 +425,7 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
-                    <FullScreenLayout>
-                      <UserCreatePage />
-                    </FullScreenLayout>
+                    <UserCreatePage />
                   </RoleProtectedRoute>
                 </PrivateRoute>
               }
@@ -427,22 +437,18 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
-                    <FullScreenLayout>
-                      <UserEditPage />
-                    </FullScreenLayout>
+                    <UserEditPage />
                   </RoleProtectedRoute>
                 </PrivateRoute>
               }
             />
 
-            {/* Profile - Own profile (All authenticated users) */}
+            {/* Profile - Own profile */}
             <Route
               path={ROUTES.PROFILE}
               element={
                 <PrivateRoute>
-                  <FullScreenLayout>
-                    <ProfilePage />
-                  </FullScreenLayout>
+                  <ProfilePage />
                 </PrivateRoute>
               }
             />

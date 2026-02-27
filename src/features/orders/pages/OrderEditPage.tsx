@@ -114,28 +114,7 @@ export function OrderEditPage() {
       title="Editar Orden"
       backRoute={getOrderDetailRoute(order.id)}
     >
-      <div className="max-w-4xl mx-auto space-y-10 pb-24">
-        {/* ============ PAGE HEADER =============== */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-1.5">
-            <div className="flex items-center gap-2 text-sage-600">
-              <Edit2 className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Modificación de Registro</span>
-            </div>
-            <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Editar Orden #{order.id.slice(-6).toUpperCase()}</h1>
-            <p className="text-sm text-carbon-500 font-medium">Actualiza el tipo de servicio o las notas del pedido.</p>
-          </div>
-          
-          <Button 
-            variant="outline" 
-            onClick={() => navigate(getOrderDetailRoute(order.id))}
-            className="rounded-2xl h-14 px-6 border-sage-200 text-sage-700 hover:bg-sage-50 transition-all font-bold"
-          >
-            <ArrowLeft className="w-5 h-5 mr-2" />
-            Volver
-          </Button>
-        </header>
-
+      <div className="max-w-4xl mx-auto space-y-10 pb-24 pt-4">
         <div className="space-y-8">
           {/* Order Type */}
           <div className="space-y-4">

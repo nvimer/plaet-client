@@ -204,24 +204,7 @@ export function OrderDetailPage() {
         title={`Pedido ${shortId}`}
         backRoute={ROUTES.ORDERS}
       >
-        <div className="max-w-4xl mx-auto space-y-8 pb-24">
-          {/* ============ PAGE HEADER =============== */}
-          <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="space-y-1.5">
-              <div className="flex items-center gap-2 text-sage-600">
-                <Receipt className="w-5 h-5" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Detalle de Transacción</span>
-              </div>
-              <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Pedido {shortId}</h1>
-              <p className="text-sm text-carbon-500 font-medium">Creado el {createdDate} a las {createdTime}</p>
-            </div>
-            
-            <div className="flex items-center gap-2">
-              <OrderStatusBadge status={order.status} size="lg" />
-              <OrderTypeBadge type={order.type} size="md" />
-            </div>
-          </header>
-
+        <div className="max-w-4xl mx-auto space-y-8 pb-24 pt-4">
           {/* Status & Type Banner - Refined */}
           <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border-2 border-sage-100 shadow-smooth-md">
             <div className="flex items-center gap-3">

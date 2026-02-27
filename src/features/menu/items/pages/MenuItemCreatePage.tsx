@@ -68,16 +68,7 @@ export function MenuItemCreatePage() {
       fullWidth
       contentClassName="p-6 lg:p-10"
     >
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-10">
-          <h2 className="text-2xl lg:text-3xl font-semibold text-carbon-900 mb-2">
-            Crear Nuevo Producto
-          </h2>
-          <p className="text-carbon-500">
-            Completa los datos para añadir un producto al menú
-          </p>
-        </div>
-
+      <div className="max-w-2xl mx-auto pt-4">
         <div className="bg-white rounded-2xl border border-sage-200 shadow-sm">
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="p-6 lg:p-8 space-y-8">

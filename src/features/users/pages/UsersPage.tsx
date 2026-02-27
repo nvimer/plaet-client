@@ -102,8 +102,8 @@ export function UsersPage() {
 
   if (isLoading) {
     return (
-      <SidebarLayout hideTitle fullWidth>
-        <div className="px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      <SidebarLayout hideTitle fullWidth backRoute={ROUTES.USERS}>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {[...Array(4)].map((_, i) => <Skeleton key={i} variant="card" height={80} />)}
           </div>
@@ -117,27 +117,29 @@ export function UsersPage() {
 
   if (error) {
     return (
-      <SidebarLayout hideTitle fullWidth>
-        <div className="flex items-center justify-center min-h-[50vh] px-4 sm:px-6 lg:px-8 py-8">
-          <Card variant="elevated" padding="lg" className="max-w-md w-full border border-sage-200 shadow-sm rounded-2xl">
-            <div className="text-center">
-              <div className="w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-rose-500">
-                <UsersIcon className="w-7 h-7" />
+      <SidebarLayout hideTitle fullWidth backRoute={ROUTES.USERS}>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <Card variant="elevated" padding="lg" className="max-w-md w-full border border-sage-200 shadow-sm rounded-2xl">
+              <div className="text-center">
+                <div className="w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-rose-500">
+                  <UsersIcon className="w-7 h-7" />
+                </div>
+                <h2 className="text-lg font-semibold text-carbon-900 mb-2">Error al cargar usuarios</h2>
+                <p className="text-carbon-500 text-sm mb-6">{error.message}</p>
+                <Button variant="primary" size="lg" onClick={() => window.location.reload()} fullWidth className="min-h-[44px]">
+                  Reintentar
+                </Button>
               </div>
-              <h2 className="text-lg font-semibold text-carbon-900 mb-2">Error al cargar usuarios</h2>
-              <p className="text-carbon-500 text-sm mb-6">{error.message}</p>
-              <Button variant="primary" size="lg" onClick={() => window.location.reload()} fullWidth className="min-h-[44px]">
-                Reintentar
-              </Button>
-            </div>
-          </Card>
+            </Card>
+          </div>
         </div>
       </SidebarLayout>
     );
   }
 
   return (
-    <SidebarLayout hideTitle fullWidth>
+    <SidebarLayout hideTitle fullWidth backRoute={ROUTES.USERS}>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
         {/* Header */}
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
@@ -146,7 +148,7 @@ export function UsersPage() {
               <UsersIcon className="w-5 h-5" />
               <span className="text-[10px] font-black uppercase tracking-[0.2em]">Recursos Humanos</span>
             </div>
-            <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Gestión de Equipo</h1>
+            <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Lista de Equipo</h1>
             <p className="text-sm text-carbon-500 font-medium">Administra el personal, roles y accesos del sistema.</p>
           </div>
           

@@ -121,7 +121,7 @@ export function ProfilePage() {
         >
 
     
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 pb-24 py-8">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10 pb-24 py-12 pt-4">
           {/* ============ PAGE HEADER =============== */}
           <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
             <div className="space-y-1.5">

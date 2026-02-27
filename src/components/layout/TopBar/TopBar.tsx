@@ -115,15 +115,18 @@ export function TopBar({
         )}
 
         <div className="min-w-0 flex-1">
-          <div className="flex flex-col gap-1">
+          <div className={cn(
+            "flex flex-col",
+            hideTitle ? "justify-center min-h-[40px]" : "gap-0.5"
+          )}>
             {!hideTitle && (
-              <h1 className="text-base sm:text-lg font-semibold text-carbon-900 truncate">
+              <h1 className="text-base sm:text-lg font-black text-carbon-900 truncate tracking-tight">
                 {title}
               </h1>
             )}
             {breadcrumbs.length > 1 && <Breadcrumbs items={breadcrumbs} />}
             {!hideTitle && subtitle && (
-              <p className="text-xs sm:text-sm text-carbon-400 truncate hidden sm:block">
+              <p className="text-xs sm:text-sm text-carbon-400 truncate hidden sm:block font-medium">
                 {subtitle}
               </p>
             )}

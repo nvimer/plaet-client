@@ -210,14 +210,7 @@ export function MenuItemEditPage() {
         fullWidth
         contentClassName="p-6 lg:p-10"
       >
-        <div className="max-w-2xl mx-auto space-y-8">
-          <div className="mb-10">
-            <h2 className="text-2xl lg:text-3xl font-semibold text-carbon-900 mb-2">
-              Editar Producto
-            </h2>
-            <p className="text-carbon-500">Modifica los datos del producto</p>
-          </div>
-
+        <div className="max-w-2xl mx-auto space-y-8 pt-4">
           <div className="bg-white rounded-2xl border border-sage-200 shadow-sm">
             <form onSubmit={handleSubmit(onSubmit, onFormError)}>
               <div className="p-6 lg:p-8 space-y-8">

@@ -90,17 +90,7 @@ export function TableCreatePage() {
       fullWidth
       contentClassName="p-6 lg:p-10"
     >
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-10">
-          <h2 className="text-2xl lg:text-3xl font-semibold text-carbon-900 mb-2">
-            Crear Nueva Mesa
-          </h2>
-          <p className="text-carbon-500">
-            Configura los detalles de la nueva mesa para tu restaurante
-          </p>
-        </div>
-
+      <div className="max-w-2xl mx-auto pt-4">
         {/* Form Card */}
         <div className="bg-white rounded-2xl border border-sage-200 shadow-sm">
           <form onSubmit={handleSubmit(onSubmit)}>

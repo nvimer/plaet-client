@@ -57,6 +57,7 @@ export const ROUTES = {
 
   // Users (Admin only)
   USERS: "/users",
+  USERS_LIST: "/users/list",
   USER_CREATE: "/users/new",
   USER_EDIT: "/users/:id/edit",
 
