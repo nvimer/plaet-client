@@ -106,7 +106,6 @@ export function OrdersPage() {
 
   // ============ STATE =============
   const [activeTab, setActiveTab] = useState<"BILLING" | "PREPARATION" | "READY" | "HISTORY">("BILLING");
-  const [statusFilter, setStatusFilter] = useState<OrderStatus | "ALL">("ALL");
   const [typeFilter, setTypeFilter] = useState<OrderType | "ALL">("ALL");
   const [paymentMethodFilter, setPaymentMethodFilter] = useState<PaymentMethod | "ALL">("ALL");
   const [dateFilter, setDateFilter] = useState<DateFilterType>("TODAY");
@@ -131,7 +130,6 @@ export function OrdersPage() {
       if (!matchesTab) return false;
 
       // 2. Regular Filters
-      const matchesStatus = statusFilter === "ALL" || order.status === statusFilter;
       const matchesType = typeFilter === "ALL" || order.type === typeFilter;
       const matchesPayment = paymentMethodFilter === "ALL" || (order.payments && order.payments.some(p => p.method === paymentMethodFilter));
       if (!matchesPayment) return false;
@@ -146,9 +144,9 @@ export function OrdersPage() {
         case "WEEK": matchesDate = isWithinLastWeek(order.createdAt); break;
         case "CUSTOM": matchesDate = customDateRange ? isWithinDateRange(order.createdAt, customDateRange) : true; break;
       }
-      return matchesStatus && matchesType && matchesDate && matchesSearch;
+      return matchesType && matchesDate && matchesSearch;
     });
-  }, [orders, activeTab, statusFilter, typeFilter, paymentMethodFilter, dateFilter, customDateRange, searchTerm]);
+  }, [orders, activeTab, typeFilter, paymentMethodFilter, dateFilter, customDateRange, searchTerm]);
 
   const groupedOrders = useMemo(() => groupOrders(filteredOrders), [filteredOrders]);
 
@@ -179,7 +177,6 @@ export function OrdersPage() {
   }), [orders]);
 
   const handleClearAll = () => {
-    setStatusFilter("ALL");
     setTypeFilter("ALL");
     setPaymentMethodFilter("ALL");
     setDateFilter("TODAY");
@@ -269,24 +266,29 @@ export function OrdersPage() {
         )}
 
         {/* Filters */}
-        <OrderFilters
-          statusFilter={statusFilter}
-          typeFilter={typeFilter}
-          paymentMethodFilter={paymentMethodFilter}
-          dateFilter={dateFilter}
-          customDateRange={customDateRange}
-          onStatusChange={setStatusFilter}
-          onTypeChange={setTypeFilter}
-          onPaymentMethodChange={setPaymentMethodFilter}
-          onDateChange={setDateFilter}
-          onCustomDateRangeChange={setCustomDateRange}
-          onClearFilter={(key) => key === "payment" ? setPaymentMethodFilter("ALL") : null}
-          onClearAll={handleClearAll}
-          counts={counts}
-          resultCount={filteredOrders.length}
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-        />
+        <div className="w-full">
+          <OrderFilters
+            typeFilter={typeFilter}
+            paymentMethodFilter={paymentMethodFilter}
+            dateFilter={dateFilter}
+            customDateRange={customDateRange}
+            onTypeChange={setTypeFilter}
+            onPaymentMethodChange={setPaymentMethodFilter}
+            onDateChange={setDateFilter}
+            onCustomDateRangeChange={setCustomDateRange}
+            onClearFilter={(key) => {
+              if (key === "payment") setPaymentMethodFilter("ALL");
+              if (key === "type") setTypeFilter("ALL");
+              if (key === "date") setDateFilter("TODAY");
+              if (key === "search") setSearchTerm("");
+            }}
+            onClearAll={handleClearAll}
+            resultCount={filteredOrders.length}
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
+        </div>
+
 
         {/* Orders Grid */}
         {(isGrouped ? groupedOrders.length : filteredOrders.length) > 0 ? (
