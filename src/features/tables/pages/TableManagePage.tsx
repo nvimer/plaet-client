@@ -213,7 +213,7 @@ export function TableManagePage() {
               <div>
                 <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest leading-none mb-1.5">Estado Actual</p>
                 <div className={cn("inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border-2", config.pill)}>
-                  {STATUS_LABELS[table.status]}
+                  {config.label}
                 </div>
               </div>
             </div>
