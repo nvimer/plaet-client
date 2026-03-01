@@ -90,6 +90,7 @@ export function TableManagePage() {
     handleSubmit,
     formState: { errors },
     reset,
+    setError,
   } = useForm<UpdateTableInput>({
     resolver: zodResolver(updateTableSchema),
     values: table
@@ -146,9 +147,17 @@ export function TableManagePage() {
           setIsEditing(false);
         },
         onError: (error: AxiosErrorWithResponse) => {
-          toast.error("Error al actualizar", {
-            description: error.response?.data?.message || error.message,
-          });
+          const errorMessage = error.response?.data?.message || error.message;
+          if (errorMessage.toLowerCase().includes("unique") || error.response?.status === 409) {
+            setError("number", {
+              type: "manual",
+              message: "Este número o nombre de mesa ya está en uso",
+            });
+          } else {
+            toast.error("Error al actualizar", {
+              description: errorMessage,
+            });
+          }
         },
       }
     );
