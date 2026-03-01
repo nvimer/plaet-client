@@ -235,30 +235,30 @@ export const updateBatchOrderStatus = async (batchData: BatchStatusUpdateInput) 
  * @returns Orders for kitchen (PENDING, IN_KITCHEN, READY)
  */
 export const getKitchenOrders = async (_status?: string) => {
-  // Only fetch orders from the last 24 hours to prevent ghosts from previous days
+  // We use limit 100 to get enough orders, but we must filter them by date in the frontend 
+  // because the backend generic /orders endpoint doesn't strictly support `fromDate`.
   const yesterday = new Date();
   yesterday.setHours(yesterday.getHours() - 24);
-  const fromDate = yesterday.toISOString();
 
   // Fetch orders with each relevant status in parallel
   const [paidResponse, inKitchenResponse, readyResponse] = await Promise.all([
     axiosClient.get<PaginatedResponse<Order>>("/orders", {
-      params: { status: OrderStatus.PAID, limit: 100, fromDate },
+      params: { status: OrderStatus.PAID, limit: 100 },
     }),
     axiosClient.get<PaginatedResponse<Order>>("/orders", {
-      params: { status: OrderStatus.IN_KITCHEN, limit: 100, fromDate },
+      params: { status: OrderStatus.IN_KITCHEN, limit: 100 },
     }),
     axiosClient.get<PaginatedResponse<Order>>("/orders", {
-      params: { status: OrderStatus.READY, limit: 100, fromDate },
+      params: { status: OrderStatus.READY, limit: 100 },
     }),
   ]);
 
-  // Combine all orders
+  // Combine all orders and filter strictly by the last 24 hours
   const allOrders = [
     ...paidResponse.data.data,
     ...inKitchenResponse.data.data,
     ...readyResponse.data.data,
-  ];
+  ].filter(order => new Date(order.createdAt).getTime() >= yesterday.getTime());
 
   return { 
     success: true, 
