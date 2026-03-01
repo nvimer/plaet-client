@@ -104,23 +104,32 @@ export function TableCard({ table, onEdit }: TableCardProps) {
           </div>
         </div>
 
-        {/* Center: Table Number & Location */}
-        <div className="flex-1 flex flex-col items-center justify-center py-4">
-          <h2 className="text-5xl font-black text-carbon-900 tracking-tighter mb-1">
+        {/* Center: Table Number & Location - FIXED HEIGHT */}
+        <div className="flex-1 flex flex-col items-center justify-center py-2 min-h-[120px]">
+          <h2 className="text-5xl font-black text-carbon-900 tracking-tighter">
             {table.number}
           </h2>
-          {table.location && (
-            <span className="text-[10px] font-bold text-carbon-400 uppercase tracking-[0.2em]">
-              {table.location}
-            </span>
-          )}
           
-          {table.status === TableStatus.OCCUPIED && (
-            <div className="mt-3 flex items-center gap-1.5 text-rose-600 bg-rose-100/50 px-3 py-1 rounded-full animate-pulse">
-              <Timer className="w-3 h-3" />
-              <span className="text-[10px] font-black uppercase tracking-wider">45 min</span>
-            </div>
-          )}
+          <div className="h-5 mt-1 flex items-center justify-center">
+            {table.location ? (
+              <span className="text-[10px] font-bold text-carbon-400 uppercase tracking-[0.2em]">
+                {table.location}
+              </span>
+            ) : (
+              <div className="w-1 h-1 bg-carbon-100 rounded-full opacity-0" /> // Placeholder
+            )}
+          </div>
+          
+          <div className="h-8 mt-3 flex items-center justify-center">
+            {table.status === TableStatus.OCCUPIED ? (
+              <div className="flex items-center gap-1.5 text-rose-600 bg-rose-100/50 px-3 py-1 rounded-full animate-pulse border border-rose-200/50">
+                <Timer className="w-3 h-3" />
+                <span className="text-[10px] font-black uppercase tracking-wider">45 min</span>
+              </div>
+            ) : (
+              <div className="w-1 h-1 bg-transparent" /> // Placeholder to keep height
+            )}
+          </div>
         </div>
 
         {/* Bottom Actions: Clean & Fast */}
