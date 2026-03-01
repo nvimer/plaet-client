@@ -5,6 +5,7 @@
 import { useOrderBuilder } from "../hooks";
 import { useAuth } from "@/hooks";
 import { RoleName, OrderType } from "@/types";
+import { useCashClosure } from "@/features/cash-closure/hooks/useCashClosure";
 import {
   OrderForm,
   OrdersListPanel,
@@ -22,18 +23,30 @@ import {
   Sparkles,
   Calendar,
   LayoutGrid,
+  AlertTriangle,
 } from "lucide-react";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { TableSelector } from "@/features/tables/components/TableSelector";
 import { Card, Button } from "@/components";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/utils/cn";
+import { useMemo } from "react";
 
 export function OrderCreatePage() {
   const { user } = useAuth();
   const isAdmin = user?.roles?.some(r => 
     (typeof r === 'object' && 'name' in r ? r.name : r) === RoleName.ADMIN
   );
+
+  const { currentShift, isOpen: isCashOpen, isLoading: isCashLoading } = useCashClosure();
+  
+  // Verify if there's an open shift from a previous day
+  const isShiftFromPreviousDay = useMemo(() => {
+    if (!isCashOpen || !currentShift) return false;
+    const shiftDate = new Date(currentShift.openingDate).toDateString();
+    const today = new Date().toDateString();
+    return shiftDate !== today;
+  }, [isCashOpen, currentShift]);
 
   const orderBuilder = useOrderBuilder();
 
@@ -76,12 +89,52 @@ export function OrderCreatePage() {
   };
 
   // Loading state
-  if (isLoading) {
+  if (isLoading || isCashLoading) {
     return (
       <SidebarLayout title="Nuevo Pedido" backRoute={ROUTES.ORDERS}>
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-sage-100 border-t-sage-600" />
           <p className="text-carbon-400 font-bold text-sm uppercase tracking-widest">Preparando terminal...</p>
+        </div>
+      </SidebarLayout>
+    );
+  }
+
+  // BLOCKING STATE: Previous day shift not closed (Bypass if it's a historical entry)
+  if (isShiftFromPreviousDay && !backdatedDate) {
+    return (
+      <SidebarLayout title="Bloqueo de Caja" backRoute={ROUTES.ORDERS}>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center min-h-[70vh]">
+          <Card variant="elevated" className="p-8 sm:p-12 flex flex-col items-center text-center rounded-[3rem] border-2 border-rose-200 bg-rose-50/30">
+            <div className="w-24 h-24 bg-rose-100 rounded-3xl flex items-center justify-center text-rose-600 mb-8 shadow-inner rotate-3">
+              <AlertTriangle className="w-12 h-12 stroke-[2.5px]" />
+            </div>
+            <h2 className="text-3xl font-black text-carbon-900 tracking-tight mb-4">
+              Cierre de Caja Pendiente
+            </h2>
+            <p className="text-lg text-carbon-600 font-medium max-w-lg leading-relaxed mb-10">
+              El sistema detectó que el turno de caja del día anterior <strong>no fue cerrado</strong>. 
+              Por seguridad operativa y contable, debes cerrar el turno anterior y abrir uno nuevo para el día de hoy antes de poder tomar nuevos pedidos.
+            </p>
+            <div className="flex gap-4">
+              <Button 
+                variant="outline"
+                size="lg" 
+                onClick={() => window.location.href = ROUTES.DASHBOARD}
+                className="h-14 px-8 rounded-2xl font-bold border-rose-200 text-carbon-600 hover:bg-rose-50"
+              >
+                Volver al Inicio
+              </Button>
+              <Button 
+                variant="primary"
+                size="lg" 
+                onClick={() => window.location.href = ROUTES.CASH_CLOSURE}
+                className="h-14 px-8 rounded-2xl font-bold bg-carbon-900 text-white hover:bg-carbon-800 shadow-xl"
+              >
+                Ir a Control de Caja
+              </Button>
+            </div>
+          </Card>
         </div>
       </SidebarLayout>
     );
