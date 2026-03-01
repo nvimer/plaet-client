@@ -27,5 +27,6 @@ export function useTables(params?: PaginationParams) {
       };
     },
     retry: 2,
+    refetchInterval: 30000, // Refresh every 30 seconds to catch auto-cleaning status
   });
 }
