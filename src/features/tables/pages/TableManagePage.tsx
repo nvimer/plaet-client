@@ -181,7 +181,7 @@ export function TableManagePage() {
     deleteTable(table.id, {
       onSuccess: () => {
         toast.success("Mesa eliminada", { description: `Mesa ${table.number} eliminada` });
-        navigate(ROUTES.TABLES);
+        navigate(ROUTES.TABLES_MAP);
       },
       onError: (error: AxiosErrorWithResponse) => {
         toast.error("Error al eliminar", {
@@ -201,7 +201,7 @@ export function TableManagePage() {
     <>
       <SidebarLayout
         title={`Administrar Mesa ${table.number}`}
-        backRoute={ROUTES.TABLES}
+        backRoute={ROUTES.TABLES_MAP}
       >
         <div className="max-w-4xl mx-auto space-y-8 pb-24 pt-4">
           {/* Status Overview */}

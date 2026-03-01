@@ -46,7 +46,7 @@ export function TableCreatePage() {
         toast.success("Mesa creada exitosamente", {
           description: `Mesa "${data.number}" lista para usar`,
         });
-        navigate(ROUTES.TABLES);
+        navigate(ROUTES.TABLES_MAP);
       },
       onError: (error: AxiosErrorWithResponse) => {
         toast.error("Error al crear mesa", {
@@ -86,7 +86,7 @@ export function TableCreatePage() {
   return (
     <SidebarLayout
       title="Nueva Mesa"
-      backRoute={ROUTES.TABLES}
+      backRoute={ROUTES.TABLES_MAP}
       fullWidth
       contentClassName="p-6 lg:p-10"
     >
@@ -209,7 +209,7 @@ export function TableCreatePage() {
                   type="button"
                   variant="ghost"
                   size="lg"
-                  onClick={() => navigate(ROUTES.TABLES)}
+                  onClick={() => navigate(ROUTES.TABLES_MAP)}
                   disabled={isPending}
                   className="sm:min-w-[120px]"
                 >
