@@ -29,6 +29,7 @@ export function TableCreatePage() {
     register,
     handleSubmit,
     control,
+    setError,
     formState: { errors, isValid },
   } = useForm<CreateTableInput>({
     resolver: zodResolver(createTableSchema),
@@ -49,9 +50,17 @@ export function TableCreatePage() {
         navigate(ROUTES.TABLES_MAP);
       },
       onError: (error: AxiosErrorWithResponse) => {
-        toast.error("Error al crear mesa", {
-          description: error.response?.data?.message || error.message,
-        });
+        const errorMessage = error.response?.data?.message || error.message;
+        if (errorMessage.toLowerCase().includes("unique") || error.response?.status === 409) {
+          setError("number", {
+            type: "manual",
+            message: "Este número o nombre de mesa ya está en uso",
+          });
+        } else {
+          toast.error("Error al crear mesa", {
+            description: errorMessage,
+          });
+        }
       },
     });
   };
