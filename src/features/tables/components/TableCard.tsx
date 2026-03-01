@@ -4,7 +4,7 @@ import { useUpdateTableStatus } from "../hooks";
 import { useDeleteTable } from "../hooks/useDeleteTable";
 import { Button, Badge } from "@/components";
 import { Edit2, Trash2, CircleCheck, CircleDot, Clock, Users, Timer } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog/ConfirmDialog";
 import { cn } from "@/utils/cn";
@@ -13,6 +13,22 @@ import { motion } from "framer-motion";
 interface TableCardProps {
   table: Table;
   onEdit: () => void;
+}
+
+/**
+ * Calculate wait time and format it
+ */
+function getWaitTime(updatedAt: string): string {
+  const updated = new Date(updatedAt);
+  const now = new Date();
+  const diffMs = now.getTime() - updated.getTime();
+  const diffMinutes = Math.floor(diffMs / 60000);
+
+  if (diffMinutes < 1) return "Ahora";
+  if (diffMinutes < 60) return `${diffMinutes} min`;
+  const hours = Math.floor(diffMinutes / 60);
+  const mins = diffMinutes % 60;
+  return `${hours}h ${mins}m`;
 }
 
 const STATUS_MAP = {
@@ -48,6 +64,21 @@ const STATUS_MAP = {
  */
 export function TableCard({ table, onEdit }: TableCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [timeLabel, setTimeLabel] = useState(getWaitTime(table.updatedAt));
+
+  useEffect(() => {
+    if (table.status !== TableStatus.OCCUPIED) return;
+    
+    // Initial update
+    setTimeLabel(getWaitTime(table.updatedAt));
+
+    const interval = setInterval(() => {
+      setTimeLabel(getWaitTime(table.updatedAt));
+    }, 60000);
+    
+    return () => clearInterval(interval);
+  }, [table.status, table.updatedAt]);
+
   const { mutate: updateStatus, isPending: isUpdatingStatus } = useUpdateTableStatus();
   const { mutate: deleteTable, isPending: isDeleting } = useDeleteTable();
 
@@ -124,7 +155,7 @@ export function TableCard({ table, onEdit }: TableCardProps) {
             {table.status === TableStatus.OCCUPIED ? (
               <div className="flex items-center gap-1.5 text-rose-600 bg-rose-100/50 px-3 py-1 rounded-full animate-pulse border border-rose-200/50">
                 <Timer className="w-3 h-3" />
-                <span className="text-[10px] font-black uppercase tracking-wider">45 min</span>
+                <span className="text-[10px] font-black uppercase tracking-wider">{timeLabel}</span>
               </div>
             ) : (
               <div className="w-1 h-1 bg-transparent" /> // Placeholder to keep height

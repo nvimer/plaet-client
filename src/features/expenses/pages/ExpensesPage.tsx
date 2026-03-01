@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Plus, History, Wallet, Filter } from "lucide-react";
+import { Plus, History, Wallet, Filter, ReceiptText } from "lucide-react";
 import { ExpenseList } from "../components/ExpenseList";
 import { ExpenseFormModal } from "../components/ExpenseFormModal";
 import { Button } from "@/components";
@@ -15,22 +15,28 @@ export const ExpensesPage: React.FC = () => {
 
   return (
     <SidebarLayout hideTitle fullWidth>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 pb-12 py-6">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10 pb-24">
         {/* Header with main CTA */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="space-y-1">
-            <h2 className="font-bold text-carbon-900 text-2xl tracking-tight">Gastos y Egresos</h2>
-            <p className="text-sm text-carbon-500 font-medium">Control de compras y pagos del día</p>
+        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-2 text-sage-600">
+              <ReceiptText className="w-5 h-5" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Tesorería y Compras</span>
+            </div>
+            <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Gastos y Egresos</h1>
+            <p className="text-lg text-carbon-500 font-medium">Control de compras y pagos operativos del restaurante.</p>
           </div>
           
           <Button 
             onClick={() => setIsModalOpen(true)}
-            className="rounded-2xl h-14 px-8 shadow-soft-lg transition-all active:scale-95"
+            variant="primary"
+            size="lg"
+            className="rounded-2xl h-14 px-8 shadow-soft-lg transition-all active:scale-95 font-bold"
           >
             <Plus className="w-5 h-5 mr-2 stroke-[3px]" />
             Registrar Gasto
           </Button>
-        </div>
+        </header>
 
         {/* Stats Grid for Expenses */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

@@ -44,15 +44,15 @@ export const CashClosurePage: React.FC = () => {
 
   return (
     <SidebarLayout hideTitle fullWidth>
-      <div className="space-y-10 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-24">
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-        <div className="space-y-1.5">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10 pb-24">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-2">
           <div className="flex items-center gap-2 text-sage-600">
             <LogIn className="w-5 h-5" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Tesorería</span>
+            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Caja y Turnos</span>
           </div>
-          <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Control de Caja</h1>
-          <p className="text-sm text-carbon-500 font-medium">Gestiona la apertura y cierre de turnos para asegurar tus ingresos.</p>
+          <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Control de Caja</h1>
+          <p className="text-lg text-carbon-500 font-medium">Gestiona la apertura y cierre de turnos para asegurar tus ingresos.</p>
         </div>
       </header>
 

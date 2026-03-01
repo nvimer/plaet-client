@@ -60,16 +60,16 @@ export const AdminDashboardPage: React.FC = () => {
 
   return (
     <SidebarLayout hideTitle fullWidth>
-      <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-24">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10 pb-24">
       {/* Professional Header */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-        <div className="space-y-1.5">
+        <div className="space-y-2">
           <div className="flex items-center gap-2 text-sage-600">
             <BarChart3 className="w-5 h-5" />
             <span className="text-[10px] font-black uppercase tracking-[0.2em]">Panel Administrativo</span>
           </div>
-          <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Análisis de Rendimiento</h1>
-          <p className="text-sm text-carbon-500 font-medium">Visualiza el pulso comercial de tu restaurante en tiempo real.</p>
+          <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Análisis de Rendimiento</h1>
+          <p className="text-lg text-carbon-500 font-medium">Visualiza el pulso comercial de tu restaurante en tiempo real.</p>
         </div>
         
         <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl shadow-smooth-md border border-sage-100 ring-4 ring-sage-50/50">
