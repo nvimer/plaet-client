@@ -9,7 +9,8 @@ import { useCreateOrder } from "./useCreateOrder";
 import { useTables, useUpdateTableStatus } from "@/features/tables";
 import { useItems } from "@/features/menu";
 import { useDailyMenuToday, useDailyMenuByDate } from "@/features/menu/hooks/useDailyMenu";
-import { OrderType, TableStatus } from "@/types";
+import { OrderType, TableStatus, OrderStatus, PaymentMethod } from "@/types";
+import { paymentApi, orderApi } from "@/services";
 import type {
   MenuOption,
   ProteinOption,
@@ -125,7 +126,7 @@ export interface UseOrderBuilderReturn {
   handleRemoveOrder: (index: number) => void;
   handleDuplicateOrder: (index: number) => void;
   handleShowSummary: () => void;
-  handleConfirmTableOrders: () => Promise<void>;
+  handleConfirmTableOrders: (isFastHistoricalEntry?: boolean) => Promise<void>;
   handleSelectOrderType: (type: OrderType) => void;
   handleBackToOrderType: () => void;
   
@@ -508,7 +509,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setShowSummaryModal(true);
   }, [tableOrders.length]);
 
-  const handleConfirmTableOrders = useCallback(async () => {
+  const handleConfirmTableOrders = useCallback(async (isFastHistoricalEntry: boolean = false) => {
     if (!selectedTable && selectedOrderType === OrderType.DINE_IN) {
       toast.error("Selecciona una mesa primero");
       return;
@@ -555,34 +556,41 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     }
 
     try {
+      let createdOrdersList: Order[] = [];
+      
       if (ordersPayload.length === 1) {
         // Single order creation
-        await createOrder(ordersPayload[0]);
+        const res = await createOrder(ordersPayload[0]);
+        createdOrdersList = [res.data];
         toast.success("Pedido creado exitosamente");
       } else {
-        // Batch order creation
-        // Only for DINE_IN with tableId (backend requirement for batch usually, check schema)
-        // Batch schema: tableId (required), orders array.
-        // If not DINE_IN, usually we don't batch multiple orders for same "client" unless strictly supported.
-        // But UI allows multiple "orders" (people) per "table" (or group).
-        
         if (selectedOrderType === OrderType.DINE_IN && selectedTable) {
-            await Promise.all(ordersPayload.map(order => createOrder(order)));
+            const results = await Promise.all(ordersPayload.map(order => createOrder(order)));
+            createdOrdersList = results.map(r => r.data);
             toast.success(`${ordersPayload.length} pedidos creados para Mesa ${selectedTable}`);
         } else {
-            // For TakeOut/Delivery, usually single order? 
-            // If user added multiple "orders" in UI for TakeOut, we should probably iterate
-            // But batch endpoint requires tableId.
-            // Fallback to Promise.all for non-table batch?
-            // Backend batchCreateOrderSchema requires tableId.
-            
-            await Promise.all(ordersPayload.map(order => createOrder(order)));
+            const results = await Promise.all(ordersPayload.map(order => createOrder(order)));
+            createdOrdersList = results.map(r => r.data);
             toast.success(`${ordersPayload.length} pedidos creados`);
         }
       }
 
-      // Automatically mark table as occupied if it's DINE_IN
-      if (selectedOrderType === OrderType.DINE_IN && selectedTable) {
+      // Fast Historical Entry Logic
+      if (isFastHistoricalEntry) {
+        await Promise.all(createdOrdersList.map(async (createdOrder) => {
+          await paymentApi.createPayment(createdOrder.id, {
+            method: PaymentMethod.CASH,
+            amount: Number(createdOrder.totalAmount)
+          });
+          await orderApi.updateOrderStatus(createdOrder.id, {
+            status: OrderStatus.DELIVERED
+          });
+        }));
+        toast.success("Ingreso histórico completado y pagado en efectivo");
+      }
+
+      // Automatically mark table as occupied if it's DINE_IN and NOT historical
+      if (selectedOrderType === OrderType.DINE_IN && selectedTable && !isFastHistoricalEntry) {
         updateTableStatus({ id: selectedTable, status: TableStatus.OCCUPIED });
       }
       

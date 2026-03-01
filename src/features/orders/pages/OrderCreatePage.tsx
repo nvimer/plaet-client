@@ -326,6 +326,7 @@ export function OrderCreatePage() {
         orderType={selectedOrderType}
         tableId={selectedTable}
         isPending={isPending}
+        isHistorical={!!backdatedDate}
         onClose={() => setShowSummaryModal(false)}
         onConfirm={handleConfirmTableOrders}
       />

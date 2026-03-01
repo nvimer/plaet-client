@@ -4,7 +4,7 @@
  */
 
 import { Button } from "@/components";
-import { X, Check, ReceiptText, Soup, Salad, CupSoda, IceCream, Utensils, CircleOff, ArrowRightLeft, Info, PackagePlus } from "lucide-react";
+import { X, Check, ReceiptText, Soup, Salad, CupSoda, IceCream, Utensils, CircleOff, ArrowRightLeft, Info, PackagePlus, FastForward } from "lucide-react";
 import type { TableOrder } from "../types/orderBuilder";
 import { OrderType } from "@/types";
 
@@ -15,8 +15,9 @@ interface OrderSummaryModalProps {
   orderType: OrderType;
   tableId: number | null;
   isPending: boolean;
+  isHistorical?: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  onConfirm: (isFastHistoricalEntry?: boolean) => void;
 }
 
 export function OrderSummaryModal({
@@ -26,6 +27,7 @@ export function OrderSummaryModal({
   orderType,
   tableId,
   isPending,
+  isHistorical = false,
   onClose,
   onConfirm,
 }: OrderSummaryModalProps) {
@@ -180,7 +182,7 @@ export function OrderSummaryModal({
             </span>
           </div>
           
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <Button
               variant="ghost"
               size="lg"
@@ -190,11 +192,27 @@ export function OrderSummaryModal({
             >
               Cancelar
             </Button>
+            
+            {isHistorical && (
+              <Button
+                variant="secondary"
+                size="lg"
+                fullWidth
+                onClick={() => onConfirm(true)}
+                disabled={isPending}
+                isLoading={isPending}
+                className="rounded-2xl h-14 sm:h-16 font-black tracking-widest uppercase text-[10px] shadow-soft-md bg-sage-100 hover:bg-sage-200 text-sage-800"
+              >
+                <FastForward className="w-4 h-4 mr-2" />
+                Ingreso Rápido
+              </Button>
+            )}
+
             <Button
               variant="primary"
               size="lg"
               fullWidth
-              onClick={onConfirm}
+              onClick={() => onConfirm(false)}
               disabled={isPending}
               isLoading={isPending}
               className="rounded-2xl h-14 sm:h-16 bg-carbon-900 hover:bg-carbon-800 text-white font-semibold shadow-xl shadow-carbon-200"
