@@ -24,11 +24,16 @@ createRoot(document.getElementById("root")!).render(
               offset="24px"
               duration={3000}
               toastOptions={{
-                className: "bg-carbon-900 text-white border border-carbon-800 shadow-2xl rounded-[2rem] font-bold px-6 py-4 flex items-center gap-3",
+                classNames: {
+                  toast: "bg-carbon-900 border border-carbon-800 shadow-2xl rounded-[2rem] px-6 py-4 flex items-center gap-4",
+                  title: "text-white font-bold text-base",
+                  description: "text-carbon-300 font-medium text-sm",
+                },
                 style: {
                   backdropFilter: "blur(12px)",
                   WebkitBackdropFilter: "blur(12px)",
                   backgroundColor: "rgba(17, 24, 39, 0.95)", // carbon-900 slightly transparent
+                  border: "1px solid rgba(255, 255, 255, 0.1)",
                 },
                 success: {
                   iconTheme: {
