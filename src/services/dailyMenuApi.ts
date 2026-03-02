@@ -100,7 +100,28 @@ export interface DailyMenuResponse {
   data: DailyMenu | null;
 }
 
+export interface PaginatedDailyMenuResponse {
+  success: boolean;
+  data: DailyMenu[];
+  meta: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
+}
+
 const DAILY_MENU_BASE_URL = "/daily-menu";
+
+/**
+ * Get history of daily menus
+ */
+export async function getHistory(page = 1, limit = 20) {
+  const response = await axiosClient.get<PaginatedDailyMenuResponse>(`${DAILY_MENU_BASE_URL}/history`, {
+    params: { page, limit }
+  });
+  return response.data;
+}
 
 /**
  * Get today's daily menu with full item details

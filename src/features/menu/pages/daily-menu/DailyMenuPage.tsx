@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Card, Button } from "@/components";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { DailyMenuConfigForm } from "./DailyMenuConfigForm";
@@ -80,7 +81,8 @@ export function DailyMenuPage() {
     (typeof r === 'object' && 'name' in r ? r.name : r) === RoleName.ADMIN
   );
 
-  const [selectedDate, setSelectedDate] = useState<string | null>(null);
+  const location = useLocation();
+  const [selectedDate, setSelectedDate] = useState<string | null>(location.state?.date || null);
   const [isEditing, setIsEditing] = useState(false);
 
   const todayMenu = useDailyMenuToday();

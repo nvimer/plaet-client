@@ -24,7 +24,8 @@ import {
   StockManagementPage, 
   InventoryHubPage,
   DailyMenuPage,
-  DailyMenuHubPage
+  DailyMenuHubPage,
+  DailyMenuHistoryPage
 } from "./features/menu";
 import { OrdersPage, OrdersHubPage } from "./features/orders";
 import { OrderCreatePage } from "./features/orders/pages/OrderCreatePage";
@@ -393,6 +394,15 @@ const App = () => {
               element={
                 <PrivateRoute>
                   <DailyMenuHubPage />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path={ROUTES.DAILY_MENU_HISTORY}
+              element={
+                <PrivateRoute>
+                  <DailyMenuHistoryPage />
                 </PrivateRoute>
               }
             />

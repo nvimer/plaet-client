@@ -3,6 +3,7 @@ import axios from "axios";
 import {
   getToday,
   getByDate,
+  getHistory,
   updateToday,
   updateByDate,
   getItemsByCategory,
@@ -17,12 +18,21 @@ const DAILY_MENU_KEYS = {
   all: ["daily-menu"] as const,
   today: () => [...DAILY_MENU_KEYS.all, "today"] as const,
   byDate: (date: string) => [...DAILY_MENU_KEYS.all, date] as const,
+  history: (page: number, limit: number) => [...DAILY_MENU_KEYS.all, "history", page, limit] as const,
 };
 
 const CATEGORY_ITEMS_KEYS = {
   all: ["category-items"] as const,
   byCategory: (categoryId: number) => [...CATEGORY_ITEMS_KEYS.all, categoryId] as const,
 };
+
+export function useDailyMenuHistory(page = 1, limit = 20) {
+  return useQuery({
+    queryKey: DAILY_MENU_KEYS.history(page, limit),
+    queryFn: () => getHistory(page, limit),
+    staleTime: 1000 * 60 * 5,
+  });
+}
 
 export function useDailyMenuToday() {
   return useQuery({
