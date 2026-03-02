@@ -180,8 +180,6 @@ export function OrderCreatePage() {
                 </div>
                 <span className="text-2xl font-black text-carbon-900 tracking-tight">{opt.label}</span>
                 <span className="text-sm text-carbon-400 font-bold uppercase tracking-widest mt-2">{opt.desc}</span>
-                
-                <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-carbon-900 translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
               </motion.button>
             ))}
           </div>
