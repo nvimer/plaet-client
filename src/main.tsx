@@ -23,29 +23,19 @@ createRoot(document.getElementById("root")!).render(
               position="top-center"
               offset="24px"
               duration={3000}
+              theme="dark"
               toastOptions={{
                 classNames: {
                   toast: "bg-carbon-900 border border-carbon-800 shadow-2xl rounded-[2rem] px-6 py-4 flex items-center gap-4",
-                  title: "text-white font-bold text-base",
-                  description: "text-carbon-300 font-medium text-sm",
+                  title: "!text-white font-bold text-base",
+                  description: "!text-carbon-300 font-medium text-sm",
                 },
                 style: {
                   backdropFilter: "blur(12px)",
                   WebkitBackdropFilter: "blur(12px)",
                   backgroundColor: "rgba(17, 24, 39, 0.95)", // carbon-900 slightly transparent
                   border: "1px solid rgba(255, 255, 255, 0.1)",
-                },
-                success: {
-                  iconTheme: {
-                    primary: "#10b981", // emerald-500
-                    secondary: "white",
-                  },
-                },
-                error: {
-                  iconTheme: {
-                    primary: "#f43f5e", // rose-500
-                    secondary: "white",
-                  },
+                  color: "white",
                 },
               }}
             />
