@@ -1,6 +1,7 @@
 import { AnimatePresence } from "framer-motion";
 import type React from "react";
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { motion } from "framer-motion";
 import { X } from "lucide-react";
 
@@ -55,10 +56,10 @@ export function BaseModal({
     }, [isOpen, onClose]);
 
     // =============== RENDER ==============
-    return (
+    const content = (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
                     {/* Backdrop */}
                     <motion.div
                         initial={{ opacity: 0 }}
@@ -106,4 +107,7 @@ export function BaseModal({
             )}
         </AnimatePresence>
     );
+
+    if (typeof document === "undefined") return null;
+    return createPortal(content, document.body);
 }

@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import type React from "react";
 import { useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cn } from "@/utils/cn";
 
@@ -40,7 +41,7 @@ export function Drawer({
     };
   }, [isOpen, onClose]);
 
-  return (
+  const content = (
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[100] flex justify-end">
@@ -97,4 +98,7 @@ export function Drawer({
       )}
     </AnimatePresence>
   );
+
+  if (typeof document === "undefined") return null;
+  return createPortal(content, document.body);
 }
