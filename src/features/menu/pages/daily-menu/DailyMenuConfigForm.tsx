@@ -21,53 +21,15 @@ interface DailyMenuConfigFormProps {
   onSuccess?: () => void;
   /** Date to save the menu for (defaults to today if not provided) */
   selectedDate?: string | null;
+  /** Automatically open price configuration on mount */
+  defaultOpenPriceModal?: boolean;
 }
-
-interface FormState {
-  basePrice: number;
-  soupCategoryId: number | null;
-  principleCategoryId: number | null;
-  proteinCategoryId: number | null;
-  drinkCategoryId: number | null;
-  extraCategoryId: number | null;
-  saladCategoryId: number | null;
-  dessertCategoryId: number | null;
-  includeDessert: boolean;
-  soupOption1Id: number | null;
-  soupOption2Id: number | null;
-  principleOption1Id: number | null;
-  principleOption2Id: number | null;
-  drinkOption1Id: number | null;
-  drinkOption2Id: number | null;
-  extraOption1Id: number | null;
-  extraOption2Id: number | null;
-  saladOption1Id: number | null;
-  saladOption2Id: number | null;
-  dessertOption1Id: number | null;
-  dessertOption2Id: number | null;
-  // All available proteins (checkbox selection)
-  selectedProteinIds: number[];
-  createdAt: string | null;
-}
-
-const defaultPrices = {
-  basePrice: 4000,
-};
-
-const DEFAULT_CATEGORY_NAMES = {
-  soup: "Sopas",
-  principle: "Principios",
-  protein: "Proteínas",
-  drink: "Bebidas",
-  extra: "Extras",
-  salad: "Ensaladas",
-  dessert: "Postres",
-};
-
+...
 export function DailyMenuConfigForm({
   initialData,
   onSuccess,
   selectedDate,
+  defaultOpenPriceModal,
 }: DailyMenuConfigFormProps) {
   const updateMenuToday = useUpdateDailyMenu();
   const updateMenuByDate = useUpdateDailyMenuByDate();
@@ -77,6 +39,12 @@ export function DailyMenuConfigForm({
   const [isPriceModalOpen, setIsPriceModalOpen] = useState(false);
   const [showPriceFields, setShowPriceFields] = useState(false);
   const [password, setPassword] = useState("");
+
+  useEffect(() => {
+    if (defaultOpenPriceModal) {
+      setIsPriceModalOpen(true);
+    }
+  }, [defaultOpenPriceModal]);
 
   const findCategoryIdByName = useCallback(
     (name: string): number | null => {

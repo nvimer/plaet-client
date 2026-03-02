@@ -33,9 +33,10 @@ export function DailyMenuHubPage() {
     },
     {
       title: "Precios y Márgenes",
-      description: "Ajusta el precio base y la lógica de cobro del menú diario.",
+      description: "Ajuste el precio base y la lógica de cobro del menú diario.",
       icon: Settings,
-      path: ROUTES.DAILY_MENU_SETUP, // Opens specific section/modal
+      path: ROUTES.DAILY_MENU_SETUP,
+      state: { openPriceModal: true },
       color: "text-amber-600",
       bgColor: "bg-amber-50",
     },
@@ -69,7 +70,7 @@ export function DailyMenuHubPage() {
                 className={cn(
                   "group h-full cursor-pointer transition-all duration-300 hover:shadow-soft-xl hover:-translate-y-1 rounded-3xl border-2 border-transparent hover:border-sage-100"
                 )}
-                onClick={() => navigate(option.path)}
+                onClick={() => navigate(option.path, { state: option.state })}
               >
                 <div className="p-8 flex flex-col h-full">
                   <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110", option.bgColor, option.color)}>

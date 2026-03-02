@@ -83,7 +83,7 @@ export function DailyMenuPage() {
 
   const location = useLocation();
   const [selectedDate, setSelectedDate] = useState<string | null>(location.state?.date || null);
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(location.state?.openPriceModal || false);
 
   const todayMenu = useDailyMenuToday();
   const historicalMenu = useDailyMenuByDate(selectedDate || "");
@@ -214,6 +214,7 @@ export function DailyMenuPage() {
                 initialData={dailyMenu}
                 onSuccess={handleSuccess}
                 selectedDate={selectedDate}
+                defaultOpenPriceModal={location.state?.openPriceModal}
               />
             </div>
             <div className="space-y-4">
