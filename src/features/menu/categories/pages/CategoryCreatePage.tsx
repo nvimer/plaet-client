@@ -75,6 +75,7 @@ export function CategoryCreatePage() {
             <div className="p-6 lg:p-8 space-y-8">
               <Input
                 label="Nombre de la categoría"
+                required
                 type="text"
                 placeholder="Ej: Bebidas, Platos Principales..."
                 {...register("name")}
@@ -87,9 +88,7 @@ export function CategoryCreatePage() {
               <div>
                 <label className="block text-sm font-semibold text-carbon-800 mb-3">
                   Descripción
-                  <span className="font-normal text-carbon-400 ml-2">
-                    (opcional)
-                  </span>
+                  <span className="text-carbon-400 font-normal ml-2 text-xs">(opcional)</span>
                 </label>
                 <textarea
                   {...register("description")}
@@ -107,6 +106,7 @@ export function CategoryCreatePage() {
               <div>
                 <label className="block text-sm font-semibold text-carbon-800 mb-3">
                   Orden de visualización
+                  <span className="text-carbon-400 font-normal ml-1">*</span>
                 </label>
                 <Input
                   type="number"

@@ -79,6 +79,7 @@ export function MenuItemCreatePage() {
                 <div className="space-y-6">
                   <Input
                     label="Nombre del producto"
+                    required
                     type="text"
                     placeholder="Ej: Hamburguesa Clásica..."
                     {...register("name")}
@@ -90,9 +91,7 @@ export function MenuItemCreatePage() {
                   <div>
                     <label className="block text-sm font-semibold text-carbon-800 mb-3">
                       Descripción
-                      <span className="font-normal text-carbon-400 ml-2">
-                        (opcional)
-                      </span>
+                      <span className="text-carbon-400 font-normal ml-2 text-xs">(opcional)</span>
                     </label>
                     <textarea
                       {...register("description")}
@@ -108,7 +107,8 @@ export function MenuItemCreatePage() {
                   </div>
                   <div>
                     <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                      Categoría *
+                      Categoría
+                      <span className="text-carbon-400 font-normal ml-1">*</span>
                     </label>
                     <select
                       {...register("categoryId", { valueAsNumber: true })}
@@ -138,6 +138,7 @@ export function MenuItemCreatePage() {
                 <div className="space-y-6">
                   <Input
                     label="Precio"
+                    required
                     type="text"
                     placeholder="Ej: 15000"
                     {...register("price")}
@@ -146,6 +147,7 @@ export function MenuItemCreatePage() {
                   />
                   <Input
                     label="URL de imagen"
+                    optional
                     type="url"
                     placeholder="https://..."
                     {...register("imageUrl")}
@@ -162,6 +164,7 @@ export function MenuItemCreatePage() {
                 <div>
                   <label className="block text-sm font-semibold text-carbon-800 mb-3">
                     Tipo de inventario
+                    <span className="text-carbon-400 font-normal ml-1">*</span>
                   </label>
                   <select {...register("inventoryType")} className={inputClass}>
                     <option value={InventoryType.UNLIMITED}>
@@ -191,7 +194,8 @@ export function MenuItemCreatePage() {
                     </div>
                     <div>
                       <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                        Stock Inicial *
+                        Stock Inicial
+                        <span className="text-carbon-400 font-normal ml-1">*</span>
                       </label>
                       <Input
                         type="number"
@@ -208,9 +212,7 @@ export function MenuItemCreatePage() {
                     <div>
                       <label className="block text-sm font-semibold text-carbon-800 mb-3">
                         Alerta de stock bajo
-                        <span className="font-normal text-carbon-400 ml-2">
-                          (opcional)
-                        </span>
+                        <span className="text-carbon-400 font-normal ml-2 text-xs">(opcional)</span>
                       </label>
                       <Input
                         type="number"

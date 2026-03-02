@@ -221,6 +221,7 @@ export function MenuItemEditPage() {
                   <div className="space-y-6">
                     <Input
                       label="Nombre del producto"
+                      required
                       type="text"
                       placeholder="Ej: Hamburguesa Clásica..."
                       {...register("name")}
@@ -231,9 +232,7 @@ export function MenuItemEditPage() {
                     <div>
                       <label className="block text-sm font-semibold text-carbon-800 mb-3">
                         Descripción
-                        <span className="font-normal text-carbon-400 ml-2">
-                          (opcional)
-                        </span>
+                        <span className="text-carbon-400 font-normal ml-2 text-xs">(opcional)</span>
                       </label>
                       <textarea
                         {...register("description")}
@@ -250,6 +249,7 @@ export function MenuItemEditPage() {
                     <div>
                       <label className="block text-sm font-semibold text-carbon-800 mb-3">
                         Categoría
+                        <span className="text-carbon-400 font-normal ml-1">*</span>
                       </label>
                       <select
                         {...register("categoryId", { valueAsNumber: true })}
@@ -279,6 +279,7 @@ export function MenuItemEditPage() {
                   <div className="space-y-6">
                     <Input
                       label="Precio"
+                      required
                       type="text"
                       placeholder="Ej: 15000"
                       {...register("price")}
@@ -287,6 +288,7 @@ export function MenuItemEditPage() {
                     />
                     <Input
                       label="URL de imagen"
+                      optional
                       type="url"
                       placeholder="https://..."
                       {...register("imageUrl")}
@@ -303,6 +305,7 @@ export function MenuItemEditPage() {
                   <div>
                     <label className="block text-sm font-semibold text-carbon-800 mb-3">
                       Tipo de inventario
+                      <span className="text-carbon-400 font-normal ml-1">*</span>
                     </label>
                     <select
                       {...register("inventoryType")}
@@ -333,6 +336,7 @@ export function MenuItemEditPage() {
                       <div>
                         <label className="block text-sm font-semibold text-carbon-800 mb-3">
                           {wasTracked ? "Stock actual" : "Stock Inicial"}
+                          {!wasTracked && <span className="text-carbon-400 font-normal ml-1">*</span>}
                         </label>
                         <Input
                           type="number"
@@ -355,9 +359,7 @@ export function MenuItemEditPage() {
                       <div>
                         <label className="block text-sm font-semibold text-carbon-800 mb-3">
                           Alerta de stock bajo
-                          <span className="font-normal text-carbon-400 ml-2">
-                            (opcional)
-                          </span>
+                          <span className="text-carbon-400 font-normal ml-2 text-xs">(opcional)</span>
                         </label>
                         <Input
                           type="number"

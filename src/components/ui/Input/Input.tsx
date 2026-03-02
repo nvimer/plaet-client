@@ -2,10 +2,12 @@ import { forwardRef, type InputHTMLAttributes } from "react";
 import { cn } from "@/utils/cn";
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
-  label?: string;
+  label?: React.ReactNode;
   error?: string;
   helperText?: string;
   fullWidth?: boolean;
+  required?: boolean;
+  optional?: boolean;
 }
 
 /**
@@ -21,6 +23,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       error,
       helperText,
       fullWidth = false,
+      required = false,
+      optional = false,
       className = "",
       id,
       ...props
@@ -33,9 +37,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={id}
-            className="block text-sm font-medium text-carbon-700 mb-2"
+            className="block text-sm font-semibold text-carbon-800 mb-2"
           >
             {label}
+            {required && (
+              <span className="text-carbon-400 font-normal ml-1">*</span>
+            )}
+            {optional && (
+              <span className="text-carbon-400 font-normal ml-2 text-xs">
+                (opcional)
+              </span>
+            )}
           </label>
         )}
 
