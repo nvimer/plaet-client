@@ -24,7 +24,7 @@ export const createItemSchema = z.object({
 
   stockQuantity: z.number({ invalid_type_error: "Ingresa una cantidad válida" }).int("Debe ser un número entero").min(0, "El stock no puede ser negativo").optional(),
 
-  lowStockAlert: z.number({ invalid_type_error: "Ingresa una alerta válida" }).int("Debe ser un número entero").min(0, "La alerta de stock bajo no puede ser negativa").optional(),
+  lowStockAlert: z.number({ invalid_type_error: "Ingresa una alerta válida" }).int("Debe ser un número entero").min(4, "La alerta debe ser mayor a 3 por seguridad").optional(),
 
   autoMarkUnavailable: z.boolean(),
 }).refine(
@@ -60,7 +60,7 @@ export const updateItemSchema = z.object({
 
   stockQuantity: z.number({ invalid_type_error: "Ingresa una cantidad válida" }).int("Debe ser un número entero").min(0, "El stock no puede ser negativo").optional(),
 
-  lowStockAlert: z.number({ invalid_type_error: "Ingresa una alerta válida" }).int("Debe ser un número entero").min(0, "La alerta de stock bajo no puede ser negativa").optional(),
+  lowStockAlert: z.number({ invalid_type_error: "Ingresa una alerta válida" }).int("Debe ser un número entero").min(4, "La alerta debe ser mayor a 3 por seguridad").optional(),
 
   autoMarkUnavailable: z.boolean().optional(),
 }).refine(
