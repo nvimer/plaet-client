@@ -25,6 +25,20 @@ interface DailyMenuConfigFormProps {
   defaultOpenPriceModal?: boolean;
 }
 
+const defaultPrices = {
+  basePrice: 4000,
+};
+
+const DEFAULT_CATEGORY_NAMES = {
+  soup: "Sopas",
+  principle: "Principios",
+  protein: "Proteínas",
+  drink: "Bebidas",
+  extra: "Extras",
+  salad: "Ensaladas",
+  dessert: "Postres",
+};
+
 export function DailyMenuConfigForm({
   initialData,
   onSuccess,
