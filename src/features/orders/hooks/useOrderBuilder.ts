@@ -5,6 +5,7 @@
 
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { toast } from "sonner";
+import axios from "axios";
 import { useCreateOrder } from "./useCreateOrder";
 import { useTables, useUpdateTableStatus } from "@/features/tables";
 import { useItems } from "@/features/menu";
@@ -561,16 +562,16 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       if (ordersPayload.length === 1) {
         // Single order creation
         const res = await createOrder(ordersPayload[0]);
-        createdOrdersList = [res.data];
+        createdOrdersList = [res];
         toast.success("Pedido creado exitosamente");
       } else {
         if (selectedOrderType === OrderType.DINE_IN && selectedTable) {
             const results = await Promise.all(ordersPayload.map(order => createOrder(order)));
-            createdOrdersList = results.map(r => r.data);
+            createdOrdersList = results;
             toast.success(`${ordersPayload.length} pedidos creados para Mesa ${selectedTable}`);
         } else {
             const results = await Promise.all(ordersPayload.map(order => createOrder(order)));
-            createdOrdersList = results.map(r => r.data);
+            createdOrdersList = results;
             toast.success(`${ordersPayload.length} pedidos creados`);
         }
       }
@@ -602,11 +603,17 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       // The parent component handles UI reset via state change (back to type selection)
       setSelectedOrderType(null); 
 
-    } catch (error) {
-      console.error(error);
-      toast.error("Error al crear los pedidos", {
-        description: error instanceof Error ? error.message : "Intenta nuevamente",
-      });
+    } catch (error: unknown) {
+      console.error("Order Creation Error:", error);
+      let description = "Intenta nuevamente";
+      
+      if (axios.isAxiosError(error)) {
+        description = error.response?.data?.message || error.message;
+      } else if (error instanceof Error) {
+        description = error.message;
+      }
+      
+      toast.error("Error al crear los pedidos", { description });
     }
   }, [selectedTable, selectedOrderType, tableOrders, createOrder, backdatedDate, updateTableStatus, clearCurrentOrder]);
 
