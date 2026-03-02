@@ -8,8 +8,8 @@ import z from "zod";
 export const createCategorySchema = z.object({
     name: z
         .string({
-            error: (iss) =>
-                iss.input === undefined ? "Campo Obligatorio" : "Entrada Inválida",
+            invalid_type_error: "Entrada inválida",
+            required_error: "Campo obligatorio",
         })
         .min(4, "Mínimo 4 caracteres de longitud.")
         .max(500, "Máximo 500 caracteres de longitud."),
@@ -21,8 +21,8 @@ export const createCategorySchema = z.object({
         .or(z.literal("")),
 
     order: z.number({
-        error: (iss) =>
-            iss.input === undefined ? "Campo Obligatorio" : "Entrada Inválida",
+        invalid_type_error: "Debe ser un número válido",
+        required_error: "Campo obligatorio",
     }),
 });
 

@@ -6,7 +6,7 @@ export const createItemSchema = z.object({
 
   description: z.string().max(500, "La descripción no puede exceder los 500 caracteres.").optional(),
 
-  categoryId: z.number().min(1, "Selecciona una categoría"),
+  categoryId: z.number({ invalid_type_error: "Debes seleccionar una categoría" }).min(1, "Selecciona una categoría"),
 
   price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Debe ser un precio válido (ej: 1250 o 12.50)").refine(
     (val) => {
@@ -22,9 +22,9 @@ export const createItemSchema = z.object({
 
   inventoryType: z.nativeEnum(InventoryType),
 
-  stockQuantity: z.number().int().min(0, "El stock no puede ser negativo").optional(),
+  stockQuantity: z.number({ invalid_type_error: "Ingresa una cantidad válida" }).int("Debe ser un número entero").min(0, "El stock no puede ser negativo").optional(),
 
-  lowStockAlert: z.number().int().min(0, "La alerta de stock bajo no puede ser negativa").optional(),
+  lowStockAlert: z.number({ invalid_type_error: "Ingresa una alerta válida" }).int("Debe ser un número entero").min(0, "La alerta de stock bajo no puede ser negativa").optional(),
 
   autoMarkUnavailable: z.boolean(),
 }).refine(
@@ -42,7 +42,7 @@ export const updateItemSchema = z.object({
 
   description: z.string().max(500, "La descripción no puede exceder los 500 caracteres.").optional().or(z.literal("")),
 
-  categoryId: z.number().min(1, "Selecciona una categoría").optional(),
+  categoryId: z.number({ invalid_type_error: "Debes seleccionar una categoría" }).min(1, "Selecciona una categoría").optional(),
 
   price: z.string().regex(/^\d+(\.\d{1,2})?$/, "Debe ser un precio válido (ej: 1250 o 12.50)").refine(
     (val) => {
@@ -58,9 +58,9 @@ export const updateItemSchema = z.object({
 
   inventoryType: z.nativeEnum(InventoryType).optional(),
 
-  stockQuantity: z.number().int().min(0, "El stock no puede ser negativo").optional(),
+  stockQuantity: z.number({ invalid_type_error: "Ingresa una cantidad válida" }).int("Debe ser un número entero").min(0, "El stock no puede ser negativo").optional(),
 
-  lowStockAlert: z.number().int().min(0, "La alerta de stock bajo no puede ser negativa").optional(),
+  lowStockAlert: z.number({ invalid_type_error: "Ingresa una alerta válida" }).int("Debe ser un número entero").min(0, "La alerta de stock bajo no puede ser negativa").optional(),
 
   autoMarkUnavailable: z.boolean().optional(),
 }).refine(
