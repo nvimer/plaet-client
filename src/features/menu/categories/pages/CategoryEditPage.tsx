@@ -53,7 +53,7 @@ export function CategoryEditPage() {
           toast.success("Categoría actualizada", {
             description: `"${data.name || category.name}" ha sido actualizada`,
           });
-          ROUTES.MENU_LIST
+          navigate(ROUTES.MENU_LIST_LIST);
         },
         onError: (error: AxiosErrorWithResponse) => {
           toast.error("Error al actualizar categoría", {
@@ -69,7 +69,7 @@ export function CategoryEditPage() {
     deleteCategory(category.id, {
       onSuccess: () => {
         toast.success("Categoría eliminada");
-        ROUTES.MENU_LIST
+        navigate(ROUTES.MENU_LIST_LIST);
       },
       onError: (error: AxiosErrorWithResponse) => {
         toast.error("Error al eliminar categoría", {
@@ -81,7 +81,7 @@ export function CategoryEditPage() {
 
   if (isLoading) {
     return (
-      <SidebarLayout title="Cargando..." backRoute={ROUTES.MENU} fullWidth contentClassName="p-6 lg:p-10">
+      <SidebarLayout title="Cargando..." backRoute={ROUTES.MENU_LIST} fullWidth contentClassName="p-6 lg:p-10">
         <div className="max-w-2xl mx-auto space-y-6">
           <Skeleton className="h-10 w-64" />
           <Skeleton className="h-32" />
@@ -93,14 +93,14 @@ export function CategoryEditPage() {
 
   if (error || !category) {
     return (
-      <SidebarLayout title="Error" backRoute={ROUTES.MENU} fullWidth contentClassName="p-6 lg:p-10">
+      <SidebarLayout title="Error" backRoute={ROUTES.MENU_LIST} fullWidth contentClassName="p-6 lg:p-10">
         <div className="max-w-2xl mx-auto">
           <EmptyState
             icon={<XCircle />}
             title="Categoría no encontrada"
             description="La categoría que buscas no existe o fue eliminada"
             actionLabel="Volver al Menú"
-            onAction={() => navigate(ROUTES.MENU)}
+            onAction={() => navigate(ROUTES.MENU_LIST)}
           />
         </div>
       </SidebarLayout>
@@ -111,7 +111,7 @@ export function CategoryEditPage() {
     <>
       <SidebarLayout
         title={`Editar: ${category.name}`}
-        backRoute={ROUTES.MENU}
+        backRoute={ROUTES.MENU_LIST}
         fullWidth
         contentClassName="p-6 lg:p-10"
       >
@@ -181,7 +181,7 @@ export function CategoryEditPage() {
                     type="button"
                     variant="ghost"
                     size="lg"
-                    onClick={() => navigate(ROUTES.MENU)}
+                    onClick={() => navigate(ROUTES.MENU_LIST)}
                     disabled={isUpdating}
                     className="sm:min-w-[120px]"
                   >

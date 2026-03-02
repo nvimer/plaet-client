@@ -81,7 +81,7 @@ export function MenuItemEditPage() {
     return (
       <SidebarLayout
         title="Cargando..."
-        backRoute={ROUTES.MENU}
+        backRoute={ROUTES.MENU_LIST}
         fullWidth
         contentClassName="p-6 lg:p-10"
       >
@@ -98,7 +98,7 @@ export function MenuItemEditPage() {
     return (
       <SidebarLayout
         title="Error"
-        backRoute={ROUTES.MENU}
+        backRoute={ROUTES.MENU_LIST}
         fullWidth
         contentClassName="p-6 lg:p-10"
       >
@@ -108,7 +108,7 @@ export function MenuItemEditPage() {
             title="Producto no encontrado"
             description="El producto que buscas no existe o fue eliminado"
             actionLabel="Volver al Menú"
-            onAction={() => navigate(ROUTES.MENU)}
+            onAction={() => navigate(ROUTES.MENU_LIST)}
           />
         </div>
       </SidebarLayout>
@@ -174,7 +174,7 @@ export function MenuItemEditPage() {
       toast.success("Producto actualizado", {
         description: `"${data.name || item.name}" ha sido actualizado correctamente`,
       });
-      navigate(ROUTES.MENU_LIST);
+      navigate(ROUTES.MENU_LIST_LIST);
     } catch (error) {
       console.error("Update error:", error);
       toast.error("Error al actualizar producto", {
@@ -190,7 +190,7 @@ export function MenuItemEditPage() {
     try {
       await deleteItem(item.id);
       toast.success("Producto eliminado");
-      navigate(ROUTES.MENU_LIST);
+      navigate(ROUTES.MENU_LIST_LIST);
     } catch (error) {
       toast.error("Error al eliminar producto", {
         description: error instanceof Error ? error.message : "Error desconocido",
@@ -206,7 +206,7 @@ export function MenuItemEditPage() {
     <>
       <SidebarLayout
         title={`Editar: ${item.name}`}
-        backRoute={ROUTES.MENU}
+        backRoute={ROUTES.MENU_LIST}
         fullWidth
         contentClassName="p-6 lg:p-10"
       >
@@ -411,7 +411,7 @@ export function MenuItemEditPage() {
                     type="button"
                     variant="ghost"
                     size="lg"
-                    onClick={() => navigate(ROUTES.MENU)}
+                    onClick={() => navigate(ROUTES.MENU_LIST)}
                     disabled={isSaving}
                     className="sm:min-w-[120px]"
                   >

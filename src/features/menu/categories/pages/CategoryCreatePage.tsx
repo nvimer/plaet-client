@@ -43,7 +43,7 @@ export function CategoryCreatePage() {
         toast.success("Categoría creada", {
           description: `"${data.name}" ha sido creada exitosamente`,
         });
-        navigate(ROUTES.MENU_LIST;
+        navigate(ROUTES.MENU_LIST);
       },
       onError: (error: AxiosErrorWithResponse) => {
         toast.error("Error al crear categoría", {
@@ -56,7 +56,7 @@ export function CategoryCreatePage() {
   return (
     <SidebarLayout
       title="Nueva Categoría"
-      backRoute={ROUTES.MENU}
+      backRoute={ROUTES.MENU_LIST}
       fullWidth
       contentClassName="p-6 lg:p-10"
     >
@@ -127,7 +127,7 @@ export function CategoryCreatePage() {
                   type="button"
                   variant="ghost"
                   size="lg"
-                  onClick={() => navigate(ROUTES.MENU_LIST}
+                  onClick={() => navigate(ROUTES.MENU_LIST)}
                   disabled={isPending}
                   className="sm:min-w-[120px]"
                 >
