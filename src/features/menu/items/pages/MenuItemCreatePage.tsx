@@ -139,7 +139,7 @@ export function MenuItemCreatePage() {
                   <Input
                     label="Precio"
                     type="text"
-                    placeholder="Ej: 12.50"
+                    placeholder="Ej: 15000"
                     {...register("price")}
                     error={errors.price?.message}
                     fullWidth
