@@ -40,7 +40,7 @@ export function MenuItemCreatePage() {
       inventoryType: InventoryType.UNLIMITED,
       stockQuantity: undefined,
       lowStockAlert: undefined,
-      autoMarkUnavailable: false,
+      autoMarkUnavailable: true,
     },
     mode: "onTouched",
   });
@@ -54,6 +54,7 @@ export function MenuItemCreatePage() {
   useEffect(() => {
     if (isZeroStock) {
       setValue("isAvailable", false, { shouldValidate: true, shouldDirty: true });
+      setValue("autoMarkUnavailable", true, { shouldValidate: true, shouldDirty: true });
     }
   }, [isZeroStock, setValue]);
 

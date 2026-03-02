@@ -85,6 +85,7 @@ export function MenuItemEditPage() {
   useEffect(() => {
     if (isZeroStock) {
       setValue("isAvailable", false, { shouldValidate: true, shouldDirty: true });
+      setValue("autoMarkUnavailable", true, { shouldValidate: true, shouldDirty: true });
     }
   }, [isZeroStock, setValue]);
 
