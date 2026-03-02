@@ -79,12 +79,12 @@ export function DailyMenuHistoryPage() {
     setViewDate(next);
   };
 
-  // Map menus to dates for fast lookup
+  // Map menus to dates for fast lookup using YYYY-MM-DD
   const menuMap = useMemo(() => {
     const map = new Map();
     menus.forEach(m => {
-      const dateKey = new Date(m.createdAt).toDateString();
-      map.set(dateKey, m);
+      const datePart = m.createdAt.split('T')[0];
+      map.set(datePart, m);
     });
     return map;
   }, [menus]);
@@ -158,7 +158,8 @@ export function DailyMenuHistoryPage() {
               {daysInMonth.map((day, idx) => {
                 if (!day) return <div key={`empty-${idx}`} className="aspect-square" />;
                 
-                const menu = menuMap.get(day.toDateString());
+                const dateKey = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
+                const menu = menuMap.get(dateKey);
                 const isSelected = selectedMenuId === menu?.id;
                 const isToday = day.toDateString() === new Date().toDateString();
 
