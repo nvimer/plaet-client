@@ -1,11 +1,102 @@
-import { useState, cloneElement, isValidElement, useEffect } from "react";
+import { useState, cloneElement, isValidElement } from "react";
 import { createPortal } from "react-dom";
 import { AlertTriangle, Info, X, Trash2 } from "lucide-react";
 import { Button } from "../Button/Button";
-...
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/utils/cn";
+
+export interface ConfirmDialogProps {
+  /** If provided, the dialog controls its own open/close state when this element is clicked */
+  trigger?: React.ReactNode;
+  /** Controlled open state (use if no trigger is provided) */
+  isOpen?: boolean;
+  /** Callback for when the dialog wants to close */
+  onClose?: () => void;
+  /** Action to perform when confirmed */
+  onConfirm: () => void;
+  /** Dialog title */
+  title: string;
+  /** Dialog body text (accepts message or description for retro-compatibility) */
+  message?: string;
+  description?: string;
+  /** Button labels */
+  confirmText?: string;
+  cancelText?: string;
+  /** Visual variant */
+  variant?: "danger" | "warning" | "info";
+  /** Loading state for confirm button */
+  isLoading?: boolean;
+}
+
+/**
+ * Premium Confirm Dialog
+ * Supports both controlled (isOpen/onClose) and uncontrolled (trigger) usage.
+ */
+export function ConfirmDialog({
+  trigger,
+  isOpen: controlledIsOpen,
+  onClose: controlledOnClose,
+  onConfirm,
+  title,
+  message,
+  description,
+  confirmText = "Confirmar",
+  cancelText = "Cancelar",
+  variant = "danger",
+  isLoading = false,
+}: ConfirmDialogProps) {
+  const [internalIsOpen, setInternalIsOpen] = useState(false);
+  const isControlled = controlledIsOpen !== undefined;
+  
+  const isOpen = isControlled ? controlledIsOpen : internalIsOpen;
+  
+  const handleClose = () => {
+    if (isControlled && controlledOnClose) {
+      controlledOnClose();
+    } else {
+      setInternalIsOpen(false);
+    }
+  };
+
+  const handleOpen = () => {
+    if (!isControlled) {
+      setInternalIsOpen(true);
+    }
+  };
+
+  const handleConfirm = () => {
+    onConfirm();
+    // Don't auto-close if loading, wait for the parent to unmount or close it
+    if (!isLoading && !isControlled) {
+      setInternalIsOpen(false);
+    }
+  };
+
+  const config = {
+    danger: {
+      icon: Trash2,
+      iconBg: "bg-rose-50 text-rose-600 shadow-inner",
+      buttonVariant: "danger" as const,
+      buttonClass: "",
+    },
+    warning: {
+      icon: AlertTriangle,
+      iconBg: "bg-amber-50 text-amber-600 shadow-inner",
+      buttonVariant: "primary" as const,
+      buttonClass: "bg-amber-500 hover:bg-amber-600 text-white shadow-soft-lg",
+    },
+    info: {
+      icon: Info,
+      iconBg: "bg-blue-50 text-blue-600 shadow-inner",
+      buttonVariant: "primary" as const,
+      buttonClass: "bg-blue-600 hover:bg-blue-700 text-white shadow-soft-lg",
+    },
+  }[variant];
+
+  const Icon = config.icon;
   const bodyText = message || description;
 
-  const content = (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
@@ -97,8 +188,8 @@ import { Button } from "../Button/Button";
         })
       }
 
-      {/* Modal Render */}
-      {typeof document !== "undefined" ? createPortal(content, document.body) : null}
+      {/* Modal Render via Portal */}
+      {typeof document !== "undefined" ? createPortal(modalContent, document.body) : null}
     </>
   );
 }
