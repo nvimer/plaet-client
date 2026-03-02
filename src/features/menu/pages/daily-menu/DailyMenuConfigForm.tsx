@@ -202,6 +202,8 @@ export function DailyMenuConfigForm({
       const missingCategories = [];
       if (!formState.soupOption1Id && !formState.soupOption2Id) missingCategories.push("Sopas");
       if (!formState.principleOption1Id && !formState.principleOption2Id) missingCategories.push("Principios");
+      if (!formState.saladOption1Id && !formState.saladOption2Id) missingCategories.push("Ensaladas");
+      if (!formState.extraOption1Id && !formState.extraOption2Id) missingCategories.push("Extras");
       if (!formState.drinkOption1Id && !formState.drinkOption2Id) missingCategories.push("Bebidas");
       if (formState.selectedProteinIds.length === 0) missingCategories.push("Proteínas");
 
