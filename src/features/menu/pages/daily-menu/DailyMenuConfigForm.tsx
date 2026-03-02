@@ -198,6 +198,21 @@ export function DailyMenuConfigForm({
 
   const handleSubmit = async () => {
     try {
+      // 1. Validation for mandatory designated categories
+      const missingCategories = [];
+      if (!formState.soupOption1Id && !formState.soupOption2Id) missingCategories.push("Sopas");
+      if (!formState.principleOption1Id && !formState.principleOption2Id) missingCategories.push("Principios");
+      if (!formState.drinkOption1Id && !formState.drinkOption2Id) missingCategories.push("Bebidas");
+      if (formState.selectedProteinIds.length === 0) missingCategories.push("Proteínas");
+
+      if (missingCategories.length > 0) {
+        toast.error("Configuración incompleta", {
+          description: `Debes seleccionar al menos una opción obligatoria en: ${missingCategories.join(", ")}`,
+        });
+        return;
+      }
+
+      // 2. Prepare payload
       let submissionDate = formState.createdAt;
       if (!submissionDate) {
         if (selectedDate) {
