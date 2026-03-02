@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -11,6 +12,7 @@ import { toast } from "sonner";
 import { Check, Loader2, Package } from "lucide-react";
 import type { AxiosErrorWithResponse } from "@/types/common";
 import { InventoryType } from "@/types";
+import { cn } from "@/utils/cn";
 
 const inputClass =
   "w-full px-4 py-3 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 placeholder:text-carbon-400 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:border-sage-400";
@@ -25,6 +27,7 @@ export function MenuItemCreatePage() {
     handleSubmit,
     formState: { errors, isValid },
     watch,
+    setValue,
   } = useForm<CreateItemInput>({
     resolver: zodResolver(createItemSchema),
     defaultValues: {
@@ -44,6 +47,15 @@ export function MenuItemCreatePage() {
 
   const inventoryType = watch("inventoryType");
   const isTracked = inventoryType === InventoryType.TRACKED;
+  const stockQuantity = watch("stockQuantity");
+
+  const isZeroStock = isTracked && stockQuantity === 0;
+
+  useEffect(() => {
+    if (isZeroStock) {
+      setValue("isAvailable", false, { shouldValidate: true, shouldDirty: true });
+    }
+  }, [isZeroStock, setValue]);
 
   const onSubmit = (data: CreateItemInput) => {
     createItem(data, {
@@ -247,14 +259,20 @@ export function MenuItemCreatePage() {
                   Opciones
                 </h3>
                 <div className="space-y-4">
-                  <label className="flex items-center gap-3 cursor-pointer">
+                  <label className={cn("flex items-center gap-3", isZeroStock ? "cursor-not-allowed" : "cursor-pointer")}>
                     <input
                       type="checkbox"
                       {...register("isAvailable")}
-                      className="w-5 h-5 rounded border-sage-300 text-sage-600 focus:ring-sage-400"
+                      disabled={isZeroStock}
+                      className="w-5 h-5 rounded border-sage-300 text-sage-600 focus:ring-sage-400 disabled:opacity-50 disabled:cursor-not-allowed"
                     />
-                    <span className="text-carbon-800">
+                    <span className={cn(isZeroStock ? "text-carbon-400" : "text-carbon-800")}>
                       Disponible en el menú
+                      {isZeroStock && (
+                        <span className="ml-2 text-xs font-bold text-rose-500 uppercase tracking-wider">
+                          (Sin stock)
+                        </span>
+                      )}
                     </span>
                   </label>
                 </div>

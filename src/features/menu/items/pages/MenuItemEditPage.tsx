@@ -24,8 +24,9 @@ import {
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
 import { Check, Trash2, XCircle, Package } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { InventoryType } from "@/types";
+import { cn } from "@/utils/cn";
 
 const inputClass =
   "w-full px-4 py-3 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 placeholder:text-carbon-400 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:border-sage-400";
@@ -53,6 +54,7 @@ export function MenuItemEditPage() {
     handleSubmit,
     formState: { errors, isDirty },
     watch,
+    setValue,
   } = useForm<UpdateItemInput>({
     resolver: zodResolver(updateItemSchema),
     values: item
@@ -76,6 +78,15 @@ export function MenuItemEditPage() {
   const inventoryType = watch("inventoryType");
   const isTracked = inventoryType === InventoryType.TRACKED;
   const wasTracked = item?.inventoryType === InventoryType.TRACKED;
+  const stockQuantity = watch("stockQuantity");
+
+  const isZeroStock = isTracked && stockQuantity === 0;
+
+  useEffect(() => {
+    if (isZeroStock) {
+      setValue("isAvailable", false, { shouldValidate: true, shouldDirty: true });
+    }
+  }, [isZeroStock, setValue]);
 
   if (isLoading) {
     return (
@@ -388,24 +399,29 @@ export function MenuItemEditPage() {
                   )}
                 </section>
 
-                <section className="pt-6 border-t border-sage-200">
-                  <h3 className="text-lg font-semibold text-carbon-800 mb-4">
-                    Opciones
-                  </h3>
-                  <div className="space-y-4">
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        {...register("isAvailable")}
-                        className="w-5 h-5 rounded border-sage-300 text-sage-600 focus:ring-sage-400"
-                      />
-                      <span className="text-carbon-800">
-                        Disponible en el menú
-                      </span>
-                    </label>
-                  </div>
-                </section>
-              </div>
+                              <section className="pt-6 border-t border-sage-200">
+                                <h3 className="text-lg font-semibold text-carbon-800 mb-4">
+                                  Opciones
+                                </h3>
+                                <div className="space-y-4">
+                                  <label className={cn("flex items-center gap-3", isZeroStock ? "cursor-not-allowed" : "cursor-pointer")}>
+                                    <input
+                                      type="checkbox"
+                                      {...register("isAvailable")}
+                                      disabled={isZeroStock}
+                                      className="w-5 h-5 rounded border-sage-300 text-sage-600 focus:ring-sage-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                                    />
+                                    <span className={cn(isZeroStock ? "text-carbon-400" : "text-carbon-800")}>
+                                      Disponible en el menú
+                                      {isZeroStock && (
+                                        <span className="ml-2 text-xs font-bold text-rose-500 uppercase tracking-wider">
+                                          (Sin stock)
+                                        </span>
+                                      )}
+                                    </span>
+                                  </label>
+                                </div>
+                              </section>              </div>
 
               <div className="px-6 lg:px-8 py-5 bg-sage-50/50 border-t border-sage-200 rounded-b-2xl space-y-4">
                 <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end">
