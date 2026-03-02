@@ -46,7 +46,7 @@ export function FixedOrderSummaryBar({
           className="bg-carbon-900 text-white border-b border-carbon-800 cursor-pointer active:bg-carbon-800 transition-colors w-full"
           onClick={onShowSummary}
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 flex items-center justify-between w-full">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 flex items-center justify-between w-full">
             <div className="flex items-center gap-2">
               <ReceiptText className="w-3.5 h-3.5 text-sage-400" />
               <span className="text-[10px] font-bold tracking-wide">Mesa: {ordersCount} servicios</span>
@@ -58,7 +58,7 @@ export function FixedOrderSummaryBar({
 
       {/* 2. Main Action Container */}
       <div className="w-full bg-white/95">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex gap-2 w-full">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex gap-2 w-full">
           {hasCurrentOrder ? (
             <button
               onClick={onAddOrder}

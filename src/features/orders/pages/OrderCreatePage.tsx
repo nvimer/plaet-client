@@ -32,8 +32,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/utils/cn";
 import { useMemo } from "react";
 
+import { useSidebar } from "@/contexts/SidebarContext";
+
 export function OrderCreatePage() {
   const { user } = useAuth();
+  const { isCollapsed, isMobile } = useSidebar();
   const isAdmin = user?.roles?.some(r => 
     (typeof r === 'object' && 'name' in r ? r.name : r) === RoleName.ADMIN
   );
@@ -354,7 +357,10 @@ export function OrderCreatePage() {
         </div>
 
         {/* Fixed Order Summary Bar */}
-        <div className="fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-t border-sage-100 shadow-soft-2xl lg:ml-[72px] transition-all duration-300">
+        <div className={cn(
+          "fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-t border-sage-100 shadow-soft-2xl transition-all duration-500",
+          !isMobile && (isCollapsed ? "ml-20" : "ml-72")
+        )}>
           <FixedOrderSummaryBar
             looseItems={formProps.looseItems}
             currentOrderTotal={formProps.currentOrderTotal}
