@@ -24,7 +24,7 @@ interface DailyMenuConfigFormProps {
   /** Automatically open price configuration on mount */
   defaultOpenPriceModal?: boolean;
 }
-...
+
 export function DailyMenuConfigForm({
   initialData,
   onSuccess,
