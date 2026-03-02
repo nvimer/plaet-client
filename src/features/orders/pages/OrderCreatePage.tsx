@@ -173,7 +173,7 @@ export function OrderCreatePage() {
                 className="group relative flex flex-col items-center p-10 rounded-[2.5rem] bg-white border-2 border-sage-100 hover:border-carbon-900 hover:shadow-soft-2xl transition-all duration-500 active:scale-95 overflow-hidden"
               >
                 <div className={cn(
-                  "w-24 h-24 rounded-3xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 shadow-inner-lg",
+                  "w-24 h-24 rounded-3xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110 shadow-inner-lg",
                   opt.bg, opt.color
                 )}>
                   <opt.icon className="w-12 h-12 stroke-[1.5px]" />
