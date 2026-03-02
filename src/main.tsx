@@ -18,22 +18,30 @@ createRoot(document.getElementById("root")!).render(
         <AuthProvider>
           <SidebarProvider>
             <App />
-            {/* TOASTER COMPONENT */}
-            {/* Displays toast notifications throughtout the app */}
+            {/* TOASTER COMPONENT - Premium Dynamic Island Style */}
             <Toaster
-              position="top-right"
-              expand={true}
-              richColors
-              closeButton
+              position="top-center"
+              offset="24px"
+              duration={3000}
               toastOptions={{
-                // Custom styles matching our design system
+                className: "bg-carbon-900 text-white border border-carbon-800 shadow-2xl rounded-[2rem] font-bold px-6 py-4 flex items-center gap-3",
                 style: {
-                  borderRadius: "12px",
-                  padding: "16px",
-                  fontSize: "15px",
-                  fontWeight: "400",
+                  backdropFilter: "blur(12px)",
+                  WebkitBackdropFilter: "blur(12px)",
+                  backgroundColor: "rgba(17, 24, 39, 0.95)", // carbon-900 slightly transparent
                 },
-                className: "font-light",
+                success: {
+                  iconTheme: {
+                    primary: "#10b981", // emerald-500
+                    secondary: "white",
+                  },
+                },
+                error: {
+                  iconTheme: {
+                    primary: "#f43f5e", // rose-500
+                    secondary: "white",
+                  },
+                },
               }}
             />
             {/* DevTools (only in development) */}
