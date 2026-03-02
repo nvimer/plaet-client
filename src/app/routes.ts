@@ -34,6 +34,7 @@ export const ROUTES = {
 
   // Menu
   MENU: "/menu",
+  MENU_LIST: "/menu/list",
   MENU_ITEM_CREATE: "/menu/items/new",
   MENU_ITEM_EDIT: "/menu/items/:id/edit",
   MENU_CATEGORY_CREATE: "/menu/categories/new",

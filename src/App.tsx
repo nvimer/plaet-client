@@ -20,6 +20,7 @@ import { TablesPage, TablesHubPage } from "./features/tables";
 import { LandingPage, PrivacyPage, TermsPage } from "./features/landing/pages";
 import { 
   MenuPage, 
+  MenuHubPage,
   StockManagementPage, 
   InventoryHubPage,
   DailyMenuPage,
@@ -218,6 +219,15 @@ const App = () => {
             {/* Menu module */}
             <Route
               path={ROUTES.MENU}
+              element={
+                <PrivateRoute>
+                  <MenuHubPage />
+                </PrivateRoute>
+              }
+            />
+
+            <Route
+              path={ROUTES.MENU_LIST}
               element={
                 <PrivateRoute>
                   <MenuPage />

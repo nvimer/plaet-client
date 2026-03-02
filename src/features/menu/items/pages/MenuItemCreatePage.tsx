@@ -51,7 +51,7 @@ export function MenuItemCreatePage() {
         toast.success("Producto creado", {
           description: `"${data.name}" ha sido creado exitosamente`,
         });
-        navigate(ROUTES.MENU);
+        navigate(ROUTES.MENU_LIST);
       },
       onError: (error: AxiosErrorWithResponse) => {
         toast.error("Error al crear producto", {
@@ -64,7 +64,7 @@ export function MenuItemCreatePage() {
   return (
     <SidebarLayout
       title="Nuevo Producto"
-      backRoute={ROUTES.MENU}
+      backRoute={ROUTES.MENU_LIST}
       fullWidth
       contentClassName="p-6 lg:p-10"
     >
@@ -265,7 +265,7 @@ export function MenuItemCreatePage() {
                   type="button"
                   variant="ghost"
                   size="lg"
-                  onClick={() => navigate(ROUTES.MENU)}
+                  onClick={() => navigate(ROUTES.MENU_LIST)}
                   disabled={isPending}
                   className="sm:min-w-[120px]"
                 >

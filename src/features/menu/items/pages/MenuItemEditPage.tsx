@@ -174,7 +174,7 @@ export function MenuItemEditPage() {
       toast.success("Producto actualizado", {
         description: `"${data.name || item.name}" ha sido actualizado correctamente`,
       });
-      navigate(ROUTES.MENU);
+      navigate(ROUTES.MENU_LIST);
     } catch (error) {
       console.error("Update error:", error);
       toast.error("Error al actualizar producto", {
@@ -190,7 +190,7 @@ export function MenuItemEditPage() {
     try {
       await deleteItem(item.id);
       toast.success("Producto eliminado");
-      navigate(ROUTES.MENU);
+      navigate(ROUTES.MENU_LIST);
     } catch (error) {
       toast.error("Error al eliminar producto", {
         description: error instanceof Error ? error.message : "Error desconocido",

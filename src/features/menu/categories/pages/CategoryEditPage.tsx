@@ -53,7 +53,7 @@ export function CategoryEditPage() {
           toast.success("Categoría actualizada", {
             description: `"${data.name || category.name}" ha sido actualizada`,
           });
-          navigate(ROUTES.MENU);
+          ROUTES.MENU_LIST
         },
         onError: (error: AxiosErrorWithResponse) => {
           toast.error("Error al actualizar categoría", {
@@ -69,7 +69,7 @@ export function CategoryEditPage() {
     deleteCategory(category.id, {
       onSuccess: () => {
         toast.success("Categoría eliminada");
-        navigate(ROUTES.MENU);
+        ROUTES.MENU_LIST
       },
       onError: (error: AxiosErrorWithResponse) => {
         toast.error("Error al eliminar categoría", {

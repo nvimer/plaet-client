@@ -133,7 +133,7 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean): NavItem
       icon: Menu,
       description: "Productos y precios",
       children: [
-        { type: "link", path: ROUTES.MENU, name: "Todos los productos", icon: Grid3x3 },
+        { type: "link", path: ROUTES.MENU_LIST, name: "Lista de Productos", icon: Grid3x3 },
         { type: "link", path: ROUTES.MENU_CATEGORY_CREATE, name: "Nueva Categoría", icon: Plus },
         { type: "link", path: ROUTES.MENU_ITEM_CREATE, name: "Nuevo Producto", icon: Plus },
       ],

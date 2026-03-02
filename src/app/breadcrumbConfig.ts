@@ -112,13 +112,21 @@ const BREADCRUMB_MAP: Array<{ path: string; items: BreadcrumbItem[] }> = [
   // Menu (Commercial)
   {
     path: "/menu",
-    items: [{ label: "Inicio", path: "/dashboard" }, { label: "Menú" }],
+    items: [{ label: "Inicio", path: "/dashboard" }, { label: "Catálogo" }],
+  },
+  {
+    path: "/menu/list",
+    items: [
+      { label: "Inicio", path: "/dashboard" },
+      { label: "Catálogo", path: "/menu" },
+      { label: "Lista de Productos" },
+    ],
   },
   {
     path: "/menu/items/new",
     items: [
       { label: "Inicio", path: "/dashboard" },
-      { label: "Menú", path: "/menu" },
+      { label: "Catálogo", path: "/menu" },
       { label: "Nuevo producto" },
     ],
   },
@@ -126,7 +134,7 @@ const BREADCRUMB_MAP: Array<{ path: string; items: BreadcrumbItem[] }> = [
     path: "/menu/categories/new",
     items: [
       { label: "Inicio", path: "/dashboard" },
-      { label: "Menú", path: "/menu" },
+      { label: "Catálogo", path: "/menu" },
       { label: "Nueva categoría" },
     ],
   },
@@ -206,12 +214,16 @@ export function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
   }
 
   if (segments[0] === "menu") {
-    const base = [{ label: "Inicio", path: "/dashboard" }, { label: "Menú", path: "/menu" }];
+    if (segments[1] === "list") return BREADCRUMB_MAP.find(b => b.path === "/menu/list")?.items || [];
+    if (segments[1] === "items" && segments[2] === "new") return BREADCRUMB_MAP.find(b => b.path === "/menu/items/new")?.items || [];
+    if (segments[1] === "categories" && segments[2] === "new") return BREADCRUMB_MAP.find(b => b.path === "/menu/categories/new")?.items || [];
+    
+    const base = [{ label: "Inicio", path: "/dashboard" }, { label: "Catálogo", path: "/menu" }];
     if (segments[1] === "items" && segments[3] === "edit") {
-      return [...base, { label: "Editar producto" }];
+      return [...base, { label: "Lista de Productos", path: "/menu/list" }, { label: "Editar producto" }];
     }
     if (segments[1] === "categories" && segments[3] === "edit") {
-      return [...base, { label: "Editar categoría" }];
+      return [...base, { label: "Lista de Productos", path: "/menu/list" }, { label: "Editar categoría" }];
     }
     return base;
   }
