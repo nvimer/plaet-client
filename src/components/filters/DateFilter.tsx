@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ChevronDown, Calendar, X } from "lucide-react";
 import { cn } from "@/utils/cn";
+import { getLocalDateString } from "@/utils/dateUtils";
 
 export type DateFilterType = "TODAY" | "YESTERDAY" | "WEEK" | "CUSTOM";
 
@@ -53,15 +54,15 @@ export function DateFilter({
     setShowCustomPicker(optionValue === "CUSTOM");
     if (optionValue !== "CUSTOM") {
       setIsOpen(false);
-    }
+    };
   };
 
   const getDefaultCustomRange = (): DateRange => {
     const today = new Date();
     const lastWeek = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
     return {
-      start: lastWeek.toISOString().split("T")[0],
-      end: today.toISOString().split("T")[0],
+      start: getLocalDateString(lastWeek),
+      end: getLocalDateString(today),
     };
   };
 

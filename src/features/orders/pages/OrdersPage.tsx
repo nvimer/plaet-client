@@ -25,6 +25,11 @@ import { OrderCard, OrderFilters, GroupedOrderCard } from "../components";
 import { ROUTES, getOrderDetailRoute } from "@/app/routes";
 import type { Order } from "@/types";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
+import { 
+  isToday as checkIsToday, 
+  isYesterday as checkIsYesterday, 
+  getLocalDateString 
+} from "@/utils/dateUtils";
 
 /**
  * Grouped Order Interface
@@ -74,31 +79,23 @@ const groupOrders = (orders: Order[]): GroupedOrder[] => {
 };
 
 const isToday = (dateString: string): boolean => {
-  const date = new Date(dateString);
-  const today = new Date();
-  return date.getDate() === today.getDate() && date.getMonth() === today.getMonth() && date.getFullYear() === today.getFullYear();
+  return checkIsToday(dateString);
 };
 
 const isYesterday = (dateString: string): boolean => {
-  const date = new Date(dateString);
-  const yesterday = new Date();
-  yesterday.setDate(yesterday.getDate() - 1);
-  return date.getDate() === yesterday.getDate() && date.getMonth() === yesterday.getMonth() && date.getFullYear() === yesterday.getFullYear();
+  return checkIsYesterday(dateString);
 };
 
 const isWithinLastWeek = (dateString: string): boolean => {
-  const date = new Date(dateString);
+  const datePart = dateString.split('T')[0];
   const weekAgo = new Date();
   weekAgo.setDate(weekAgo.getDate() - 7);
-  return date >= weekAgo;
+  return datePart >= getLocalDateString(weekAgo);
 };
 
 const isWithinDateRange = (dateString: string, range: DateRange): boolean => {
-  const date = new Date(dateString);
-  const start = new Date(range.start);
-  const end = new Date(range.end);
-  end.setHours(23, 59, 59, 999);
-  return date >= start && date <= end;
+  const datePart = dateString.split('T')[0];
+  return datePart >= range.start && datePart <= range.end;
 };
 
 export function OrdersPage() {
