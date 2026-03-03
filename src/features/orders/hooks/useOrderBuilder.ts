@@ -576,11 +576,14 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
                 // Ensure createdOrdersList is an array, handle potential nested structures
                 createdOrdersList = res && res.orders ? res.orders : [];
                 
-                if (selectedOrderType === OrderType.DINE_IN && selectedTable) {
-                  toast.success(`${ordersPayload.length} productos agregados a Mesa ${selectedTable}`);
-                } else {
-                  toast.success(`${ordersPayload.length} pedidos creados`);
-                }
+                                  if (!isFastHistoricalEntry) {
+                                    if (selectedOrderType === OrderType.DINE_IN && selectedTable) {
+                                      toast.success(`${ordersPayload.length} productos agregados a Mesa ${selectedTable}`);
+                                    } else {
+                                      toast.success(`${ordersPayload.length} pedidos creados`);
+                                    }
+                                  }
+                
               }
             // Fast Historical Entry Logic
       if (isFastHistoricalEntry && createdOrdersList && createdOrdersList.length > 0) {
