@@ -24,6 +24,7 @@ import {
   Calendar,
   LayoutGrid,
   AlertTriangle,
+  Box,
 } from "lucide-react";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { TableSelector } from "@/features/tables/components/TableSelector";
@@ -89,6 +90,39 @@ export function OrderCreatePage() {
     if (orderSection) {
       orderSection.scrollIntoView({ behavior: "smooth", block: "start" });
     }
+  };
+
+  const handleQuickPackaging = () => {
+    // 1. Set type to TAKE_OUT as default for packaging-only
+    setSelectedOrderType(OrderType.TAKE_OUT);
+    
+    // 2. Clear anything existing
+    clearCurrentOrder();
+    
+    // 3. Add the virtual item directly
+    const packagingItem = {
+      id: -1,
+      name: "Portacomida",
+      price: orderBuilder.packagingFee,
+      quantity: 1
+    };
+    
+    // 4. Create a TableOrder object and add it to state
+    const quickOrder = {
+      id: Date.now().toString(),
+      protein: null,
+      lunch: null,
+      looseItems: [packagingItem],
+      total: orderBuilder.packagingFee,
+      notes: "Venta Rápida: Portacomida",
+      createdAt: Date.now(),
+    };
+    
+    orderBuilder.setTableOrders([quickOrder]);
+    
+    // 5. Open summary immediately
+    setShowSummaryModal(true);
+    toast.success("Venta rápida de empaque preparada");
   };
 
   // Loading state
@@ -186,6 +220,35 @@ export function OrderCreatePage() {
               </motion.button>
             ))}
           </div>
+
+          {/* VENTAS RÁPIDAS SECTION */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            className="mt-16 w-full max-w-2xl"
+          >
+            <div className="flex items-center gap-3 mb-6 px-2">
+              <div className="h-[1px] flex-1 bg-gradient-to-r from-transparent to-sage-200" />
+              <span className="text-[10px] font-black text-carbon-400 uppercase tracking-[0.3em]">Ventas Rápidas / Extras</span>
+              <div className="h-[1px] flex-1 bg-gradient-to-l from-transparent to-sage-200" />
+            </div>
+
+            <div className="flex justify-center">
+              <button
+                onClick={handleQuickPackaging}
+                className="group flex items-center gap-4 px-8 py-4 bg-white border-2 border-amber-100 rounded-2xl hover:border-amber-500 hover:bg-amber-50 transition-all duration-300 shadow-soft-sm active:scale-95"
+              >
+                <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Box className="w-5 h-5" />
+                </div>
+                <div className="text-left">
+                  <p className="text-xs font-black text-carbon-900 uppercase tracking-tight">Portacomida</p>
+                  <p className="text-[10px] font-bold text-amber-600">$1.000 (Solo empaque)</p>
+                </div>
+              </button>
+            </div>
+          </motion.div>
         </div>
       </SidebarLayout>
     );
@@ -380,6 +443,8 @@ export function OrderCreatePage() {
             onShowSummary={handleShowSummary}
             scrollToOrder={scrollToOrder}
             ordersCount={tableOrders.length}
+            onAddManualItem={formProps.handleAddLooseItem}
+            packagingFee={orderBuilder.packagingFee}
           />
         </div>
       </SidebarLayout>

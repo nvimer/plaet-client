@@ -24,7 +24,6 @@ import {
   User,
   Phone,
   MapPin,
-  Box,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { OrderType } from "@/types";
@@ -657,33 +656,6 @@ export function OrderForm({
                 </div>
               </div>
             )}
-        </div>
-      </Card>
-
-      {/* Quick manual items - Packaging and others */}
-      <Card variant="elevated" className="p-5 rounded-2xl border-2 border-amber-100 bg-amber-50/5">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-amber-100 text-amber-600 flex items-center justify-center">
-              <Box className="w-4 h-4" />
-            </div>
-            <h4 className="text-sm font-bold text-carbon-900">Cargos Rápidos</h4>
-          </div>
-        </div>
-        
-        <div className="flex flex-wrap gap-3">
-          <button
-            onClick={() => handleAddLooseItem({ id: -1, name: "Portacomida", price: packagingFee })}
-            className="flex-1 min-w-[140px] flex items-center justify-between p-3 bg-white border-2 border-amber-200 rounded-xl hover:bg-amber-100 hover:border-amber-300 transition-all active:scale-95 shadow-sm group"
-          >
-            <div className="flex items-center gap-2">
-              <Box className="w-4 h-4 text-amber-500 group-hover:scale-110 transition-transform" />
-              <span className="text-xs font-black text-carbon-700 uppercase tracking-tight">Portacomida</span>
-            </div>
-            <span className="text-xs font-black text-amber-600">${packagingFee.toLocaleString()}</span>
-          </button>
-          
-          {/* You can add more quick charges here in the future like 'Domicilio Extra', etc. */}
         </div>
       </Card>
 

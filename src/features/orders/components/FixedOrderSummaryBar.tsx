@@ -90,3 +90,5 @@ export function FixedOrderSummaryBar({
 }
 
 export default FixedOrderSummaryBar;
+
+export default FixedOrderSummaryBar;
