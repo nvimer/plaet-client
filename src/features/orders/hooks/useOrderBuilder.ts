@@ -589,16 +589,13 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       if (isFastHistoricalEntry && createdOrdersList && createdOrdersList.length > 0) {
         await Promise.all(createdOrdersList.map(async (createdOrder) => {
           try {
+            // Register payment - This AUTOMATICALLY marks the Order as PAID in the backend
             await paymentApi.createPayment(createdOrder.id, {
               method: PaymentMethod.CASH,
               amount: Number(createdOrder.totalAmount)
             });
-            // In Master-Detail, PAID is the terminal state for the account
-            await orderApi.updateOrderStatus(createdOrder.id, {
-              status: OrderStatus.PAID
-            });
           } catch (payErr) {
-            console.error(`Error paying historical order ${createdOrder.id}:`, payErr);
+            console.error(`Error processing historical payment for ${createdOrder.id}:`, payErr);
           }
         }));
         toast.success("Registro histórico guardado y liquidado", { icon: "📜" });
