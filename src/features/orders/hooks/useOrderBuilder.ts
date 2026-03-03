@@ -564,35 +564,41 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
         // Single order creation (non-table)
         const res = await createOrder(ordersPayload[0]);
         createdOrdersList = [res];
-        toast.success("Pedido creado exitosamente");
-      } else {
-        // Batch creation for tables or multiple services
-        // The backend batch logic now unifies these into one order
-        const res = await createBatchOrders({
-          tableId: selectedTable || 0,
-          orders: ordersPayload
-        });
-        createdOrdersList = res.orders;
-        
-        if (selectedOrderType === OrderType.DINE_IN && selectedTable) {
-          toast.success(`${ordersPayload.length} productos agregados a Mesa ${selectedTable}`);
-        } else {
-          toast.success(`${ordersPayload.length} pedidos creados`);
-        }
-      }
-
-      // Fast Historical Entry Logic
-      if (isFastHistoricalEntry) {
+        if (!isFastHistoricalEntry) toast.success("Pedido creado exitosamente");
+              } else {
+                // Batch creation for tables or multiple services
+                // The backend batch logic now unifies these into one order
+                const res = await createBatchOrders({
+                  tableId: selectedTable || 0,
+                  orders: ordersPayload
+                });
+                
+                // Ensure createdOrdersList is an array, handle potential nested structures
+                createdOrdersList = res && res.orders ? res.orders : [];
+                
+                if (selectedOrderType === OrderType.DINE_IN && selectedTable) {
+                  toast.success(`${ordersPayload.length} productos agregados a Mesa ${selectedTable}`);
+                } else {
+                  toast.success(`${ordersPayload.length} pedidos creados`);
+                }
+              }
+            // Fast Historical Entry Logic
+      if (isFastHistoricalEntry && createdOrdersList && createdOrdersList.length > 0) {
         await Promise.all(createdOrdersList.map(async (createdOrder) => {
-          await paymentApi.createPayment(createdOrder.id, {
-            method: PaymentMethod.CASH,
-            amount: Number(createdOrder.totalAmount)
-          });
-          await orderApi.updateOrderStatus(createdOrder.id, {
-            status: OrderStatus.DELIVERED
-          });
+          try {
+            await paymentApi.createPayment(createdOrder.id, {
+              method: PaymentMethod.CASH,
+              amount: Number(createdOrder.totalAmount)
+            });
+            // In Master-Detail, PAID is the terminal state for the account
+            await orderApi.updateOrderStatus(createdOrder.id, {
+              status: OrderStatus.PAID
+            });
+          } catch (payErr) {
+            console.error(`Error paying historical order ${createdOrder.id}:`, payErr);
+          }
         }));
-        toast.success("Ingreso histórico completado y pagado en efectivo");
+        toast.success("Registro histórico guardado y liquidado", { icon: "📜" });
       }
 
       // Automatically mark table as occupied if it's DINE_IN and NOT historical

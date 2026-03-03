@@ -165,9 +165,7 @@ export function OrdersPage() {
             const anyBalanceLeft = remainingInGroup.some(o => {
               const isPaid = [
                 OrderStatus.PAID, 
-                OrderStatus.IN_KITCHEN, 
-                OrderStatus.READY, 
-                OrderStatus.DELIVERED
+                OrderStatus.CANCELLED
               ].includes(o.status);
 
               if (isPaid) return false;
@@ -193,7 +191,7 @@ export function OrdersPage() {
   };
 
   // ================ COMPUTED VALUES =================
-  // Base filtered list that all tabs and counts should respect
+  // Base filtered list that all tabs and counts should respect (excluding date)
   const baseFilteredOrders = useMemo(() => {
     if (!orders) return [];
     
@@ -206,25 +204,31 @@ export function OrdersPage() {
       const matchesSearch = searchTerm === "" || order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (order.user && `${order.user.firstName} ${order.user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()));
 
-      // 2. Date Filter
-      let matchesDate = true;
-      switch (dateFilter) {
-        case "TODAY": matchesDate = isToday(order.createdAt); break;
-        case "YESTERDAY": matchesDate = isYesterday(order.createdAt); break;
-        case "WEEK": matchesDate = isWithinLastWeek(order.createdAt); break;
-        case "CUSTOM": matchesDate = customDateRange ? isWithinDateRange(order.createdAt, customDateRange) : true; break;
-      }
-      
-      return matchesType && matchesDate && matchesSearch;
+      return matchesType && matchesSearch;
     });
-  }, [orders, typeFilter, paymentMethodFilter, dateFilter, customDateRange, searchTerm]);
+  }, [orders, typeFilter, paymentMethodFilter, searchTerm]);
 
   const filteredOrders = useMemo(() => {
-    // Apply Tab Filtering on top of the base filters
+    // Apply Tab Filtering and Date Filtering
     const filtered = baseFilteredOrders.filter((order) => {
+      // 1. Date Filter: Only apply to HISTORY tab. 
+      // Operational tabs show all active orders regardless of date.
+      if (activeTab === "HISTORY") {
+        let matchesDate = true;
+        switch (dateFilter) {
+          case "TODAY": matchesDate = isToday(order.createdAt); break;
+          case "YESTERDAY": matchesDate = isYesterday(order.createdAt); break;
+          case "WEEK": matchesDate = isWithinLastWeek(order.createdAt); break;
+          case "CUSTOM": matchesDate = customDateRange ? isWithinDateRange(order.createdAt, customDateRange) : true; break;
+        }
+        if (!matchesDate) return false;
+      }
+
+      // 2. Tab Lifecycle Filter
       if (activeTab === "BILLING") return order.status === OrderStatus.OPEN || order.status === OrderStatus.SENT_TO_CASHIER;
       
       if (activeTab === "PREPARATION") {
+        // MUST be paid to be in preparation tab
         if (order.status !== OrderStatus.PAID) return false;
         return order.items?.some(item => 
           item.status === OrderItemStatus.PENDING || 
@@ -233,6 +237,7 @@ export function OrdersPage() {
       }
       
       if (activeTab === "READY") {
+        // MUST be paid to be in ready tab
         if (order.status !== OrderStatus.PAID) return false;
         return order.items?.some(item => item.status === OrderItemStatus.READY);
       }
@@ -255,7 +260,37 @@ export function OrdersPage() {
       const timeB = new Date(b.createdAt).getTime();
       return activeTab === "HISTORY" ? timeB - timeA : timeA - timeB;
     });
-  }, [baseFilteredOrders, activeTab]);
+  }, [baseFilteredOrders, activeTab, dateFilter, customDateRange]);
+
+  const counts = useMemo(() => {
+    // For counts, we apply the date filter to ALL categories to keep numbers consistent with selected date
+    const dateFiltered = baseFilteredOrders.filter(order => {
+      switch (dateFilter) {
+        case "TODAY": return isToday(order.createdAt);
+        case "YESTERDAY": return isYesterday(order.createdAt);
+        case "WEEK": return isWithinLastWeek(order.createdAt);
+        case "CUSTOM": return customDateRange ? isWithinDateRange(order.createdAt, customDateRange) : true;
+        default: return true;
+      }
+    });
+
+    return {
+      all: orders?.length || 0,
+      billing: baseFilteredOrders?.filter(o => o.status === OrderStatus.OPEN || o.status === OrderStatus.SENT_TO_CASHIER).length || 0,
+      inKitchen: baseFilteredOrders?.filter(o => 
+        o.status === OrderStatus.PAID && 
+        o.items?.some(i => i.status === OrderItemStatus.PENDING || i.status === OrderItemStatus.IN_KITCHEN)
+      ).length || 0,
+      ready: baseFilteredOrders?.filter(o => 
+        o.status === OrderStatus.PAID && 
+        o.items?.some(i => i.status === OrderItemStatus.READY)
+      ).length || 0,
+      history: dateFiltered?.filter(o => 
+        o.status === OrderStatus.CANCELLED || 
+        (o.status === OrderStatus.PAID && o.items?.every(i => i.status === OrderItemStatus.DELIVERED))
+      ).length || 0,
+    };
+  }, [baseFilteredOrders, orders?.length, dateFilter, customDateRange]);
 
   const groupedOrders = useMemo(() => {
     // History should show individual records for auditing, but still needs GroupedOrder structure for the UI
@@ -288,23 +323,6 @@ export function OrdersPage() {
     });
     return summary;
   }, [filteredOrders]);
-
-  const counts = useMemo(() => ({
-    all: orders?.length || 0,
-    billing: baseFilteredOrders?.filter(o => o.status === OrderStatus.OPEN || o.status === OrderStatus.SENT_TO_CASHIER).length || 0,
-    inKitchen: baseFilteredOrders?.filter(o => 
-      o.status === OrderStatus.PAID && 
-      o.items?.some(i => i.status === OrderItemStatus.PENDING || i.status === OrderItemStatus.IN_KITCHEN)
-    ).length || 0,
-    ready: baseFilteredOrders?.filter(o => 
-      o.status === OrderStatus.PAID && 
-      o.items?.some(i => i.status === OrderItemStatus.READY)
-    ).length || 0,
-    history: baseFilteredOrders?.filter(o => 
-      o.status === OrderStatus.CANCELLED || 
-      (o.status === OrderStatus.PAID && o.items?.every(i => i.status === OrderItemStatus.DELIVERED))
-    ).length || 0,
-  }), [baseFilteredOrders, orders?.length]);
 
   const handleClearAll = () => {
     setTypeFilter("ALL");
