@@ -61,9 +61,11 @@ export function RoleProtectedRoute({
   if (!hasAccess) {
     if (showMessage) {
       // You could show a message here or redirect
-      console.warn(
-        `Access denied. Required roles: ${allowedRoles.join(", ")}`
-      );
+      if (import.meta.env.DEV) {
+        console.warn(
+          `Access denied. Required roles: ${allowedRoles.join(", ")}`
+        );
+      }
     }
     return <Navigate to={fallbackRoute} replace />;
   }

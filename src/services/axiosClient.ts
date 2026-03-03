@@ -11,6 +11,7 @@
 import type { InternalAxiosRequestConfig } from "axios";
 import axios, { AxiosError } from "axios";
 import { API_URL, API_TIMEOUT } from "../config/constants";
+import { logger } from "@/utils";
 
 export const axiosClient = axios.create({
   baseURL: API_URL,
@@ -81,9 +82,7 @@ axiosClient.interceptors.response.use(
           );
 
           if (isRefreshEndpoint) {
-            console.warn(
-              "[Auth] Refresh token invalid - session closed",
-            );
+            logger.warn("[Auth] Refresh token invalid - session closed");
             processQueue(new Error("REFRESH_TOKEN_INVALID"));
             const authError = new Error("REFRESH_TOKEN_INVALID");
             (authError as { code?: string }).code = "AUTH_REFRESH_FAILED";
@@ -120,23 +119,17 @@ axiosClient.interceptors.response.use(
         }
 
         case 403: {
-          if (import.meta.env.DEV) {
-            console.warn(`[API] Forbidden (403): ${url}`);
-          }
+          logger.warn(`[API] Forbidden (403): ${url}`);
           break;
         }
 
         case 404: {
-          if (import.meta.env.DEV) {
-            console.warn(`[API] Not Found (404): ${url}`);
-          }
+          logger.warn(`[API] Not Found (404): ${url}`);
           break;
         }
 
         case 422: {
-          if (import.meta.env.DEV) {
-            console.warn(`[API] Validation Error (422): ${url}`, error.response.data);
-          }
+          logger.warn(`[API] Validation Error (422): ${url}`, error.response.data);
           break;
         }
 
@@ -166,7 +159,7 @@ axiosClient.interceptors.response.use(
         }
 
         case 429: {
-          console.warn(`[API] Rate limited (429): ${url}`);
+          logger.warn(`[API] Rate limited (429): ${url}`);
           break;
         }
 
@@ -174,7 +167,7 @@ axiosClient.interceptors.response.use(
         case 502:
         case 503:
         case 504: {
-          console.error(`[API] Server error (${status}): ${url}`);
+          logger.error(`[API] Server error (${status}): ${url}`);
           break;
         }
       }

@@ -29,13 +29,9 @@ export default function NetworkStatusManager({
   }, [logout, navigate]);
 
   useEffect(() => {
-    const handleOnline = (): void => {
-      console.log("[NetworkStatus] Connection restored");
-    };
+    const handleOnline = (): void => {};
 
-    const handleOffline = (): void => {
-      console.log("[NetworkStatus] Connection lost");
-    };
+    const handleOffline = (): void => {};
 
     if (typeof window !== "undefined") {
       window.addEventListener("online", handleOnline);

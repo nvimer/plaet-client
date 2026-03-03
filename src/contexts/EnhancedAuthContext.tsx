@@ -16,6 +16,7 @@ import {
 import type { ReactNode } from "react";
 import type { User, LoginInput, RegisterInput } from "@/types";
 import { authApi, profileApi } from "@/services";
+import { logger } from "@/utils";
 
 /**
  * Authentication error types
@@ -78,7 +79,7 @@ const saveUserToStorage = (user: User): void => {
   try {
     localStorage.setItem("user", JSON.stringify(user));
   } catch {
-    console.error("Failed to save user to localStorage");
+    logger.error("Failed to save user to localStorage");
   }
 };
 
@@ -326,7 +327,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       await authApi.logout();
     } catch {
-      console.error("Error calling logout API");
+      logger.error("Error calling logout API");
     } finally {
       updateState({
         user: null,
@@ -484,7 +485,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             });
           }
         } catch {
-          console.error("Failed to initialize auth");
+          logger.error("Failed to initialize auth");
           updateState({
             user: null,
             isAuthenticated: false,
