@@ -39,17 +39,26 @@ export enum TableStatus {
 }
 
 /**
- * Estados de un pedido
+ * Estados de un pedido (Cuenta de Mesa)
  * Sincronizado con: enum OrderStatus en Prisma
  */
 export enum OrderStatus {
-  PENDING = "PENDING",
+  OPEN = "OPEN",
   SENT_TO_CASHIER = "SENT_TO_CASHIER",
   PAID = "PAID",
   CANCELLED = "CANCELLED",
+}
+
+/**
+ * Estados de un plato/item individual
+ * Sincronizado con: enum OrderItemStatus en Prisma
+ */
+export enum OrderItemStatus {
+  PENDING = "PENDING",
   IN_KITCHEN = "IN_KITCHEN",
   READY = "READY",
   DELIVERED = "DELIVERED",
+  CANCELLED = "CANCELLED",
 }
 
 /**

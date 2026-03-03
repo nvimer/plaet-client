@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { BaseModal } from "@/components/ui/BaseModal/BaseModal";
 import { Button } from "@/components/ui/Button/Button";
 import { 
@@ -12,7 +12,7 @@ import {
   Search,
   AlertCircle
 } from "lucide-react";
-import { PaymentMethod } from "@/types";
+import { PaymentMethod, OrderStatus, type Order } from "@/types";
 import { cn } from "@/utils/cn";
 import { useCustomerTickets } from "../hooks/useCustomerTickets";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,22 +20,24 @@ import { motion, AnimatePresence } from "framer-motion";
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  orderTotal: number;
-  remainingAmount: number;
-  onConfirm: (method: PaymentMethod, amount: number, options?: { reference?: string; phone?: string }) => void;
+  orders: Order[]; // Changed from orderTotal/remainingAmount to full orders array
+  onConfirm: (method: PaymentMethod, amount: number, orderIds: string[], options?: { reference?: string; phone?: string }) => void;
   isPending?: boolean;
 }
 
 export function PaymentModal({
   isOpen,
   onClose,
-  remainingAmount,
+  orders,
   onConfirm,
   isPending = false,
 }: PaymentModalProps) {
   const [method, setMethod] = useState<PaymentMethod>(PaymentMethod.CASH);
-  const [amount, setAmount] = useState<number>(remainingAmount);
   
+  // Selection logic
+  const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
+  const [payAll, setPayAll] = useState(true);
+
   // Cash logic
   const [cashReceived, setCashReceived] = useState<number>(0);
   
@@ -46,20 +48,66 @@ export function PaymentModal({
   const [customerPhone, setCustomerPhone] = useState("");
   const { data: customer, isLoading: isLoadingCustomer, isError: isCustomerError } = useCustomerTickets(customerPhone);
 
-  const change = Math.max(0, cashReceived - amount);
+  // Calculate totals based on selection
+  const remainingAmounts = useMemo(() => {
+    return orders.reduce((acc, order) => {
+      // In Master-Detail, an order is either PAID or not.
+      const isAlreadyPaid = order.status === OrderStatus.PAID;
+      
+      if (isAlreadyPaid) {
+        acc[order.id] = 0;
+      } else {
+        const paid = order.payments?.reduce((sum, p) => sum + Number(p.amount), 0) || 0;
+        acc[order.id] = Math.max(0, Number(order.totalAmount) - paid);
+      }
+      return acc;
+    }, {} as Record<string, number>);
+  }, [orders]);
 
+  const totalToPay = useMemo(() => {
+    if (payAll) {
+      return Object.values(remainingAmounts).reduce((sum, amt) => sum + amt, 0);
+    }
+    return selectedOrderIds.reduce((sum, id) => sum + (remainingAmounts[id] || 0), 0);
+  }, [payAll, selectedOrderIds, remainingAmounts]);
+
+  const change = Math.max(0, cashReceived - totalToPay);
+
+  // Use a ref to track the last orders set and only reset when the actual group of orders changes
+  const ordersIdsHash = orders.map(o => o.id).sort().join(",");
+  
   useEffect(() => {
     if (isOpen) {
-      setAmount(remainingAmount);
       setMethod(PaymentMethod.CASH);
       setCashReceived(0);
       setReference("");
       setCustomerPhone("");
+      setPayAll(true);
+      setSelectedOrderIds(orders.map(o => o.id));
     }
-  }, [isOpen, remainingAmount]);
+    // We only reset when the modal is opened OR when we switch to a completely different set of orders (different table)
+    // NOT when the same orders just update their content (like status/payments)
+  }, [isOpen, ordersIdsHash]);
+
+  const handleToggleOrder = (orderId: string) => {
+    setPayAll(false);
+    setCashReceived(0);
+    setSelectedOrderIds(prev => 
+      prev.includes(orderId) 
+        ? prev.filter(id => id !== orderId) 
+        : [...prev, orderId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    setPayAll(true);
+    setCashReceived(0);
+    setSelectedOrderIds(orders.map(o => o.id));
+  };
 
   const handleConfirm = () => {
-    onConfirm(method, amount, {
+    const idsToPay = payAll ? orders.map(o => o.id) : selectedOrderIds;
+    onConfirm(method, totalToPay, idsToPay, {
       reference: method === PaymentMethod.NEQUI ? reference : undefined,
       phone: method === PaymentMethod.TICKET_BOOK ? customerPhone : undefined
     });
@@ -74,13 +122,70 @@ export function PaymentModal({
   const hasActiveTickets = customer?.ticketBooks && customer.ticketBooks.some((tb: any) => tb.consumedPortions < tb.totalPortions);
 
   return (
-    <BaseModal isOpen={isOpen} onClose={onClose} title="Finalizar Pedido" className="max-w-md">
+    <BaseModal isOpen={isOpen} onClose={onClose} title="Finalizar Pedido" className="max-w-xl">
       <div className="space-y-6">
+        {/* Selection Toggle */}
+        {orders.length > 1 && (
+          <div className="flex bg-sage-50 p-1 rounded-2xl border border-sage-100">
+            <button
+              onClick={handleSelectAll}
+              className={cn(
+                "flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                payAll ? "bg-white shadow-sm text-carbon-900" : "text-carbon-400"
+              )}
+            >
+              Cuenta Total
+            </button>
+            <button
+              onClick={() => setPayAll(false)}
+              className={cn(
+                "flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                !payAll ? "bg-white shadow-sm text-carbon-900" : "text-carbon-400"
+              )}
+            >
+              Pago Individual
+            </button>
+          </div>
+        )}
+
+        {/* Individual Selection List */}
+        {!payAll && orders.length > 1 && (
+          <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+            {orders.map((order, idx) => {
+              const isSelected = selectedOrderIds.includes(order.id);
+              const remaining = remainingAmounts[order.id];
+              if (remaining <= 0) return null;
+
+              return (
+                <button
+                  key={order.id}
+                  onClick={() => handleToggleOrder(order.id)}
+                  className={cn(
+                    "flex items-center justify-between p-3 rounded-xl border-2 transition-all",
+                    isSelected ? "border-carbon-900 bg-carbon-50" : "border-sage-100 bg-white"
+                  )}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all",
+                      isSelected ? "bg-carbon-900 border-carbon-900" : "border-sage-200"
+                    )}>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-white stroke-[4px]" />}
+                    </div>
+                    <span className="text-xs font-bold text-carbon-700">Pedido #{idx + 1} ({order.id.slice(-4).toUpperCase()})</span>
+                  </div>
+                  <span className="text-sm font-black text-carbon-900">${remaining.toLocaleString("es-CO")}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         {/* Payment Summary Banner */}
         <div className="bg-carbon-900 rounded-[2rem] p-6 text-white relative overflow-hidden shadow-soft-2xl">
           <div className="relative z-10">
             <p className="text-[10px] font-black uppercase tracking-[0.2em] text-carbon-400 mb-1">Total a Pagar</p>
-            <h3 className="text-4xl font-black tracking-tighter">${remainingAmount.toLocaleString("es-CO")}</h3>
+            <h3 className="text-4xl font-black tracking-tighter">${totalToPay.toLocaleString("es-CO")}</h3>
           </div>
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-3xl" />
           <Calculator className="absolute bottom-4 right-6 w-12 h-12 text-white/10" />
@@ -138,25 +243,25 @@ export function PaymentModal({
                 {cashReceived > 0 && (
                   <div className={cn(
                     "p-5 rounded-3xl border-2 transition-all flex items-center justify-between",
-                    cashReceived >= amount ? "bg-emerald-50 border-emerald-100" : "bg-amber-50 border-amber-100"
+                    cashReceived >= totalToPay ? "bg-emerald-50 border-emerald-100" : "bg-amber-50 border-amber-100"
                   )}>
                     <div>
                       <p className="text-[10px] font-black uppercase tracking-widest text-carbon-500">Devuelta</p>
                       <p className={cn(
                         "text-3xl font-black tracking-tighter",
-                        cashReceived >= amount ? "text-emerald-700" : "text-amber-700"
+                        cashReceived >= totalToPay ? "text-emerald-700" : "text-amber-700"
                       )}>
                         ${change.toLocaleString("es-CO")}
                       </p>
                     </div>
-                    {cashReceived >= amount ? (
+                    {cashReceived >= totalToPay ? (
                       <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-lg">
                         <Check className="w-6 h-6 stroke-[3px]" />
                       </div>
                     ) : (
                       <div className="text-right">
                         <p className="text-[10px] font-bold text-amber-600 uppercase">Faltan</p>
-                        <p className="text-sm font-black text-amber-700">${(amount - cashReceived).toLocaleString("es-CO")}</p>
+                        <p className="text-sm font-black text-amber-700">${(totalToPay - cashReceived).toLocaleString("es-CO")}</p>
                       </div>
                     )}
                   </div>
@@ -286,7 +391,8 @@ export function PaymentModal({
             isLoading={isPending}
             disabled={
               isPending || 
-              (method === PaymentMethod.CASH && cashReceived < amount) ||
+              (totalToPay <= 0) ||
+              (method === PaymentMethod.CASH && cashReceived < totalToPay) ||
               (method === PaymentMethod.TICKET_BOOK && !hasActiveTickets)
             }
             className={cn(

@@ -5,20 +5,18 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { cn } from "@/utils/cn";
-import { type Order, OrderStatus } from "@/types";
+import { OrderItemStatus } from "@/types";
 import { KitchenOrderCard } from "./KitchenOrderCard";
-
-import { isPreparableCategory as _isPreparableCategory, type KitchenCategoryConfig } from "./kitchenCategories";
+import { type KitchenItem } from "./KitchenKanban";
+import { type KitchenCategoryConfig } from "./kitchenCategories";
 
 export interface KitchenColumnProps {
-  id: string;
+  id: OrderItemStatus;
   title: string;
   icon: React.ReactNode;
   color: string;
-  orders: Order[];
-  readyItemIds: number[];
-  onToggleItemReady: (orderId: string, itemId: number, ready: boolean) => void;
-  onStatusChange: (orderId: string, status: OrderStatus) => void;
+  items: KitchenItem[];
+  onStatusChange: (orderId: string, itemId: number, status: OrderItemStatus) => void;
   isMobile?: boolean;
   categoryConfig?: KitchenCategoryConfig;
 }
@@ -28,9 +26,7 @@ export function KitchenColumn({
   title,
   icon,
   color,
-  orders,
-  readyItemIds,
-  onToggleItemReady,
+  items,
   onStatusChange,
   isMobile = false,
   categoryConfig,
@@ -43,7 +39,7 @@ export function KitchenColumn({
     },
   });
 
-  const orderIds = useMemo(() => orders.map((o) => o.id), [orders]);
+  const itemIds = useMemo(() => items.map((i) => i.id), [items]);
 
   return (
     <div
@@ -58,7 +54,7 @@ export function KitchenColumn({
         </div>
         <h2 className="text-lg font-black uppercase tracking-widest text-carbon-900">{title}</h2>
         <span className="ml-auto bg-carbon-900/10 px-3 py-1 rounded-xl text-base font-black text-carbon-900">
-          {orders.length}
+          {items.length}
         </span>
       </div>
 
@@ -67,15 +63,13 @@ export function KitchenColumn({
         className="flex-1 p-4 overflow-y-auto space-y-4 min-h-[400px] max-h-[calc(100vh-220px)] custom-scrollbar"
       >
         <SortableContext
-          items={orderIds}
+          items={itemIds}
           strategy={verticalListSortingStrategy}
         >
-          {orders.map((order) => (
+          {items.map((item) => (
             <KitchenOrderCard
-              key={order.id}
-              order={order}
-              readyItemIds={readyItemIds}
-              onToggleItemReady={onToggleItemReady}
+              key={item.id}
+              item={item}
               onStatusChange={onStatusChange}
               isMobile={isMobile}
               categoryConfig={categoryConfig}
@@ -83,9 +77,9 @@ export function KitchenColumn({
           ))}
         </SortableContext>
 
-        {orders.length === 0 && (
+        {items.length === 0 && (
           <div className="flex items-center justify-center h-32 text-carbon-400">
-            <p className="text-center">No hay pedidos</p>
+            <p className="text-center font-bold text-sm uppercase tracking-widest opacity-50">Sin platos</p>
           </div>
         )}
       </div>

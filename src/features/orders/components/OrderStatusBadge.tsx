@@ -37,35 +37,17 @@ export function OrderStatusBadge({
       className: string;
     }
   > = {
-    [OrderStatus.PENDING]: {
-      label: "Pendiente",
-      variant: "warning",
+    [OrderStatus.OPEN]: {
+      label: "Abierto",
+      variant: "info",
       icon: Clock,
-      className: "bg-yellow-50 text-yellow-700 border-yellow-300",
+      className: "bg-blue-50 text-blue-700 border-blue-300",
     },
     [OrderStatus.SENT_TO_CASHIER]: {
       label: "En caja",
-      variant: "info",
-      icon: ReceiptText,
-      className: "bg-blue-50 text-blue-700 border-blue-300",
-    },
-    [OrderStatus.IN_KITCHEN]: {
-      label: "En Cocina",
       variant: "warning",
-      icon: ChefHat,
-      className: "bg-orange-50 text-orange-700 border-orange-300",
-    },
-    [OrderStatus.READY]: {
-      label: "Listo",
-      variant: "success",
-      icon: CheckCircle,
-      className: "bg-sage-50 text-sage-700 border-sage-300",
-    },
-    [OrderStatus.DELIVERED]: {
-      label: "Entregado",
-      variant: "success",
-      icon: Truck,
-      className: "bg-green-50 text-green-700 border-green-300",
+      icon: ReceiptText,
+      className: "bg-yellow-50 text-yellow-700 border-yellow-300",
     },
     [OrderStatus.PAID]: {
       label: "Pagado",

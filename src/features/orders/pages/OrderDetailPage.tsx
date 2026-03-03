@@ -93,7 +93,7 @@ export function OrderDetailPage() {
   const paidAmount = order.payments?.reduce((sum, p) => sum + Number(p.amount), 0) || 0;
   const remainingAmount = Math.max(0, Number(order.totalAmount) - paidAmount);
 
-  // Status actions (Simplified for post-payment flow)
+  // Status actions (Simplified for Master-Detail flow)
   const statusActions: {
     from: OrderStatus[];
     to: OrderStatus;
@@ -102,30 +102,23 @@ export function OrderDetailPage() {
     variant: "primary" | "secondary" | "outline";
   }[] = [
     {
-      from: [OrderStatus.PAID], // Only allow kitchen after payment
-      to: OrderStatus.IN_KITCHEN,
-      label: "Enviar a Cocina",
-      icon: ChefHat,
+      from: [OrderStatus.OPEN],
+      to: OrderStatus.SENT_TO_CASHIER,
+      label: "Pedir Cuenta",
+      icon: ReceiptText,
       variant: "primary",
     },
     {
-      from: [OrderStatus.IN_KITCHEN],
-      to: OrderStatus.READY,
-      label: "Marcar Listo",
-      icon: CheckCircle,
+      from: [OrderStatus.SENT_TO_CASHIER],
+      to: OrderStatus.PAID,
+      label: "Registrar Pago",
+      icon: DollarSign,
       variant: "primary",
     },
     {
-      from: [OrderStatus.READY],
-      to: OrderStatus.DELIVERED,
-      label: "Entregar",
-      icon: Truck,
-      variant: "primary",
-    },
-    {
-      from: [OrderStatus.PENDING, OrderStatus.PAID, OrderStatus.IN_KITCHEN],
+      from: [OrderStatus.OPEN, OrderStatus.SENT_TO_CASHIER],
       to: OrderStatus.CANCELLED,
-      label: "Cancelar",
+      label: "Cancelar Mesa",
       icon: XCircle,
       variant: "outline",
     },
@@ -137,6 +130,12 @@ export function OrderDetailPage() {
 
   // Handlers
   const handleStatusChange = (newStatus: OrderStatus) => {
+    // If target status is PAID, we open the modal instead
+    if (newStatus === OrderStatus.PAID) {
+      setIsPaymentModalOpen(true);
+      return;
+    }
+
     updateStatus(
       { id: order.id, orderStatus: newStatus },
       {
@@ -152,28 +151,33 @@ export function OrderDetailPage() {
     );
   };
 
-  const handleConfirmPayment = (method: PaymentMethod, amount: number, options?: { reference?: string; phone?: string }) => {
-    addPayment({
-      orderId: order!.id,
-      paymentData: {
-        method,
-        amount,
-        transactionRef: options?.reference,
-        phone: options?.phone
-      }
-    }, {
-      onSuccess: () => {
-        setIsPaymentModalOpen(false);
-        toast.success("Pago registrado correctamente");
-        
-        // Removed auto-send to kitchen. 
-        // The backend automatically marks as PAID, which puts it in the first column of the Kitchen Kanban.
-      },
-      onError: (error: AxiosErrorWithResponse) => {
-        toast.error("Error al registrar pago", {
-          description: error.response?.data?.message || error.message
-        });
-      }
+  const handleConfirmPayment = (method: PaymentMethod, amount: number, orderIds: string[], options?: { reference?: string; phone?: string }) => {
+    // Process each order (in this page it's only one, but we keep the same signature)
+    orderIds.forEach(orderId => {
+      // Calculate amount for this specific order if it was a group, 
+      // but since it's OrderDetailPage, it's just the current order.
+      // For simplicity in individual page, we use the total 'amount' passed.
+      addPayment({
+        orderId,
+        paymentData: {
+          method,
+          amount,
+          transactionRef: options?.reference,
+          phone: options?.phone
+        }
+      }, {
+        onSuccess: () => {
+          setIsPaymentModalOpen(false);
+          toast.success("Pago registrado correctamente");
+          // Redirigir a la lista de pedidos después de pagar
+          navigate(ROUTES.ORDERS);
+        },
+        onError: (error: AxiosErrorWithResponse) => {
+          toast.error("Error al registrar pago", {
+            description: error.response?.data?.message || error.message
+          });
+        }
+      });
     });
   };
 
@@ -403,8 +407,7 @@ export function OrderDetailPage() {
       <PaymentModal
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
-        orderTotal={Number(order.totalAmount)}
-        remainingAmount={remainingAmount}
+        orders={[order]}
         onConfirm={handleConfirmPayment}
         isPending={isAddingPayment}
       />

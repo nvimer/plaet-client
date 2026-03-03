@@ -9,7 +9,6 @@ import {
   useSensors,
   pointerWithin,
   rectIntersection,
-  getFirstCollision,
   type DragStartEvent,
   type DragEndEvent,
   type CollisionDetection,
@@ -17,12 +16,10 @@ import {
 import { sortableKeyboardCoordinates } from "@dnd-kit/sortable";
 import { Clock, ChefHat, CheckCircle, RefreshCw } from "lucide-react";
 import { toast } from "sonner";
-import { useKitchenOrders } from "../../hooks";
-import { useUpdateOrderStatus } from "../../hooks/useUpdateOrderStatus";
-import { OrderStatus } from "@/types";
-import { type Order } from "@/types";
+import { useKitchenOrders, useUpdateOrderItemStatus } from "../../hooks";
+import { OrderItemStatus, type OrderItem, type Order } from "@/types";
 import { KitchenColumn } from "./KitchenColumn";
-import { KitchenOrderCard } from "./KitchenOrderCard";
+import { KitchenOrderCard } from "./KitchenOrderCard"; // We will adapt this or use a new ItemCard
 import { Skeleton, EmptyState } from "@/components";
 import { cn } from "@/utils/cn";
 
@@ -60,15 +57,19 @@ const TABS_CONFIG = [
   },
 ];
 
+// Extended OrderItem type for UI needs
+export type KitchenItem = OrderItem & {
+  order: Order; // Reference to parent order for table info, etc.
+};
+
 export function KitchenKanban({
   proteinCategoryIds,
   extraCategoryIds,
 }: KitchenKanbanProps) {
   const { data: allOrders, isLoading, error, refetch } = useKitchenOrders();
-  const { mutate: updateStatus } = useUpdateOrderStatus();
+  const { mutate: updateItemStatus } = useUpdateOrderItemStatus();
 
-  const [readyItemIds, setReadyItemIds] = useState<number[]>([]);
-  const [activeOrder, setActiveOrder] = useState<Order | null>(null);
+  const [activeItem, setActiveItem] = useState<KitchenItem | null>(null);
   const [activeTab, setActiveTab] = useState<TabType>("pending");
   const [isMobile, setIsMobile] = useState(false);
 
@@ -98,116 +99,87 @@ export function KitchenKanban({
     return () => clearInterval(interval);
   }, [refetch]);
 
-  const ordersByStatus = useMemo(() => {
-    if (!allOrders) return { pending: [], inKitchen: [], ready: [] };
+  // Flatten all items from all active orders and group them by status
+  const itemsByStatus = useMemo(() => {
+    const initial = { pending: [] as KitchenItem[], inKitchen: [] as KitchenItem[], ready: [] as KitchenItem[] };
+    if (!allOrders) return initial;
 
-    const pending = allOrders
-      .filter((o) => o.status === OrderStatus.PAID) // Now PAID is the entry point for kitchen
-      .sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      );
-
-    const inKitchen = allOrders
-      .filter((o) => o.status === OrderStatus.IN_KITCHEN)
-      .sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      );
-
-    const ready = allOrders
-      .filter((o) => o.status === OrderStatus.READY)
-      .sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-      );
-
-    return { pending, inKitchen, ready };
+    return allOrders.reduce((acc, order) => {
+      order.items?.forEach(item => {
+        const kitchenItem: KitchenItem = { ...item, order };
+        
+        if (item.status === OrderItemStatus.PENDING) acc.pending.push(kitchenItem);
+        else if (item.status === OrderItemStatus.IN_KITCHEN) acc.inKitchen.push(kitchenItem);
+        else if (item.status === OrderItemStatus.READY) acc.ready.push(kitchenItem);
+      });
+      return acc;
+    }, initial);
   }, [allOrders]);
 
-  const getOrdersForTab = (tab: TabType) => {
+  const getItemsForTab = (tab: TabType) => {
     switch (tab) {
-      case "pending":
-        return ordersByStatus.pending;
-      case "inKitchen":
-        return ordersByStatus.inKitchen;
-      case "ready":
-        return ordersByStatus.ready;
+      case "pending": return itemsByStatus.pending;
+      case "inKitchen": return itemsByStatus.inKitchen;
+      case "ready": return itemsByStatus.ready;
     }
   };
 
   const handleDragStart = useCallback(
     (event: DragStartEvent) => {
       const { active } = event;
-      const order = allOrders?.find((o) => o.id === active.id);
-      if (order) {
-        setActiveOrder(order);
+      // Find the item in our flattened lists
+      const item = [...itemsByStatus.pending, ...itemsByStatus.inKitchen, ...itemsByStatus.ready]
+        .find(i => i.id === active.id);
+      
+      if (item) {
+        setActiveItem(item);
       }
     },
-    [allOrders],
+    [itemsByStatus],
   );
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { active, over } = event;
-      setActiveOrder(null);
+      setActiveItem(null);
 
       if (!over) return;
 
-      const orderId = active.id as string;
+      const itemId = active.id as number;
+      const orderId = active.data.current?.item?.orderId as string;
       
-      // Smart status detection: check if over is a column or another card
-      let newStatus: OrderStatus | null = null;
+      let newStatus: OrderItemStatus | null = null;
       
       if (over.data.current?.type === "column") {
-        newStatus = over.data.current.status as OrderStatus;
-      } else if (over.data.current?.type === "order") {
-        newStatus = over.data.current.order.status as OrderStatus;
-      } else {
-        // Fallback to ID if it's a valid status
-        const possibleStatus = over.id as OrderStatus;
-        if ([OrderStatus.PENDING, OrderStatus.IN_KITCHEN, OrderStatus.READY].includes(possibleStatus)) {
-          newStatus = possibleStatus;
-        }
+        newStatus = over.data.current.status as OrderItemStatus;
+      } else if (over.data.current?.type === "item") {
+        newStatus = over.data.current.item.status as OrderItemStatus;
       }
 
-      if (newStatus && newStatus !== active.data.current?.order?.status) {
-        updateStatus(
-          { id: orderId, orderStatus: newStatus },
+      if (newStatus && newStatus !== active.data.current?.item?.status) {
+        updateItemStatus(
+          { orderId, itemId, status: newStatus },
           {
             onSuccess: () => {
-              toast.success(`Pedido movido a ${getStatusLabel(newStatus!)}`);
+              toast.success(`Plato movido a ${getStatusLabel(newStatus!)}`);
             },
             onError: () => {
-              toast.error("Error al mover el pedido");
+              toast.error("Error al mover el plato");
             },
           },
         );
       }
     },
-    [updateStatus],
+    [updateItemStatus],
   );
 
-  const handleToggleItemReady = useCallback(
-    (_orderId: string, itemId: number, ready: boolean) => {
-      setReadyItemIds((prev) => {
-        if (ready) {
-          return [...prev, itemId];
-        } else {
-          return prev.filter((id) => id !== itemId);
-        }
-      });
-    },
-    [],
-  );
-
-  const handleStatusChange = useCallback(
-    (orderId: string, status: OrderStatus) => {
-      updateStatus(
-        { id: orderId, orderStatus: status },
+  const handleItemStatusChange = useCallback(
+    (orderId: string, itemId: number, status: OrderItemStatus) => {
+      updateItemStatus(
+        { orderId, itemId, status },
         {
           onSuccess: () => {
-            toast.success(`Pedido marcado como ${getStatusLabel(status)}`);
+            toast.success(`Plato marcado como ${getStatusLabel(status)}`);
           },
           onError: () => {
             toast.error("Error al actualizar el estado");
@@ -215,27 +187,18 @@ export function KitchenKanban({
         },
       );
     },
-    [updateStatus],
+    [updateItemStatus],
   );
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
   };
 
-  /**
-   * Custom collision detection strategy
-   * Solves the bug where dropping on a non-empty column is difficult.
-   */
   const customCollisionDetection: CollisionDetection = useCallback((args) => {
-    // 1. First try pointerWithin (most intuitive)
     const pointerCollisions = pointerWithin(args);
     if (pointerCollisions.length > 0) return pointerCollisions;
-
-    // 2. Fallback to rectIntersection
     const rectCollisions = rectIntersection(args);
     if (rectCollisions.length > 0) return rectCollisions;
-
-    // 3. Last resort: closest corners for sorting within list
     return closestCorners(args);
   }, []);
 
@@ -252,7 +215,7 @@ export function KitchenKanban({
             <div key={i} className="space-y-4">
               <Skeleton height={60} />
               {[...Array(3)].map((_, j) => (
-                <Skeleton key={j} height={200} />
+                <Skeleton key={j} height={120} />
               ))}
             </div>
           ))}
@@ -272,12 +235,12 @@ export function KitchenKanban({
     );
   }
 
-  const totalOrders =
-    ordersByStatus.pending.length +
-    ordersByStatus.inKitchen.length +
-    ordersByStatus.ready.length;
+  const totalItemsCount =
+    itemsByStatus.pending.length +
+    itemsByStatus.inKitchen.length +
+    itemsByStatus.ready.length;
 
-  const currentTabOrders = getOrdersForTab(activeTab);
+  const currentTabItems = getItemsForTab(activeTab);
 
   return (
     <DndContext
@@ -292,7 +255,7 @@ export function KitchenKanban({
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-sage-600">
               <ChefHat className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Operación en Tiempo Real</span>
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Cocina Master-Detail</span>
             </div>
             <div className="flex items-center gap-4">
               <h1 className="text-2xl lg:text-3xl font-bold text-carbon-900 tracking-tight">
@@ -307,37 +270,34 @@ export function KitchenKanban({
 
           <div className="flex items-center gap-6">
             <div className="text-right hidden sm:block">
-              <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest leading-none mb-1">Órdenes Activas</p>
-              <p className="text-2xl font-bold text-sage-700 tracking-tight leading-none">{totalOrders}</p>
+              <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest leading-none mb-1">Platos Activos</p>
+              <p className="text-2xl font-bold text-sage-700 tracking-tight leading-none">{totalItemsCount}</p>
             </div>
-            
-            {/* Desktop Only: Quick Filter Info or similar could go here */}
           </div>
         </header>
 
         <div className="flex-1 overflow-hidden">
-          {totalOrders === 0 ? (
+          {totalItemsCount === 0 ? (
             <EmptyState
               icon={<ChefHat className="w-16 h-16" />}
-              title="No hay pedidos en cocina"
-              description="Los pedidos aparecerán aquí cuando sean enviados a cocina"
+              title="No hay platos pendientes"
+              description="Los platos aparecerán aquí cuando se registren en una mesa"
             />
           ) : isMobile ? (
             <div className="h-full flex flex-col">
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {currentTabOrders.length === 0 ? (
+                {currentTabItems.length === 0 ? (
                   <div className="flex items-center justify-center h-32 text-carbon-400">
-                    <p className="text-center">No hay pedidos</p>
+                    <p className="text-center">No hay platos en esta etapa</p>
                   </div>
                 ) : (
-                  currentTabOrders.map((order) => (
+                  currentTabItems.map((item) => (
                     <KitchenOrderCard
-                      key={order.id}
-                      order={order}
-                      readyItemIds={readyItemIds}
-                      onToggleItemReady={handleToggleItemReady}
-                      onStatusChange={handleStatusChange}
+                      key={item.id}
+                      item={item}
+                      onStatusChange={handleItemStatusChange}
                       isMobile={isMobile}
+                      categoryConfig={categoryConfig}
                     />
                   ))
                 )}
@@ -347,7 +307,7 @@ export function KitchenKanban({
                 <div className="flex justify-around items-center">
                   {TABS_CONFIG.map((tab) => {
                     const Icon = tab.icon;
-                    const count = getOrdersForTab(tab.id).length;
+                    const count = getItemsForTab(tab.id).length;
                     const isActive = activeTab === tab.id;
 
                     return (
@@ -400,38 +360,32 @@ export function KitchenKanban({
             <div className="flex-1 p-6 overflow-y-auto">
               <div className="grid grid-cols-3 gap-6 min-h-0 h-full">
                 <KitchenColumn
-                  id={OrderStatus.PAID}
+                  id={OrderItemStatus.PENDING}
                   title="Nuevos"
                   icon={<Clock className="w-6 h-6" />}
                   color="bg-blue-100 text-blue-800"
-                  orders={ordersByStatus.pending}
-                  readyItemIds={readyItemIds}
-                  onToggleItemReady={handleToggleItemReady}
-                  onStatusChange={handleStatusChange}
+                  items={itemsByStatus.pending}
+                  onStatusChange={handleItemStatusChange}
                   isMobile={false}
                   categoryConfig={categoryConfig}
                 />
                 <KitchenColumn
-                  id={OrderStatus.IN_KITCHEN}
+                  id={OrderItemStatus.IN_KITCHEN}
                   title="Preparando"
                   icon={<ChefHat className="w-6 h-6" />}
                   color="bg-orange-100 text-orange-800"
-                  orders={ordersByStatus.inKitchen}
-                  readyItemIds={readyItemIds}
-                  onToggleItemReady={handleToggleItemReady}
-                  onStatusChange={handleStatusChange}
+                  items={itemsByStatus.inKitchen}
+                  onStatusChange={handleItemStatusChange}
                   isMobile={false}
                   categoryConfig={categoryConfig}
                 />
                 <KitchenColumn
-                  id={OrderStatus.READY}
+                  id={OrderItemStatus.READY}
                   title="Listos"
                   icon={<CheckCircle className="w-6 h-6" />}
                   color="bg-emerald-100 text-emerald-800"
-                  orders={ordersByStatus.ready}
-                  readyItemIds={readyItemIds}
-                  onToggleItemReady={handleToggleItemReady}
-                  onStatusChange={handleStatusChange}
+                  items={itemsByStatus.ready}
+                  onStatusChange={handleItemStatusChange}
                   isMobile={false}
                   categoryConfig={categoryConfig}
                 />
@@ -442,12 +396,10 @@ export function KitchenKanban({
       </div>
 
       <DragOverlay>
-        {activeOrder && (
+        {activeItem && (
           <KitchenOrderCard
-            order={activeOrder}
-            readyItemIds={readyItemIds}
-            onToggleItemReady={handleToggleItemReady}
-            onStatusChange={handleStatusChange}
+            item={activeItem}
+            onStatusChange={handleItemStatusChange}
             categoryConfig={categoryConfig}
           />
         )}
@@ -456,15 +408,13 @@ export function KitchenKanban({
   );
 }
 
-function getStatusLabel(status: OrderStatus): string {
+function getStatusLabel(status: OrderItemStatus): string {
   switch (status) {
-    case OrderStatus.PENDING:
-      return "Pendiente";
-    case OrderStatus.IN_KITCHEN:
-      return "En Cocina";
-    case OrderStatus.READY:
-      return "Listo";
-    default:
-      return status;
+    case OrderItemStatus.PENDING: return "Pendiente";
+    case OrderItemStatus.IN_KITCHEN: return "En Cocina";
+    case OrderItemStatus.READY: return "Listo";
+    case OrderItemStatus.DELIVERED: return "Entregado";
+    case OrderItemStatus.CANCELLED: return "Cancelado";
+    default: return status;
   }
 }

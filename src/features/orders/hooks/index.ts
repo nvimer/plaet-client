@@ -1,6 +1,6 @@
 export { useOrders } from "./useOrders";
 export { useOrder } from "./useOrder";
-export { useCreateOrder } from "./useCreateOrder";
+export { useCreateOrder, useBatchCreateOrders } from "./useCreateOrder";
 export { useUpdateOrder } from "./useUpdateOrder";
 export { useUpdateOrderStatus } from "./useUpdateOrderStatus";
 export { useDeleteOrder } from "./useDeleteOrder";
@@ -17,5 +17,6 @@ export { useValidateOrder } from "./useCreateOrder";
 export { useCancelOrder } from "./useCreateOrder";
 export { useOrderBuilder } from "./useOrderBuilder";
 export type { UseOrderBuilderReturn } from "./useOrderBuilder";
+export { useUpdateOrderItemStatus } from "./useUpdateOrderItemStatus";
 export { useAddPayment } from "./useAddPayment";
 export { useCustomerTickets } from "./useCustomerTickets";

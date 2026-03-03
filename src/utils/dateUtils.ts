@@ -27,18 +27,18 @@ export const parseLocalDate = (dateStr: string): Date => {
  * Checks if a given date string (ISO or local) matches today's local date.
  */
 export const isToday = (dateString: string): boolean => {
-  const dateStr = dateString.includes("T") ? dateString.split("T")[0] : dateString;
+  const date = new Date(dateString);
   const todayStr = getLocalDateString(new Date());
-  return dateStr === todayStr;
+  return getLocalDateString(date) === todayStr;
 };
 
 /**
  * Checks if a given date string matches yesterday's local date.
  */
 export const isYesterday = (dateString: string): boolean => {
-  const dateStr = dateString.includes("T") ? dateString.split("T")[0] : dateString;
+  const date = new Date(dateString);
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);
   const yesterdayStr = getLocalDateString(yesterday);
-  return dateStr === yesterdayStr;
+  return getLocalDateString(date) === yesterdayStr;
 };

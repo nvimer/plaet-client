@@ -8,7 +8,7 @@
  * Synced with: model Customer in Prisma
  */
 
-import { OrderStatus, OrderType, PaymentMethod } from "./enums";
+import { OrderStatus, OrderType, PaymentMethod, OrderItemStatus } from "./enums";
 import type { User } from "./user";
 import type { Table } from "./table";
 import type { MenuItem } from "./menu";
@@ -42,6 +42,7 @@ export interface OrderItem {
   priceAtOrder: number; // Price at order time (Decimal → number)
   notes?: string; // Special notes (e.g., "no onion")
   isFreeSubstitution: boolean; // Whether it's a free substitution
+  status: OrderItemStatus;
   createdAt: string;
   updatedAt: string;
 }

@@ -6,7 +6,6 @@
  */
 
 import {
-  User,
   Clock,
   ChevronDown,
   ChevronUp,
@@ -15,9 +14,9 @@ import {
   UtensilsCrossed,
   ChefHat,
   DollarSign,
-  CheckCircle,
   Truck,
-  AlertCircle
+  XCircle,
+  CheckCircle,
 } from "lucide-react";
 import { useState } from "react";
 import { Button, Card } from "@/components";
@@ -25,12 +24,13 @@ import { OrderStatusBadge } from "./OrderStatusBadge";
 import { OrderTypeBadge } from "./OrderTypeBadge";
 import { cn } from "@/utils/cn";
 import type { GroupedOrder } from "../pages/OrdersPage";
-import { useUpdateOrderStatus } from "../hooks";
-import { OrderStatus } from "@/types";
+import { useUpdateOrderStatus, useUpdateOrderItemStatus } from "../hooks";
+import { OrderStatus, OrderItemStatus, type Order } from "@/types";
 
 interface GroupedOrderCardProps {
   groupedOrder: GroupedOrder;
   onViewDetail: (orderId: string) => void;
+  onPayTable: (orders: Order[]) => void;
 }
 
 /**
@@ -68,12 +68,18 @@ function getWaitTime(createdAt: string): {
 export function GroupedOrderCard({
   groupedOrder,
   onViewDetail,
+  onPayTable,
 }: GroupedOrderCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { mutate: updateStatus, isPending: isUpdating } = useUpdateOrderStatus();
+  const { mutate: updateStatus } = useUpdateOrderStatus();
+  const { mutate: updateItemStatus } = useUpdateOrderItemStatus();
   
   const waitTime = getWaitTime(groupedOrder.createdAt);
   
+  // Calculate auto-cancel warning (10 min limit)
+  const minutesRemaining = Math.max(0, 10 - waitTime.minutes);
+  const isNearAutoCancel = waitTime.minutes >= 7; // Warning after 7 mins
+
   const createdTime = new Date(groupedOrder.createdAt).toLocaleTimeString("es-CO", {
     hour: "2-digit",
     minute: "2-digit",
@@ -84,26 +90,31 @@ export function GroupedOrderCard({
     0
   );
 
-  // Logic for primary actions
-  const pendingPaymentOrders = groupedOrder.orders.filter(o => o.status === OrderStatus.PENDING || o.status === OrderStatus.SENT_TO_CASHIER);
-  const paidWaitingKitchen = groupedOrder.orders.filter(o => o.status === OrderStatus.PAID);
-  const readyForDelivery = groupedOrder.orders.filter(o => o.status === OrderStatus.READY);
+  // Logic for primary actions based on account and items
+  const activeOrders = groupedOrder.orders.filter(o => o.status === OrderStatus.OPEN || o.status === OrderStatus.SENT_TO_CASHIER);
+  const itemsPendingKitchen = groupedOrder.orders.flatMap(o => o.items || []).filter(i => i.status === OrderItemStatus.PENDING);
+  const itemsReadyForDelivery = groupedOrder.orders.flatMap(o => o.items || []).filter(i => i.status === OrderItemStatus.READY);
   
-  const needsBilling = pendingPaymentOrders.length > 0;
-  const canSendToKitchen = paidWaitingKitchen.length > 0;
-  const canDeliver = readyForDelivery.length > 0;
+  const needsBilling = activeOrders.length > 0;
+  const canSendToKitchen = itemsPendingKitchen.length > 0;
+  const canDeliver = itemsReadyForDelivery.length > 0;
+  
+  const allDelivered = groupedOrder.orders.every(o => 
+    o.items?.every(i => i.status === OrderItemStatus.DELIVERED)
+  );
+  const allCancelled = groupedOrder.orders.every(o => o.status === OrderStatus.CANCELLED);
 
   const handleSendAllToKitchen = (e: React.MouseEvent) => {
     e.stopPropagation();
-    paidWaitingKitchen.forEach(order => {
-      updateStatus({ id: order.id, orderStatus: OrderStatus.IN_KITCHEN });
+    itemsPendingKitchen.forEach(item => {
+      updateItemStatus({ orderId: item.orderId, itemId: item.id, status: OrderItemStatus.IN_KITCHEN });
     });
   };
 
   const handleDeliverAll = (e: React.MouseEvent) => {
     e.stopPropagation();
-    readyForDelivery.forEach(order => {
-      updateStatus({ id: order.id, orderStatus: OrderStatus.DELIVERED });
+    itemsReadyForDelivery.forEach(item => {
+      updateItemStatus({ orderId: item.orderId, itemId: item.id, status: OrderItemStatus.DELIVERED });
     });
   };
 
@@ -111,108 +122,150 @@ export function GroupedOrderCard({
     <Card
       variant="elevated"
       className={cn(
-        "overflow-hidden border-2 transition-all duration-300 rounded-3xl h-full flex flex-col",
-        isExpanded ? "border-sage-300 shadow-soft-xl" : "border-sage-100 hover:border-sage-300 hover:shadow-soft-lg",
-        needsBilling && !isExpanded && "border-amber-200/60 bg-amber-50/10",
-        canSendToKitchen && !needsBilling && !isExpanded && "border-emerald-200/60 bg-emerald-50/10"
+        "overflow-hidden border-2 transition-all duration-300 rounded-[2.5rem] h-full flex flex-col group",
+        isExpanded ? "border-carbon-900 shadow-soft-2xl scale-[1.02]" : "border-sage-100 hover:border-sage-300 hover:shadow-soft-xl",
+        needsBilling && !isExpanded && "bg-white",
+        isNearAutoCancel && needsBilling && "border-rose-200 ring-4 ring-rose-50",
+        canDeliver && !isExpanded && "border-emerald-500 ring-4 ring-emerald-50 animate-pulse-subtle"
       )}
     >
       {/* Header: Table Info & Group Stats */}
       <div 
         className={cn(
-          "p-5 cursor-pointer transition-colors duration-300 flex-1 flex flex-col",
-          isExpanded ? "bg-sage-50/50" : "bg-white"
+          "p-6 cursor-pointer transition-colors duration-300 flex-1 flex flex-col",
+          isExpanded ? "bg-carbon-900 text-white" : "bg-white"
         )}
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex items-start justify-between gap-4 flex-shrink-0">
-          <div className="flex-1 min-w-0">
-            {/* Table / Location Info */}
-            <div className="flex items-center gap-4 mb-4">
-              <div className={cn(
-                "w-14 h-14 rounded-2xl flex items-center justify-center text-white shadow-md flex-shrink-0 transition-colors",
-                needsBilling ? "bg-amber-500" : "bg-carbon-900"
-              )}>
-                {groupedOrder.table ? (
-                  <span className="text-2xl font-bold">{groupedOrder.table.number}</span>
-                ) : (
-                  <UtensilsCrossed className="w-7 h-7 text-sage-400" />
-                )}
-              </div>
-              <div className="min-w-0">
-                <h3 className="text-xl font-bold text-carbon-900 leading-tight tracking-tight truncate">
-                  {groupedOrder.table ? `Mesa ${groupedOrder.table.number}` : "Sin Mesa"}
-                </h3>
-                <div className="flex items-center gap-2 text-sm text-carbon-500 mt-1">
-                  <Clock className="w-4 h-4 text-carbon-400" />
-                  <span className="font-medium">{createdTime}</span>
-                  <span className="text-carbon-300">•</span>
-                  <span className={cn("font-semibold", waitTime.isUrgent ? "text-error-600 animate-pulse" : "text-sage-600")}>
-                    {waitTime.text}
-                  </span>
-                </div>
-              </div>
+        <div className="flex items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-4">
+            {/* TABLE NUMBER BOX */}
+            <div className={cn(
+              "w-16 h-16 rounded-[1.25rem] flex items-center justify-center shadow-md transition-all duration-500",
+              isExpanded ? "bg-white text-carbon-900" : "bg-carbon-900 text-white group-hover:rotate-3"
+            )}>
+              <span className="text-3xl font-black tracking-tighter">
+                {groupedOrder.table ? groupedOrder.table.number : "S/M"}
+              </span>
             </div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <OrderTypeBadge type={groupedOrder.type} />
-              <div className="px-3 py-1 rounded-xl bg-carbon-50 text-carbon-600 text-[11px] font-bold border border-carbon-200 tracking-wide">
-                {groupedOrder.orders.length} {groupedOrder.orders.length === 1 ? 'SERVICIO' : 'SERVICIOS'}
+            
+            <div>
+              <h3 className={cn(
+                "text-sm font-black uppercase tracking-widest",
+                isExpanded ? "text-white/60" : "text-carbon-400"
+              )}>
+                {groupedOrder.table ? "Mesa" : "Pedido"}
+              </h3>
+              <div className="flex items-center gap-2">
+                <span className={cn("text-xl font-bold", isExpanded ? "text-white" : "text-carbon-900")}>
+                  {groupedOrder.table ? `Local ${groupedOrder.table.number}` : `#${groupedOrder.id.slice(-4).toUpperCase()}`}
+                </span>
               </div>
             </div>
           </div>
 
-          <div className="flex flex-col items-end justify-between h-full gap-4">
-            {isExpanded ? (
-              <ChevronUp className="w-6 h-6 text-carbon-400 bg-carbon-50 rounded-full p-1" />
-            ) : (
-              <ChevronDown className="w-6 h-6 text-carbon-400 bg-carbon-50 rounded-full p-1" />
-            )}
-            <div className="text-right mt-auto">
-              <p className="text-[10px] text-carbon-400 font-bold uppercase tracking-widest mb-0.5">Total</p>
-              <p className="text-2xl font-bold text-carbon-900 tracking-tight">
-                ${Number(groupedOrder.totalAmount).toLocaleString("es-CO")}
-              </p>
+          <div className="flex flex-col items-end gap-1">
+            <div className={cn(
+              "flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors",
+              isExpanded ? "bg-white/10 text-white" : 
+              isNearAutoCancel ? "bg-rose-100 text-rose-600 animate-pulse" : "bg-sage-100 text-sage-600"
+            )}>
+              <Clock className="w-3 h-3" />
+              {needsBilling ? `Cancela en ${minutesRemaining}m` : waitTime.text}
+            </div>
+            <div className={cn(
+              "text-[10px] font-bold opacity-60",
+              isExpanded ? "text-white" : "text-carbon-400"
+            )}>
+              Ingreso: {createdTime}
             </div>
           </div>
         </div>
 
+        {/* Content Preview */}
+        {!isExpanded && (
+          <div className="flex-1">
+            <div className="flex flex-wrap gap-2 mb-4">
+              <OrderTypeBadge type={groupedOrder.type} />
+              <div className="px-3 py-1 rounded-full bg-carbon-50 text-carbon-600 text-[9px] font-black border border-carbon-100 uppercase tracking-widest">
+                {groupedOrder.orders.length} {groupedOrder.orders.length === 1 ? 'Servicio' : 'Servicios'}
+              </div>
+            </div>
+            
+            <div className="space-y-1.5 opacity-80">
+              {groupedOrder.orders.flatMap(o => o.items || []).slice(0, 3).map((item, i) => (
+                <div key={i} className="flex items-center gap-2 text-xs text-carbon-600 font-medium">
+                  <div className="w-1.5 h-1.5 rounded-full bg-sage-300" />
+                  <span className="truncate">{item.quantity}x {item.menuItem?.name}</span>
+                </div>
+              ))}
+              {totalItems > 3 && (
+                <p className="text-[10px] text-carbon-400 font-bold pl-3.5">+ {totalItems - 3} productos más...</p>
+              )}
+            </div>
+          </div>
+        )}
+
+        <div className={cn(
+          "mt-6 pt-6 border-t flex items-center justify-between",
+          isExpanded ? "border-white/10" : "border-sage-50"
+        )}>
+          <div>
+            <p className={cn(
+              "text-[10px] font-black uppercase tracking-widest mb-0.5",
+              isExpanded ? "text-white/40" : "text-carbon-400"
+            )}>Total Cuenta</p>
+            <p className={cn(
+              "text-3xl font-black tracking-tighter",
+              isExpanded ? "text-white" : "text-carbon-900"
+            )}>
+              ${Number(groupedOrder.totalAmount).toLocaleString("es-CO")}
+            </p>
+          </div>
+          {isExpanded ? <ChevronUp className="w-6 h-6 opacity-40" /> : <ChevronDown className="w-6 h-6 text-carbon-300" />}
+        </div>
+
         {/* Dynamic Action Area (Simplified when collapsed) */}
         {!isExpanded && (
-          <div className="mt-auto pt-5">
+          <div className="mt-6">
             {needsBilling ? (
               <Button
                 variant="primary"
-                className="w-full bg-carbon-900 hover:bg-carbon-800 text-white rounded-2xl h-14 shadow-lg active:scale-[0.98] transition-all font-black uppercase tracking-widest text-xs"
-                onClick={(e) => { e.stopPropagation(); onViewDetail(groupedOrder.id); }}
+                className="w-full bg-carbon-900 hover:bg-carbon-800 text-white rounded-2xl h-16 shadow-xl active:scale-[0.98] transition-all font-black uppercase tracking-[0.15em] text-xs"
+                onClick={(e) => { e.stopPropagation(); onPayTable(groupedOrder.orders); }}
               >
                 <DollarSign className="w-5 h-5 mr-2" />
                 Registrar Pago
               </Button>
-            ) : canSendToKitchen ? (
-              <Button
-                variant="primary"
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl h-14 shadow-lg active:scale-[0.98] transition-all font-black uppercase tracking-widest text-xs"
-                onClick={handleSendAllToKitchen}
-                disabled={isUpdating}
-              >
-                <ChefHat className="w-5 h-5 mr-2" />
-                Enviar a Cocina
-              </Button>
             ) : canDeliver ? (
               <Button
                 variant="primary"
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white rounded-2xl h-14 shadow-lg active:scale-[0.98] transition-all font-black uppercase tracking-widest text-xs"
+                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl h-16 shadow-xl active:scale-[0.98] transition-all font-black uppercase tracking-[0.15em] text-xs"
                 onClick={handleDeliverAll}
-                disabled={isUpdating}
               >
                 <Truck className="w-5 h-5 mr-2" />
                 Entregar Todo
               </Button>
+            ) : allDelivered ? (
+              <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 flex items-center justify-between">
+                <p className="text-xs text-emerald-600 font-black uppercase tracking-widest flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Entregado
+                </p>
+                <span className="text-[10px] font-black text-carbon-400 uppercase tracking-widest">{totalItems} productos</span>
+              </div>
+            ) : allCancelled ? (
+              <div className="bg-rose-50 rounded-2xl p-4 border border-rose-100 flex items-center justify-between">
+                <p className="text-xs text-rose-600 font-black uppercase tracking-widest flex items-center gap-2">
+                  <XCircle className="w-4 h-4" />
+                  Cancelado
+                </p>
+                <span className="text-[10px] font-black text-carbon-400 uppercase tracking-widest">{totalItems} productos</span>
+              </div>
             ) : (
-              <div className="bg-sage-50/50 rounded-xl p-3 border border-sage-100 flex items-center justify-between">
-                <p className="text-xs text-carbon-500 font-bold flex items-center gap-2">
-                  <Clock className="w-3.5 h-3.5 text-amber-500" />
+              <div className="bg-sage-50 rounded-2xl p-4 border border-sage-100 flex items-center justify-between">
+                <p className="text-xs text-carbon-500 font-black uppercase tracking-widest flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-amber-500" />
                   En preparación...
                 </p>
                 <span className="text-[10px] font-black text-carbon-400 uppercase">{totalItems} productos</span>
@@ -224,14 +277,14 @@ export function GroupedOrderCard({
 
       {/* Expanded Details: List of individual orders */}
       {isExpanded && (
-        <div className="border-t border-sage-200 bg-sage-50/50">
-          <div className="p-5 space-y-4">
+        <div className="border-t border-white/10 bg-white/5 backdrop-blur-md">
+          <div className="p-6 space-y-4">
             {groupedOrder.orders.map((order, idx) => (
               <div 
                 key={order.id}
                 className={cn(
-                  "bg-white rounded-2xl border-2 p-4 shadow-sm transition-all duration-200 hover:shadow-md",
-                  (order.status === OrderStatus.PENDING || order.status === OrderStatus.SENT_TO_CASHIER) ? "border-amber-100 shadow-amber-50/50" : "border-sage-50"
+                  "bg-white rounded-[1.5rem] border-2 p-5 shadow-sm transition-all duration-200",
+                  (order.status === OrderStatus.OPEN || order.status === OrderStatus.SENT_TO_CASHIER) ? "border-amber-100" : "border-sage-50"
                 )}
               >
                 <div className="flex items-center justify-between mb-4 border-b border-sage-50 pb-3">
@@ -240,14 +293,14 @@ export function GroupedOrderCard({
                       {idx + 1}
                     </div>
                     <div>
-                      <p className="text-sm font-bold text-carbon-900 tracking-tight">
-                        Pedido #{order.id.slice(-4).toUpperCase()}
+                      <p className="text-sm font-black text-carbon-900 tracking-tight">
+                        Servicio #{order.id.slice(-4).toUpperCase()}
                       </p>
                       <OrderStatusBadge status={order.status} size="sm" showIcon={false} />
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-sm font-bold text-carbon-900">
+                    <p className="text-sm font-black text-carbon-900">
                       ${Number(order.totalAmount).toLocaleString("es-CO")}
                     </p>
                   </div>
@@ -256,9 +309,9 @@ export function GroupedOrderCard({
                 <div className="space-y-2 mb-4 px-1">
                   {order.items?.map((item) => (
                     <div key={item.id} className="flex items-start gap-3 text-sm">
-                      <span className="text-carbon-400 font-bold min-w-[1.5rem] bg-carbon-50 px-1.5 py-0.5 rounded text-xs text-center">{item.quantity}x</span>
+                      <span className="text-carbon-400 font-black min-w-[1.5rem] bg-carbon-50 px-1.5 py-0.5 rounded text-[10px] text-center">{item.quantity}x</span>
                       <div className="flex-1">
-                        <span className="text-carbon-800 font-medium">{item.menuItem?.name || 'Producto'}</span>
+                        <span className="text-carbon-800 font-bold text-xs uppercase">{item.menuItem?.name || 'Producto'}</span>
                         {item.notes && <p className="text-[10px] text-carbon-400 italic">"{item.notes}"</p>}
                       </div>
                     </div>
@@ -273,43 +326,28 @@ export function GroupedOrderCard({
                       e.stopPropagation();
                       onViewDetail(order.id);
                     }}
-                    className="h-10 text-[10px] font-black uppercase tracking-widest rounded-xl border-sage-200 text-carbon-600 hover:text-sage-700 hover:bg-sage-50"
+                    className="h-12 text-[10px] font-black uppercase tracking-widest rounded-xl border-sage-200 text-carbon-600 hover:text-sage-700 hover:bg-sage-50"
                   >
-                    <Eye className="w-3.5 h-3.5 mr-2" />
-                    Ver Detalle
+                    <Eye className="w-4 h-4 mr-2" />
+                    Detalles
                   </Button>
-                  
-                  {order.status === OrderStatus.READY && (
-                    <Button
-                      variant="primary"
-                      fullWidth
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        updateStatus({ id: order.id, orderStatus: OrderStatus.DELIVERED });
-                      }}
-                      className="h-10 text-[10px] font-black uppercase tracking-widest rounded-xl bg-indigo-600 hover:bg-indigo-700"
-                    >
-                      <Truck className="w-3.5 h-3.5 mr-2" />
-                      Entregar
-                    </Button>
-                  )}
                 </div>
               </div>
             ))}
           </div>
           
-          <div className="p-5 pt-0 flex gap-3">
+          <div className="p-6 pt-0 flex gap-3">
             <Button
               variant="outline"
               fullWidth
-              className="bg-white border-2 border-carbon-200 text-carbon-700 hover:bg-carbon-50 rounded-2xl h-14 font-black uppercase tracking-widest text-[10px]"
+              className="bg-white border-2 border-carbon-200 text-carbon-700 hover:bg-carbon-50 rounded-2xl h-16 font-black uppercase tracking-widest text-[10px]"
               onClick={(e) => {
                 e.stopPropagation();
                 onViewDetail(groupedOrder.id);
               }}
             >
               <ReceiptText className="w-5 h-5 mr-2" />
-              Factura de Mesa
+              Ver Factura Mesa
             </Button>
           </div>
         </div>

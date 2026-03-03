@@ -31,6 +31,31 @@ export function useCreateOrder() {
 }
 
 /**
+ * useBatchCreateOrders Hook
+ *
+ * Mutation to create multiple orders (services) at once
+ */
+export function useBatchCreateOrders() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: async (batchData: Parameters<typeof orderApi.createBatchOrders>[0]) => {
+            const response = await orderApi.createBatchOrders(batchData);
+            return response.data;
+        },
+
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["orders"],
+            });
+            queryClient.invalidateQueries({
+                queryKey: queryKeys.tables.all,
+            });
+        },
+    });
+}
+
+/**
  * useUpdateOrderItem Hook
  *
  * Mutation to update order item quantity and details

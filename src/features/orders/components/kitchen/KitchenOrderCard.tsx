@@ -2,18 +2,16 @@ import { useMemo, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useGesture } from "@use-gesture/react";
-import { Clock, UtensilsCrossed, ArrowRight, ArrowLeft, GripVertical, CheckCircle } from "lucide-react";
+import { Clock, CheckCircle, ArrowRight, ArrowLeft, GripVertical } from "lucide-react";
 import { cn } from "@/utils/cn";
-import { OrderStatus, type Order } from "@/types";
-import { KitchenItemRow } from "./KitchenItemRow";
-import { isPreparableCategory, type KitchenCategoryConfig } from "./kitchenCategories";
+import { OrderItemStatus } from "@/types";
+import { type KitchenItem } from "./KitchenKanban";
+import { type KitchenCategoryConfig } from "./kitchenCategories";
 import { motion, AnimatePresence } from "framer-motion";
 
 export interface KitchenOrderCardProps {
-  order: Order;
-  readyItemIds: number[];
-  onToggleItemReady: (orderId: string, itemId: number, ready: boolean) => void;
-  onStatusChange: (orderId: string, status: OrderStatus) => void;
+  item: KitchenItem;
+  onStatusChange: (orderId: string, itemId: number, status: OrderItemStatus) => void;
   isMobile?: boolean;
   categoryConfig?: KitchenCategoryConfig;
 }
@@ -21,15 +19,13 @@ export interface KitchenOrderCardProps {
 const SWIPE_THRESHOLD = 80;
 
 export function KitchenOrderCard({
-  order,
-  readyItemIds,
-  onToggleItemReady,
+  item,
   onStatusChange,
   isMobile = false,
-  categoryConfig,
+  _categoryConfig,
 }: KitchenOrderCardProps) {
   const [translateX, setTranslateX] = useState(0);
-  const [isSwiping, setIsSwiping] = useState(false);
+  const [_isSwiping, setIsSwiping] = useState(false);
 
   const {
     attributes,
@@ -39,10 +35,10 @@ export function KitchenOrderCard({
     transition,
     isDragging,
   } = useSortable({
-    id: order.id,
+    id: item.id,
     data: {
-      type: "order",
-      order,
+      type: "item",
+      item,
     },
     disabled: isMobile,
   });
@@ -68,17 +64,17 @@ export function KitchenOrderCard({
         }
         const swipeDirection = dir > 0 ? "right" : "left";
         if (Math.abs(mx) > SWIPE_THRESHOLD) {
-          let newStatus: OrderStatus | null = null;
+          let newStatus: OrderItemStatus | null = null;
           if (swipeDirection === "right") {
-            if (order.status === OrderStatus.PENDING) newStatus = OrderStatus.IN_KITCHEN;
-            else if (order.status === OrderStatus.IN_KITCHEN) newStatus = OrderStatus.READY;
+            if (item.status === OrderItemStatus.PENDING) newStatus = OrderItemStatus.IN_KITCHEN;
+            else if (item.status === OrderItemStatus.IN_KITCHEN) newStatus = OrderItemStatus.READY;
           } else {
-            if (order.status === OrderStatus.READY) newStatus = OrderStatus.IN_KITCHEN;
-            else if (order.status === OrderStatus.IN_KITCHEN) newStatus = OrderStatus.PENDING;
+            if (item.status === OrderItemStatus.READY) newStatus = OrderItemStatus.IN_KITCHEN;
+            else if (item.status === OrderItemStatus.IN_KITCHEN) newStatus = OrderItemStatus.PENDING;
           }
           if (newStatus) {
             if (navigator.vibrate) navigator.vibrate(50);
-            onStatusChange(order.id, newStatus);
+            onStatusChange(item.orderId, item.id, newStatus);
           }
         }
         setTranslateX(0);
@@ -91,121 +87,91 @@ export function KitchenOrderCard({
 
   const timeInfo = useMemo(() => {
     const now = new Date().getTime();
-    const created = new Date(order.createdAt).getTime();
+    const created = new Date(item.createdAt).getTime();
     const diffMinutes = Math.floor((now - created) / (1000 * 60));
     let text = diffMinutes < 1 ? "< 1 min" : `${diffMinutes} min`;
     const isWarning = diffMinutes > 15;
     const isUrgent = diffMinutes > 25;
     return { text, isWarning, isUrgent, diffMinutes };
-  }, [order.createdAt]);
+  }, [item.createdAt]);
 
-  const preparableItems = useMemo(() => {
-    return order.items?.filter((item) => isPreparableCategory(item.menuItem?.categoryId, categoryConfig)) || [];
-  }, [order.items, categoryConfig]);
-
-  const readyItems = useMemo(() => {
-    return preparableItems.filter((item) => readyItemIds.includes(item.id));
-  }, [preparableItems, readyItemIds]);
-
-  const allProteinsReady = preparableItems.length > 0 && readyItems.length === preparableItems.length;
-
-  const handleToggleItemReady = (itemId: number, ready: boolean) => {
-    onToggleItemReady(order.id, itemId, ready);
-  };
+  const tableNumber = item.order.table?.number || "S/M";
 
   return (
     <div
       ref={setNodeRef}
       style={isMobile ? { transform: `translateX(${translateX}px)` } : style}
+      {...(isMobile ? bind() : {})}
       className={cn(
-        "group relative rounded-[2rem] bg-white border-2 transition-all duration-300 overflow-hidden",
+        "group relative rounded-3xl bg-white border-2 transition-all duration-300 overflow-hidden",
         isDragging ? "z-50 shadow-soft-2xl scale-105 border-carbon-900 ring-8 ring-carbon-900/5" : "shadow-soft-lg border-sage-100",
-        allProteinsReady && order.status !== OrderStatus.READY && "ring-2 ring-emerald-500 ring-offset-2"
       )}
     >
       {/* Header Info */}
       <div className={cn(
-        "p-4 flex items-center justify-between border-b transition-colors",
+        "p-3 flex items-center justify-between border-b transition-colors",
         timeInfo.isUrgent ? "bg-rose-50 border-rose-100" : 
         timeInfo.isWarning ? "bg-amber-50 border-amber-100" : "bg-sage-50/50 border-sage-100"
       )}>
-        <div className="flex items-center gap-3">
-          {/* Drag Handle (Desktop) */}
+        <div className="flex items-center gap-2">
           {!isMobile && (
             <div {...attributes} {...listeners} className="cursor-grab active:cursor-grabbing p-1 hover:bg-carbon-900/5 rounded-lg transition-colors">
-              <GripVertical className="w-5 h-5 text-carbon-300" />
+              <GripVertical className="w-4 h-4 text-carbon-300" />
             </div>
           )}
-          <div className="flex items-center gap-2.5">
-            <div className="w-10 h-10 rounded-xl bg-carbon-900 flex items-center justify-center text-white shadow-sm">
-              <span className="text-lg font-black">{order.table?.number || "S/M"}</span>
-            </div>
-            <div>
-              <p className="text-[10px] font-black text-carbon-400 uppercase tracking-[0.15em]">Pedido</p>
-              <p className="text-xs font-bold text-carbon-900">#{order.id.slice(-4).toUpperCase()}</p>
-            </div>
+          <div className="w-8 h-8 rounded-lg bg-carbon-900 flex items-center justify-center text-white shadow-sm">
+            <span className="text-sm font-black">{tableNumber}</span>
           </div>
+          <span className="text-[10px] font-black text-carbon-400 uppercase tracking-widest">#{item.order.id.slice(-4)}</span>
         </div>
 
         <div className={cn(
-          "flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-sm font-black transition-all",
+          "flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-black transition-all",
           timeInfo.isUrgent ? "bg-rose-500 text-white animate-pulse" : 
           timeInfo.isWarning ? "bg-amber-500 text-white" : "bg-white text-sage-600 border border-sage-200"
         )}>
-          <Clock className="w-3.5 h-3.5" />
+          <Clock className="w-3 h-3" />
           {timeInfo.text}
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-5 space-y-4">
-        {order.notes && (
-          <div className="p-3 bg-amber-50/50 border border-amber-100 rounded-2xl flex gap-2">
-            <span className="text-base">📝</span>
-            <p className="text-xs font-bold text-amber-800 leading-relaxed italic">
-              {order.notes}
-            </p>
+      <div className="p-4 space-y-3">
+        <div className="flex items-start justify-between gap-2">
+          <div className="flex-1">
+            <h4 className="text-sm font-black text-carbon-900 leading-tight">
+              {item.quantity}x {item.menuItem?.name || "Producto"}
+            </h4>
+            {item.notes && (
+              <p className="text-[10px] font-bold text-amber-700 mt-1 italic">
+                📝 {item.notes}
+              </p>
+            )}
           </div>
-        )}
-
-        <div className="space-y-1">
-          {order.items?.map((item) => (
-            <KitchenItemRow
-              key={item.id}
-              itemId={item.id}
-              name={item.menuItem?.name || `Item #${item.menuItemId}`}
-              quantity={item.quantity}
-              notes={item.notes}
-              categoryId={item.menuItem?.categoryId}
-              isReady={readyItemIds.includes(item.id)}
-              onToggleReady={handleToggleItemReady}
-              categoryConfig={categoryConfig}
-            />
-          ))}
         </div>
 
-        {/* Action / Ready Button */}
-        <AnimatePresence>
-          {allProteinsReady && order.status !== OrderStatus.READY && (
-            <motion.button
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              onClick={(e) => { e.stopPropagation(); onStatusChange(order.id, OrderStatus.READY); }}
-              className="w-full mt-4 py-4 bg-emerald-600 hover:bg-emerald-700 text-white font-black uppercase tracking-widest text-[10px] rounded-[1.5rem] flex items-center justify-center gap-2 shadow-xl shadow-emerald-100 active:scale-95 transition-all"
-            >
-              <CheckCircle className="w-4 h-4" />
-              Marcar como Listo
-            </motion.button>
-          )}
-        </AnimatePresence>
+        {/* Action Button (Desktop only, for quick move) */}
+        {!isMobile && item.status !== OrderItemStatus.READY && (
+          <button
+            onClick={() => {
+              const next = item.status === OrderItemStatus.PENDING 
+                ? OrderItemStatus.IN_KITCHEN 
+                : OrderItemStatus.READY;
+              onStatusChange(item.orderId, item.id, next);
+            }}
+            className="w-full py-2 bg-sage-50 hover:bg-carbon-900 hover:text-white text-carbon-600 font-black uppercase tracking-widest text-[9px] rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 border border-sage-100"
+          >
+            {item.status === OrderItemStatus.PENDING ? "Empezar" : "Listo"}
+            <ArrowRight className="w-3 h-3" />
+          </button>
+        )}
       </div>
       
-      {/* Selection / Status indicator for non-dragging cards */}
+      {/* Selection / Status indicator */}
       <div className={cn(
         "absolute bottom-0 left-0 right-0 h-1 transition-all",
-        order.status === OrderStatus.PENDING ? "bg-amber-400" :
-        order.status === OrderStatus.IN_KITCHEN ? "bg-orange-400" : "bg-emerald-400"
+        item.status === OrderItemStatus.PENDING ? "bg-blue-400" :
+        item.status === OrderItemStatus.IN_KITCHEN ? "bg-orange-400" : "bg-emerald-400"
       )} />
     </div>
   );

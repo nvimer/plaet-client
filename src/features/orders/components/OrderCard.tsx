@@ -25,7 +25,6 @@ import {
   User,
   AlertCircle,
   Flame,
-  ArrowRight,
   DollarSign,
 } from "lucide-react";
 import { toast } from "sonner";
@@ -43,41 +42,14 @@ interface OrderCardProps {
 }
 
 const STATUS_CONFIG = {
-  [OrderStatus.PENDING]: {
-    label: "Pendiente",
-    bg: "bg-amber-50",
-    border: "border-amber-200",
-    text: "text-amber-700",
-    badge: "bg-amber-100 text-amber-700 border-amber-200",
-    accent: "bg-amber-500",
-    urgencyColor: "text-amber-600",
-  },
-  [OrderStatus.IN_KITCHEN]: {
-    label: "En Cocina",
-    bg: "bg-orange-50",
-    border: "border-orange-200",
-    text: "text-orange-700",
-    badge: "bg-orange-100 text-orange-700 border-orange-200",
-    accent: "bg-orange-500",
-    urgencyColor: "text-orange-600",
-  },
-  [OrderStatus.READY]: {
-    label: "Listo",
+  [OrderStatus.OPEN]: {
+    label: "Abierto",
     bg: "bg-emerald-50",
     border: "border-emerald-200",
     text: "text-emerald-700",
     badge: "bg-emerald-100 text-emerald-700 border-emerald-200",
     accent: "bg-emerald-500",
     urgencyColor: "text-emerald-600",
-  },
-  [OrderStatus.DELIVERED]: {
-    label: "Entregado",
-    bg: "bg-blue-50",
-    border: "border-blue-200",
-    text: "text-blue-700",
-    badge: "bg-blue-100 text-blue-700 border-blue-200",
-    accent: "bg-blue-500",
-    urgencyColor: "text-blue-600",
   },
   [OrderStatus.PAID]: {
     label: "Pagado",
@@ -199,30 +171,13 @@ export function OrderCard({
     action?: () => void;
   } | null => {
     switch (order.status) {
-      case OrderStatus.PENDING:
+      case OrderStatus.OPEN:
+      case OrderStatus.SENT_TO_CASHIER:
         return {
           status: OrderStatus.PAID,
           label: "Cobrar",
           icon: DollarSign,
           action: () => setIsPaymentModalOpen(true),
-        };
-      case OrderStatus.PAID:
-        return {
-          status: OrderStatus.IN_KITCHEN,
-          label: "Enviar a Cocina",
-          icon: ChefHat,
-        };
-      case OrderStatus.IN_KITCHEN:
-        return {
-          status: OrderStatus.READY,
-          label: "Marcar Listo",
-          icon: CheckCircle,
-        };
-      case OrderStatus.READY:
-        return {
-          status: OrderStatus.DELIVERED,
-          label: "Entregar",
-          icon: Truck,
         };
       default:
         return null;
@@ -257,30 +212,19 @@ export function OrderCard({
     );
   };
 
-  const handleConfirmPayment = (method: PaymentMethod, amount: number, reference?: string) => {
+  const handleConfirmPayment = (method: PaymentMethod, amount: number, _orderIds: string[], options?: { reference?: string; phone?: string }) => {
     addPayment({
       orderId: order.id,
       paymentData: {
         method,
         amount,
-        transactionRef: reference
+        transactionRef: options?.reference,
+        phone: options?.phone
       }
     }, {
       onSuccess: () => {
         setIsPaymentModalOpen(false);
         toast.success("Pago registrado correctamente");
-        
-        // Si el pago cubre el total pendiente, enviamos directamente a cocina
-        if (amount >= remainingAmount) {
-          updateStatus({ 
-            id: order.id, 
-            orderStatus: OrderStatus.IN_KITCHEN 
-          }, {
-            onSuccess: () => {
-              toast.success("Pedido enviado a Cocina automáticamente");
-            }
-          });
-        }
       },
       onError: (error: AxiosErrorWithResponse) => {
         toast.error("Error al registrar pago", {
@@ -517,8 +461,7 @@ export function OrderCard({
       <PaymentModal
         isOpen={isPaymentModalOpen}
         onClose={() => setIsPaymentModalOpen(false)}
-        orderTotal={Number(order.totalAmount)}
-        remainingAmount={remainingAmount}
+        orders={[order]}
         onConfirm={handleConfirmPayment}
         isPending={isAddingPayment}
       />

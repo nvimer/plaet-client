@@ -6,7 +6,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import axios from "axios";
-import { useCreateOrder } from "./useCreateOrder";
+import { useCreateOrder, useBatchCreateOrders } from "./useCreateOrder";
 import { useTables, useUpdateTableStatus } from "@/features/tables";
 import { useItems } from "@/features/menu";
 import { useDailyMenuToday, useDailyMenuByDate } from "@/features/menu/hooks/useDailyMenu";
@@ -157,9 +157,10 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const menuLoading = backdatedDate ? historicalMenu.isLoading : todayMenu.isLoading;
   
   const { mutateAsync: createOrder, isPending: isCreating } = useCreateOrder();
+  const { mutateAsync: createBatchOrders, isPending: isBatchCreating } = useBatchCreateOrders();
   const { mutate: updateTableStatus } = useUpdateTableStatus();
   
-  const isPending = isCreating;
+  const isPending = isCreating || isBatchCreating;
 
   const tables = tablesData?.tables || [];
   const availableTables = tables.filter((t) => t.status === "AVAILABLE");
@@ -559,20 +560,24 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     try {
       let createdOrdersList: Order[] = [];
       
-      if (ordersPayload.length === 1) {
-        // Single order creation
+      if (ordersPayload.length === 1 && selectedOrderType !== OrderType.DINE_IN) {
+        // Single order creation (non-table)
         const res = await createOrder(ordersPayload[0]);
         createdOrdersList = [res];
         toast.success("Pedido creado exitosamente");
       } else {
+        // Batch creation for tables or multiple services
+        // The backend batch logic now unifies these into one order
+        const res = await createBatchOrders({
+          tableId: selectedTable || 0,
+          orders: ordersPayload
+        });
+        createdOrdersList = res.orders;
+        
         if (selectedOrderType === OrderType.DINE_IN && selectedTable) {
-            const results = await Promise.all(ordersPayload.map(order => createOrder(order)));
-            createdOrdersList = results;
-            toast.success(`${ordersPayload.length} pedidos creados para Mesa ${selectedTable}`);
+          toast.success(`${ordersPayload.length} productos agregados a Mesa ${selectedTable}`);
         } else {
-            const results = await Promise.all(ordersPayload.map(order => createOrder(order)));
-            createdOrdersList = results;
-            toast.success(`${ordersPayload.length} pedidos creados`);
+          toast.success(`${ordersPayload.length} pedidos creados`);
         }
       }
 

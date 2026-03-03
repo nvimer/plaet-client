@@ -4,6 +4,7 @@ import {
   type Order,
   OrderStatus,
   OrderType,
+  OrderItemStatus,
   type PaginatedResponse,
   type PaginationParams,
   type ApiResponse,
@@ -13,6 +14,7 @@ import {
   type CreatePaymentInput,
   type Payment,
   type UpdateOrderInput,
+  type OrderItem,
 } from "@/types";
 import axiosClient from "./axiosClient";
 
@@ -205,6 +207,28 @@ export const updateOrderItem = async (
 };
 
 /**
+ * PATCH /orders/:orderId/items/:itemId/status
+ *
+ * Update order item status
+ *
+ * @param orderId - Order ID
+ * @param itemId - Item ID
+ * @param status - New status
+ * @returns Updated order item
+ */
+export const updateOrderItemStatus = async (
+  orderId: string,
+  itemId: number,
+  status: OrderItemStatus,
+) => {
+  const { data } = await axiosClient.patch<ApiResponse<OrderItem>>(
+    `/orders/${orderId}/items/${itemId}/status`,
+    { status },
+  );
+  return data;
+};
+
+/**
  * POST /orders/batch-status
  *
  * Update status for multiple orders at once
@@ -240,25 +264,15 @@ export const getKitchenOrders = async (_status?: string) => {
   const yesterday = new Date();
   yesterday.setHours(yesterday.getHours() - 24);
 
-  // Fetch orders with each relevant status in parallel
-  const [paidResponse, inKitchenResponse, readyResponse] = await Promise.all([
-    axiosClient.get<PaginatedResponse<Order>>("/orders", {
-      params: { status: OrderStatus.PAID, limit: 100 },
-    }),
-    axiosClient.get<PaginatedResponse<Order>>("/orders", {
-      params: { status: OrderStatus.IN_KITCHEN, limit: 100 },
-    }),
-    axiosClient.get<PaginatedResponse<Order>>("/orders", {
-      params: { status: OrderStatus.READY, limit: 100 },
-    }),
-  ]);
+  // In this workflow, Kitchen ONLY sees orders that have been PAID
+  const { data: response } = await axiosClient.get<PaginatedResponse<Order>>("/orders", {
+    params: { status: OrderStatus.PAID, limit: 100 },
+  });
 
   // Combine all orders and filter strictly by the last 24 hours
-  const allOrders = [
-    ...paidResponse.data.data,
-    ...inKitchenResponse.data.data,
-    ...readyResponse.data.data,
-  ].filter(order => new Date(order.createdAt).getTime() >= yesterday.getTime());
+  const allOrders = response.data.filter(
+    order => new Date(order.createdAt).getTime() >= yesterday.getTime()
+  );
 
   return { 
     success: true, 
@@ -471,6 +485,7 @@ export const orderApi = {
   addOrderItem,
   removeOrderItem,
   updateOrderItem,
+  updateOrderItemStatus,
   
   // Batch operations
   updateBatchOrderStatus,

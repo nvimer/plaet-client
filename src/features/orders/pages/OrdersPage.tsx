@@ -1,18 +1,14 @@
-import { OrderStatus, OrderType, PaymentMethod } from "@/types";
+import { OrderStatus, OrderType, PaymentMethod, OrderItemStatus } from "@/types";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { useOrders } from "../hooks";
+import { useOrders, useAddPayment } from "../hooks"; 
 import { Button, Skeleton, EmptyState, Card } from "@/components";
 import type { DateFilterType, DateRange } from "@/components";
 import {
   CheckCircle,
-  Clock,
-  LayoutGrid,
-  List,
   Plus,
   ShoppingCart,
   TrendingUp,
-  Calendar,
   DollarSign,
   ChefHat,
   History,
@@ -21,7 +17,7 @@ import {
   Ticket
 } from "lucide-react";
 import { cn } from "@/utils/cn";
-import { OrderCard, OrderFilters, GroupedOrderCard } from "../components";
+import { OrderCard, OrderFilters, GroupedOrderCard, PaymentModal } from "../components"; 
 import { ROUTES, getOrderDetailRoute } from "@/app/routes";
 import type { Order } from "@/types";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
@@ -30,6 +26,8 @@ import {
   isYesterday as checkIsYesterday, 
   getLocalDateString 
 } from "@/utils/dateUtils";
+import { toast } from "sonner";
+import type { AxiosErrorWithResponse } from "@/types/common";
 
 /**
  * Grouped Order Interface
@@ -51,7 +49,8 @@ export interface GroupedOrder {
 const groupOrders = (orders: Order[]): GroupedOrder[] => {
   const grouped: GroupedOrder[] = [];
   const processedIds = new Set<string>();
-  const sorted = [...orders].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+  // Sort by arrival (FIFO): Oldest first for operational tabs
+  const sorted = [...orders].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
 
   sorted.forEach((order) => {
     if (processedIds.has(order.id)) return;
@@ -107,26 +106,99 @@ export function OrdersPage() {
   const [paymentMethodFilter, setPaymentMethodFilter] = useState<PaymentMethod | "ALL">("ALL");
   const [dateFilter, setDateFilter] = useState<DateFilterType>("TODAY");
   const [customDateRange, setCustomDateRange] = useState<DateRange | undefined>(undefined);
-  const [isGrouped, setIsGrouped] = useState(true);
+  const [isGrouped, _setIsGrouped] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const { data: orders, isLoading, error, refetch } = useOrders();
+  const { data: orders, isLoading, error: _error, refetch: _refetch } = useOrders({ limit: 100 });
+  const { mutate: addPayment, isPending: isAddingPayment } = useAddPayment();
+
+  // Payment Modal State - Storing IDs for dynamic sync with React Query
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [payingOrderIds, setPayingOrderIds] = useState<string[]>([]);
+
+  // Derived orders from the main list to keep them "alive" (refetched after payment)
+  const currentOrdersToPay = useMemo(() => {
+    if (!orders) return [];
+    return orders.filter(o => payingOrderIds.includes(o.id));
+  }, [orders, payingOrderIds]);
+
+  const handleOpenPaymentModal = (ordersInGroup: Order[]) => {
+    setPayingOrderIds(ordersInGroup.map(o => o.id));
+    setIsPaymentModalOpen(true);
+  };
+
+  const handleConfirmPayment = (method: PaymentMethod, _totalAmount: number, orderIds: string[], options?: { reference?: string; phone?: string }) => {
+    let processedCount = 0;
+    const totalToProcess = orderIds.length;
+    
+    // We'll track if after this batch there are still pending orders in the group
+    const remainingInGroup = currentOrdersToPay.filter(o => !orderIds.includes(o.id));
+
+    orderIds.forEach(orderId => {
+      const order = currentOrdersToPay.find(o => o.id === orderId);
+      if (!order) return;
+
+      const paid = order.payments?.reduce((sum, p) => sum + Number(p.amount), 0) || 0;
+      const remaining = Math.max(0, Number(order.totalAmount) - paid);
+
+      if (remaining <= 0) {
+        processedCount++;
+        return;
+      }
+
+      addPayment({
+        orderId,
+        paymentData: {
+          method,
+          amount: remaining,
+          transactionRef: options?.reference,
+          phone: options?.phone
+        }
+      }, {
+        onSuccess: () => {
+          processedCount++;
+          if (processedCount === totalToProcess) {
+            toast.success("Pago registrado correctamente");
+            
+            // Check if there's any order left in the group with pending balance
+            // We use status as the primary source of truth if payments array is missing
+            const anyBalanceLeft = remainingInGroup.some(o => {
+              const isPaid = [
+                OrderStatus.PAID, 
+                OrderStatus.IN_KITCHEN, 
+                OrderStatus.READY, 
+                OrderStatus.DELIVERED
+              ].includes(o.status);
+
+              if (isPaid) return false;
+
+              const p = o.payments?.reduce((s, pay) => s + Number(pay.amount), 0) || 0;
+              return Number(o.totalAmount) - p > 0;
+            });
+
+            if (!anyBalanceLeft) {
+              setIsPaymentModalOpen(false);
+              // Cambiar a la pestaña "En Cocina" para ver los pedidos pagados
+              setActiveTab("PREPARATION");
+            }
+          }
+        },
+        onError: (error: AxiosErrorWithResponse) => {
+          toast.error(`Error en pedido #${orderId.slice(-4)}`, {
+            description: error.response?.data?.message || error.message
+          });
+        }
+      });
+    });
+  };
 
   // ================ COMPUTED VALUES =================
-  const filteredOrders = useMemo(() => {
+  // Base filtered list that all tabs and counts should respect
+  const baseFilteredOrders = useMemo(() => {
     if (!orders) return [];
+    
     return orders.filter((order) => {
-      // 1. Tab Filtering (Operational Life Cycle)
-      const matchesTab = (() => {
-        if (activeTab === "BILLING") return order.status === OrderStatus.PENDING || order.status === OrderStatus.SENT_TO_CASHIER;
-        if (activeTab === "PREPARATION") return order.status === OrderStatus.PAID || order.status === OrderStatus.IN_KITCHEN;
-        if (activeTab === "READY") return order.status === OrderStatus.READY;
-        if (activeTab === "HISTORY") return order.status === OrderStatus.PAID || order.status === OrderStatus.DELIVERED || order.status === OrderStatus.CANCELLED;
-        return true;
-      })();
-      if (!matchesTab) return false;
-
-      // 2. Regular Filters
+      // 1. Regular Filters (Type, Payment, Search)
       const matchesType = typeFilter === "ALL" || order.type === typeFilter;
       const matchesPayment = paymentMethodFilter === "ALL" || (order.payments && order.payments.some(p => p.method === paymentMethodFilter));
       if (!matchesPayment) return false;
@@ -134,6 +206,7 @@ export function OrdersPage() {
       const matchesSearch = searchTerm === "" || order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
         (order.user && `${order.user.firstName} ${order.user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()));
 
+      // 2. Date Filter
       let matchesDate = true;
       switch (dateFilter) {
         case "TODAY": matchesDate = isToday(order.createdAt); break;
@@ -141,11 +214,65 @@ export function OrdersPage() {
         case "WEEK": matchesDate = isWithinLastWeek(order.createdAt); break;
         case "CUSTOM": matchesDate = customDateRange ? isWithinDateRange(order.createdAt, customDateRange) : true; break;
       }
+      
       return matchesType && matchesDate && matchesSearch;
     });
-  }, [orders, activeTab, typeFilter, paymentMethodFilter, dateFilter, customDateRange, searchTerm]);
+  }, [orders, typeFilter, paymentMethodFilter, dateFilter, customDateRange, searchTerm]);
 
-  const groupedOrders = useMemo(() => groupOrders(filteredOrders), [filteredOrders]);
+  const filteredOrders = useMemo(() => {
+    // Apply Tab Filtering on top of the base filters
+    const filtered = baseFilteredOrders.filter((order) => {
+      if (activeTab === "BILLING") return order.status === OrderStatus.OPEN || order.status === OrderStatus.SENT_TO_CASHIER;
+      
+      if (activeTab === "PREPARATION") {
+        if (order.status !== OrderStatus.PAID) return false;
+        return order.items?.some(item => 
+          item.status === OrderItemStatus.PENDING || 
+          item.status === OrderItemStatus.IN_KITCHEN
+        );
+      }
+      
+      if (activeTab === "READY") {
+        if (order.status !== OrderStatus.PAID) return false;
+        return order.items?.some(item => item.status === OrderItemStatus.READY);
+      }
+      
+      if (activeTab === "HISTORY") {
+        if (order.status === OrderStatus.CANCELLED) return true;
+        if (order.status === OrderStatus.PAID) {
+          // Only show in history if ALL items are delivered
+          return order.items?.every(item => item.status === OrderItemStatus.DELIVERED);
+        }
+        return false;
+      }
+      
+      return true;
+    });
+
+    // Apply sorting
+    return filtered.sort((a, b) => {
+      const timeA = new Date(a.createdAt).getTime();
+      const timeB = new Date(b.createdAt).getTime();
+      return activeTab === "HISTORY" ? timeB - timeA : timeA - timeB;
+    });
+  }, [baseFilteredOrders, activeTab]);
+
+  const groupedOrders = useMemo(() => {
+    // History should show individual records for auditing, but still needs GroupedOrder structure for the UI
+    if (activeTab === "HISTORY") {
+      return filteredOrders.map(order => ({
+        id: order.id,
+        tableId: order.tableId,
+        table: order.table,
+        createdAt: order.createdAt,
+        status: order.status,
+        type: order.type,
+        orders: [order], // Wrap single order in array
+        totalAmount: Number(order.totalAmount),
+      }));
+    }
+    return isGrouped ? groupOrders(filteredOrders) : filteredOrders;
+  }, [filteredOrders, isGrouped, activeTab]);
 
   const financialSummary = useMemo(() => {
     const summary = { total: 0, cash: 0, nequi: 0, ticket: 0, count: filteredOrders.length };
@@ -164,14 +291,20 @@ export function OrdersPage() {
 
   const counts = useMemo(() => ({
     all: orders?.length || 0,
-    pending: orders?.filter(o => o.status === OrderStatus.PENDING).length || 0,
-    inKitchen: orders?.filter(o => o.status === OrderStatus.IN_KITCHEN).length || 0,
-    ready: orders?.filter(o => o.status === OrderStatus.READY).length || 0,
-    delivered: orders?.filter(o => o.status === OrderStatus.DELIVERED).length || 0,
-    paid: orders?.filter(o => o.status === OrderStatus.PAID).length || 0,
-    sentToCashier: orders?.filter(o => o.status === OrderStatus.SENT_TO_CASHIER).length || 0,
-    cancelled: orders?.filter(o => o.status === OrderStatus.CANCELLED).length || 0,
-  }), [orders]);
+    billing: baseFilteredOrders?.filter(o => o.status === OrderStatus.OPEN || o.status === OrderStatus.SENT_TO_CASHIER).length || 0,
+    inKitchen: baseFilteredOrders?.filter(o => 
+      o.status === OrderStatus.PAID && 
+      o.items?.some(i => i.status === OrderItemStatus.PENDING || i.status === OrderItemStatus.IN_KITCHEN)
+    ).length || 0,
+    ready: baseFilteredOrders?.filter(o => 
+      o.status === OrderStatus.PAID && 
+      o.items?.some(i => i.status === OrderItemStatus.READY)
+    ).length || 0,
+    history: baseFilteredOrders?.filter(o => 
+      o.status === OrderStatus.CANCELLED || 
+      (o.status === OrderStatus.PAID && o.items?.every(i => i.status === OrderItemStatus.DELIVERED))
+    ).length || 0,
+  }), [baseFilteredOrders, orders?.length]);
 
   const handleClearAll = () => {
     setTypeFilter("ALL");
@@ -208,22 +341,35 @@ export function OrdersPage() {
         {/* Operational Tabs */}
         <div className="flex items-center gap-2 p-1.5 bg-sage-50 rounded-2xl border border-sage-100 overflow-x-auto no-scrollbar">
           {[
-            { id: "BILLING", label: "Por Cobrar", icon: DollarSign, count: counts.pending + counts.sentToCashier },
-            { id: "PREPARATION", label: "En Cocina", icon: ChefHat, count: counts.paid + counts.inKitchen },
-            { id: "READY", label: "Listos", icon: CheckCircle, count: counts.ready },
-            { id: "HISTORY", label: "Historial", icon: History, count: counts.paid + counts.delivered + counts.cancelled }
+            { id: "BILLING", label: "Por Cobrar", icon: DollarSign, count: counts.billing },
+            { id: "PREPARATION", label: "En Cocina", icon: ChefHat, count: counts.inKitchen },
+            { 
+              id: "READY", 
+              label: "Listos", 
+              icon: CheckCircle, 
+              count: counts.ready,
+              alert: counts.ready > 0
+            },
+            { id: "HISTORY", label: "Historial", icon: History, count: counts.history }
           ].map((tab) => (
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
               className={cn(
-                "flex-1 min-w-[130px] flex items-center justify-center gap-2 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all",
-                activeTab === tab.id ? "bg-carbon-900 text-white shadow-soft-lg" : "text-carbon-400 hover:text-carbon-600"
+                "flex-1 min-w-[130px] flex items-center justify-center gap-2 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all relative overflow-hidden",
+                activeTab === tab.id ? "bg-carbon-900 text-white shadow-soft-lg" : "text-carbon-400 hover:text-carbon-600",
+                tab.alert && "ring-2 ring-emerald-500 ring-inset"
               )}
             >
-              <tab.icon className="w-4 h-4" />
-              {tab.label}
-              <span className={cn("px-2 py-0.5 rounded-lg text-[10px]", activeTab === tab.id ? "bg-white/20" : "bg-sage-100 text-sage-600")}>
+              {tab.alert && (
+                <span className="absolute inset-0 bg-emerald-500/10 animate-pulse" />
+              )}
+              <tab.icon className={cn("w-4 h-4 z-10", tab.alert && "text-emerald-500 animate-bounce")} />
+              <span className="z-10">{tab.label}</span>
+              <span className={cn("px-2 py-0.5 rounded-lg text-[10px] z-10", 
+                activeTab === tab.id ? "bg-white/20" : 
+                tab.alert ? "bg-emerald-500 text-white" : "bg-sage-100 text-sage-600"
+              )}>
                 {tab.count}
               </span>
             </button>
@@ -292,7 +438,12 @@ export function OrdersPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             {(isGrouped ? groupedOrders : filteredOrders).map((item: any) => (
               isGrouped ? (
-                <GroupedOrderCard key={item.id} groupedOrder={item} onViewDetail={(id) => navigate(getOrderDetailRoute(id))} />
+                <GroupedOrderCard 
+                  key={item.id} 
+                  groupedOrder={item} 
+                  onViewDetail={(id) => navigate(getOrderDetailRoute(id))} 
+                  onPayTable={handleOpenPaymentModal}
+                />
               ) : (
                 <OrderCard key={item.id} order={item} onViewDetail={(id) => navigate(getOrderDetailRoute(id))} />
               )
@@ -302,6 +453,14 @@ export function OrdersPage() {
           <EmptyState icon={<History className="w-12 h-12" />} title="Sin registros" description="No hay pedidos que coincidan con los filtros aplicados." onAction={handleClearAll} actionLabel="Limpiar Filtros" />
         )}
       </div>
+
+      <PaymentModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => setIsPaymentModalOpen(false)}
+        orders={currentOrdersToPay}
+        onConfirm={handleConfirmPayment}
+        isPending={isAddingPayment}
+      />
     </SidebarLayout>
   );
 }
