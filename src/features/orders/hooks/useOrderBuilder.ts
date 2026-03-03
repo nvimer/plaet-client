@@ -52,6 +52,12 @@ export interface UseOrderBuilderReturn {
   currentOrderIndex: number | null;
   backdatedDate: string | null;
   
+  // Customer info for non-table orders
+  customerName: string;
+  customerPhone: string;
+  deliveryAddress: string;
+  packagingFee: number;
+  
   // Current order state
   selectedProtein: ProteinOption | null;
   looseItems: LooseItem[];
@@ -117,6 +123,10 @@ export interface UseOrderBuilderReturn {
   setTableOrders: (orders: TableOrder[] | ((prev: TableOrder[]) => TableOrder[])) => void;
   setCurrentOrderIndex: (index: number | null) => void;
   setBackdatedDate: (date: string | null) => void;
+  setCustomerName: (name: string) => void;
+  setCustomerPhone: (phone: string) => void;
+  setDeliveryAddress: (address: string) => void;
+  setPackagingFee: (fee: number) => void;
   
   // Handlers
   handleAddLooseItem: (item: { id: number; name: string; price: number }) => void;
@@ -144,6 +154,12 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const [tableOrders, setTableOrders] = useState<TableOrder[]>([]);
   const [currentOrderIndex, setCurrentOrderIndex] = useState<number | null>(null);
   const [backdatedDate, setBackdatedDate] = useState<string | null>(null);
+
+  // Customer info state
+  const [customerName, setCustomerName] = useState("");
+  const [customerPhone, setCustomerPhone] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [packagingFee, setPackagingFee] = useState(1000);
 
   // Data hooks
   const { data: tablesData, isLoading: tablesLoading } = useTables();
@@ -295,8 +311,16 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     looseItems.forEach((item) => {
       total += item.price * item.quantity;
     });
+    
+    // Add packaging fee for non-dine-in if not already present in looseItems
+    if ((selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) && 
+        !looseItems.some(i => i.name === "Portacomida") && 
+        packagingFee > 0) {
+      total += packagingFee;
+    }
+    
     return total;
-  }, [lunchPrice, looseItems]);
+  }, [lunchPrice, looseItems, selectedOrderType, packagingFee]);
 
   // Calculate table total
   const tableTotal = useMemo(() => {
@@ -353,9 +377,18 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     if (selectedOrderType === OrderType.DINE_IN && !selectedTable) {
       errors.push({ field: "table", message: "Selecciona una mesa" });
     }
+
+    if (selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) {
+      if (!customerName.trim()) errors.push({ field: "customerName", message: "Nombre del cliente requerido" });
+      if (!customerPhone.trim()) errors.push({ field: "customerPhone", message: "Teléfono requerido" });
+    }
+
+    if (selectedOrderType === OrderType.DELIVERY) {
+      if (!deliveryAddress.trim()) errors.push({ field: "deliveryAddress", message: "Dirección de entrega requerida" });
+    }
     
     return errors;
-  }, [selectedProtein, looseItems, dailyMenuDisplay, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedOrderType, selectedTable]);
+  }, [selectedProtein, looseItems, dailyMenuDisplay, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedOrderType, selectedTable, customerName, customerPhone, deliveryAddress]);
 
   const hasError = useCallback((field: string) => {
     return validationErrors.some(e => e.field === field) && touchedFields.has(field);
@@ -363,21 +396,30 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
   // Build order notes
   const buildOrderNotes = useCallback((): string => {
-    if (!selectedProtein) return orderNotes || "";
-    
     let note = "";
+
+    // 1. Add Customer Info for Non-Dine-In
+    if (selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) {
+      note += `👤 CLIENTE: ${customerName}\n📞 TEL: ${customerPhone}`;
+      if (selectedOrderType === OrderType.DELIVERY && deliveryAddress) {
+        note += `\n📍 DIR: ${deliveryAddress}`;
+      }
+      note += "\n-------------------\n";
+    }
     
-    if (replacements.length > 0) {
-      const replText = replacements.map(r => `[-] Sin ${r.fromName} [+] Extra ${r.itemName}`).join(" | ");
-      note += `${replText}`;
+    if (selectedProtein) {
+      if (replacements.length > 0) {
+        const replText = replacements.map(r => `[-] Sin ${r.fromName} [+] Extra ${r.itemName}`).join(" | ");
+        note += `${replText}`;
+      }
     }
     
     if (orderNotes) {
-      note += note ? `\n📝 ${orderNotes}` : `📝 ${orderNotes}`;
+      note += note ? `\n📝 NOTAS: ${orderNotes}` : `📝 NOTAS: ${orderNotes}`;
     }
     
     return note;
-  }, [selectedProtein, replacements, orderNotes]);
+  }, [selectedProtein, replacements, orderNotes, selectedOrderType, customerName, customerPhone, deliveryAddress]);
 
   // Handlers
   const handleAddLooseItem = useCallback((item: { id: number; name: string; price: number }) => {
@@ -416,6 +458,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setOrderNotes("");
     setCurrentOrderIndex(null);
     setSearchTerm("");
+    // We don't reset customer info here as it might be shared across table services
   }, []);
 
   const handleAddOrderToTable = useCallback(() => {
@@ -426,6 +469,21 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       setValidationErrors(errors);
       toast.error("Completa los campos requeridos");
       return;
+    }
+
+    const currentLooseItems = [...looseItems];
+    
+    // Automatically add Packaging Fee if applicable
+    if ((selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) && packagingFee > 0) {
+      const existingFee = currentLooseItems.find(i => i.name === "Portacomida");
+      if (!existingFee) {
+        currentLooseItems.push({
+          id: -1, // Virtual ID
+          name: "Portacomida",
+          price: packagingFee,
+          quantity: 1
+        });
+      }
     }
 
     const lunchSelection: LunchSelection | null = selectedProtein ? {
@@ -443,7 +501,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       id: Date.now().toString(),
       protein: selectedProtein,
       lunch: lunchSelection,
-      looseItems: [...looseItems],
+      looseItems: currentLooseItems,
       total: currentOrderTotal,
       notes: buildOrderNotes(),
       createdAt: Date.now(),
@@ -533,14 +591,13 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       }
 
       order.looseItems.forEach((item) => {
-        if (item.id > 0) {
-          items.push({
-            menuItemId: item.id,
-            quantity: item.quantity,
-            priceAtOrder: item.price,
-            notes: item.name,
-          });
-        }
+        // Include both real items (id > 0) and manual items (id <= 0 like Portacomida)
+        items.push({
+          menuItemId: item.id > 0 ? item.id : undefined,
+          quantity: item.quantity,
+          priceAtOrder: item.price,
+          notes: item.name,
+        });
       });
       
       return {
@@ -608,6 +665,10 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       
       setTableOrders([]);
       setSelectedTable(null);
+      setCustomerName("");
+      setCustomerPhone("");
+      setDeliveryAddress("");
+      setPackagingFee(1000);
       clearCurrentOrder();
       
       // Navigate or reset? UseOrderBuilder doesn't have navigate.
@@ -636,6 +697,10 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setSelectedOrderType(null);
     setSelectedTable(null);
     setTableOrders([]);
+    setCustomerName("");
+    setCustomerPhone("");
+    setDeliveryAddress("");
+    setPackagingFee(1000);
     clearCurrentOrder();
   }, [clearCurrentOrder]);
 
@@ -656,6 +721,12 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     tableOrders,
     currentOrderIndex,
     backdatedDate,
+    
+    // Customer info
+    customerName,
+    customerPhone,
+    deliveryAddress,
+    packagingFee,
     
     // Current order state
     selectedProtein,
@@ -709,6 +780,10 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setTableOrders,
     setCurrentOrderIndex,
     setBackdatedDate,
+    setCustomerName,
+    setCustomerPhone,
+    setDeliveryAddress,
+    setPackagingFee,
     
     // Handlers
     handleAddLooseItem,

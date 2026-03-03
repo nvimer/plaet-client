@@ -294,8 +294,17 @@ export function OrderCreatePage() {
               className="space-y-6"
             >
               <OrderForm
+                selectedOrderType={selectedOrderType}
                 currentOrderIndex={currentOrderIndex}
                 tableOrdersLength={tableOrders.length}
+                customerName={orderBuilder.customerName}
+                setCustomerName={orderBuilder.setCustomerName}
+                customerPhone={orderBuilder.customerPhone}
+                setCustomerPhone={orderBuilder.setCustomerPhone}
+                deliveryAddress={orderBuilder.deliveryAddress}
+                setDeliveryAddress={orderBuilder.setDeliveryAddress}
+                packagingFee={orderBuilder.packagingFee}
+                setPackagingFee={orderBuilder.setPackagingFee}
                 showDailyMenu={formProps.showDailyMenu}
                 setShowDailyMenu={formProps.setShowDailyMenu}
                 dailyMenuDisplay={formProps.dailyMenuDisplay}
@@ -384,6 +393,9 @@ export function OrderCreatePage() {
         tableId={selectedTable}
         isPending={isPending}
         isHistorical={!!backdatedDate}
+        customerName={orderBuilder.customerName}
+        customerPhone={orderBuilder.customerPhone}
+        deliveryAddress={orderBuilder.deliveryAddress}
         onClose={() => setShowSummaryModal(false)}
         onConfirm={handleConfirmTableOrders}
       />

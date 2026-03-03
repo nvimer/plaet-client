@@ -21,8 +21,13 @@ import {
   Sparkles,
   ShoppingBag,
   Search,
+  User,
+  Phone,
+  MapPin,
+  Box,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
+import { OrderType } from "@/types";
 import type {
   MenuOption,
   ProteinOption,
@@ -31,9 +36,22 @@ import type {
 } from "../types/orderBuilder";
 
 interface OrderFormProps {
+  // Order type context
+  selectedOrderType: OrderType | null;
+
   // Order state
   currentOrderIndex: number | null;
   tableOrdersLength: number;
+
+  // Customer info (for TAKE_OUT/DELIVERY)
+  customerName: string;
+  setCustomerName: (name: string) => void;
+  customerPhone: string;
+  setCustomerPhone: (phone: string) => void;
+  deliveryAddress: string;
+  setDeliveryAddress: (address: string) => void;
+  packagingFee: number;
+  setPackagingFee: (fee: number) => void;
 
   // Daily menu state
   showDailyMenu: boolean;
@@ -111,8 +129,17 @@ interface OrderFormProps {
 }
 
 export function OrderForm({
+  selectedOrderType,
   currentOrderIndex,
   tableOrdersLength,
+  customerName,
+  setCustomerName,
+  customerPhone,
+  setCustomerPhone,
+  deliveryAddress,
+  setDeliveryAddress,
+  packagingFee,
+  setPackagingFee,
   showDailyMenu,
   setShowDailyMenu,
   dailyMenuDisplay,
@@ -158,8 +185,104 @@ export function OrderForm({
     );
   }
 
+  const isDineIn = selectedOrderType === OrderType.DINE_IN;
+
   return (
     <div className="space-y-6 pb-24 sm:pb-0">
+      {/* Customer Information Section (Only for Take-out/Delivery) */}
+      {!isDineIn && (
+        <Card variant="elevated" className="p-6 rounded-2xl border-2 border-primary-100 bg-primary-50/10">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-12 h-12 rounded-xl bg-primary-100 text-primary-600 flex items-center justify-center">
+              <User className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-lg font-bold text-carbon-900">
+                Información del Cliente
+              </h3>
+              <p className="text-sm text-carbon-500">
+                Datos necesarios para el servicio {selectedOrderType === OrderType.DELIVERY ? 'a domicilio' : 'para llevar'}
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Nombre del Cliente</label>
+              <div className="relative">
+                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
+                <Input
+                  type="text"
+                  placeholder="Ej: Juan Pérez"
+                  value={customerName}
+                  onChange={(e) => setCustomerName(e.target.value)}
+                  className="pl-11"
+                  error={hasError("customerName") ? validationErrors.find(e => e.field === "customerName")?.message : undefined}
+                  fullWidth
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Teléfono de Contacto</label>
+              <div className="relative">
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
+                <Input
+                  type="tel"
+                  placeholder="Ej: 300 123 4567"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  className="pl-11"
+                  error={hasError("customerPhone") ? validationErrors.find(e => e.field === "customerPhone")?.message : undefined}
+                  fullWidth
+                />
+              </div>
+            </div>
+
+            {selectedOrderType === OrderType.DELIVERY && (
+              <div className="sm:col-span-2 space-y-2">
+                <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Dirección de Entrega</label>
+                <div className="relative">
+                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
+                  <Input
+                    type="text"
+                    placeholder="Ej: Calle 123 # 45-67, Apto 401"
+                    value={deliveryAddress}
+                    onChange={(e) => setDeliveryAddress(e.target.value)}
+                    className="pl-11"
+                    error={hasError("deliveryAddress") ? validationErrors.find(e => e.field === "deliveryAddress")?.message : undefined}
+                    fullWidth
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="sm:col-span-2 pt-2">
+              <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-primary-100 shadow-sm">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center">
+                    <Box className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold text-carbon-900">Costo de Portacomida</p>
+                    <p className="text-[10px] text-carbon-500">Se agregará automáticamente al total</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm font-bold text-carbon-400">$</span>
+                  <input
+                    type="number"
+                    value={packagingFee}
+                    onChange={(e) => setPackagingFee(Number(e.target.value))}
+                    className="w-24 h-10 bg-sage-50 border-none rounded-xl text-right font-black text-carbon-900 focus:ring-primary-500"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
+
       {/* Professional Header Banner */}
       <Card
         variant="elevated"

@@ -16,6 +16,9 @@ interface OrderSummaryModalProps {
   tableId: number | null;
   isPending: boolean;
   isHistorical?: boolean;
+  customerName?: string;
+  customerPhone?: string;
+  deliveryAddress?: string;
   onClose: () => void;
   onConfirm: (isFastHistoricalEntry?: boolean) => void;
 }
@@ -28,10 +31,15 @@ export function OrderSummaryModal({
   tableId,
   isPending,
   isHistorical = false,
+  customerName,
+  customerPhone,
+  deliveryAddress,
   onClose,
   onConfirm,
 }: OrderSummaryModalProps) {
   if (!isOpen) return null;
+
+  const isDineIn = orderType === OrderType.DINE_IN;
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-carbon-900/60 backdrop-blur-sm">
@@ -47,11 +55,18 @@ export function OrderSummaryModal({
                 <h2 className="text-white font-semibold text-lg sm:text-2xl tracking-tight">
                   Revisar Pedido
                 </h2>
-                <p className="text-carbon-400 text-xs sm:text-sm font-medium tracking-wide">
-                  {orderType === OrderType.DINE_IN
-                    ? `Mesa ${tableId} • ${orders.length} servicios`
-                    : `Para Llevar • ${orders.length} servicios`}
-                </p>
+                <div className="text-carbon-400 text-xs sm:text-sm font-medium tracking-wide">
+                  {isDineIn ? (
+                    <span>Mesa {tableId} • {orders.length} servicios</span>
+                  ) : (
+                    <div className="flex flex-col">
+                      <span className="text-white font-bold">{customerName} ({customerPhone})</span>
+                      <span className="opacity-80">
+                        {orderType === OrderType.TAKE_OUT ? 'Para Llevar' : `Domicilio: ${deliveryAddress}`}
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
             <button
