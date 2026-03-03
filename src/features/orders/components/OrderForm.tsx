@@ -24,6 +24,7 @@ import {
   User,
   Phone,
   MapPin,
+  Box,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { OrderType } from "@/types";
