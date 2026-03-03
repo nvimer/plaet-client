@@ -344,9 +344,7 @@ export function GroupedOrderCard({
           </div>
         </div>
       )}
-    </Card>
-  );
-}
-    </Card>
-  );
-}
+        </Card>
+      );
+    }
+    
