@@ -122,8 +122,8 @@ export function GroupedOrderCard({
     <Card
       variant="elevated"
       className={cn(
-        "overflow-hidden border-2 transition-all duration-300 rounded-[2.5rem] h-full flex flex-col group",
-        isExpanded ? "border-carbon-900 shadow-soft-2xl scale-[1.02]" : "border-sage-100 hover:border-sage-300 hover:shadow-soft-xl",
+        "overflow-hidden border-2 transition-all duration-300 rounded-[2.5rem] flex flex-col group min-h-[520px]",
+        isExpanded ? "border-carbon-900 shadow-soft-2xl" : "border-sage-100 hover:border-sage-300 hover:shadow-soft-xl",
         needsBilling && !isExpanded && "bg-white",
         isNearAutoCancel && needsBilling && "border-rose-200 ring-4 ring-rose-50",
         canDeliver && !isExpanded && "border-emerald-500 ring-4 ring-emerald-50 animate-pulse-subtle"
@@ -132,7 +132,7 @@ export function GroupedOrderCard({
       {/* Header: Table Info & Group Stats */}
       <div 
         className={cn(
-          "p-6 cursor-pointer transition-colors duration-300 flex-1 flex flex-col",
+          "p-6 cursor-pointer transition-colors duration-300 flex-none",
           isExpanded ? "bg-carbon-900 text-white" : "bg-white"
         )}
         onClick={() => setIsExpanded(!isExpanded)}
@@ -184,7 +184,7 @@ export function GroupedOrderCard({
 
         {/* Content Preview */}
         {!isExpanded && (
-          <div className="flex-1">
+          <div className="h-32 overflow-hidden mb-2">
             <div className="flex flex-wrap gap-2 mb-4">
               <OrderTypeBadge type={groupedOrder.type} />
               <div className="px-3 py-1 rounded-full bg-carbon-50 text-carbon-600 text-[9px] font-black border border-carbon-100 uppercase tracking-widest">
@@ -193,21 +193,23 @@ export function GroupedOrderCard({
             </div>
             
             <div className="space-y-1.5 opacity-80">
-              {groupedOrder.orders.flatMap(o => o.items || []).slice(0, 3).map((item, i) => (
+              {groupedOrder.orders.flatMap(o => o.items || []).slice(0, 4).map((item, i) => (
                 <div key={i} className="flex items-center gap-2 text-xs text-carbon-600 font-medium">
                   <div className="w-1.5 h-1.5 rounded-full bg-sage-300" />
-                  <span className="truncate">{item.quantity}x {item.menuItem?.name}</span>
+                  <span className="truncate">
+                    {item.quantity}x {item.menuItem?.name || item.notes || 'Producto'}
+                  </span>
                 </div>
               ))}
-              {totalItems > 3 && (
-                <p className="text-[10px] text-carbon-400 font-bold pl-3.5">+ {totalItems - 3} productos más...</p>
+              {totalItems > 4 && (
+                <p className="text-[10px] text-carbon-400 font-bold pl-3.5">+ {totalItems - 4} productos más...</p>
               )}
             </div>
           </div>
         )}
 
         <div className={cn(
-          "mt-6 pt-6 border-t flex items-center justify-between",
+          "mt-auto pt-6 border-t flex items-center justify-between",
           isExpanded ? "border-white/10" : "border-sage-50"
         )}>
           <div>
@@ -275,83 +277,76 @@ export function GroupedOrderCard({
         )}
       </div>
 
-      {/* Expanded Details: List of individual orders */}
+      {/* Expanded Details: CLEAN TICKET VIEW */}
       {isExpanded && (
-        <div className="border-t border-white/10 bg-white/5 backdrop-blur-md">
-          <div className="p-6 space-y-4">
+        <div className="flex-1 bg-carbon-50/50 flex flex-col overflow-hidden">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6">
             {groupedOrder.orders.map((order, idx) => (
-              <div 
-                key={order.id}
-                className={cn(
-                  "bg-white rounded-[1.5rem] border-2 p-5 shadow-sm transition-all duration-200",
-                  (order.status === OrderStatus.OPEN || order.status === OrderStatus.SENT_TO_CASHIER) ? "border-amber-100" : "border-sage-50"
-                )}
-              >
-                <div className="flex items-center justify-between mb-4 border-b border-sage-50 pb-3">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-xl bg-carbon-900 flex items-center justify-center text-white font-bold text-xs shadow-inner">
-                      {idx + 1}
-                    </div>
-                    <div>
-                      <p className="text-sm font-black text-carbon-900 tracking-tight">
-                        Servicio #{order.id.slice(-4).toUpperCase()}
-                      </p>
-                      <OrderStatusBadge status={order.status} size="sm" showIcon={false} />
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <p className="text-sm font-black text-carbon-900">
-                      ${Number(order.totalAmount).toLocaleString("es-CO")}
-                    </p>
-                  </div>
+              <div key={order.id} className="relative">
+                {/* Order Divider/Header */}
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="h-px flex-1 bg-carbon-200" />
+                  <span className="text-[10px] font-black text-carbon-400 uppercase tracking-[0.2em]">Servicio {idx + 1}</span>
+                  <div className="h-px flex-1 bg-carbon-200" />
                 </div>
 
-                <div className="space-y-2 mb-4 px-1">
+                <div className="space-y-3">
                   {order.items?.map((item) => (
-                    <div key={item.id} className="flex items-start gap-3 text-sm">
-                      <span className="text-carbon-400 font-black min-w-[1.5rem] bg-carbon-50 px-1.5 py-0.5 rounded text-[10px] text-center">{item.quantity}x</span>
-                      <div className="flex-1">
-                        <span className="text-carbon-800 font-bold text-xs uppercase">{item.menuItem?.name || 'Producto'}</span>
-                        {item.notes && <p className="text-[10px] text-carbon-400 italic">"{item.notes}"</p>}
+                    <div key={item.id} className="flex items-start justify-between gap-4">
+                      <div className="flex items-start gap-3">
+                        <span className="bg-white border border-carbon-200 text-carbon-900 font-black w-7 h-7 rounded-lg flex items-center justify-center text-[10px] shrink-0 shadow-sm">
+                          {item.quantity}
+                        </span>
+                        <div>
+                          <p className="text-xs font-bold text-carbon-900 uppercase tracking-tight">
+                            {item.menuItem?.name || item.notes || 'Producto'}
+                          </p>
+                          {item.notes && item.menuItem && (
+                            <p className="text-[10px] text-carbon-500 italic mt-0.5 line-clamp-1">
+                              {item.notes}
+                            </p>
+                          )}
+                        </div>
                       </div>
+                      <span className="text-xs font-bold text-carbon-600 tabular-nums">
+                        ${Number(item.priceAtOrder || 0).toLocaleString("es-CO")}
+                      </span>
                     </div>
                   ))}
                 </div>
 
-                <div className="flex gap-2">
-                  <Button
-                    variant="outline"
-                    fullWidth
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onViewDetail(order.id);
-                    }}
-                    className="h-12 text-[10px] font-black uppercase tracking-widest rounded-xl border-sage-200 text-carbon-600 hover:text-sage-700 hover:bg-sage-50"
+                <div className="mt-4 flex items-center justify-between">
+                  <OrderStatusBadge status={order.status} size="sm" showIcon={false} />
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onViewDetail(order.id); }}
+                    className="text-[10px] font-black text-primary-600 hover:text-primary-700 uppercase tracking-widest underline underline-offset-4"
                   >
-                    <Eye className="w-4 h-4 mr-2" />
                     Detalles
-                  </Button>
+                  </button>
                 </div>
               </div>
             ))}
           </div>
           
-          <div className="p-6 pt-0 flex gap-3">
+          <div className="p-6 bg-white border-t border-carbon-100">
             <Button
-              variant="outline"
+              variant="primary"
               fullWidth
-              className="bg-white border-2 border-carbon-200 text-carbon-700 hover:bg-carbon-50 rounded-2xl h-16 font-black uppercase tracking-widest text-[10px]"
+              className="bg-carbon-900 text-white rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] shadow-lg"
               onClick={(e) => {
                 e.stopPropagation();
                 onViewDetail(groupedOrder.id);
               }}
             >
-              <ReceiptText className="w-5 h-5 mr-2" />
-              Ver Factura Mesa
+              <ReceiptText className="w-4 h-4 mr-2 text-sage-400" />
+              Ver Factura Completa
             </Button>
           </div>
         </div>
       )}
+    </Card>
+  );
+}
     </Card>
   );
 }

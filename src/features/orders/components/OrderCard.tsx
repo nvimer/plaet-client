@@ -311,7 +311,7 @@ export function OrderCard({
     <article
       className={cn(
         "group relative overflow-hidden rounded-2xl border-2 bg-white",
-        "transition-all duration-200 flex flex-col h-full",
+        "transition-all duration-200 flex flex-col min-h-[520px]",
         "hover:shadow-lg hover:border-sage-200",
         "active:scale-[0.99]",
         config.border,
@@ -410,13 +410,13 @@ export function OrderCard({
             {order.items?.map((item) => (
               <div key={item.id} className="flex items-center gap-2 text-sm">
                 <span className="text-lg flex-shrink-0">
-                  {getItemEmoji(item.menuItem?.name || "")}
+                  {getItemEmoji(item.menuItem?.name || item.notes || "")}
                 </span>
                 <span className="text-carbon-700 font-bold flex-shrink-0">
                   {item.quantity}x
                 </span>
                 <span className="text-carbon-600 truncate flex-1">
-                  {item.menuItem?.name || "Producto"}
+                  {item.menuItem?.name || item.notes || "Producto"}
                 </span>
               </div>
             ))}
