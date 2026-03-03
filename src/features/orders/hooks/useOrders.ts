@@ -18,6 +18,8 @@ export function useOrders(params?: OrdersFilterParams) {
             const response = await orderApi.getOrders(params);
             return response.data;
         },
+        // Refetch every 30 seconds for semi-realtime updates (cancellations, etc)
+        refetchInterval: 30000,
     });
 }
 
