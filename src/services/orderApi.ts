@@ -259,24 +259,17 @@ export const updateBatchOrderStatus = async (batchData: BatchStatusUpdateInput) 
  * @returns Orders for kitchen (PENDING, IN_KITCHEN, READY)
  */
 export const getKitchenOrders = async (_status?: string) => {
-  // We use limit 100 to get enough orders, but we must filter them by date in the frontend 
-  // because the backend generic /orders endpoint doesn't strictly support `fromDate`.
-  const yesterday = new Date();
-  yesterday.setHours(yesterday.getHours() - 24);
-
   // In this workflow, Kitchen ONLY sees orders that have been PAID
+  // We fetch a larger limit to ensure we get all active operational orders
   const { data: response } = await axiosClient.get<PaginatedResponse<Order>>("/orders", {
     params: { status: OrderStatus.PAID, limit: 100 },
   });
 
-  // Combine all orders and filter strictly by the last 24 hours
-  const allOrders = response.data.filter(
-    order => new Date(order.createdAt).getTime() >= yesterday.getTime()
-  );
-
+  // Return all PAID orders. The frontend Kanban will filter individual items 
+  // by their status (PENDING, IN_KITCHEN, READY).
   return { 
     success: true, 
-    data: allOrders,
+    data: response.data,
     message: "Orders retrieved successfully"
   };
 };
