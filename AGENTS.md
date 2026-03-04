@@ -14,6 +14,13 @@
 - **Touch Targets:** Minimum 44px for buttons and interactive cards.
 - **Component Geometry:** Prefer `rounded-2xl` for standard cards and `rounded-3xl` for main module hubs or launchpad cards.
 - **Shadows:** Use custom shadow utilities like `shadow-smooth-md` or `shadow-soft-xl`.
+- **Motion & Animations:** Use the "Soft & Minimal" engine (`src/utils/motion.ts`). **NEVER use spring physics** (bouncing/jumping) unless explicitly requested. Use `variants.fadeInUp` and `transitions.soft` (Cubic Bezier: `[0.22, 1, 0.36, 1]`) for elegant, premium feel.
+
+## 🍽️ Order & Kitchen Workflow
+- **Table-Centric:** All operational filtering (Billing, Kitchen, Ready) must be grouped by the `Table` (or individual customer for Take-out). The entire table moves from "In Kitchen" to "Ready" ONLY when all its items are finished.
+- **Pay First:** Orders must be `PAID` to appear in the Kitchen Kanban.
+- **Data Capture:** Take-out and Delivery modes must collect numeric phone numbers to support auto-saving customers in the database.
+- **Packaging:** Portacomida fees are fixed via the Daily Menu configuration, but their quantity is manually adjusted in the order form.
 
 ## 🛰️ Navigation System (Sidebar 2.0)
 - **Hover & Click:** Sidebar groups (accordions) must support both **Hover to Expand** (desktop) and **Click to Navigate** (to the module Hub).
@@ -32,8 +39,10 @@
 
 ## 🛠️ Quality Standards
 - **Zero Tolerance:** NO `any` or `unknown`. Use `import type` for interfaces.
+- **Logging:** Use `logger.ts` for all frontend logs. Raw `console.log` is strictly forbidden to maintain production cleanliness.
 - **Functional Comments:** Code comments must be strictly functional. Focus on *why* or complex logic.
 - **Form Patterns:** Always `react-hook-form` + `zod`.
+- **Timezones:** Use `dateUtils` to evaluate dates against local Colombia time (UTC-5), preventing midnight-shift bugs.
 - **Modular Pages:** Extract complex logic into hooks or sub-components. Keep page components clean and focused on layout.
 
 ## 🏗️ Structure

@@ -15,6 +15,11 @@
 
 The project follows a **feature-based architecture**. Each module in `src/features/` is self-contained.
 
+**Core Architectural Paradigms:**
+1.  **Master-Detail Orders:** A single "Order" represents a table session or a customer account (Master). Individual dishes/products are "OrderItems" (Detail) within that order.
+2.  **Table-Centric Workflow:** Operations in the POS (like billing and kitchen boards) group and move items based on their parent Table/Group. An entire table's order moves to "Ready" only when ALL its items are prepared.
+3.  **Pay First Rule:** Orders do not appear on the Kitchen Kanban until their status is `PAID`. Cashiers handle billing; Kitchen handles preparation.
+
 ```
 src/
 ├── app/                # Global config (Routes, Breadcrumbs)
@@ -24,10 +29,10 @@ src/
 ├── contexts/           # React Contexts (Auth, Sidebar)
 ├── features/           # Feature-based modules
 │   ├── auth/           # Login, Password recovery, Email verification
-│   ├── daily-menu/     # The "Corrientazo" configuration
+│   ├── daily-menu/     # The "Corrientazo" configuration & Packaging Fees
 │   ├── dashboard/      # Admin/Overview stats
 │   ├── menu/           # Products, Categories, Stock Management
-│   ├── orders/         # Order creation, Detail, Kitchen view
+│   ├── orders/         # Order creation (Table-centric), Detail, Kitchen view
 │   ├── tables/         # Visual table management
 │   └── users/          # RBAC (Admin-only), Profile
 ├── hooks/              # Global custom hooks
@@ -35,15 +40,16 @@ src/
 ├── lib/                # Configured library instances (Axios client, Query client)
 ├── services/           # Global API services
 ├── types/              # TypeScript definitions (synced with Prisma backend)
-└── utils/              # Helper functions (cn utility, error handling)
+└── utils/              # Helper functions (cn utility, error handling, logger, motion)
 ```
 
 ## 🍛 Core Domain: The "Corrientazo"
 
 A central feature of this POS is the **Corrientazo** (Daily Menu).
-- **Fixed Categories:** Categories like Sopas, Principios, Proteínas, etc., are backend-seeded and cannot be modified via the UI.
+- **Fixed Categories:** Categories like Sopas, Principios, Proteínas, Arroz, etc., are backend-seeded and cannot be modified via the UI.
 - **Pricing Logic:** Total price = `basePrice` + `selected protein(s) price`.
-- **UX Requirement:** Minimal labels, large touch targets, and visual grids for selection instead of dropdowns.
+- **Packaging Fees:** Portacomidas (Take-out containers) are manually quantity-adjusted in the UI but their price is centrally controlled via the Daily Menu settings.
+- **UX Requirement:** Minimal labels, large touch targets, and visual grids for selection instead of dropdowns. Flexible interchanges (e.g., removing Soup for extra Rice) are supported via `ReplacementManager`.
 
 ## 🛠 Building and Running
 
@@ -63,12 +69,12 @@ A central feature of this POS is the **Corrientazo** (Daily Menu).
 3.  **Layouts in Routes:** Layouts (e.g., `<DashboardLayout>`) are applied in `src/App.tsx`. Do NOT wrap pages in layouts internally unless creating a sub-layout.
 4.  **React Query:** All data fetching and mutations MUST use TanStack Query hooks.
 5.  **Forms:** Use `react-hook-form` integrated with `zod` for validation.
-6.  **Styling:** Use the `cn()` utility for merging Tailwind classes. Respect the custom color palette (`sage-green`, `carbon`, `primary`).
-7.  **Unused Variables:** Prefix with `_` (e.g., `_err`) to satisfy ESLint rules.
-8.  **Authentication:** Handled via cookies. `axiosClient` manages 401s and token refresh automatically.
+6.  **Styling & Motion:** Use the `cn()` utility for merging Tailwind classes. Respect the custom color palette (`sage-green`, `carbon`, `primary`). All animations MUST use the "Soft & Minimal" configurations from `src/utils/motion.ts` (e.g., `variants.fadeInUp`, `transitions.soft`). DO NOT use raw `framer-motion` springs or bounce effects.
+7.  **Logging:** Use the professional `logger` from `src/utils/logger.ts` instead of raw `console.log`. Debug/Info logs are silenced in production.
+8.  **Customer Data:** Take-out and Delivery orders must auto-capture customer data (Name/Phone) to be processed by the backend's auto-storage logic.
+9.  **Timezones:** Always use the `dateUtils` helpers (`getLocalDateString`, `parseLocalDate`) to ensure Colombian UTC-5 time consistency, especially for history and filtering.
 
 ## 🚀 Ongoing / Pending Tasks
 
-- **Kitchen Kanban:** Finishing the drag-and-drop integration for the kitchen view.
 - **Stock Resets:** UI integration for daily stock reset hooks.
 - **Testing:** Integration of `Vitest` and `React Testing Library` is planned but not yet implemented.
