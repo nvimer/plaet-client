@@ -106,6 +106,10 @@ export function KitchenKanban({
 
     return allOrders.reduce((acc, order) => {
       order.items?.forEach(item => {
+        // FILTER: Do not show Portacomidas or manual items in kitchen
+        const isPackaging = item.notes?.toLowerCase().includes("portacomida") || !item.menuItemId;
+        if (isPackaging) return;
+
         const kitchenItem: KitchenItem = { ...item, order };
         
         if (item.status === OrderItemStatus.PENDING) acc.pending.push(kitchenItem);
