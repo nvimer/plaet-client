@@ -200,29 +200,53 @@ export function OrdersPage() {
   };
 
   // ================ COMPUTED VALUES =================
-  // Base filtered list that all tabs and counts should respect (excluding date)
+  // Base filtered list that all tabs and counts should respect (fundamental filters)
   const baseFilteredOrders = useMemo(() => {
     if (!orders) return [];
     
     return orders.filter((order) => {
-      // 1. Regular Filters (Type, Payment, Search)
+      // 1. Type Filter (Applies to all tabs)
       const matchesType = typeFilter === "ALL" || order.type === typeFilter;
-      const matchesPayment = paymentMethodFilter === "ALL" || (order.payments && order.payments.some(p => p.method === paymentMethodFilter));
-      if (!matchesPayment) return false;
+      if (!matchesType) return false;
 
-      const matchesSearch = searchTerm === "" || order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (order.user && `${order.user.firstName} ${order.user.lastName}`.toLowerCase().includes(searchTerm.toLowerCase()));
+      // 2. Search Filter (Applies to all tabs)
+      const matchesSearch = searchTerm === "" || 
+        order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (order.waiter && `${order.waiter.firstName} ${order.waiter.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (order.notes && order.notes.toLowerCase().includes(searchTerm.toLowerCase()));
 
-      return matchesType && matchesSearch;
+      return matchesSearch;
     });
-  }, [orders, typeFilter, paymentMethodFilter, searchTerm]);
+  }, [orders, typeFilter, searchTerm]);
 
   const filteredOrders = useMemo(() => {
-    // Apply Tab Filtering and Date Filtering
     const filtered = baseFilteredOrders.filter((order) => {
-      // 1. Date Filter: Only apply to HISTORY tab. 
-      // Operational tabs show all active orders regardless of date.
+      // 1. Tab Lifecycle Filter (Primary logic)
+      if (activeTab === "BILLING") {
+        return order.status === OrderStatus.OPEN || order.status === OrderStatus.SENT_TO_CASHIER;
+      }
+      
+      if (activeTab === "PREPARATION") {
+        if (order.status !== OrderStatus.PAID) return false;
+        // Match Kitchen Kanban logic: show orders with pending/preparing items
+        return order.items?.some(item => 
+          item.status === OrderItemStatus.PENDING || 
+          item.status === OrderItemStatus.IN_KITCHEN
+        );
+      }
+      
+      if (activeTab === "READY") {
+        if (order.status !== OrderStatus.PAID) return false;
+        return order.items?.some(item => item.status === OrderItemStatus.READY);
+      }
+      
       if (activeTab === "HISTORY") {
+        // Apply Payment Method Filter (Only in History)
+        const matchesPayment = paymentMethodFilter === "ALL" || 
+          (order.payments && order.payments.some(p => p.method === paymentMethodFilter));
+        if (!matchesPayment) return false;
+
+        // Apply Date Filter (Only in History)
         let matchesDate = true;
         switch (dateFilter) {
           case "TODAY": matchesDate = isToday(order.createdAt); break;
@@ -231,31 +255,15 @@ export function OrdersPage() {
           case "CUSTOM": matchesDate = customDateRange ? isWithinDateRange(order.createdAt, customDateRange) : true; break;
         }
         if (!matchesDate) return false;
-      }
 
-      // 2. Tab Lifecycle Filter
-      if (activeTab === "BILLING") return order.status === OrderStatus.OPEN || order.status === OrderStatus.SENT_TO_CASHIER;
-      
-      if (activeTab === "PREPARATION") {
-        // MUST be paid to be in preparation tab
-        if (order.status !== OrderStatus.PAID) return false;
-        return order.items?.some(item => 
-          item.status === OrderItemStatus.PENDING || 
-          item.status === OrderItemStatus.IN_KITCHEN
-        );
-      }
-      
-      if (activeTab === "READY") {
-        // MUST be paid to be in ready tab
-        if (order.status !== OrderStatus.PAID) return false;
-        return order.items?.some(item => item.status === OrderItemStatus.READY);
-      }
-      
-      if (activeTab === "HISTORY") {
+        // Status check for history
         if (order.status === OrderStatus.CANCELLED) return true;
         if (order.status === OrderStatus.PAID) {
-          // Only show in history if ALL items are delivered
-          return order.items?.every(item => item.status === OrderItemStatus.DELIVERED);
+          // Show in history if delivered or no active items left
+          const hasActiveItems = order.items?.some(i => 
+            [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN, OrderItemStatus.READY].includes(i.status)
+          );
+          return !hasActiveItems;
         }
         return false;
       }
@@ -267,39 +275,54 @@ export function OrdersPage() {
     return filtered.sort((a, b) => {
       const timeA = new Date(a.createdAt).getTime();
       const timeB = new Date(b.createdAt).getTime();
+      // History: Newest first. Operational: Oldest first (FIFO).
       return activeTab === "HISTORY" ? timeB - timeA : timeA - timeB;
     });
-  }, [baseFilteredOrders, activeTab, dateFilter, customDateRange]);
+  }, [baseFilteredOrders, activeTab, dateFilter, customDateRange, paymentMethodFilter]);
 
   const counts = useMemo(() => {
-    // For counts, we apply the date filter to ALL categories to keep numbers consistent with selected date
-    const dateFiltered = baseFilteredOrders.filter(order => {
-      switch (dateFilter) {
-        case "TODAY": return isToday(order.createdAt);
-        case "YESTERDAY": return isYesterday(order.createdAt);
-        case "WEEK": return isWithinLastWeek(order.createdAt);
-        case "CUSTOM": return customDateRange ? isWithinDateRange(order.createdAt, customDateRange) : true;
-        default: return true;
-      }
-    });
-
+    // Correct counts by applying the specific logic of each tab
     return {
       all: orders?.length || 0,
-      billing: baseFilteredOrders?.filter(o => o.status === OrderStatus.OPEN || o.status === OrderStatus.SENT_TO_CASHIER).length || 0,
-      inKitchen: baseFilteredOrders?.filter(o => 
+      billing: baseFilteredOrders.filter(o => 
+        o.status === OrderStatus.OPEN || o.status === OrderStatus.SENT_TO_CASHIER
+      ).length,
+      inKitchen: baseFilteredOrders.filter(o => 
         o.status === OrderStatus.PAID && 
         o.items?.some(i => i.status === OrderItemStatus.PENDING || i.status === OrderItemStatus.IN_KITCHEN)
-      ).length || 0,
-      ready: baseFilteredOrders?.filter(o => 
+      ).length,
+      ready: baseFilteredOrders.filter(o => 
         o.status === OrderStatus.PAID && 
         o.items?.some(i => i.status === OrderItemStatus.READY)
-      ).length || 0,
-      history: dateFiltered?.filter(o => 
-        o.status === OrderStatus.CANCELLED || 
-        (o.status === OrderStatus.PAID && o.items?.every(i => i.status === OrderItemStatus.DELIVERED))
-      ).length || 0,
+      ).length,
+      history: baseFilteredOrders.filter(o => {
+        // Payment check
+        const matchesPayment = paymentMethodFilter === "ALL" || 
+          (o.payments && o.payments.some(p => p.method === paymentMethodFilter));
+        if (!matchesPayment) return false;
+
+        // Date check
+        let matchesDate = true;
+        switch (dateFilter) {
+          case "TODAY": matchesDate = isToday(o.createdAt); break;
+          case "YESTERDAY": matchesDate = isYesterday(o.createdAt); break;
+          case "WEEK": matchesDate = isWithinLastWeek(o.createdAt); break;
+          case "CUSTOM": matchesDate = customDateRange ? isWithinDateRange(o.createdAt, customDateRange) : true; break;
+        }
+        if (!matchesDate) return false;
+
+        // Status check
+        if (o.status === OrderStatus.CANCELLED) return true;
+        if (o.status === OrderStatus.PAID) {
+          const hasActiveItems = o.items?.some(i => 
+            [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN, OrderItemStatus.READY].includes(i.status)
+          );
+          return !hasActiveItems;
+        }
+        return false;
+      }).length,
     };
-  }, [baseFilteredOrders, orders?.length, dateFilter, customDateRange]);
+  }, [baseFilteredOrders, orders?.length, dateFilter, customDateRange, paymentMethodFilter]);
 
   const groupedOrders = useMemo(() => {
     // History should show individual records for auditing, but still needs GroupedOrder structure for the UI
