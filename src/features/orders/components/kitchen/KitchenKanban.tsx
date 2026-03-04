@@ -22,6 +22,8 @@ import { KitchenColumn } from "./KitchenColumn";
 import { KitchenOrderCard } from "./KitchenOrderCard"; // We will adapt this or use a new ItemCard
 import { Skeleton, EmptyState } from "@/components";
 import { cn } from "@/utils/cn";
+import { motion, AnimatePresence } from "framer-motion";
+import { variants, transitions } from "@/utils/motion";
 
 type TabType = "pending" | "inKitchen" | "ready";
 
@@ -362,38 +364,49 @@ export function KitchenKanban({
             </div>
           ) : (
             <div className="flex-1 p-6 overflow-y-auto">
-              <div className="grid grid-cols-3 gap-6 min-h-0 h-full">
-                <KitchenColumn
-                  id={OrderItemStatus.PENDING}
-                  title="Nuevos"
-                  icon={<Clock className="w-6 h-6" />}
-                  color="bg-blue-100 text-blue-800"
-                  items={itemsByStatus.pending}
-                  onStatusChange={handleItemStatusChange}
-                  isMobile={false}
-                  categoryConfig={categoryConfig}
-                />
-                <KitchenColumn
-                  id={OrderItemStatus.IN_KITCHEN}
-                  title="Preparando"
-                  icon={<ChefHat className="w-6 h-6" />}
-                  color="bg-orange-100 text-orange-800"
-                  items={itemsByStatus.inKitchen}
-                  onStatusChange={handleItemStatusChange}
-                  isMobile={false}
-                  categoryConfig={categoryConfig}
-                />
-                <KitchenColumn
-                  id={OrderItemStatus.READY}
-                  title="Listos"
-                  icon={<CheckCircle className="w-6 h-6" />}
-                  color="bg-emerald-100 text-emerald-800"
-                  items={itemsByStatus.ready}
-                  onStatusChange={handleItemStatusChange}
-                  isMobile={false}
-                  categoryConfig={categoryConfig}
-                />
-              </div>
+              <motion.div 
+                variants={transitions.stagger(0.1)}
+                initial="initial"
+                animate="animate"
+                className="grid grid-cols-3 gap-6 min-h-0 h-full"
+              >
+                <motion.div variants={variants.fadeInUp} className="h-full">
+                  <KitchenColumn
+                    id={OrderItemStatus.PENDING}
+                    title="Nuevos"
+                    icon={<Clock className="w-6 h-6" />}
+                    color="bg-blue-100 text-blue-800"
+                    items={itemsByStatus.pending}
+                    onStatusChange={handleItemStatusChange}
+                    isMobile={false}
+                    categoryConfig={categoryConfig}
+                  />
+                </motion.div>
+                <motion.div variants={variants.fadeInUp} className="h-full">
+                  <KitchenColumn
+                    id={OrderItemStatus.IN_KITCHEN}
+                    title="Preparando"
+                    icon={<ChefHat className="w-6 h-6" />}
+                    color="bg-orange-100 text-orange-800"
+                    items={itemsByStatus.inKitchen}
+                    onStatusChange={handleItemStatusChange}
+                    isMobile={false}
+                    categoryConfig={categoryConfig}
+                  />
+                </motion.div>
+                <motion.div variants={variants.fadeInUp} className="h-full">
+                  <KitchenColumn
+                    id={OrderItemStatus.READY}
+                    title="Listos"
+                    icon={<CheckCircle className="w-6 h-6" />}
+                    color="bg-emerald-100 text-emerald-800"
+                    items={itemsByStatus.ready}
+                    onStatusChange={handleItemStatusChange}
+                    isMobile={false}
+                    categoryConfig={categoryConfig}
+                  />
+                </motion.div>
+              </motion.div>
             </div>
           )}
         </div>

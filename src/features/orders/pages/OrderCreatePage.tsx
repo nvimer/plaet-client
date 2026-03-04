@@ -31,34 +31,9 @@ import { Card, Button } from "@/components";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/utils/cn";
 import { useMemo } from "react";
+import { variants, transitions } from "@/utils/motion";
 
 import { useSidebar } from "@/contexts/SidebarContext";
-
-// Soft Animation Configs
-const softFadeIn = {
-  initial: { opacity: 0, y: 8 },
-  animate: { opacity: 1, y: 0 },
-  exit: { opacity: 0, y: -8 },
-  transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] }
-};
-
-const staggerContainer = {
-  animate: {
-    transition: {
-      staggerChildren: 0.05
-    }
-  }
-};
-
-const itemVariants = {
-  initial: { opacity: 0, scale: 0.98, y: 4 },
-  animate: { 
-    opacity: 1, 
-    scale: 1, 
-    y: 0,
-    transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] }
-  }
-};
 
 export function OrderCreatePage() {
   const { user } = useAuth();
@@ -222,7 +197,7 @@ export function OrderCreatePage() {
           </motion.div>
 
           <motion.div 
-            variants={staggerContainer}
+            variants={transitions.stagger(0.05)}
             initial="initial"
             animate="animate"
             className="grid grid-cols-1 sm:grid-cols-3 gap-8 w-full max-w-4xl"
@@ -234,7 +209,7 @@ export function OrderCreatePage() {
             ].map((opt) => (
               <motion.button
                 key={opt.type}
-                variants={itemVariants}
+                variants={variants.scaleIn}
                 onClick={() => setSelectedOrderType(opt.type)}
                 className="group relative flex flex-col items-center p-10 rounded-[2.5rem] bg-white border-2 border-sage-100 hover:border-carbon-900 hover:shadow-soft-2xl transition-all duration-500 active:scale-[0.98] overflow-hidden"
               >
@@ -386,9 +361,9 @@ export function OrderCreatePage() {
             {/* LEFT: Order Form */}
             <motion.div 
               id="current-order"
-              initial={{ opacity: 0, y: 8 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              variants={variants.fadeInUp}
+              initial="initial"
+              animate="animate"
               className="space-y-6"
             >
               <OrderForm
@@ -444,9 +419,9 @@ export function OrderCreatePage() {
 
             {/* RIGHT: Orders List */}
             <motion.div 
-              initial={{ opacity: 0, x: 8 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+              variants={variants.fadeInRight}
+              initial="initial"
+              animate="animate"
               className="lg:sticky lg:top-6 h-fit"
             >
               <OrdersListPanel

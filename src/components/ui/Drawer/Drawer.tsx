@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { cn } from "@/utils/cn";
+import { variants, transitions } from "@/utils/motion";
 
 interface DrawerProps {
   isOpen: boolean;
@@ -47,10 +48,10 @@ export function Drawer({
         <div className="fixed inset-0 z-[100] flex justify-end">
           {/* Backdrop */}
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            variants={variants.fadeIn}
+            initial="initial"
+            animate="animate"
+            exit="exit"
             className="absolute inset-0 bg-carbon-900/40 backdrop-blur-sm"
             onClick={onClose}
           />
@@ -60,7 +61,7 @@ export function Drawer({
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
-            transition={{ type: "spring", damping: 30, stiffness: 300 }}
+            transition={transitions.soft}
             className="relative w-full max-w-md h-full bg-white shadow-2xl flex flex-col"
           >
             {/* Header */}

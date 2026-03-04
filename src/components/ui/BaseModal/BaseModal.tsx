@@ -1,9 +1,9 @@
-import { AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import type React from "react";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
-import { motion } from "framer-motion";
 import { X } from "lucide-react";
+import { variants, transitions } from "@/utils/motion";
 
 // =============== TYPES ================
 interface BaseModalProps {
@@ -62,20 +62,20 @@ export function BaseModal({
                 <div className="fixed inset-0 z-[150] flex items-center justify-center p-4">
                     {/* Backdrop */}
                     <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.2 }}
+                        variants={variants.fadeIn}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
                         className="absolute inset-0 bg-carbon-900/60 backdrop-blur-sm"
                         onClick={onClose}
                     />
 
                     {/* Modal Content */}
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        variants={variants.modalEntry}
+                        initial="initial"
+                        animate="animate"
+                        exit="exit"
                         className={`relative w-full ${sizeClasses[size]} bg-white rounded-2xl shadow-soft-xl overflow-hidden`}
                     >
                         {/* Header */}

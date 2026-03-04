@@ -1,8 +1,10 @@
 import { OrderStatus, OrderType, PaymentMethod, OrderItemStatus } from "@/types";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
 import { useOrders, useAddPayment } from "../hooks"; 
 import { Button, Skeleton, EmptyState, Card } from "@/components";
+import { variants, transitions } from "@/utils/motion";
 import type { DateFilterType, DateRange } from "@/components";
 import {
   CheckCircle,
@@ -453,20 +455,32 @@ export function OrdersPage() {
 
         {/* Orders Grid */}
         {(isGrouped ? groupedOrders.length : filteredOrders.length) > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-            {(isGrouped ? groupedOrders : filteredOrders).map((item: any) => (
-              isGrouped ? (
-                <GroupedOrderCard 
-                  key={item.id} 
-                  groupedOrder={item} 
-                  onViewDetail={(id) => navigate(getOrderDetailRoute(id))} 
-                  onPayTable={handleOpenPaymentModal}
-                />
-              ) : (
-                <OrderCard key={item.id} order={item} onViewDetail={(id) => navigate(getOrderDetailRoute(id))} />
-              )
-            ))}
-          </div>
+          <motion.div 
+            variants={transitions.stagger(0.03)}
+            initial="initial"
+            animate="animate"
+            className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
+          >
+            <AnimatePresence mode="popLayout">
+              {(isGrouped ? groupedOrders : filteredOrders).map((item: any) => (
+                <motion.div
+                  key={item.id}
+                  variants={variants.fadeInUp}
+                  layout
+                >
+                  {isGrouped ? (
+                    <GroupedOrderCard 
+                      groupedOrder={item} 
+                      onViewDetail={(id) => navigate(getOrderDetailRoute(id))} 
+                      onPayTable={handleOpenPaymentModal}
+                    />
+                  ) : (
+                    <OrderCard order={item} onViewDetail={(id) => navigate(getOrderDetailRoute(id))} />
+                  )}
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </motion.div>
         ) : (
           <EmptyState icon={<History className="w-12 h-12" />} title="Sin registros" description="No hay pedidos que coincidan con los filtros aplicados." onAction={handleClearAll} actionLabel="Limpiar Filtros" />
         )}

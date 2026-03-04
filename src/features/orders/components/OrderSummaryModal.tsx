@@ -7,6 +7,8 @@ import { Button } from "@/components";
 import { X, Check, ReceiptText, Soup, Salad, CupSoda, IceCream, Utensils, CircleOff, ArrowRightLeft, Info, PackagePlus, FastForward } from "lucide-react";
 import type { TableOrder } from "../types/orderBuilder";
 import { OrderType } from "@/types";
+import { motion, AnimatePresence } from "framer-motion";
+import { variants } from "@/utils/motion";
 
 interface OrderSummaryModalProps {
   isOpen: boolean;
@@ -42,9 +44,28 @@ export function OrderSummaryModal({
   const isDineIn = orderType === OrderType.DINE_IN;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-carbon-900/60 backdrop-blur-sm">
-      <div className="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl max-w-2xl w-full h-[90vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-300">
-        {/* Header - Fixed Height */}
+    <AnimatePresence>
+      {isOpen && (
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-0 sm:p-4">
+          {/* Backdrop */}
+          <motion.div 
+            variants={variants.fadeIn}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="absolute inset-0 bg-carbon-900/60 backdrop-blur-sm"
+            onClick={onClose}
+          />
+
+          {/* Modal Content */}
+          <motion.div 
+            variants={variants.modalEntry}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+            className="bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl max-w-2xl w-full h-[90vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden relative z-10"
+          >
+            {/* Header - Fixed Height */}
         <div className="bg-gradient-to-br from-carbon-900 to-carbon-800 px-6 py-5 sm:py-6 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -237,7 +258,10 @@ export function OrderSummaryModal({
             </Button>
           </div>
         </div>
-      </div>
-    </div>
-  );
-}
+                </motion.div>
+              </div>
+            )}
+          </AnimatePresence>
+        );
+      }
+      
