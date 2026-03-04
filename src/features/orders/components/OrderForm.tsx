@@ -747,17 +747,18 @@ export function OrderForm({
       )}
 
       {/* Replacement manager */}
-      <Card variant="elevated" className="p-6 rounded-2xl">
-        <ReplacementManager
-          availableItems={{
-            soup: selectedSoup ? [selectedSoup] : [],
-            principle: selectedPrinciple ? [selectedPrinciple] : [],
-            salad: selectedSalad ? [selectedSalad] : [],
-            drink: selectedDrink ? [selectedDrink] : [],
-            extra: selectedExtra ? [selectedExtra] : [],
-            rice: selectedRice ? [selectedRice] : [],
-          }}
-          replacements={replacements}
+              <Card variant="elevated" className="p-6 rounded-2xl">
+                <ReplacementManager
+                  availableItems={{
+                    soup: dailyMenuDisplay.soupOptions,
+                    principle: dailyMenuDisplay.principleOptions,
+                    salad: dailyMenuDisplay.saladOptions,
+                    drink: dailyMenuDisplay.drinkOptions,
+                    extra: dailyMenuDisplay.extraOptions,
+                    rice: dailyMenuDisplay.riceOption ? [dailyMenuDisplay.riceOption] : [],
+                  }}
+                  replacements={replacements}
+      
           onAddReplacement={(replacement) =>
             setReplacements([...replacements, replacement])
           }

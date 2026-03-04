@@ -10,7 +10,7 @@ interface MenuOption {
 
 export interface Replacement {
   id: string;
-  from: "soup" | "principle" | "salad" | "drink" | "extra";
+  from: "soup" | "principle" | "salad" | "drink" | "extra" | "rice";
   fromName: string;
   to: "soup" | "principle" | "salad" | "drink" | "extra" | "rice";
   toName: string;
@@ -106,6 +106,12 @@ export function ReplacementManager({
         name: "Extra",
         icon: CATEGORY_ICONS.extra,
         hasItems: availableItems.extra.length > 0,
+      },
+      {
+        key: "rice",
+        name: "Arroz",
+        icon: CATEGORY_ICONS.rice,
+        hasItems: (availableItems.rice?.length || 0) > 0,
       },
     ];
     return categories.filter((c) => c.hasItems);
