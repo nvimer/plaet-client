@@ -6,30 +6,13 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import axios from "axios";
-import { useCreateOrder, useBatchCreateOrders } from "./useCreateO
-
-    // Data hooks
-    const { data: tablesData, isLoading: tablesLoading } = useTables();
-    const { data: menuItems, isLoading: itemsLoading } = useItems();
-    
-    // Daily Menu Data fetching logic
-    const todayMenu = useDailyMenuToday();
-    const historicalMenu = useDailyMenuByDate(backdatedDate || "");
-    
-    const dailyMenuData = backdatedDate ? historicalMenu.data : todayMenu.data;
-    const menuLoading = backdatedDate ? historicalMenu.isLoading : todayMenu.isLoading;
-
-    // Update packagingFee when dailyMenuData changes
-    useEffect(() => {
-      if (dailyMenuData?.packagingFee) {
-        setPackagingFee(Number(dailyMenuData.packagingFee));
-      }
-    }, [dailyMenuData]);rder";
+import { useCreateOrder, useBatchCreateOrders } from "./useCreateOrder";
 import { useTables, useUpdateTableStatus } from "@/features/tables";
 import { useItems } from "@/features/menu";
 import { useDailyMenuToday, useDailyMenuByDate } from "@/features/menu/hooks/useDailyMenu";
-import { OrderType, TableStatus, OrderStatus, PaymentMethod } from "@/types";
+import { OrderType, TableStatus, OrderStatus, PaymentMethod, OrderItemStatus } from "@/types";
 import { paymentApi, orderApi } from "@/services";
+import type { Order } from "@/types";
 import type {
   MenuOption,
   ProteinOption,
@@ -50,18 +33,7 @@ export interface UseOrderBuilderReturn {
   tables: Array<{ id: number; status: string }>;
   availableTables: Array<{ id: number; status: string }>;
   menuItems: Array<{ id: number; name: string; price: string; isAvailable: boolean }> | undefined;
-  dailyMenuData: {
-    basePrice: number;
-    proteinOptions: Array<{ id: number; name: string; price: number }>;
-    proteinCategory?: { name: string } | null;
-    soupOptions: MenuOption[];
-    principleOptions: MenuOption[];
-    saladOptions: MenuOption[];
-    drinkOptions: MenuOption[];
-    extraOptions: MenuOption[];
-    dessertOptions?: MenuOption[];
-    riceOptions?: MenuOption[];
-  } | null | undefined;
+  dailyMenuData: any;
   
   // Order type and table state
   selectedOrderType: OrderType | null;
@@ -179,13 +151,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [packagingFee, setPackagingFee] = useState(1000);
 
-  // Update packagingFee when dailyMenuData changes
-  useEffect(() => {
-    if (dailyMenuData?.packagingFee) {
-      setPackagingFee(Number(dailyMenuData.packagingFee));
-    }
-  }, [dailyMenuData]);
-
   // Data hooks
   const { data: tablesData, isLoading: tablesLoading } = useTables();
   const { data: menuItems, isLoading: itemsLoading } = useItems();
@@ -196,6 +161,13 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   
   const dailyMenuData = backdatedDate ? historicalMenu.data : todayMenu.data;
   const menuLoading = backdatedDate ? historicalMenu.isLoading : todayMenu.isLoading;
+
+  // Update packagingFee when dailyMenuData changes
+  useEffect(() => {
+    if (dailyMenuData?.packagingFee) {
+      setPackagingFee(Number(dailyMenuData.packagingFee));
+    }
+  }, [dailyMenuData]);
   
   const { mutateAsync: createOrder, isPending: isCreating } = useCreateOrder();
   const { mutateAsync: createBatchOrders, isPending: isBatchCreating } = useBatchCreateOrders();
@@ -207,14 +179,12 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const availableTables = tables.filter((t) => t.status === "AVAILABLE");
 
   // Lunch selection state
-
   const [selectedProtein, setSelectedProtein] = useState<ProteinOption | null>(null);
   const [looseItems, setLooseItems] = useState<LooseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [showDailyMenu, setShowDailyMenu] = useState(false);
   const [orderNotes, setOrderNotes] = useState("");
 
-  // Lunch selection state
   const [selectedSoup, setSelectedSoup] = useState<MenuOption | null>(null);
   const [selectedPrinciple, setSelectedPrinciple] = useState<MenuOption | null>(null);
   const [selectedSalad, setSelectedSalad] = useState<MenuOption | null>(null);
@@ -228,13 +198,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
 
-  // Popular products (quick add-ons)
-  // Calculate popular/common products from real menu data
-  // For now, we'll take the first 6 items that are available and not from lunch categories
   const popularProducts = useMemo(() => {
     if (!menuItems || !Array.isArray(menuItems)) return [];
     
-    // Lunch category IDs to exclude from "popular" (loose items)
     const lunchCategoryIds = [
       dailyMenuData?.soupCategory?.id,
       dailyMenuData?.principleCategory?.id,
@@ -258,19 +224,17 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       }));
   }, [menuItems, dailyMenuData]);
 
-  // Daily Menu Prices
   const dailyMenuPrices = useMemo(() => ({
     basePrice: dailyMenuData?.basePrice || 0,
     isConfigured: !!dailyMenuData,
   }), [dailyMenuData]);
 
-  // Get proteins from daily menu
   const proteins = useMemo(() => {
     if (!dailyMenuData?.proteinOptions || dailyMenuData.proteinOptions.length === 0) {
       return [];
     }
     
-    return dailyMenuData.proteinOptions.map((item) => ({
+    return dailyMenuData.proteinOptions.map((item: any) => ({
       id: item.id,
       name: item.name,
       price: item.price,
@@ -279,7 +243,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     }));
   }, [dailyMenuData]);
 
-  // Filtered loose items
   const filteredLooseItems = useMemo(() => {
     if (!menuItems) return [];
     return menuItems.filter(
@@ -290,7 +253,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     );
   }, [menuItems, searchTerm]);
 
-  // Build daily menu display
   const dailyMenuDisplay = useMemo(() => {
     if (!dailyMenuData) {
       return {
@@ -323,13 +285,11 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     };
   }, [dailyMenuData, dailyMenuPrices]);
 
-  // Calculate lunch price
   const lunchPrice = useMemo(() => {
     if (!selectedProtein) return 0;
-    return dailyMenuPrices.basePrice + selectedProtein.price;
+    return Number(dailyMenuPrices.basePrice) + Number(selectedProtein.price);
   }, [selectedProtein, dailyMenuPrices]);
 
-  // Calculate current order total
   const currentOrderTotal = useMemo(() => {
     let total = 0;
     total += lunchPrice;
@@ -337,7 +297,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       total += item.price * item.quantity;
     });
     
-    // Add packaging fee for non-dine-in if not already present in looseItems
     if ((selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) && 
         !looseItems.some(i => i.name === "Portacomida") && 
         packagingFee > 0) {
@@ -347,12 +306,10 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     return total;
   }, [lunchPrice, looseItems, selectedOrderType, packagingFee]);
 
-  // Calculate table total
   const tableTotal = useMemo(() => {
     return tableOrders.reduce((sum, order) => sum + order.total, 0);
   }, [tableOrders]);
 
-  // Auto-select single options
   useEffect(() => {
     if (dailyMenuDisplay.isConfigured) {
       if (dailyMenuDisplay.soupOptions.length === 1 && !selectedSoup) {
@@ -373,7 +330,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     }
   }, [dailyMenuDisplay, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra]);
 
-  // Validation
   const validateOrder = useCallback((): ValidationError[] => {
     const errors: ValidationError[] = [];
     
@@ -419,11 +375,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     return validationErrors.some(e => e.field === field) && touchedFields.has(field);
   }, [validationErrors, touchedFields]);
 
-  // Build order notes
   const buildOrderNotes = useCallback((): string => {
     let note = "";
 
-    // 1. Add Customer Info for Non-Dine-In
     if (selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) {
       note += `👤 CLIENTE: ${customerName}\n📞 TEL: ${customerPhone}`;
       if (selectedOrderType === OrderType.DELIVERY && deliveryAddress) {
@@ -446,7 +400,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     return note;
   }, [selectedProtein, replacements, orderNotes, selectedOrderType, customerName, customerPhone, deliveryAddress]);
 
-  // Handlers
   const handleAddLooseItem = useCallback((item: { id: number; name: string; price: number }) => {
     const existing = looseItems.find((i) => i.id === item.id);
     if (existing) {
@@ -483,7 +436,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setOrderNotes("");
     setCurrentOrderIndex(null);
     setSearchTerm("");
-    // We don't reset customer info here as it might be shared across table services
   }, []);
 
   const handleAddOrderToTable = useCallback(() => {
@@ -498,12 +450,11 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
     const currentLooseItems = [...looseItems];
     
-    // Automatically add Packaging Fee if applicable
     if ((selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) && packagingFee > 0) {
       const existingFee = currentLooseItems.find(i => i.name === "Portacomida");
       if (!existingFee) {
         currentLooseItems.push({
-          id: -1, // Virtual ID
+          id: -1,
           name: "Portacomida",
           price: packagingFee,
           quantity: 1
@@ -545,7 +496,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     clearCurrentOrder();
     setValidationErrors([]);
     setTouchedFields(new Set());
-  }, [selectedProtein, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedRice, dailyMenuDisplay.riceOption, replacements, looseItems, currentOrderTotal, buildOrderNotes, currentOrderIndex, tableOrders.length, validateOrder, clearCurrentOrder]);
+  }, [selectedProtein, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedRice, dailyMenuDisplay.riceOption, replacements, looseItems, currentOrderTotal, buildOrderNotes, currentOrderIndex, tableOrders.length, validateOrder, clearCurrentOrder, packagingFee, selectedOrderType]);
 
   const handleEditOrder = useCallback((index: number) => {
     const order = tableOrders[index];
@@ -602,7 +553,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
     setShowSummaryModal(false);
 
-    // Transform tableOrders into CreateOrderInput[]
     const ordersPayload = tableOrders.map((order) => {
       const items: OrderItemInput[] = [];
       
@@ -616,7 +566,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       }
 
       order.looseItems.forEach((item) => {
-        // Include both real items (id > 0) and manual items (id <= 0 like Portacomida)
         items.push({
           menuItemId: item.id > 0 ? item.id : undefined,
           quantity: item.quantity,
@@ -646,41 +595,34 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       let createdOrdersList: Order[] = [];
       
       if (ordersPayload.length === 1 && selectedOrderType !== OrderType.DINE_IN) {
-        // Single order creation (non-table)
         const res = await createOrder(ordersPayload[0]);
         createdOrdersList = [res];
         if (!isFastHistoricalEntry) toast.success("Pedido creado exitosamente");
-              } else {
-                // Batch creation for tables or multiple services
-                // The backend batch logic now unifies these into one order
-                const res = await createBatchOrders({
-                  tableId: selectedTable || 0,
-                  orders: ordersPayload
-                });
-                
-                // Ensure createdOrdersList is an array, handle potential nested structures
-                createdOrdersList = res && res.orders ? res.orders : [];
-                
-                                  if (!isFastHistoricalEntry) {
-                                    if (selectedOrderType === OrderType.DINE_IN && selectedTable) {
-                                      toast.success(`${ordersPayload.length} productos agregados a Mesa ${selectedTable}`);
-                                    } else {
-                                      toast.success(`${ordersPayload.length} pedidos creados`);
-                                    }
-                                  }
-                
-              }
-            // Fast Historical Entry Logic
+      } else {
+        const res = await createBatchOrders({
+          tableId: selectedTable || 0,
+          orders: ordersPayload
+        });
+        
+        createdOrdersList = res && (res as any).orders ? (res as any).orders : [];
+        
+        if (!isFastHistoricalEntry) {
+          if (selectedOrderType === OrderType.DINE_IN && selectedTable) {
+            toast.success(`${ordersPayload.length} productos agregados a Mesa ${selectedTable}`);
+          } else {
+            toast.success(`${ordersPayload.length} pedidos creados`);
+          }
+        }
+      }
+
       if (isFastHistoricalEntry && createdOrdersList && createdOrdersList.length > 0) {
         await Promise.all(createdOrdersList.map(async (createdOrder) => {
           try {
-            // 1. Register payment - Marks Order as PAID
             await paymentApi.createPayment(createdOrder.id, {
               method: PaymentMethod.CASH,
               amount: Number(createdOrder.totalAmount)
             });
 
-            // 2. Mark all items as DELIVERED (historical data shouldn't be in kitchen)
             if (createdOrder.items) {
               await Promise.all(createdOrder.items.map(item => 
                 orderApi.updateOrderItemStatus(createdOrder.id, item.id, OrderItemStatus.DELIVERED)
@@ -693,7 +635,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
         toast.success("Registro histórico guardado y liquidado", { icon: "📜" });
       }
 
-      // Automatically mark table as occupied if it's DINE_IN and NOT historical
       if (selectedOrderType === OrderType.DINE_IN && selectedTable && !isFastHistoricalEntry) {
         updateTableStatus({ id: selectedTable, status: TableStatus.OCCUPIED });
       }
@@ -705,9 +646,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       setDeliveryAddress("");
       setPackagingFee(1000);
       clearCurrentOrder();
-      
-      // Navigate or reset? UseOrderBuilder doesn't have navigate.
-      // The parent component handles UI reset via state change (back to type selection)
       setSelectedOrderType(null); 
 
     } catch (error: unknown) {
@@ -722,7 +660,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       
       toast.error("Error al crear los pedidos", { description });
     }
-  }, [selectedTable, selectedOrderType, tableOrders, createOrder, backdatedDate, updateTableStatus, clearCurrentOrder]);
+  }, [selectedTable, selectedOrderType, tableOrders, createOrder, backdatedDate, updateTableStatus, clearCurrentOrder, createBatchOrders, customerName, customerPhone, deliveryAddress]);
 
   const handleSelectOrderType = useCallback((type: OrderType) => {
     setSelectedOrderType(type);
@@ -740,37 +678,26 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   }, [clearCurrentOrder]);
 
   return {
-    // Loading states
     isLoading: tablesLoading || itemsLoading || menuLoading,
     isPending,
-    
-    // Data
     tables,
     availableTables,
     menuItems,
     dailyMenuData,
-    
-    // Order type and table state
     selectedOrderType,
     selectedTable,
     tableOrders,
     currentOrderIndex,
     backdatedDate,
-    
-    // Customer info
     customerName,
     customerPhone,
     deliveryAddress,
     packagingFee,
-    
-    // Current order state
     selectedProtein,
     looseItems,
     searchTerm,
     showDailyMenu,
     orderNotes,
-    
-    // Lunch selection state
     selectedSoup,
     selectedPrinciple,
     selectedSalad,
@@ -778,13 +705,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     selectedExtra,
     selectedRice,
     replacements,
-    
-    // UI state
     showSummaryModal,
     validationErrors,
     touchedFields,
-    
-    // Computed values
     proteins,
     filteredLooseItems,
     dailyMenuDisplay,
@@ -793,8 +716,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     currentOrderTotal,
     tableTotal,
     popularProducts,
-    
-    // Actions
     setSelectedOrderType,
     setSelectedTable,
     setSearchTerm,
@@ -819,8 +740,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setCustomerPhone,
     setDeliveryAddress,
     setPackagingFee,
-    
-    // Handlers
     handleAddLooseItem,
     handleUpdateLooseItemQuantity,
     handleAddOrderToTable,
@@ -832,8 +751,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     handleConfirmTableOrders,
     handleSelectOrderType,
     handleBackToOrderType,
-    
-    // Utilities
     validateOrder,
     hasError,
     buildOrderNotes,
