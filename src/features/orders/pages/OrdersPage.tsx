@@ -228,7 +228,7 @@ export function OrdersPage() {
       
       if (activeTab === "PREPARATION") {
         if (order.status !== OrderStatus.PAID) return false;
-        // Match Kitchen Kanban logic: show orders with pending/preparing items
+        // SHOW ONLY IF: There is still something pending or cooking
         return order.items?.some(item => 
           item.status === OrderItemStatus.PENDING || 
           item.status === OrderItemStatus.IN_KITCHEN
@@ -237,7 +237,10 @@ export function OrdersPage() {
       
       if (activeTab === "READY") {
         if (order.status !== OrderStatus.PAID) return false;
-        return order.items?.some(item => item.status === OrderItemStatus.READY);
+        // SHOW ONLY IF: Nothing is pending/cooking AND at least one item is READY
+        const hasPending = order.items?.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status));
+        const hasReady = order.items?.some(i => i.status === OrderItemStatus.READY);
+        return !hasPending && hasReady;
       }
       
       if (activeTab === "HISTORY") {
@@ -256,10 +259,10 @@ export function OrdersPage() {
         }
         if (!matchesDate) return false;
 
-        // Status check for history
+        // Status check for history: Cancelled or fully Delivered
         if (order.status === OrderStatus.CANCELLED) return true;
         if (order.status === OrderStatus.PAID) {
-          // Show in history if delivered or no active items left
+          // Fully finished: No items are pending, cooking, or ready
           const hasActiveItems = order.items?.some(i => 
             [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN, OrderItemStatus.READY].includes(i.status)
           );
@@ -275,15 +278,13 @@ export function OrdersPage() {
     return filtered.sort((a, b) => {
       const timeA = new Date(a.createdAt).getTime();
       const timeB = new Date(b.createdAt).getTime();
-      // History: Newest first. Operational: Oldest first (FIFO).
       return activeTab === "HISTORY" ? timeB - timeA : timeA - timeB;
     });
   }, [baseFilteredOrders, activeTab, dateFilter, customDateRange, paymentMethodFilter]);
 
   const counts = useMemo(() => {
-    // Correct counts by applying the specific logic of each tab
     return {
-      all: orders?.length || 0,
+      all: baseFilteredOrders.length,
       billing: baseFilteredOrders.filter(o => 
         o.status === OrderStatus.OPEN || o.status === OrderStatus.SENT_TO_CASHIER
       ).length,
@@ -291,11 +292,24 @@ export function OrdersPage() {
         o.status === OrderStatus.PAID && 
         o.items?.some(i => i.status === OrderItemStatus.PENDING || i.status === OrderItemStatus.IN_KITCHEN)
       ).length,
-      ready: baseFilteredOrders.filter(o => 
-        o.status === OrderStatus.PAID && 
-        o.items?.some(i => i.status === OrderItemStatus.READY)
-      ).length,
+      ready: baseFilteredOrders.filter(o => {
+        if (o.status !== OrderStatus.PAID) return false;
+        const hasPending = o.items?.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status));
+        const hasReady = o.items?.some(i => i.status === OrderItemStatus.READY);
+        return !hasPending && hasReady;
+      }).length,
       history: baseFilteredOrders.filter(o => {
+        // Status check
+        let matchesStatus = false;
+        if (o.status === OrderStatus.CANCELLED) matchesStatus = true;
+        else if (o.status === OrderStatus.PAID) {
+          const hasActiveItems = o.items?.some(i => 
+            [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN, OrderItemStatus.READY].includes(i.status)
+          );
+          matchesStatus = !hasActiveItems;
+        }
+        if (!matchesStatus) return false;
+
         // Payment check
         const matchesPayment = paymentMethodFilter === "ALL" || 
           (o.payments && o.payments.some(p => p.method === paymentMethodFilter));
@@ -309,23 +323,12 @@ export function OrdersPage() {
           case "WEEK": matchesDate = isWithinLastWeek(o.createdAt); break;
           case "CUSTOM": matchesDate = customDateRange ? isWithinDateRange(o.createdAt, customDateRange) : true; break;
         }
-        if (!matchesDate) return false;
-
-        // Status check
-        if (o.status === OrderStatus.CANCELLED) return true;
-        if (o.status === OrderStatus.PAID) {
-          const hasActiveItems = o.items?.some(i => 
-            [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN, OrderItemStatus.READY].includes(i.status)
-          );
-          return !hasActiveItems;
-        }
-        return false;
+        return matchesDate;
       }).length,
     };
-  }, [baseFilteredOrders, orders?.length, dateFilter, customDateRange, paymentMethodFilter]);
+  }, [baseFilteredOrders, dateFilter, customDateRange, paymentMethodFilter]);
 
   const groupedOrders = useMemo(() => {
-    // History should show individual records for auditing, but still needs GroupedOrder structure for the UI
     if (activeTab === "HISTORY") {
       return filteredOrders.map(order => ({
         id: order.id,
@@ -334,7 +337,7 @@ export function OrdersPage() {
         createdAt: order.createdAt,
         status: order.status,
         type: order.type,
-        orders: [order], // Wrap single order in array
+        orders: [order], 
         totalAmount: Number(order.totalAmount),
       }));
     }
