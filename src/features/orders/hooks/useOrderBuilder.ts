@@ -116,6 +116,8 @@ export interface UseOrderBuilderReturn {
   setCustomerName: (name: string) => void;
   setCustomerPhone: (phone: string) => void;
   setDeliveryAddress: (address: string) => void;
+  packagingQuantity: number;
+  setPackagingQuantity: (qty: number) => void;
   
   // Handlers
   handleAddLooseItem: (item: { id: number; name: string; price: number }) => void;
@@ -149,6 +151,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const [customerPhone, setCustomerPhone] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [packagingFee, setPackagingFee] = useState(1000);
+  const [packagingQuantity, setPackagingQuantity] = useState(0);
 
   // Data hooks
   const { data: tablesData, isLoading: tablesLoading } = useTables();
@@ -160,6 +163,15 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   
   const dailyMenuData = backdatedDate ? historicalMenu.data : todayMenu.data;
   const menuLoading = backdatedDate ? historicalMenu.isLoading : todayMenu.isLoading;
+
+  // Set default quantity when order type changes
+  useEffect(() => {
+    if (selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) {
+      setPackagingQuantity(1);
+    } else {
+      setPackagingQuantity(0);
+    }
+  }, [selectedOrderType]);
 
   // Update packagingFee when dailyMenuData changes
   useEffect(() => {
@@ -296,14 +308,13 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       total += item.price * item.quantity;
     });
     
-    if ((selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) && 
-        !looseItems.some(i => i.name === "Portacomida") && 
-        packagingFee > 0) {
-      total += packagingFee;
+    // Add packaging fee based on manual quantity
+    if (packagingQuantity > 0 && packagingFee > 0) {
+      total += packagingFee * packagingQuantity;
     }
     
     return total;
-  }, [lunchPrice, looseItems, selectedOrderType, packagingFee]);
+  }, [lunchPrice, looseItems, packagingFee, packagingQuantity]);
 
   const tableTotal = useMemo(() => {
     return tableOrders.reduce((sum, order) => sum + order.total, 0);
@@ -435,7 +446,8 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setOrderNotes("");
     setCurrentOrderIndex(null);
     setSearchTerm("");
-  }, []);
+    setPackagingQuantity(selectedOrderType === OrderType.DINE_IN ? 0 : 1);
+  }, [selectedOrderType]);
 
   const handleAddOrderToTable = useCallback(() => {
     setTouchedFields(new Set(["protein", "soup", "principle", "salad", "drink", "extra"]));
@@ -449,16 +461,14 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
     const currentLooseItems = [...looseItems];
     
-    if ((selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) && packagingFee > 0) {
-      const existingFee = currentLooseItems.find(i => i.name === "Portacomida");
-      if (!existingFee) {
-        currentLooseItems.push({
-          id: -1,
-          name: "Portacomida",
-          price: packagingFee,
-          quantity: 1
-        });
-      }
+    // Add Packaging Fee with manual quantity if specified
+    if (packagingQuantity > 0 && packagingFee > 0) {
+      currentLooseItems.push({
+        id: -1,
+        name: "Portacomida",
+        price: packagingFee,
+        quantity: packagingQuantity
+      });
     }
 
     const lunchSelection: LunchSelection | null = selectedProtein ? {
@@ -495,7 +505,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     clearCurrentOrder();
     setValidationErrors([]);
     setTouchedFields(new Set());
-  }, [selectedProtein, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedRice, dailyMenuDisplay.riceOption, replacements, looseItems, currentOrderTotal, buildOrderNotes, currentOrderIndex, tableOrders.length, validateOrder, clearCurrentOrder, packagingFee, selectedOrderType]);
+  }, [selectedProtein, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedRice, dailyMenuDisplay.riceOption, replacements, looseItems, currentOrderTotal, buildOrderNotes, currentOrderIndex, tableOrders.length, validateOrder, clearCurrentOrder, packagingFee, packagingQuantity, selectedOrderType]);
 
   const handleEditOrder = useCallback((index: number) => {
     const order = tableOrders[index];
@@ -512,10 +522,19 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       setReplacements([...order.lunch.replacements]);
     }
     
-    setLooseItems([...order.looseItems]);
+    // Extract packaging quantity if it exists in looseItems
+    const packagingItem = order.looseItems.find(i => i.name === "Portacomida");
+    if (packagingItem) {
+      setPackagingQuantity(packagingItem.quantity);
+      setLooseItems(order.looseItems.filter(i => i.name !== "Portacomida"));
+    } else {
+      setPackagingQuantity(selectedOrderType === OrderType.DINE_IN ? 0 : 1);
+      setLooseItems([...order.looseItems]);
+    }
+
     setOrderNotes(order.notes || "");
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [tableOrders]);
+  }, [tableOrders, selectedOrderType]);
 
   const handleRemoveOrder = useCallback((index: number) => {
     setTableOrders((prev) => prev.filter((_, i) => i !== index));
@@ -738,6 +757,8 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setCustomerName,
     setCustomerPhone,
     setDeliveryAddress,
+    packagingQuantity,
+    setPackagingQuantity,
     handleAddLooseItem,
     handleUpdateLooseItemQuantity,
     handleAddOrderToTable,

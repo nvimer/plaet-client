@@ -98,8 +98,12 @@ export function OrderCreatePage() {
     
     // 2. Clear anything existing
     clearCurrentOrder();
+
+    // 3. Pre-fill customer info for quick sale validation
+    orderBuilder.setCustomerName("Venta Rápida");
+    orderBuilder.setCustomerPhone("0000000");
     
-    // 3. Add the virtual item directly
+    // 4. Add the virtual item directly
     const packagingItem = {
       id: -1,
       name: "Portacomida",
@@ -107,7 +111,7 @@ export function OrderCreatePage() {
       quantity: 1
     };
     
-    // 4. Create a TableOrder object and add it to state
+    // 5. Create a TableOrder object and add it to state
     const quickOrder = {
       id: Date.now().toString(),
       protein: null,
@@ -120,7 +124,7 @@ export function OrderCreatePage() {
     
     orderBuilder.setTableOrders([quickOrder]);
     
-    // 5. Open summary immediately
+    // 6. Open summary immediately
     setShowSummaryModal(true);
     toast.success("Venta rápida de empaque preparada");
   };
@@ -248,7 +252,7 @@ export function OrderCreatePage() {
                 </div>
                 <div className="text-left">
                   <p className="text-xs font-black text-carbon-900 uppercase tracking-tight">Portacomida</p>
-                  <p className="text-[10px] font-bold text-amber-600">$1.000 (Solo empaque)</p>
+                  <p className="text-[10px] font-bold text-amber-600">${orderBuilder.packagingFee.toLocaleString()} (Solo empaque)</p>
                 </div>
               </button>
             </div>
@@ -377,6 +381,8 @@ export function OrderCreatePage() {
                 deliveryAddress={orderBuilder.deliveryAddress}
                 setDeliveryAddress={orderBuilder.setDeliveryAddress}
                 packagingFee={orderBuilder.packagingFee}
+                packagingQuantity={orderBuilder.packagingQuantity}
+                setPackagingQuantity={orderBuilder.setPackagingQuantity}
                 showDailyMenu={formProps.showDailyMenu}
                 setShowDailyMenu={formProps.setShowDailyMenu}
                 dailyMenuDisplay={formProps.dailyMenuDisplay}

@@ -13,6 +13,7 @@ import {
 } from "./";
 import {
   Plus,
+  Minus,
   X,
   ChevronDown,
   ChevronUp,
@@ -51,6 +52,8 @@ interface OrderFormProps {
   deliveryAddress: string;
   setDeliveryAddress: (address: string) => void;
   packagingFee: number;
+  packagingQuantity: number;
+  setPackagingQuantity: (qty: number) => void;
 
   // Daily menu state
   showDailyMenu: boolean;
@@ -138,6 +141,8 @@ export function OrderForm({
   deliveryAddress,
   setDeliveryAddress,
   packagingFee,
+  packagingQuantity,
+  setPackagingQuantity,
   showDailyMenu,
   setShowDailyMenu,
   dailyMenuDisplay,
@@ -261,14 +266,37 @@ export function OrderForm({
                   <div className="w-10 h-10 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center">
                     <Box className="w-5 h-5" />
                   </div>
-                  <div>
-                    <p className="text-xs font-bold text-carbon-900">Costo de Portacomida</p>
-                    <p className="text-[10px] text-carbon-500">Se agregará automáticamente al total</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-xl border border-primary-100">
-                  <span className="text-sm font-black text-primary-700">${packagingFee.toLocaleString()}</span>
-                </div>
+                                      <div>
+                                        <p className="text-xs font-bold text-carbon-900">Costo de Portacomida</p>
+                                        <p className="text-[10px] text-carbon-500">${packagingFee.toLocaleString()} por unidad</p>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                      <div className="flex items-center bg-sage-50 rounded-xl border border-sage-100 p-1">
+                                        <button
+                                          type="button"
+                                          onClick={() => setPackagingQuantity(Math.max(0, packagingQuantity - 1))}
+                                          className="w-8 h-8 flex items-center justify-center text-carbon-500 hover:text-primary-600 hover:bg-white rounded-lg transition-all"
+                                        >
+                                          <Minus className="w-4 h-4" />
+                                        </button>
+                                        <span className="w-10 text-center font-black text-carbon-900 text-sm">
+                                          {packagingQuantity}
+                                        </span>
+                                        <button
+                                          type="button"
+                                          onClick={() => setPackagingQuantity(packagingQuantity + 1)}
+                                          className="w-8 h-8 flex items-center justify-center text-carbon-500 hover:text-primary-600 hover:bg-white rounded-lg transition-all"
+                                        >
+                                          <Plus className="w-4 h-4" />
+                                        </button>
+                                      </div>
+                                      <div className="hidden sm:block text-right min-w-[60px]">
+                                        <p className="text-[10px] font-bold text-carbon-400 uppercase">Subtotal</p>
+                                        <p className="text-xs font-black text-primary-700">${(packagingFee * packagingQuantity).toLocaleString()}</p>
+                                      </div>
+                                    </div>
+                  
               </div>
             </div>
           </div>
