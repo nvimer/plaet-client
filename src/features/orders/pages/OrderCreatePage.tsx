@@ -15,7 +15,6 @@ import {
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
 import {
-  Users,
   ArrowLeft,
   UtensilsCrossed,
   ShoppingBag,
@@ -34,6 +33,32 @@ import { cn } from "@/utils/cn";
 import { useMemo } from "react";
 
 import { useSidebar } from "@/contexts/SidebarContext";
+
+// Soft Animation Configs
+const softFadeIn = {
+  initial: { opacity: 0, y: 8 },
+  animate: { opacity: 1, y: 0 },
+  exit: { opacity: 0, y: -8 },
+  transition: { duration: 0.4, ease: [0.22, 1, 0.36, 1] }
+};
+
+const staggerContainer = {
+  animate: {
+    transition: {
+      staggerChildren: 0.05
+    }
+  }
+};
+
+const itemVariants = {
+  initial: { opacity: 0, scale: 0.98, y: 4 },
+  animate: { 
+    opacity: 1, 
+    scale: 1, 
+    y: 0,
+    transition: { duration: 0.3, ease: [0.22, 1, 0.36, 1] }
+  }
+};
 
 export function OrderCreatePage() {
   const { user } = useAuth();
@@ -142,36 +167,38 @@ export function OrderCreatePage() {
     return (
       <SidebarLayout title="Bloqueo de Caja" backRoute={ROUTES.ORDERS}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center min-h-[70vh]">
-          <Card variant="elevated" className="p-8 sm:p-12 flex flex-col items-center text-center rounded-[3rem] border-2 border-rose-200 bg-rose-50/30">
-            <div className="w-24 h-24 bg-rose-100 rounded-3xl flex items-center justify-center text-rose-600 mb-8 shadow-inner rotate-3">
-              <AlertTriangle className="w-12 h-12 stroke-[2.5px]" />
-            </div>
-            <h2 className="text-3xl font-black text-carbon-900 tracking-tight mb-4">
-              Cierre de Caja Pendiente
-            </h2>
-            <p className="text-lg text-carbon-600 font-medium max-w-lg leading-relaxed mb-10">
-              El sistema detectó que el turno de caja del día anterior <strong>no fue cerrado</strong>. 
-              Por seguridad operativa y contable, debes cerrar el turno anterior y abrir uno nuevo para el día de hoy antes de poder tomar nuevos pedidos.
-            </p>
-            <div className="flex gap-4">
-              <Button 
-                variant="outline"
-                size="lg" 
-                onClick={() => window.location.href = ROUTES.DASHBOARD}
-                className="h-14 px-8 rounded-2xl font-bold border-rose-200 text-carbon-600 hover:bg-rose-50"
-              >
-                Volver al Inicio
-              </Button>
-              <Button 
-                variant="primary"
-                size="lg" 
-                onClick={() => window.location.href = ROUTES.CASH_CLOSURE}
-                className="h-14 px-8 rounded-2xl font-bold bg-carbon-900 text-white hover:bg-carbon-800 shadow-xl"
-              >
-                Ir a Control de Caja
-              </Button>
-            </div>
-          </Card>
+          <motion.div {...softFadeIn}>
+            <Card variant="elevated" className="p-8 sm:p-12 flex flex-col items-center text-center rounded-[3rem] border-2 border-rose-200 bg-rose-50/30">
+              <div className="w-24 h-24 bg-rose-100 rounded-3xl flex items-center justify-center text-rose-600 mb-8 shadow-inner rotate-3">
+                <AlertTriangle className="w-12 h-12 stroke-[2.5px]" />
+              </div>
+              <h2 className="text-3xl font-black text-carbon-900 tracking-tight mb-4">
+                Cierre de Caja Pendiente
+              </h2>
+              <p className="text-lg text-carbon-600 font-medium max-w-lg leading-relaxed mb-10">
+                El sistema detectó que el turno de caja del día anterior <strong>no fue cerrado</strong>. 
+                Por seguridad operativa y contable, debes cerrar el turno anterior y abrir uno nuevo para el día de hoy antes de poder tomar nuevos pedidos.
+              </p>
+              <div className="flex gap-4">
+                <Button 
+                  variant="outline"
+                  size="lg" 
+                  onClick={() => window.location.href = ROUTES.DASHBOARD}
+                  className="h-14 px-8 rounded-2xl font-bold border-rose-200 text-carbon-600 hover:bg-rose-50"
+                >
+                  Volver al Inicio
+                </Button>
+                <Button 
+                  variant="primary"
+                  size="lg" 
+                  onClick={() => window.location.href = ROUTES.CASH_CLOSURE}
+                  className="h-14 px-8 rounded-2xl font-bold bg-carbon-900 text-white hover:bg-carbon-800 shadow-xl"
+                >
+                  Ir a Control de Caja
+                </Button>
+              </div>
+            </Card>
+          </motion.div>
         </div>
       </SidebarLayout>
     );
@@ -183,8 +210,7 @@ export function OrderCreatePage() {
       <SidebarLayout title="Tipo de Pedido" backRoute={ROUTES.ORDERS}>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center min-h-[70vh]">
           <motion.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
+            {...softFadeIn}
             className="text-center mb-16 space-y-3"
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-sage-100 rounded-full text-sage-700 text-[10px] font-black uppercase tracking-[0.2em] mb-2">
@@ -195,22 +221,25 @@ export function OrderCreatePage() {
             <p className="text-xl text-carbon-500 font-medium">Seleccione el modo de servicio para continuar.</p>
           </motion.div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 w-full max-w-4xl">
+          <motion.div 
+            variants={staggerContainer}
+            initial="initial"
+            animate="animate"
+            className="grid grid-cols-1 sm:grid-cols-3 gap-8 w-full max-w-4xl"
+          >
             {[
               { type: OrderType.DINE_IN, label: "Para Mesa", desc: "Comer en el local", icon: UtensilsCrossed, color: "text-sage-600", bg: "bg-sage-50" },
               { type: OrderType.TAKE_OUT, label: "Llevar", desc: "Recoger pedido", icon: ShoppingBag, color: "text-amber-600", bg: "bg-amber-50" },
               { type: OrderType.DELIVERY, label: "Domicilio", desc: "Entrega a casa", icon: Bike, color: "text-blue-600", bg: "bg-blue-50" },
-            ].map((opt, idx) => (
+            ].map((opt) => (
               <motion.button
                 key={opt.type}
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: idx * 0.1, type: "spring", stiffness: 300, damping: 25 }}
+                variants={itemVariants}
                 onClick={() => setSelectedOrderType(opt.type)}
-                className="group relative flex flex-col items-center p-10 rounded-[2.5rem] bg-white border-2 border-sage-100 hover:border-carbon-900 hover:shadow-soft-2xl transition-all duration-500 active:scale-95 overflow-hidden"
+                className="group relative flex flex-col items-center p-10 rounded-[2.5rem] bg-white border-2 border-sage-100 hover:border-carbon-900 hover:shadow-soft-2xl transition-all duration-500 active:scale-[0.98] overflow-hidden"
               >
                 <div className={cn(
-                  "w-24 h-24 rounded-3xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110 shadow-inner-lg",
+                  "w-24 h-24 rounded-3xl flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-105 shadow-inner-lg",
                   opt.bg, opt.color
                 )}>
                   <opt.icon className="w-12 h-12 stroke-[1.5px]" />
@@ -219,13 +248,13 @@ export function OrderCreatePage() {
                 <span className="text-sm text-carbon-400 font-bold uppercase tracking-widest mt-2">{opt.desc}</span>
               </motion.button>
             ))}
-          </div>
+          </motion.div>
 
           {/* VENTAS RÁPIDAS SECTION */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
             className="mt-16 w-full max-w-2xl"
           >
             <div className="flex items-center gap-3 mb-6 px-2">
@@ -274,8 +303,7 @@ export function OrderCreatePage() {
       >
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <motion.div 
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
+            {...softFadeIn}
             className="mb-10 space-y-2"
           >
             <div className="flex items-center gap-2 text-sage-600">
@@ -286,31 +314,37 @@ export function OrderCreatePage() {
             <p className="text-lg text-carbon-500 font-medium">Toque el número de la mesa para iniciar la orden.</p>
           </motion.div>
 
-          {availableTables.length === 0 ? (
-            <Card variant="elevated" className="py-20 flex flex-col items-center justify-center rounded-[3rem] border-dashed border-2 border-sage-200 bg-sage-50/20">
-              <div className="w-20 h-20 bg-white rounded-full shadow-soft-md flex items-center justify-center mb-6">
-                <Sparkles className="w-10 h-10 text-sage-300" />
-              </div>
-              <h2 className="text-2xl font-bold text-carbon-900 mb-2">Restaurante Lleno</h2>
-              <p className="text-carbon-500 max-w-xs text-center font-medium">Todas las mesas están ocupadas actualmente.</p>
-              <Button 
-                variant="outline" 
-                onClick={handleBackToOrderType}
-                className="mt-8 rounded-2xl border-sage-200"
-              >
-                Volver
-              </Button>
-            </Card>
-          ) : (
-            <div className="bg-white p-10 rounded-[3rem] border border-sage-100 shadow-smooth-xl">
-              <TableSelector
-                tables={tables as never}
-                selectedTableId={selectedTable || undefined}
-                onSelect={handleTableSelect}
-                showOnlyAvailable={true}
-              />
-            </div>
-          )}
+          <AnimatePresence mode="wait">
+            {availableTables.length === 0 ? (
+              <motion.div key="empty" {...softFadeIn}>
+                <Card variant="elevated" className="py-20 flex flex-col items-center justify-center rounded-[3rem] border-dashed border-2 border-sage-200 bg-sage-50/20">
+                  <div className="w-20 h-20 bg-white rounded-full shadow-soft-md flex items-center justify-center mb-6">
+                    <Sparkles className="w-10 h-10 text-sage-300" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-carbon-900 mb-2">Restaurante Lleno</h2>
+                  <p className="text-carbon-500 max-w-xs text-center font-medium">Todas las mesas están ocupadas actualmente.</p>
+                  <Button 
+                    variant="outline" 
+                    onClick={handleBackToOrderType}
+                    className="mt-8 rounded-2xl border-sage-200"
+                  >
+                    Volver
+                  </Button>
+                </Card>
+              </motion.div>
+            ) : (
+              <motion.div key="selector" {...softFadeIn}>
+                <div className="bg-white p-10 rounded-[3rem] border border-sage-100 shadow-smooth-xl">
+                  <TableSelector
+                    tables={tables as never}
+                    selectedTableId={selectedTable || undefined}
+                    onSelect={handleTableSelect}
+                    showOnlyAvailable={true}
+                  />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </SidebarLayout>
     );
@@ -352,8 +386,9 @@ export function OrderCreatePage() {
             {/* LEFT: Order Form */}
             <motion.div 
               id="current-order"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
               className="space-y-6"
             >
               <OrderForm
@@ -409,8 +444,9 @@ export function OrderCreatePage() {
 
             {/* RIGHT: Orders List */}
             <motion.div 
-              initial={{ opacity: 0, x: 20 }}
+              initial={{ opacity: 0, x: 8 }}
               animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.4, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
               className="lg:sticky lg:top-6 h-fit"
             >
               <OrdersListPanel
