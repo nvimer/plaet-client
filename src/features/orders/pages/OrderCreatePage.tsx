@@ -142,7 +142,7 @@ export function OrderCreatePage() {
     return (
       <SidebarLayout title="Bloqueo de Caja" backRoute={ROUTES.ORDERS}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center min-h-[70vh]">
-          <motion.div {...softFadeIn}>
+          <motion.div variants={variants.fadeInUp} initial="initial" animate="animate" exit="exit">
             <Card variant="elevated" className="p-8 sm:p-12 flex flex-col items-center text-center rounded-[3rem] border-2 border-rose-200 bg-rose-50/30">
               <div className="w-24 h-24 bg-rose-100 rounded-3xl flex items-center justify-center text-rose-600 mb-8 shadow-inner rotate-3">
                 <AlertTriangle className="w-12 h-12 stroke-[2.5px]" />
@@ -185,7 +185,7 @@ export function OrderCreatePage() {
       <SidebarLayout title="Tipo de Pedido" backRoute={ROUTES.ORDERS}>
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center min-h-[70vh]">
           <motion.div 
-            {...softFadeIn}
+            variants={variants.fadeInUp} initial="initial" animate="animate" exit="exit"
             className="text-center mb-16 space-y-3"
           >
             <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-sage-100 rounded-full text-sage-700 text-[10px] font-black uppercase tracking-[0.2em] mb-2">
@@ -278,7 +278,7 @@ export function OrderCreatePage() {
       >
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <motion.div 
-            {...softFadeIn}
+            variants={variants.fadeInUp} initial="initial" animate="animate" exit="exit"
             className="mb-10 space-y-2"
           >
             <div className="flex items-center gap-2 text-sage-600">
@@ -291,7 +291,7 @@ export function OrderCreatePage() {
 
           <AnimatePresence mode="wait">
             {availableTables.length === 0 ? (
-              <motion.div key="empty" {...softFadeIn}>
+              <motion.div key="empty" variants={variants.fadeInUp} initial="initial" animate="animate" exit="exit">
                 <Card variant="elevated" className="py-20 flex flex-col items-center justify-center rounded-[3rem] border-dashed border-2 border-sage-200 bg-sage-50/20">
                   <div className="w-20 h-20 bg-white rounded-full shadow-soft-md flex items-center justify-center mb-6">
                     <Sparkles className="w-10 h-10 text-sage-300" />
@@ -308,7 +308,7 @@ export function OrderCreatePage() {
                 </Card>
               </motion.div>
             ) : (
-              <motion.div key="selector" {...softFadeIn}>
+              <motion.div key="selector" variants={variants.fadeInUp} initial="initial" animate="animate" exit="exit">
                 <div className="bg-white p-10 rounded-[3rem] border border-sage-100 shadow-smooth-xl">
                   <TableSelector
                     tables={tables as never}
