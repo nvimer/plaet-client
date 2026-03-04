@@ -115,7 +115,6 @@ export function OrdersPage() {
   const [paymentMethodFilter, setPaymentMethodFilter] = useState<PaymentMethod | "ALL">("ALL");
   const [dateFilter, setDateFilter] = useState<DateFilterType>("TODAY");
   const [customDateRange, setCustomDateRange] = useState<DateRange | undefined>(undefined);
-  const [isGrouped, _setIsGrouped] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
 
   const { data: orders, isLoading, error: _error, refetch: _refetch } = useOrders({ limit: 100 });
@@ -475,7 +474,7 @@ export function OrdersPage() {
               if (key === "search") setSearchTerm("");
             }}
             onClearAll={handleClearAll}
-            resultCount={filteredOrders.length}
+            resultCount={groupedOrders.length}
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
           />
@@ -483,7 +482,7 @@ export function OrdersPage() {
 
 
         {/* Orders Grid */}
-        {(isGrouped ? groupedOrders.length : filteredOrders.length) > 0 ? (
+        {groupedOrders.length > 0 ? (
           <motion.div 
             variants={transitions.stagger(0.03)}
             initial="initial"
@@ -491,21 +490,17 @@ export function OrdersPage() {
             className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
           >
             <AnimatePresence mode="popLayout">
-              {(isGrouped ? groupedOrders : filteredOrders).map((item: any) => (
+              {groupedOrders.map((item: any) => (
                 <motion.div
                   key={item.id}
                   variants={variants.fadeInUp}
                   layout
                 >
-                  {isGrouped ? (
-                    <GroupedOrderCard 
-                      groupedOrder={item} 
-                      onViewDetail={(id) => navigate(getOrderDetailRoute(id))} 
-                      onPayTable={handleOpenPaymentModal}
-                    />
-                  ) : (
-                    <OrderCard order={item} onViewDetail={(id) => navigate(getOrderDetailRoute(id))} />
-                  )}
+                  <GroupedOrderCard 
+                    groupedOrder={item} 
+                    onViewDetail={(id) => navigate(getOrderDetailRoute(id))} 
+                    onPayTable={handleOpenPaymentModal}
+                  />
                 </motion.div>
               ))}
             </AnimatePresence>
