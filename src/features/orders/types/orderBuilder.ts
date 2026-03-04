@@ -77,7 +77,7 @@ export interface ValidationError {
  * Order item input for API
  */
 export interface OrderItemInput {
-  menuItemId: number;
+  menuItemId?: number;
   quantity: number;
   priceAtOrder: number;
   notes: string;

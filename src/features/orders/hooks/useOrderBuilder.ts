@@ -116,7 +116,6 @@ export interface UseOrderBuilderReturn {
   setCustomerName: (name: string) => void;
   setCustomerPhone: (phone: string) => void;
   setDeliveryAddress: (address: string) => void;
-  setPackagingFee: (fee: number) => void;
   
   // Handlers
   handleAddLooseItem: (item: { id: number; name: string; price: number }) => void;
@@ -644,7 +643,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       setCustomerName("");
       setCustomerPhone("");
       setDeliveryAddress("");
-      setPackagingFee(1000);
+      setPackagingFee(Number(dailyMenuData?.packagingFee || 1000));
       clearCurrentOrder();
       setSelectedOrderType(null); 
 
@@ -673,9 +672,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setCustomerName("");
     setCustomerPhone("");
     setDeliveryAddress("");
-    setPackagingFee(1000);
+    setPackagingFee(Number(dailyMenuData?.packagingFee || 1000));
     clearCurrentOrder();
-  }, [clearCurrentOrder]);
+  }, [clearCurrentOrder, dailyMenuData]);
 
   return {
     isLoading: tablesLoading || itemsLoading || menuLoading,
@@ -739,7 +738,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setCustomerName,
     setCustomerPhone,
     setDeliveryAddress,
-    setPackagingFee,
     handleAddLooseItem,
     handleUpdateLooseItemQuantity,
     handleAddOrderToTable,

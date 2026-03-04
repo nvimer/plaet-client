@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { Card, Button, Input } from "@/components";
 import { FilterSelect } from "@/components/filters/FilterSelect";
-import { Save, UtensilsCrossed, Check, Settings2, Lock, ListChecks } from "lucide-react";
+import { Save, UtensilsCrossed, Check, Settings2, Lock, ListChecks, Box } from "lucide-react";
 import {
   useUpdateDailyMenu,
   useUpdateDailyMenuByDate,
@@ -78,6 +78,7 @@ export function DailyMenuConfigForm({
 
   const [formState, setFormState] = useState<FormState>({
     basePrice: initialData?.basePrice || defaultPrices.basePrice,
+    packagingFee: initialData?.packagingFee || 1000,
     soupCategoryId: initialData?.soupCategory?.id || null,
     principleCategoryId: initialData?.principleCategory?.id || null,
     proteinCategoryId: initialData?.proteinCategory?.id || null,
@@ -144,6 +145,7 @@ export function DailyMenuConfigForm({
     if (initialData) {
       setFormState({
         basePrice: initialData.basePrice || defaultPrices.basePrice,
+        packagingFee: initialData.packagingFee || 1000,
         soupCategoryId: initialData.soupCategory?.id || null,
         principleCategoryId: initialData.principleCategory?.id || null,
         proteinCategoryId: initialData.proteinCategory?.id || null,
@@ -208,6 +210,7 @@ export function DailyMenuConfigForm({
 
       const payload: UpdateDailyMenuData = {
         basePrice: formState.basePrice,
+        packagingFee: formState.packagingFee,
         soupCategoryId: formState.soupCategoryId,
         principleCategoryId: formState.principleCategoryId,
         proteinCategoryId: formState.proteinCategoryId,
@@ -868,9 +871,46 @@ export function DailyMenuConfigForm({
                 />
               </div>
 
+              <div className="p-4 rounded-2xl bg-amber-50 border-2 border-amber-200">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <span className="text-xs font-semibold text-amber-600 tracking-widest">Costo Portacomida</span>
+                    <p className="text-2xl font-semibold text-carbon-900">${formState.packagingFee.toLocaleString()}</p>
+                  </div>
+                  <Box className="w-8 h-8 text-amber-300" />
+                </div>
+
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  {[500, 1000, 1500].map((price) => (
+                    <button
+                      key={price}
+                      type="button"
+                      onClick={() => setFormState((prev) => ({ ...prev, packagingFee: price }))}
+                      className={cn(
+                        "py-2 rounded-xl text-xs font-bold transition-all",
+                        formState.packagingFee === price
+                          ? "bg-amber-500 text-white shadow-md"
+                          : "bg-white border border-carbon-200 text-carbon-600"
+                      )}
+                    >
+                      ${price.toLocaleString()}
+                    </button>
+                  ))}
+                </div>
+
+                <Input
+                  type="number"
+                  value={formState.packagingFee}
+                  onChange={(e) => setFormState({ ...formState, packagingFee: Number(e.target.value) })}
+                  placeholder="Costo personalizado"
+                  className="bg-white"
+                />
+              </div>
+
               <div className="bg-carbon-50 p-4 rounded-xl text-xs text-carbon-600 space-y-1">
                 <p className="font-bold text-carbon-800">Fórmula de cálculo:</p>
-                <p>Precio Final = ${formState.basePrice.toLocaleString()} (Base) + Precio Proteína</p>
+                <p>Almuerzo = ${formState.basePrice.toLocaleString()} (Base) + Precio Proteína</p>
+                <p>Portacomida = ${formState.packagingFee.toLocaleString()} (Auto en Para Llevar/Domicilio)</p>
               </div>
 
               <Button onClick={() => setIsPriceModalOpen(false)} fullWidth variant="primary" size="lg">

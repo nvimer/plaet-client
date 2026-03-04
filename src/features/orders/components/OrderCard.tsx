@@ -136,6 +136,7 @@ function getItemEmoji(itemName: string): string {
   if (name.includes("papa") || name.includes("yuca")) return "🥔";
   if (name.includes("huevo")) return "🥚";
   if (name.includes("plátano")) return "🍌";
+  if (name.includes("portacomida") || name.includes("empaque")) return "📦";
   return "🍽️";
 }
 

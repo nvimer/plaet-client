@@ -51,7 +51,6 @@ interface OrderFormProps {
   deliveryAddress: string;
   setDeliveryAddress: (address: string) => void;
   packagingFee: number;
-  setPackagingFee: (fee: number) => void;
 
   // Daily menu state
   showDailyMenu: boolean;
@@ -139,7 +138,6 @@ export function OrderForm({
   deliveryAddress,
   setDeliveryAddress,
   packagingFee,
-  setPackagingFee,
   showDailyMenu,
   setShowDailyMenu,
   dailyMenuDisplay,
@@ -268,14 +266,8 @@ export function OrderForm({
                     <p className="text-[10px] text-carbon-500">Se agregará automáticamente al total</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-carbon-400">$</span>
-                  <input
-                    type="number"
-                    value={packagingFee}
-                    onChange={(e) => setPackagingFee(Number(e.target.value))}
-                    className="w-24 h-10 bg-sage-50 border-none rounded-xl text-right font-black text-carbon-900 focus:ring-primary-500"
-                  />
+                <div className="flex items-center gap-2 px-4 py-2 bg-primary-50 rounded-xl border border-primary-100">
+                  <span className="text-sm font-black text-primary-700">${packagingFee.toLocaleString()}</span>
                 </div>
               </div>
             </div>

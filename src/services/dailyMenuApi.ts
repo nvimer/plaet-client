@@ -28,6 +28,7 @@ export interface DailyMenu {
   id: string;
   isActive: boolean;
   basePrice: number; // Base margin added to protein individual price
+  packagingFee: number; // Cost of containers (Portacomida)
   createdAt: string;
   updatedAt: string;
 
@@ -68,6 +69,7 @@ export interface ItemOptionInput {
 export interface UpdateDailyMenuData {
   // Prices - base margin added to protein individual price
   basePrice?: number;
+  packagingFee?: number;
 
   // Category IDs
   soupCategoryId?: number | null;

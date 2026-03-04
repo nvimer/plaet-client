@@ -377,7 +377,6 @@ export function OrderCreatePage() {
                 deliveryAddress={orderBuilder.deliveryAddress}
                 setDeliveryAddress={orderBuilder.setDeliveryAddress}
                 packagingFee={orderBuilder.packagingFee}
-                setPackagingFee={orderBuilder.setPackagingFee}
                 showDailyMenu={formProps.showDailyMenu}
                 setShowDailyMenu={formProps.setShowDailyMenu}
                 dailyMenuDisplay={formProps.dailyMenuDisplay}
