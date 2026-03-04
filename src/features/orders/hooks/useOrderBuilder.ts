@@ -6,7 +6,25 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import axios from "axios";
-import { useCreateOrder, useBatchCreateOrders } from "./useCreateOrder";
+import { useCreateOrder, useBatchCreateOrders } from "./useCreateO
+
+    // Data hooks
+    const { data: tablesData, isLoading: tablesLoading } = useTables();
+    const { data: menuItems, isLoading: itemsLoading } = useItems();
+    
+    // Daily Menu Data fetching logic
+    const todayMenu = useDailyMenuToday();
+    const historicalMenu = useDailyMenuByDate(backdatedDate || "");
+    
+    const dailyMenuData = backdatedDate ? historicalMenu.data : todayMenu.data;
+    const menuLoading = backdatedDate ? historicalMenu.isLoading : todayMenu.isLoading;
+
+    // Update packagingFee when dailyMenuData changes
+    useEffect(() => {
+      if (dailyMenuData?.packagingFee) {
+        setPackagingFee(Number(dailyMenuData.packagingFee));
+      }
+    }, [dailyMenuData]);rder";
 import { useTables, useUpdateTableStatus } from "@/features/tables";
 import { useItems } from "@/features/menu";
 import { useDailyMenuToday, useDailyMenuByDate } from "@/features/menu/hooks/useDailyMenu";
@@ -160,6 +178,13 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const [customerPhone, setCustomerPhone] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [packagingFee, setPackagingFee] = useState(1000);
+
+  // Update packagingFee when dailyMenuData changes
+  useEffect(() => {
+    if (dailyMenuData?.packagingFee) {
+      setPackagingFee(Number(dailyMenuData.packagingFee));
+    }
+  }, [dailyMenuData]);
 
   // Data hooks
   const { data: tablesData, isLoading: tablesLoading } = useTables();
@@ -603,6 +628,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       return {
         type: selectedOrderType!,
         tableId: selectedOrderType === OrderType.DINE_IN ? (selectedTable ?? undefined) : undefined,
+        customerId: undefined,
+        customerName: customerName || undefined,
+        customerPhone: customerPhone || undefined,
         items,
         notes: order.notes,
         createdAt: backdatedDate ? new Date(backdatedDate).toISOString() : undefined,
