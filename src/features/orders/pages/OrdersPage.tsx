@@ -56,14 +56,21 @@ const groupOrders = (orders: Order[]): GroupedOrder[] => {
 
   sorted.forEach((order) => {
     if (processedIds.has(order.id)) return;
-    const groupMembers = sorted.filter((other) => {
-      if (processedIds.has(other.id)) return false;
-      if (other.type !== order.type) return false;
-      if (other.tableId !== order.tableId) return false;
-      if (order.type === OrderType.DINE_IN && !order.tableId) return false;
-      const timeDiff = Math.abs(new Date(order.createdAt).getTime() - new Date(other.createdAt).getTime());
-      return timeDiff <= 2 * 60 * 1000;
-    });
+          const groupMembers = sorted.filter((other) => {
+            if (processedIds.has(other.id)) return false;
+            if (other.type !== order.type) return false;
+            
+            // CRITICAL: Only group if it is DINE_IN and has a valid Table ID
+            // Takeaway/Delivery should NOT group (each customer is independent)
+            if (order.type !== OrderType.DINE_IN || !order.tableId) {
+              return other.id === order.id;
+            }
+    
+            if (other.tableId !== order.tableId) return false;
+            const timeDiff = Math.abs(new Date(order.createdAt).getTime() - new Date(other.createdAt).getTime());
+            return timeDiff <= 2 * 60 * 1000;
+          });
+    
     groupMembers.forEach((m) => processedIds.add(m.id));
     grouped.push({
       id: order.id,

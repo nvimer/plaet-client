@@ -230,15 +230,16 @@ export function OrderForm({
               <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Teléfono de Contacto</label>
               <div className="relative">
                 <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
-                <Input
-                  type="tel"
-                  placeholder="Ej: 300 123 4567"
-                  value={customerPhone}
-                  onChange={(e) => setCustomerPhone(e.target.value)}
-                  className="pl-11"
-                  error={hasError("customerPhone") ? validationErrors.find(e => e.field === "customerPhone")?.message : undefined}
-                  fullWidth
-                />
+                                      <Input
+                                        type="tel"
+                                        placeholder="Ej: 300 123 4567"
+                                        value={customerPhone}
+                                        onChange={(e) => setCustomerPhone(e.target.value.replace(/\D/g, ""))}
+                                        className="pl-11"
+                                        error={hasError("customerPhone") ? validationErrors.find(e => e.field === "customerPhone")?.message : undefined}
+                                        fullWidth
+                                      />
+                
               </div>
             </div>
 
