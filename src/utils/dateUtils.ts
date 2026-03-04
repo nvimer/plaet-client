@@ -2,6 +2,7 @@
  * DATE UTILITIES
  * 
  * Safe handling of local dates to avoid Timezone Shift issues.
+ * Optimized for Colombia (UTC-5) context.
  */
 
 /**
@@ -25,8 +26,11 @@ export const parseLocalDate = (dateStr: string): Date => {
 
 /**
  * Checks if a given date string (ISO or local) matches today's local date.
+ * Handles ISO strings by creating a Date object which JavaScript 
+ * automatically shifts to the local timezone.
  */
 export const isToday = (dateString: string): boolean => {
+  if (!dateString) return false;
   const date = new Date(dateString);
   const todayStr = getLocalDateString(new Date());
   return getLocalDateString(date) === todayStr;
@@ -36,6 +40,7 @@ export const isToday = (dateString: string): boolean => {
  * Checks if a given date string matches yesterday's local date.
  */
 export const isYesterday = (dateString: string): boolean => {
+  if (!dateString) return false;
   const date = new Date(dateString);
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate() - 1);

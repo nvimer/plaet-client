@@ -199,167 +199,163 @@ export function OrdersPage() {
     });
   };
 
-  // ================ COMPUTED VALUES =================
-  // Base filtered list that all tabs and counts should respect (fundamental filters)
-  const baseFilteredOrders = useMemo(() => {
-    if (!orders) return [];
-    
-    return orders.filter((order) => {
-      // 1. Type Filter (Applies to all tabs)
-      const matchesType = typeFilter === "ALL" || order.type === typeFilter;
-      if (!matchesType) return false;
-
-      // 2. Search Filter (Applies to all tabs)
-      const matchesSearch = searchTerm === "" || 
-        order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (order.waiter && `${order.waiter.firstName} ${order.waiter.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (order.notes && order.notes.toLowerCase().includes(searchTerm.toLowerCase()));
-
-      return matchesSearch;
-    });
-  }, [orders, typeFilter, searchTerm]);
-
-  const filteredOrders = useMemo(() => {
-    const filtered = baseFilteredOrders.filter((order) => {
-      // 1. Tab Lifecycle Filter (Primary logic)
-      if (activeTab === "BILLING") {
-        return order.status === OrderStatus.OPEN || order.status === OrderStatus.SENT_TO_CASHIER;
-      }
+      // ================ COMPUTED VALUES =================
       
-      if (activeTab === "PREPARATION") {
-        if (order.status !== OrderStatus.PAID) return false;
-        // SHOW ONLY IF: There is still something pending or cooking
-        return order.items?.some(item => 
-          item.status === OrderItemStatus.PENDING || 
-          item.status === OrderItemStatus.IN_KITCHEN
-        );
-      }
-      
-      if (activeTab === "READY") {
-        if (order.status !== OrderStatus.PAID) return false;
-        // SHOW ONLY IF: Nothing is pending/cooking AND at least one item is READY
-        const hasPending = order.items?.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status));
-        const hasReady = order.items?.some(i => i.status === OrderItemStatus.READY);
-        return !hasPending && hasReady;
-      }
-      
-      if (activeTab === "HISTORY") {
-        // Apply Payment Method Filter (Only in History)
-        const matchesPayment = paymentMethodFilter === "ALL" || 
-          (order.payments && order.payments.some(p => p.method === paymentMethodFilter));
-        if (!matchesPayment) return false;
-
-        // Apply Date Filter (Only in History)
-        let matchesDate = true;
-        switch (dateFilter) {
-          case "TODAY": matchesDate = isToday(order.createdAt); break;
-          case "YESTERDAY": matchesDate = isYesterday(order.createdAt); break;
-          case "WEEK": matchesDate = isWithinLastWeek(order.createdAt); break;
-          case "CUSTOM": matchesDate = customDateRange ? isWithinDateRange(order.createdAt, customDateRange) : true; break;
-        }
-        if (!matchesDate) return false;
-
-        // Status check for history: Cancelled or fully Delivered
-        if (order.status === OrderStatus.CANCELLED) return true;
-        if (order.status === OrderStatus.PAID) {
-          // Fully finished: No items are pending, cooking, or ready
-          const hasActiveItems = order.items?.some(i => 
-            [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN, OrderItemStatus.READY].includes(i.status)
-          );
-          return !hasActiveItems;
-        }
-        return false;
-      }
-      
-      return true;
-    });
-
-    // Apply sorting
-    return filtered.sort((a, b) => {
-      const timeA = new Date(a.createdAt).getTime();
-      const timeB = new Date(b.createdAt).getTime();
-      return activeTab === "HISTORY" ? timeB - timeA : timeA - timeB;
-    });
-  }, [baseFilteredOrders, activeTab, dateFilter, customDateRange, paymentMethodFilter]);
-
-  const counts = useMemo(() => {
-    return {
-      all: baseFilteredOrders.length,
-      billing: baseFilteredOrders.filter(o => 
-        o.status === OrderStatus.OPEN || o.status === OrderStatus.SENT_TO_CASHIER
-      ).length,
-      inKitchen: baseFilteredOrders.filter(o => 
-        o.status === OrderStatus.PAID && 
-        o.items?.some(i => i.status === OrderItemStatus.PENDING || i.status === OrderItemStatus.IN_KITCHEN)
-      ).length,
-      ready: baseFilteredOrders.filter(o => {
-        if (o.status !== OrderStatus.PAID) return false;
-        const hasPending = o.items?.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status));
-        const hasReady = o.items?.some(i => i.status === OrderItemStatus.READY);
-        return !hasPending && hasReady;
-      }).length,
-      history: baseFilteredOrders.filter(o => {
-        // Status check
-        let matchesStatus = false;
-        if (o.status === OrderStatus.CANCELLED) matchesStatus = true;
-        else if (o.status === OrderStatus.PAID) {
-          const hasActiveItems = o.items?.some(i => 
-            [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN, OrderItemStatus.READY].includes(i.status)
-          );
-          matchesStatus = !hasActiveItems;
-        }
-        if (!matchesStatus) return false;
-
-        // Payment check
-        const matchesPayment = paymentMethodFilter === "ALL" || 
-          (o.payments && o.payments.some(p => p.method === paymentMethodFilter));
-        if (!matchesPayment) return false;
-
-        // Date check
-        let matchesDate = true;
-        switch (dateFilter) {
-          case "TODAY": matchesDate = isToday(o.createdAt); break;
-          case "YESTERDAY": matchesDate = isYesterday(o.createdAt); break;
-          case "WEEK": matchesDate = isWithinLastWeek(o.createdAt); break;
-          case "CUSTOM": matchesDate = customDateRange ? isWithinDateRange(o.createdAt, customDateRange) : true; break;
-        }
-        return matchesDate;
-      }).length,
-    };
-  }, [baseFilteredOrders, dateFilter, customDateRange, paymentMethodFilter]);
-
-  const groupedOrders = useMemo(() => {
-    if (activeTab === "HISTORY") {
-      return filteredOrders.map(order => ({
-        id: order.id,
-        tableId: order.tableId,
-        table: order.table,
-        createdAt: order.createdAt,
-        status: order.status,
-        type: order.type,
-        orders: [order], 
-        totalAmount: Number(order.totalAmount),
-      }));
-    }
-    return isGrouped ? groupOrders(filteredOrders) : filteredOrders;
-  }, [filteredOrders, isGrouped, activeTab]);
-
-  const financialSummary = useMemo(() => {
-    const summary = { total: 0, cash: 0, nequi: 0, ticket: 0, count: filteredOrders.length };
-    filteredOrders.forEach(order => {
-      if (order.status !== OrderStatus.CANCELLED) {
-        summary.total += Number(order.totalAmount);
-        order.payments?.forEach(p => {
-          if (p.method === PaymentMethod.CASH) summary.cash += Number(p.amount);
-          if (p.method === PaymentMethod.NEQUI) summary.nequi += Number(p.amount);
-          if (p.method === PaymentMethod.TICKET_BOOK) summary.ticket += Number(p.amount);
+      // 1. PHASE ONE: Fundamental filters (Type, Search)
+      const baseFilteredOrders = useMemo(() => {
+        if (!orders) return [];
+        
+        return orders.filter((order) => {
+          const matchesType = typeFilter === "ALL" || order.type === typeFilter;
+          if (!matchesType) return false;
+  
+          const matchesSearch = searchTerm === "" || 
+            order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (order.waiter && `${order.waiter.firstName} ${order.waiter.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())) ||
+            (order.notes && order.notes.toLowerCase().includes(searchTerm.toLowerCase()));
+  
+          return matchesSearch;
         });
-      }
-    });
-    return summary;
-  }, [filteredOrders]);
-
-  const handleClearAll = () => {
+      }, [orders, typeFilter, searchTerm]);
+  
+      // 2. PHASE TWO: Grouping (UNIT OF WORK)
+      const allGroupedOrders = useMemo(() => {
+        return groupOrders(baseFilteredOrders);
+      }, [baseFilteredOrders]);
+  
+      // 3. PHASE THREE: Tab Filtering (State Management)
+      const groupedOrders = useMemo(() => {
+        return allGroupedOrders.filter((group) => {
+          // BILLING: Group has at least one order that is NOT paid
+          if (activeTab === "BILLING") {
+            return group.orders.some(o => o.status === OrderStatus.OPEN || o.status === OrderStatus.SENT_TO_CASHIER);
+          }
+  
+          // PREPARATION: All orders paid AND group has at least one item pending/cooking
+          if (activeTab === "PREPARATION") {
+            const anyUnpaid = group.orders.some(o => o.status !== OrderStatus.PAID);
+            if (anyUnpaid) return false;
+  
+            return group.orders.some(o => 
+              o.items?.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status))
+            );
+          }
+  
+          // READY: All orders paid AND nothing cooking AND at least one item ready
+          if (activeTab === "READY") {
+            const anyUnpaid = group.orders.some(o => o.status !== OrderStatus.PAID);
+            if (anyUnpaid) return false;
+  
+            const allItems = group.orders.flatMap(o => o.items || []);
+            const hasCooking = allItems.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status));
+            const hasReady = allItems.some(i => i.status === OrderItemStatus.READY);
+            
+            return !hasCooking && hasReady;
+          }
+  
+          // HISTORY: Audit records (Show individual groups that are finished)
+          if (activeTab === "HISTORY") {
+            // Date Check (Only in History)
+            let matchesDate = true;
+            switch (dateFilter) {
+              case "TODAY": matchesDate = isToday(group.createdAt); break;
+              case "YESTERDAY": matchesDate = isYesterday(group.createdAt); break;
+              case "WEEK": matchesDate = isWithinLastWeek(group.createdAt); break;
+              case "CUSTOM": matchesDate = customDateRange ? isWithinDateRange(group.createdAt, customDateRange) : true; break;
+            }
+            if (!matchesDate) return false;
+  
+            // Payment Check (Only in History)
+            if (paymentMethodFilter !== "ALL") {
+              const hasMethod = group.orders.some(o => o.payments?.some(p => p.method === paymentMethodFilter));
+              if (!hasMethod) return false;
+            }
+  
+            // Finish Check: All orders either Cancelled or fully Delivered
+            return group.orders.every(o => {
+              if (o.status === OrderStatus.CANCELLED) return true;
+              if (o.status === OrderStatus.PAID) {
+                const hasActiveItems = o.items?.some(i => 
+                  [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN, OrderItemStatus.READY].includes(i.status)
+                );
+                return !hasActiveItems;
+              }
+              return false;
+            });
+          }
+  
+          return true;
+        });
+      }, [allGroupedOrders, activeTab, dateFilter, customDateRange, paymentMethodFilter]);
+  
+      // 4. Counts based on the SAME grouping logic
+      const counts = useMemo(() => {
+        const billing = allGroupedOrders.filter(g => g.orders.some(o => o.status === OrderStatus.OPEN || o.status === OrderStatus.SENT_TO_CASHIER)).length;
+        
+        const inKitchen = allGroupedOrders.filter(g => {
+          const anyUnpaid = g.orders.some(o => o.status !== OrderStatus.PAID);
+          if (anyUnpaid) return false;
+          return g.orders.some(o => o.items?.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status)));
+        }).length;
+  
+        const ready = allGroupedOrders.filter(g => {
+          const anyUnpaid = g.orders.some(o => o.status !== OrderStatus.PAID);
+          if (anyUnpaid) return false;
+          const allItems = g.orders.flatMap(o => o.items || []);
+          const hasCooking = allItems.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status));
+          const hasReady = allItems.some(i => i.status === OrderItemStatus.READY);
+          return !hasCooking && hasReady;
+        }).length;
+  
+        const history = allGroupedOrders.filter(g => {
+          // Date Check
+          let matchesDate = true;
+          switch (dateFilter) {
+            case "TODAY": matchesDate = isToday(g.createdAt); break;
+            case "YESTERDAY": matchesDate = isYesterday(g.createdAt); break;
+            case "WEEK": matchesDate = isWithinLastWeek(g.createdAt); break;
+            case "CUSTOM": matchesDate = customDateRange ? isWithinDateRange(g.createdAt, customDateRange) : true; break;
+          }
+          if (!matchesDate) return false;
+  
+          return g.orders.every(o => {
+            if (o.status === OrderStatus.CANCELLED) return true;
+            if (o.status === OrderStatus.PAID) {
+              const hasActiveItems = o.items?.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN, OrderItemStatus.READY].includes(i.status));
+              return !hasActiveItems;
+            }
+            return false;
+          });
+        }).length;
+  
+        return { all: allGroupedOrders.length, billing, inKitchen, ready, history };
+      }, [allGroupedOrders, dateFilter, customDateRange]);
+  
+      const financialSummary = useMemo(() => {
+        const summary = { total: 0, cash: 0, nequi: 0, ticket: 0, count: groupedOrders.length };
+        
+        baseFilteredOrders.forEach(order => {
+          let matchesDate = true;
+          switch (dateFilter) {
+            case "TODAY": matchesDate = isToday(order.createdAt); break;
+            case "YESTERDAY": matchesDate = isYesterday(order.createdAt); break;
+            case "WEEK": matchesDate = isWithinLastWeek(order.createdAt); break;
+            case "CUSTOM": matchesDate = customDateRange ? isWithinDateRange(order.createdAt, customDateRange) : true; break;
+          }
+          if (!matchesDate) return;
+  
+          if (order.status !== OrderStatus.CANCELLED) {
+            summary.total += Number(order.totalAmount);
+            order.payments?.forEach(p => {
+              if (p.method === PaymentMethod.CASH) summary.cash += Number(p.amount);
+              if (p.method === PaymentMethod.NEQUI) summary.nequi += Number(p.amount);
+              if (p.method === PaymentMethod.TICKET_BOOK) summary.ticket += Number(p.amount);
+            });
+          }
+        });
+        return summary;
+      }, [baseFilteredOrders, dateFilter, customDateRange, groupedOrders.length]);
+    const handleClearAll = () => {
     setTypeFilter("ALL");
     setPaymentMethodFilter("ALL");
     setDateFilter("TODAY");
