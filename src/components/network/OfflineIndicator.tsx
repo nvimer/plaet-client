@@ -16,7 +16,7 @@ interface OfflineIndicatorProps {
   showReconnectButton?: boolean;
 }
 
-export default function OfflineIndicator({
+export function OfflineIndicator({
   position = "top",
   showReconnectButton = true,
 }: OfflineIndicatorProps) {

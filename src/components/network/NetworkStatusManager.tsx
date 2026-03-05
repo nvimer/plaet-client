@@ -7,8 +7,8 @@
 
 import { useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import OfflineIndicator from "./OfflineIndicator";
-import SessionTimeoutWarning from "./SessionTimeoutWarning";
+import { OfflineIndicator } from "./OfflineIndicator";
+import { SessionTimeoutWarning } from "../guards/SessionTimeoutWarning";
 import { useAuth } from "@/hooks";
 
 interface NetworkStatusManagerProps {
