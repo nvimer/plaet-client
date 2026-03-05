@@ -26,10 +26,9 @@ import {
 import {
   MenuItemCard,
   useDeleteItem,
-  useLowStockItems,
-  useOutOfStockItems,
   useItemsPagination,
 } from "../items";
+import { useLowStockItems, useOutOfStockItems } from "@/features/inventory/hooks";
 import { Pagination } from "@/components/ui/Pagination";
 import {
   ROUTES,

@@ -13,9 +13,8 @@ import {
   useMenuItem,
   useUpdateItem,
   useDeleteItem,
-  useAddStock,
-  useSetInventoryType,
 } from "../hooks";
+import { useAddStock, useSetInventoryType } from "@/features/inventory/hooks";
 import { useCategories } from "../../categories/hooks";
 import {
   updateItemSchema,
