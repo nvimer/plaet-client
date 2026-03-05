@@ -24,6 +24,7 @@ import {
 import {
   StockManagementPage, 
   InventoryHubPage,
+  InventoryHistoryPage,
 } from "./features/inventory";
 import {
   DailyMenuPage,
@@ -386,6 +387,19 @@ const App = () => {
                     allowedRoles={[RoleName.ADMIN, RoleName.KITCHEN_MANAGER]}
                   >
                     <StockManagementPage />
+                  </RoleProtectedRoute>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path={ROUTES.INVENTORY_HISTORY}
+              element={
+                <ProtectedRoute>
+                  <RoleProtectedRoute
+                    allowedRoles={[RoleName.ADMIN, RoleName.KITCHEN_MANAGER]}
+                  >
+                    <InventoryHistoryPage />
                   </RoleProtectedRoute>
                 </ProtectedRoute>
               }

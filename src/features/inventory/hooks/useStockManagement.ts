@@ -106,6 +106,22 @@ export function useStockHistory(
 }
 
 /**
+ * useAllStockHistory Hook
+ *
+ * Query to get all stock history entries
+ */
+export function useAllStockHistory(params?: { page?: number; limit?: number }) {
+  return useQuery({
+    queryKey: ["menu", "items", "stock", "history", params],
+    queryFn: async () => {
+      const response = await menuApi.getAllStockHistory(params);
+      return response;
+    },
+    staleTime: 30000, // 30 seconds
+  });
+}
+
+/**
  * useLowStockItems Hook
  *
  * Query to get items with low stock

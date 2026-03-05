@@ -1,5 +1,6 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Button, Card, Badge, Skeleton, EmptyState, FilterBar, FilterPills, FilterSearch, FilterSelect, FilterDrawer, ActiveFilterChips } from "@/components";
 import { useItems } from "@/features/menu/hooks";
 import { useCategories } from "@/features/menu/categories/hooks";
@@ -22,11 +23,23 @@ type StockFilter = "ALL" | "LOW_STOCK" | "OUT_OF_STOCK" | "TRACKED";
  */
 export function StockManagementPage() {
   const { isAdmin } = usePermissions();
+  const location = useLocation();
+  const navigate = useNavigate();
 
   // State
   const [filter, setFilter] = useState<StockFilter>("ALL");
   const [searchTerm, setSearchTerm] = useState("");
   const [isResetModalOpen, setIsResetModalOpen] = useState(false);
+
+  // Handle auto-opening reset modal from Hub
+  useEffect(() => {
+    const state = location.state as { openResetModal?: boolean } | null;
+    if (state?.openResetModal) {
+      setIsResetModalOpen(true);
+      // Clear state after reading it
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
   const [isInventoryTypeModalOpen, setIsInventoryTypeModalOpen] = useState(false);
   const [isQuickStockOpen, setIsQuickStockOpen] = useState(false);
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);

@@ -334,6 +334,22 @@ export const dailyStockResetByCategory = async (resetData: {
 };
 
 /**
+ * GET /menu/items/stock/history
+ *
+ * Get all stock history entries
+ *
+ * @param params - Pagination params
+ * @returns Paginated stock history
+ */
+export const getAllStockHistory = async (params?: PaginationParams) => {
+  const { data } = await axiosClient.get<PaginatedResponse<StockHistoryEntry>>(
+    "/menu/items/stock/history",
+    { params },
+  );
+  return data;
+};
+
+/**
  * PATCH /menu/items/:id/inventory-type
  *
  * Set inventory type for a menu item
