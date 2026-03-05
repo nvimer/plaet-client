@@ -8,7 +8,7 @@ export { Seo } from "./seo/Seo";
 export * from "./filters";
 
 // Feedback
-export { GlobalErrorBoundary as ErrorBoundary } from "./feedback/GlobalErrorBoundary";
+export { ErrorBoundary } from "./feedback/GlobalErrorBoundary";
 
 // Network
 export { default as NetworkStatusManager } from "./network/NetworkStatusManager";
