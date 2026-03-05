@@ -3,6 +3,7 @@ import { Edit2, ImageIcon, Trash2, Package, Star, Plus } from "lucide-react";
 import type { MenuItem } from "@/types";
 import { Button, ConfirmDialog } from "@/components";
 import { cn } from "@/utils/cn";
+import { formatCurrency } from "@/utils/formatUtils";
 import { QuickStockModal } from "./QuickStockModal";
 
 interface MenuItemCardProps {
@@ -10,13 +11,14 @@ interface MenuItemCardProps {
   categoryName?: string;
   onEdit: (itemId: number) => void;
   onDelete: (id: number) => void;
+  highlighted?: boolean;
 }
 
 /**
  * MenuItemCard – Rediseño Vertical & Táctil.
  * Optimizado para lectura de nombres largos y uso en pantallas táctiles.
  */
-export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemCardProps) {
+export function MenuItemCard({ item, categoryName, onEdit, onDelete, highlighted }: MenuItemCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isStockModalOpen, setIsStockModalOpen] = useState(false);
 
@@ -42,7 +44,8 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
           "group relative flex flex-col h-full overflow-hidden",
           "bg-white rounded-3xl border-2 border-transparent shadow-sm",
           "transition-all duration-300 hover:shadow-soft-xl hover:border-sage-200 sm:hover:-translate-y-1",
-          !item.isAvailable && "opacity-75 grayscale-[0.5]"
+          !item.isAvailable && "opacity-75 grayscale-[0.5]",
+          highlighted && "ring-4 ring-sage-400 ring-offset-2 border-sage-400 animate-pulse"
         )}
       >
         {/* ÁREA DE IMAGEN - Estilo Limpio/Kiosko */}
@@ -100,7 +103,7 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete }: MenuItemC
 
             <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-carbon-900 text-white shadow-sm mt-2">
               <span className="text-xs sm:text-sm font-black tracking-tight leading-none">
-                ${item.price.toLocaleString("es-CO")}
+                {formatCurrency(item.price)}
               </span>
             </div>
           </div>

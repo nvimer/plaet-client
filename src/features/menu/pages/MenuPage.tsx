@@ -1,5 +1,5 @@
 import { useMemo, useState, useEffect } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { toast } from "sonner";
 import {
   Button,
@@ -44,10 +44,27 @@ import { SidebarLayout } from "@/layouts/SidebarLayout";
  */
 export function MenuPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [filterCategory, setFilterCategory] = useState<string>("");
   const [searchTerm, setSearchTerm] = useState("");
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
+  const [highlightedItemId, setHighlightedItemId] = useState<number | null>(null);
+
+  useEffect(() => {
+    const state = location.state as { highlightId?: number } | null;
+    if (state?.highlightId) {
+      setHighlightedItemId(state.highlightId);
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, navigate]);
+
+  useEffect(() => {
+    if (highlightedItemId) {
+      const timer = setTimeout(() => setHighlightedItemId(null), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [highlightedItemId]);
 
   useEffect(() => {
     const categoryParam = searchParams.get("category");
@@ -263,6 +280,7 @@ export function MenuPage() {
                 categoryName={categoryNameById[item.categoryId]}
                 onEdit={handleEditItem}
                 onDelete={handleDeleteItem}
+                highlighted={highlightedItemId === item.id}
               />
             ))}
           </div>
