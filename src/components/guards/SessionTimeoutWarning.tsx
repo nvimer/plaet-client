@@ -21,7 +21,7 @@ interface SessionTimeoutWarningProps {
 const DEFAULT_TIMEOUT_MS = 25 * 60 * 1000;
 const DEFAULT_WARNING_MS = 2 * 60 * 1000;
 
-export default function SessionTimeoutWarning({
+export function SessionTimeoutWarning({
   sessionTimeoutMs = DEFAULT_TIMEOUT_MS,
   warningBeforeMs = DEFAULT_WARNING_MS,
   onSessionExpired,
