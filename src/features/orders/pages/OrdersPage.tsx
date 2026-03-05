@@ -372,7 +372,7 @@ export function OrdersPage() {
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sage-600">
               <ShoppingCart className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Registro de Ventas</span>
+              <span className="text-[10px] font-semibold tracking-[0.2em]">Registro de Ventas</span>
             </div>
             <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">
               {activeTab === "HISTORY" ? "Historial de Ventas" : "Gestión de Pedidos"}
@@ -404,19 +404,19 @@ export function OrdersPage() {
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
               className={cn(
-                "flex-1 min-w-[130px] flex items-center justify-center gap-2 py-3.5 rounded-xl text-xs font-black uppercase tracking-widest transition-all relative overflow-hidden",
+                "flex-1 min-w-[130px] flex items-center justify-center gap-2 py-3.5 rounded-xl text-xs font-semibold tracking-wide transition-all relative overflow-hidden",
                 activeTab === tab.id ? "bg-carbon-900 text-white shadow-soft-lg" : "text-carbon-400 hover:text-carbon-600",
-                tab.alert && "ring-2 ring-emerald-500 ring-inset"
+                tab.alert && "ring-2 ring-success-500 ring-inset"
               )}
             >
               {tab.alert && (
-                <span className="absolute inset-0 bg-emerald-500/10 animate-pulse" />
+                <span className="absolute inset-0 bg-success-500/10 animate-pulse" />
               )}
-              <tab.icon className={cn("w-4 h-4 z-10", tab.alert && "text-emerald-500 animate-bounce")} />
+              <tab.icon className={cn("w-4 h-4 z-10", tab.alert && "text-success-500 animate-bounce")} />
               <span className="z-10">{tab.label}</span>
               <span className={cn("px-2 py-0.5 rounded-lg text-[10px] z-10", 
                 activeTab === tab.id ? "bg-white/20" : 
-                tab.alert ? "bg-emerald-500 text-white" : "bg-sage-100 text-sage-600"
+                tab.alert ? "bg-success-500 text-white" : "bg-sage-100 text-sage-600"
               )}>
                 {tab.count}
               </span>
@@ -428,28 +428,28 @@ export function OrdersPage() {
         {activeTab === "HISTORY" && (
           <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
             <Card className="bg-carbon-900 text-white p-6 rounded-3xl border-none relative overflow-hidden">
-              <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest mb-1">Total Ventas</p>
+              <p className="text-[10px] font-bold text-carbon-400 tracking-wide mb-1">Total Ventas</p>
               <p className="text-3xl font-black tracking-tighter">${financialSummary.total.toLocaleString("es-CO")}</p>
               <TrendingUp className="absolute bottom-4 right-6 w-10 h-10 text-white/5" />
             </Card>
-            <Card className="bg-white p-6 rounded-3xl border-2 border-emerald-100 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600"><Wallet className="w-5 h-5" /></div>
+            <Card className="bg-white p-6 rounded-3xl border-2 border-success-100 flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-success-50 flex items-center justify-center text-success-600"><Wallet className="w-5 h-5" /></div>
               <div>
-                <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest">Efectivo</p>
+                <p className="text-[10px] font-bold text-carbon-400 tracking-wide">Efectivo</p>
                 <p className="text-lg font-black text-carbon-900">${financialSummary.cash.toLocaleString("es-CO")}</p>
               </div>
             </Card>
-            <Card className="bg-white p-6 rounded-3xl border-2 border-purple-100 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-xl bg-purple-50 flex items-center justify-center text-purple-600"><Smartphone className="w-5 h-5" /></div>
+            <Card className="bg-white p-6 rounded-3xl border-2 border-info-100 flex items-center gap-4">
+              <div className="w-10 h-10 rounded-xl bg-info-50 flex items-center justify-center text-info-600"><Smartphone className="w-5 h-5" /></div>
               <div>
-                <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest">Nequi</p>
+                <p className="text-[10px] font-bold text-carbon-400 tracking-wide">Nequi</p>
                 <p className="text-lg font-black text-carbon-900">${financialSummary.nequi.toLocaleString("es-CO")}</p>
               </div>
             </Card>
             <Card className="bg-white p-6 rounded-3xl border-2 border-blue-100 flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl bg-blue-50 flex items-center justify-center text-blue-600"><Ticket className="w-5 h-5" /></div>
               <div>
-                <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest">Tiquetera</p>
+                <p className="text-[10px] font-bold text-carbon-400 tracking-wide">Tiquetera</p>
                 <p className="text-lg font-black text-carbon-900">${financialSummary.ticket.toLocaleString("es-CO")}</p>
               </div>
             </Card>

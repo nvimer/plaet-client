@@ -53,9 +53,9 @@ const TABS_CONFIG = [
     id: "ready" as TabType,
     label: "Listos",
     icon: CheckCircle,
-    color: "bg-emerald-500",
-    textColor: "text-emerald-700",
-    bgColor: "bg-emerald-50",
+    color: "bg-success-500",
+    textColor: "text-success-700",
+    bgColor: "bg-success-50",
   },
 ];
 
@@ -261,13 +261,13 @@ export function KitchenKanban({
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-sage-600">
               <ChefHat className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Cocina Master-Detail</span>
+              <span className="text-[10px] font-semibold tracking-[0.2em]">Cocina Master-Detail</span>
             </div>
             <div className="flex items-center gap-4">
               <h1 className="text-2xl lg:text-3xl font-bold text-carbon-900 tracking-tight">
                 Vista de Cocina
               </h1>
-              <div className="hidden sm:flex items-center gap-2 text-[10px] font-bold text-carbon-400 bg-sage-50 px-2 py-1 rounded-lg uppercase tracking-widest border border-sage-100">
+              <div className="hidden sm:flex items-center gap-2 text-[10px] font-bold text-carbon-400 bg-sage-50 px-2 py-1 rounded-lg tracking-wide border border-sage-100">
                 <RefreshCw className="w-3 h-3 animate-spin-slow" />
                 <span>Auto-refresh: 30s</span>
               </div>
@@ -276,7 +276,7 @@ export function KitchenKanban({
 
           <div className="flex items-center gap-6">
             <div className="text-right hidden sm:block">
-              <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest leading-none mb-1">Platos Activos</p>
+              <p className="text-[10px] font-bold text-carbon-400 tracking-wide leading-none mb-1">Platos Activos</p>
               <p className="text-2xl font-bold text-sage-700 tracking-tight leading-none">{totalItemsCount}</p>
             </div>
           </div>
@@ -399,7 +399,7 @@ export function KitchenKanban({
                     id={OrderItemStatus.READY}
                     title="Listos"
                     icon={<CheckCircle className="w-6 h-6" />}
-                    color="bg-emerald-100 text-emerald-800"
+                    color="bg-success-100 text-success-800"
                     items={itemsByStatus.ready}
                     onStatusChange={handleItemStatusChange}
                     isMobile={false}

@@ -141,8 +141,8 @@ export default function LoginPage() {
               animate={{ opacity: 1, y: 0 }}
               className={`p-4 mb-6 border-2 rounded-xl flex items-start gap-3 ${
                 messageType === "success"
-                  ? "bg-green-50 border-green-200 text-green-900"
-                  : "bg-red-50 border-red-200 text-red-900"
+                  ? "bg-success-50 border-success-200 text-success-900"
+                  : "bg-error-50 border-error-200 text-error-900"
               }`}
             >
               <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
@@ -219,14 +219,14 @@ export default function LoginPage() {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-4 bg-red-50 border-2 border-red-200 rounded-xl flex items-start gap-3"
+                className="p-4 bg-error-50 border-2 border-error-200 rounded-xl flex items-start gap-3"
               >
-                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                <AlertCircle className="w-5 h-5 text-error-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-semibold text-red-900 mb-1">
+                  <p className="text-sm font-semibold text-error-900 mb-1">
                     Error de Autenticación
                   </p>
-                  <p className="text-sm text-red-700 font-light">{error}</p>
+                  <p className="text-sm text-error-700 font-light">{error}</p>
                 </div>
               </motion.div>
             )}

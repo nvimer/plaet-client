@@ -149,7 +149,7 @@ export function StockManagementPage() {
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sage-600">
               <Package className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Control de Existencias</span>
+              <span className="text-[10px] font-semibold tracking-[0.2em]">Control de Existencias</span>
             </div>
             <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Stock de Productos</h1>
             <p className="text-lg text-carbon-500 font-medium">Monitorea y ajusta el inventario de tus insumos en tiempo real.</p>
@@ -244,7 +244,7 @@ export function StockManagementPage() {
               <div key={categoryName}>
                 {/* Category Header */}
                 <div className="flex items-center gap-3 mb-4 pb-2 border-b border-sage-200">
-                  <h3 className="text-xs font-black text-carbon-400 uppercase tracking-widest">
+                  <h3 className="text-xs font-black text-carbon-400 tracking-wide">
                     {categoryName}
                   </h3>
                   <span className="text-[10px] font-medium text-carbon-400 bg-carbon-50 px-2 py-0.5 rounded-full">
@@ -275,6 +275,7 @@ export function StockManagementPage() {
         {/* Modals & Drawers */}
         <DailyResetModal
           items={allItems || []}
+          categories={categories || []}
           isOpen={isResetModalOpen}
           onClose={() => setIsResetModalOpen(false)}
         />
@@ -302,7 +303,7 @@ export function StockManagementPage() {
             />
             
             <div className="pt-4 p-5 rounded-2xl bg-sage-50 border border-sage-100">
-              <h4 className="text-[10px] font-black text-carbon-400 uppercase tracking-widest mb-3 ml-1">Estado de Inventario</h4>
+              <h4 className="text-[10px] font-black text-carbon-400 tracking-wide mb-3 ml-1">Estado de Inventario</h4>
               <p className="text-sm font-medium text-carbon-600 leading-relaxed">
                 Usa las píldoras de acceso rápido para identificar productos críticos que requieren tu atención inmediata.
               </p>
@@ -362,9 +363,9 @@ function StockItemCard({
   const isOutOfStock = currentStock === 0;
 
   const statusColor = isOutOfStock
-    ? "text-rose-600 bg-rose-50 border-rose-100"
+    ? "text-error-600 bg-error-50 border-error-100"
     : isLowStock
-      ? "text-amber-600 bg-amber-50 border-amber-100"
+      ? "text-warning-600 bg-warning-50 border-warning-100"
       : "text-sage-600 bg-sage-50 border-sage-100";
 
   const statusLabel = isOutOfStock
@@ -378,9 +379,9 @@ function StockItemCard({
       className={cn(
         "group flex flex-col p-4 rounded-2xl border transition-all duration-200 hover:shadow-md",
         isOutOfStock
-          ? "bg-rose-50/50 border-rose-100 hover:border-rose-200"
+          ? "bg-error-50/50 border-error-100 hover:border-error-200"
           : isLowStock
-            ? "bg-amber-50/50 border-amber-100 hover:border-amber-200"
+            ? "bg-warning-50/50 border-warning-100 hover:border-warning-200"
             : "bg-white border-sage-100 hover:border-sage-300"
       )}
     >
@@ -400,7 +401,7 @@ function StockItemCard({
       {isTracked ? (
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Package className={cn("w-4 h-4", isOutOfStock ? "text-rose-400" : isLowStock ? "text-amber-400" : "text-sage-400")} />
+            <Package className={cn("w-4 h-4", isOutOfStock ? "text-error-400" : isLowStock ? "text-warning-400" : "text-sage-400")} />
             <span className={cn(
               "text-sm font-black px-2 py-0.5 rounded-md border",
               statusColor
@@ -410,7 +411,7 @@ function StockItemCard({
           </div>
           {item.lowStockAlert !== undefined && (
             <div className="flex items-center gap-1">
-              <AlertTriangle className={cn("w-3 h-3", isLowStock ? "text-amber-500" : "text-carbon-300")} />
+              <AlertTriangle className={cn("w-3 h-3", isLowStock ? "text-warning-500" : "text-carbon-300")} />
               <span className="text-[10px] font-medium text-carbon-500">
                 {item.lowStockAlert}
               </span>

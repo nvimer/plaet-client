@@ -52,7 +52,7 @@ export function KitchenColumn({
         <div className="p-2 bg-white/20 rounded-xl backdrop-blur-md shadow-inner">
           {icon}
         </div>
-        <h2 className="text-lg font-black uppercase tracking-widest text-carbon-900">{title}</h2>
+        <h2 className="text-lg font-semibold tracking-wide text-carbon-900">{title}</h2>
         <span className="ml-auto bg-carbon-900/10 px-3 py-1 rounded-xl text-base font-black text-carbon-900">
           {items.length}
         </span>
@@ -79,7 +79,7 @@ export function KitchenColumn({
 
         {items.length === 0 && (
           <div className="flex items-center justify-center h-32 text-carbon-400">
-            <p className="text-center font-bold text-sm uppercase tracking-widest opacity-50">Sin platos</p>
+            <p className="text-center font-bold text-sm tracking-wide opacity-50">Sin platos</p>
           </div>
         )}
       </div>

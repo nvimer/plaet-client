@@ -44,9 +44,9 @@ const LoadingScreen = ({
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6 }}
-              className="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center mx-auto mb-6"
+              className="w-20 h-20 rounded-full bg-warning-100 flex items-center justify-center mx-auto mb-6"
             >
-              <WifiOff className="w-10 h-10 text-amber-600" />
+              <WifiOff className="w-10 h-10 text-warning-600" />
             </motion.div>
 
             <h1 className="text-2xl font-bold text-carbon-900 mb-4">
@@ -99,9 +99,9 @@ const AccessDenied = ({
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-6"
+          className="w-20 h-20 rounded-full bg-error-100 flex items-center justify-center mx-auto mb-6"
         >
-          <ShieldX className="w-10 h-10 text-red-600" />
+          <ShieldX className="w-10 h-10 text-error-600" />
         </motion.div>
 
         <h1 className="text-2xl font-bold text-carbon-900 mb-4">
@@ -136,9 +136,9 @@ const SessionExpiredScreen = ({ onGoToLogin }: { onGoToLogin: () => void }) => (
           initial={{ scale: 0.8, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.6 }}
-          className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-6"
+          className="w-20 h-20 rounded-full bg-error-100 flex items-center justify-center mx-auto mb-6"
         >
-          <LogOut className="w-10 h-10 text-red-600" />
+          <LogOut className="w-10 h-10 text-error-600" />
         </motion.div>
 
         <h1 className="text-2xl font-bold text-carbon-900 mb-4">

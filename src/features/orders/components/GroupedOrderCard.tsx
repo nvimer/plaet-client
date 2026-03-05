@@ -125,8 +125,8 @@ export function GroupedOrderCard({
         "overflow-hidden border-2 transition-all duration-300 rounded-[2.5rem] flex flex-col group min-h-[520px]",
         isExpanded ? "border-carbon-900 shadow-soft-2xl" : "border-sage-100 hover:border-sage-300 hover:shadow-soft-xl",
         needsBilling && !isExpanded && "bg-white",
-        isNearAutoCancel && needsBilling && "border-rose-200 ring-4 ring-rose-50",
-        canDeliver && !isExpanded && "border-emerald-500 ring-4 ring-emerald-50 animate-pulse-subtle"
+        isNearAutoCancel && needsBilling && "border-error-200 ring-4 ring-error-50",
+        canDeliver && !isExpanded && "border-success-500 ring-4 ring-success-50 animate-pulse-subtle"
       )}
     >
       {/* Header: Table Info & Group Stats */}
@@ -151,7 +151,7 @@ export function GroupedOrderCard({
             
             <div>
               <h3 className={cn(
-                "text-sm font-black uppercase tracking-widest",
+                "text-sm font-semibold tracking-wide",
                 isExpanded ? "text-white/60" : "text-carbon-400"
               )}>
                 {groupedOrder.table ? "Mesa" : "Pedido"}
@@ -166,9 +166,9 @@ export function GroupedOrderCard({
 
           <div className="flex flex-col items-end gap-1">
             <div className={cn(
-              "flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-colors",
+              "flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide transition-colors",
               isExpanded ? "bg-white/10 text-white" : 
-              isNearAutoCancel ? "bg-rose-100 text-rose-600 animate-pulse" : "bg-sage-100 text-sage-600"
+              isNearAutoCancel ? "bg-error-100 text-error-600 animate-pulse" : "bg-sage-100 text-sage-600"
             )}>
               <Clock className="w-3 h-3" />
               {needsBilling ? `Cancela en ${minutesRemaining}m` : waitTime.text}
@@ -187,7 +187,7 @@ export function GroupedOrderCard({
           <div className="h-32 overflow-hidden mb-2">
             <div className="flex flex-wrap gap-2 mb-4">
               <OrderTypeBadge type={groupedOrder.type} />
-              <div className="px-3 py-1 rounded-full bg-carbon-50 text-carbon-600 text-[9px] font-black border border-carbon-100 uppercase tracking-widest">
+              <div className="px-3 py-1 rounded-full bg-carbon-50 text-carbon-600 text-[9px] font-black border border-carbon-100 tracking-wide">
                 {groupedOrder.orders.length} {groupedOrder.orders.length === 1 ? 'Servicio' : 'Servicios'}
               </div>
             </div>
@@ -214,7 +214,7 @@ export function GroupedOrderCard({
         )}>
           <div>
             <p className={cn(
-              "text-[10px] font-black uppercase tracking-widest mb-0.5",
+              "text-[10px] font-semibold tracking-wide mb-0.5",
               isExpanded ? "text-white/40" : "text-carbon-400"
             )}>Total Cuenta</p>
             <p className={cn(
@@ -233,7 +233,7 @@ export function GroupedOrderCard({
             {needsBilling ? (
               <Button
                 variant="primary"
-                className="w-full bg-carbon-900 hover:bg-carbon-800 text-white rounded-2xl h-16 shadow-xl active:scale-[0.98] transition-all font-black uppercase tracking-[0.15em] text-xs"
+                className="w-full bg-carbon-900 hover:bg-carbon-800 text-white rounded-2xl h-16 shadow-xl active:scale-[0.98] transition-all font-semibold tracking-[0.15em] text-xs"
                 onClick={(e) => { e.stopPropagation(); onPayTable(groupedOrder.orders); }}
               >
                 <DollarSign className="w-5 h-5 mr-2" />
@@ -242,32 +242,32 @@ export function GroupedOrderCard({
             ) : canDeliver ? (
               <Button
                 variant="primary"
-                className="w-full bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl h-16 shadow-xl active:scale-[0.98] transition-all font-black uppercase tracking-[0.15em] text-xs"
+                className="w-full bg-success-600 hover:bg-success-700 text-white rounded-2xl h-16 shadow-xl active:scale-[0.98] transition-all font-semibold tracking-[0.15em] text-xs"
                 onClick={handleDeliverAll}
               >
                 <Truck className="w-5 h-5 mr-2" />
                 Entregar Todo
               </Button>
             ) : allDelivered ? (
-              <div className="bg-emerald-50 rounded-2xl p-4 border border-emerald-100 flex items-center justify-between">
-                <p className="text-xs text-emerald-600 font-black uppercase tracking-widest flex items-center gap-2">
+              <div className="bg-success-50 rounded-2xl p-4 border border-success-100 flex items-center justify-between">
+                <p className="text-xs text-success-600 font-semibold tracking-wide flex items-center gap-2">
                   <CheckCircle className="w-4 h-4" />
                   Entregado
                 </p>
-                <span className="text-[10px] font-black text-carbon-400 uppercase tracking-widest">{totalItems} productos</span>
+                <span className="text-[10px] font-black text-carbon-400 tracking-wide">{totalItems} productos</span>
               </div>
             ) : allCancelled ? (
-              <div className="bg-rose-50 rounded-2xl p-4 border border-rose-100 flex items-center justify-between">
-                <p className="text-xs text-rose-600 font-black uppercase tracking-widest flex items-center gap-2">
+              <div className="bg-error-50 rounded-2xl p-4 border border-error-100 flex items-center justify-between">
+                <p className="text-xs text-error-600 font-semibold tracking-wide flex items-center gap-2">
                   <XCircle className="w-4 h-4" />
                   Cancelado
                 </p>
-                <span className="text-[10px] font-black text-carbon-400 uppercase tracking-widest">{totalItems} productos</span>
+                <span className="text-[10px] font-black text-carbon-400 tracking-wide">{totalItems} productos</span>
               </div>
             ) : (
               <div className="bg-sage-50 rounded-2xl p-4 border border-sage-100 flex items-center justify-between">
-                <p className="text-xs text-carbon-500 font-black uppercase tracking-widest flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-amber-500" />
+                <p className="text-xs text-carbon-500 font-semibold tracking-wide flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-warning-500" />
                   En preparación...
                 </p>
                 <span className="text-[10px] font-black text-carbon-400 uppercase">{totalItems} productos</span>
@@ -319,7 +319,7 @@ export function GroupedOrderCard({
                   <OrderStatusBadge status={order.status} size="sm" showIcon={false} />
                   <button 
                     onClick={(e) => { e.stopPropagation(); onViewDetail(order.id); }}
-                    className="text-[10px] font-black text-primary-600 hover:text-primary-700 uppercase tracking-widest underline underline-offset-4"
+                    className="text-[10px] font-black text-primary-600 hover:text-primary-700 tracking-wide underline underline-offset-4"
                   >
                     Detalles
                   </button>
@@ -332,7 +332,7 @@ export function GroupedOrderCard({
             <Button
               variant="primary"
               fullWidth
-              className="bg-carbon-900 text-white rounded-2xl h-14 font-black uppercase tracking-widest text-[10px] shadow-lg"
+              className="bg-carbon-900 text-white rounded-2xl h-14 font-semibold tracking-wide text-[10px] shadow-lg"
               onClick={(e) => {
                 e.stopPropagation();
                 onViewDetail(groupedOrder.id);

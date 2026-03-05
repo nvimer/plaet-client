@@ -175,7 +175,7 @@ export function Sidebar() {
             </button>
             
             {(!isCollapsed || isMobile) && (
-              <span className="text-[10px] font-black text-carbon-300 uppercase tracking-widest">v2.1.0</span>
+              <span className="text-[10px] font-black text-carbon-300 tracking-wide">v2.1.0</span>
             )}
           </div>
         </div>

@@ -135,7 +135,7 @@ export function OrderCreatePage() {
       <SidebarLayout title="Nuevo Pedido" backRoute={ROUTES.ORDERS}>
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-sage-100 border-t-sage-600" />
-          <p className="text-carbon-400 font-bold text-sm uppercase tracking-widest">Preparando terminal...</p>
+          <p className="text-carbon-400 font-bold text-sm tracking-wide">Preparando terminal...</p>
         </div>
       </SidebarLayout>
     );
@@ -147,8 +147,8 @@ export function OrderCreatePage() {
       <SidebarLayout title="Bloqueo de Caja" backRoute={ROUTES.ORDERS}>
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 flex flex-col items-center justify-center min-h-[70vh]">
           <motion.div variants={variants.fadeInUp} initial="initial" animate="animate" exit="exit">
-            <Card variant="elevated" className="p-8 sm:p-12 flex flex-col items-center text-center rounded-[3rem] border-2 border-rose-200 bg-rose-50/30">
-              <div className="w-24 h-24 bg-rose-100 rounded-3xl flex items-center justify-center text-rose-600 mb-8 shadow-inner rotate-3">
+            <Card variant="elevated" className="p-8 sm:p-12 flex flex-col items-center text-center rounded-[3rem] border-2 border-error-200 bg-error-50/30">
+              <div className="w-24 h-24 bg-error-100 rounded-3xl flex items-center justify-center text-error-600 mb-8 shadow-inner rotate-3">
                 <AlertTriangle className="w-12 h-12 stroke-[2.5px]" />
               </div>
               <h2 className="text-3xl font-black text-carbon-900 tracking-tight mb-4">
@@ -163,7 +163,7 @@ export function OrderCreatePage() {
                   variant="outline"
                   size="lg" 
                   onClick={() => window.location.href = ROUTES.DASHBOARD}
-                  className="h-14 px-8 rounded-2xl font-bold border-rose-200 text-carbon-600 hover:bg-rose-50"
+                  className="h-14 px-8 rounded-2xl font-bold border-error-200 text-carbon-600 hover:bg-error-50"
                 >
                   Volver al Inicio
                 </Button>
@@ -192,7 +192,7 @@ export function OrderCreatePage() {
             variants={variants.fadeInUp} initial="initial" animate="animate" exit="exit"
             className="text-center mb-16 space-y-3"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-sage-100 rounded-full text-sage-700 text-[10px] font-black uppercase tracking-[0.2em] mb-2">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-sage-100 rounded-full text-sage-700 text-[10px] font-semibold tracking-[0.2em] mb-2">
               <Sparkles className="w-3 h-3" />
               Iniciando Pedido
             </div>
@@ -208,7 +208,7 @@ export function OrderCreatePage() {
           >
             {[
               { type: OrderType.DINE_IN, label: "Para Mesa", desc: "Comer en el local", icon: UtensilsCrossed, color: "text-sage-600", bg: "bg-sage-50" },
-              { type: OrderType.TAKE_OUT, label: "Llevar", desc: "Recoger pedido", icon: ShoppingBag, color: "text-amber-600", bg: "bg-amber-50" },
+              { type: OrderType.TAKE_OUT, label: "Llevar", desc: "Recoger pedido", icon: ShoppingBag, color: "text-warning-600", bg: "bg-warning-50" },
               { type: OrderType.DELIVERY, label: "Domicilio", desc: "Entrega a casa", icon: Bike, color: "text-blue-600", bg: "bg-blue-50" },
             ].map((opt) => (
               <motion.button
@@ -224,7 +224,7 @@ export function OrderCreatePage() {
                   <opt.icon className="w-12 h-12 stroke-[1.5px]" />
                 </div>
                 <span className="text-2xl font-black text-carbon-900 tracking-tight">{opt.label}</span>
-                <span className="text-sm text-carbon-400 font-bold uppercase tracking-widest mt-2">{opt.desc}</span>
+                <span className="text-sm text-carbon-400 font-medium tracking-wide mt-2">{opt.desc}</span>
               </motion.button>
             ))}
           </motion.div>
@@ -245,14 +245,14 @@ export function OrderCreatePage() {
             <div className="flex justify-center">
               <button
                 onClick={handleQuickPackaging}
-                className="group flex items-center gap-4 px-8 py-4 bg-white border-2 border-amber-100 rounded-2xl hover:border-amber-500 hover:bg-amber-50 transition-all duration-300 shadow-soft-sm active:scale-95"
+                className="group flex items-center gap-4 px-8 py-4 bg-white border-2 border-warning-100 rounded-2xl hover:border-warning-500 hover:bg-warning-50 transition-all duration-300 shadow-soft-sm active:scale-95"
               >
-                <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="w-10 h-10 rounded-xl bg-warning-100 text-warning-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <Box className="w-5 h-5" />
                 </div>
                 <div className="text-left">
                   <p className="text-xs font-black text-carbon-900 uppercase tracking-tight">Portacomida</p>
-                  <p className="text-[10px] font-bold text-amber-600">${orderBuilder.packagingFee.toLocaleString()} (Solo empaque)</p>
+                  <p className="text-[10px] font-bold text-warning-600">${orderBuilder.packagingFee.toLocaleString()} (Solo empaque)</p>
                 </div>
               </button>
             </div>
@@ -287,7 +287,7 @@ export function OrderCreatePage() {
           >
             <div className="flex items-center gap-2 text-sage-600">
               <LayoutGrid className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Mapa de Sala</span>
+              <span className="text-[10px] font-semibold tracking-[0.2em]">Mapa de Sala</span>
             </div>
             <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Elija una mesa disponible</h1>
             <p className="text-lg text-carbon-500 font-medium">Toque el número de la mesa para iniciar la orden.</p>

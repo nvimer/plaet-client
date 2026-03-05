@@ -80,7 +80,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             // Disabled
             "disabled:bg-sage-100 disabled:text-carbon-400 disabled:cursor-not-allowed",
             // Error state
-            error && "border-red-400 bg-red-50/50 focus:border-red-500 focus:ring-red-500/10",
+            error && "border-error-400 bg-error-50/50 focus:border-error-500 focus:ring-error-500/10",
             // Modified state (dirty tracking)
             isModified && "border-sage-500 bg-sage-100/50",
             className
@@ -90,7 +90,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
         {/* Error message */}
         {error && (
-          <p className="mt-2 text-sm text-red-600">{error}</p>
+          <p className="mt-2 text-sm text-error-600">{error}</p>
         )}
 
         {/* Helper text */}

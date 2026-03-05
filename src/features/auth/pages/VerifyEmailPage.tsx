@@ -144,9 +144,9 @@ export default function VerifyEmailPage() {
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mt-8 mx-auto"
+              className="w-20 h-20 rounded-full bg-success-100 flex items-center justify-center mt-8 mx-auto"
             >
-              <CheckCircle className="w-10 h-10 text-green-600" />
+              <CheckCircle className="w-10 h-10 text-success-600" />
             </motion.div>
 
             <p className="text-carbon-600 text-center mt-6">
@@ -185,9 +185,9 @@ export default function VerifyEmailPage() {
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center mt-8 mx-auto"
+              className="w-20 h-20 rounded-full bg-warning-100 flex items-center justify-center mt-8 mx-auto"
             >
-              <AlertCircle className="w-10 h-10 text-amber-600" />
+              <AlertCircle className="w-10 h-10 text-warning-600" />
             </motion.div>
 
             {status === "expired" && (

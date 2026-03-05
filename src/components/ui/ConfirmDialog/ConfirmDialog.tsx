@@ -75,15 +75,15 @@ export function ConfirmDialog({
   const config = {
     danger: {
       icon: Trash2,
-      iconBg: "bg-rose-50 text-rose-600 shadow-inner",
+      iconBg: "bg-error-50 text-error-600 shadow-inner",
       buttonVariant: "danger" as const,
       buttonClass: "",
     },
     warning: {
       icon: AlertTriangle,
-      iconBg: "bg-amber-50 text-amber-600 shadow-inner",
+      iconBg: "bg-warning-50 text-warning-600 shadow-inner",
       buttonVariant: "primary" as const,
-      buttonClass: "bg-amber-500 hover:bg-amber-600 text-white shadow-soft-lg",
+      buttonClass: "bg-warning-500 hover:bg-warning-600 text-white shadow-soft-lg",
     },
     info: {
       icon: Info,

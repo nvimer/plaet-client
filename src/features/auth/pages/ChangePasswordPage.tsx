@@ -211,7 +211,7 @@ export default function ChangePasswordPage() {
                   disabled={isLoading}
                   className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all ${
                     errors.currentPassword
-                      ? "border-red-500 focus:ring-red-200"
+                      ? "border-error-500 focus:ring-error-200"
                       : "border-carbon-200 focus:ring-sage-200 focus:border-sage-500"
                   }`}
                   required
@@ -255,7 +255,7 @@ export default function ChangePasswordPage() {
                   disabled={isLoading}
                   className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all ${
                     errors.newPassword
-                      ? "border-red-500 focus:ring-red-200"
+                      ? "border-error-500 focus:ring-error-200"
                       : "border-carbon-200 focus:ring-sage-200 focus:border-sage-500"
                   }`}
                   required
@@ -295,10 +295,10 @@ export default function ChangePasswordPage() {
                         passwordStrength >= 4
                           ? "text-success-600"
                           : passwordStrength >= 3
-                            ? "text-lime-600"
+                            ? "text-success-600"
                             : passwordStrength >= 2
                               ? "text-yellow-600"
-                              : "text-red-500"
+                              : "text-error-500"
                       }
                     >
                       {strengthLabels[passwordStrength - 1]}
@@ -333,7 +333,7 @@ export default function ChangePasswordPage() {
                   disabled={isLoading}
                   className={`w-full pl-12 pr-12 py-3 border rounded-xl focus:outline-none focus:ring-2 transition-all ${
                     errors.confirmPassword
-                      ? "border-red-500 focus:ring-red-200"
+                      ? "border-error-500 focus:ring-error-200"
                       : "border-carbon-200 focus:ring-sage-200 focus:border-sage-500"
                   }`}
                   required

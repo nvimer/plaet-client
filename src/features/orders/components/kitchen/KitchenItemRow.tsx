@@ -30,7 +30,7 @@ export function KitchenItemRow({
 
   const itemColor = useMemo(() => {
     if (isProtein) return "bg-orange-50 border-orange-200";
-    if (isExtra) return "bg-purple-50 border-purple-200";
+    if (isExtra) return "bg-info-50 border-info-200";
     return "bg-sage-50 border-sage-200";
   }, [isProtein, isExtra]);
 
@@ -58,7 +58,7 @@ export function KitchenItemRow({
             "w-7 h-7 rounded-lg flex items-center justify-center transition-all",
             "border-2",
             isReady
-              ? "bg-emerald-500 border-emerald-500 text-white"
+              ? "bg-success-500 border-success-500 text-white"
               : "border-carbon-300 bg-white",
           )}
         >
@@ -86,7 +86,7 @@ export function KitchenItemRow({
             </span>
           )}
           {isExtra && !isProtein && (
-            <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full font-medium">
+            <span className="text-xs bg-info-100 text-info-700 px-2 py-0.5 rounded-full font-medium">
               Extra
             </span>
           )}

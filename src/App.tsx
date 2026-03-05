@@ -10,7 +10,6 @@ import {
   ChangePasswordPage,
 } from "./features/auth";
 import { PrivateRoute } from "./components/PrivateRoute";
-import { DashboardLayout } from "./layouts/DashboardLayout";
 import { FullScreenLayout } from "./layouts/FullScreenLayout";
 import { ErrorBoundary } from "./components/GlobalErrorBoundary";
 import NetworkStatusManager from "./components/NetworkStatusManager";

@@ -72,7 +72,7 @@ export function SidebarItem({
               {name}
             </span>
             {badge && (
-              <span className="ml-2 px-1.5 py-0.5 bg-sage-200 text-sage-700 text-[10px] font-black rounded-md uppercase tracking-wider">
+              <span className="ml-2 px-1.5 py-0.5 bg-sage-200 text-sage-700 text-[10px] font-black rounded-md tracking-wide">
                 {badge}
               </span>
             )}

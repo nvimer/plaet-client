@@ -211,7 +211,7 @@ export function OrderForm({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Nombre del Cliente</label>
+              <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Nombre del Cliente</label>
               <div className="relative">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
                 <Input
@@ -227,7 +227,7 @@ export function OrderForm({
             </div>
 
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Teléfono de Contacto</label>
+              <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Teléfono de Contacto</label>
               <div className="relative">
                 <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
                                       <Input
@@ -245,7 +245,7 @@ export function OrderForm({
 
             {selectedOrderType === OrderType.DELIVERY && (
               <div className="sm:col-span-2 space-y-2">
-                <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Dirección de Entrega</label>
+                <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Dirección de Entrega</label>
                 <div className="relative">
                   <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
                   <Input
@@ -310,7 +310,7 @@ export function OrderForm({
         className={cn(
           "overflow-hidden rounded-2xl border-2 transition-all duration-300",
           currentOrderIndex !== null
-            ? "border-amber-200 bg-white shadow-soft-xl"
+            ? "border-warning-200 bg-white shadow-soft-xl"
             : "border-sage-200 bg-white shadow-smooth-md"
         )}
       >
@@ -318,7 +318,7 @@ export function OrderForm({
           <div className="flex items-center gap-3 sm:gap-4">
             <div className={cn(
               "w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-inner transition-colors",
-              currentOrderIndex !== null ? "bg-amber-100 text-amber-600" : "bg-sage-100 text-sage-600"
+              currentOrderIndex !== null ? "bg-warning-100 text-warning-600" : "bg-sage-100 text-sage-600"
             )}>
               {currentOrderIndex !== null ? (
                 <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -335,7 +335,7 @@ export function OrderForm({
               <div className="flex items-center gap-2 mt-0.5">
                 <span className={cn(
                   "w-2 h-2 rounded-full animate-pulse",
-                  currentOrderIndex !== null ? "bg-amber-500" : "bg-sage-500"
+                  currentOrderIndex !== null ? "bg-warning-500" : "bg-sage-500"
                 )} />
                 <p className="text-carbon-500 text-sm font-medium">
                   {currentOrderIndex !== null
@@ -350,7 +350,7 @@ export function OrderForm({
             {currentOrderIndex !== null && (
               <button
                 onClick={onCancelEdit}
-                className="p-2.5 sm:p-3 bg-rose-50 border-2 border-rose-100 rounded-xl text-rose-500 hover:bg-rose-100 transition-all shadow-sm active:scale-90"
+                className="p-2.5 sm:p-3 bg-error-50 border-2 border-error-100 rounded-xl text-error-500 hover:bg-error-100 transition-all shadow-sm active:scale-90"
                 title="Cancelar edición"
               >
                 <X className="w-5 h-5" />
@@ -363,7 +363,7 @@ export function OrderForm({
       {/* Lunch configuration - Conditional selectors */}
       <Card variant="elevated" className="p-6 rounded-2xl">
         <div className="flex items-center gap-3 mb-6">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-100 to-amber-200 text-amber-600 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-warning-100 to-warning-200 text-warning-600 flex items-center justify-center">
             <UtensilsCrossed className="w-6 h-6" />
           </div>
           <div>
@@ -476,7 +476,7 @@ export function OrderForm({
             dailyMenuDisplay.saladOptions.length <= 1 &&
             dailyMenuDisplay.drinkOptions.length <= 1 &&
             dailyMenuDisplay.extraOptions.length <= 1 && (
-              <div className="bg-gradient-to-br from-sage-50 via-white to-amber-50 rounded-2xl border border-sage-200 overflow-hidden">
+              <div className="bg-gradient-to-br from-sage-50 via-white to-warning-50 rounded-2xl border border-sage-200 overflow-hidden">
                 <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-4 py-3">
                   <h4 className="text-white font-semibold text-sm flex items-center gap-2">
                     <span className="text-lg">🍽️</span>
@@ -486,21 +486,21 @@ export function OrderForm({
                 <div className="p-4 space-y-3">
                   {/* Soup */}
                   {dailyMenuDisplay.soupOptions.length === 1 && (
-                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-amber-100 shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-xl">
+                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-warning-100 shadow-sm">
+                      <div className="w-10 h-10 rounded-xl bg-warning-100 flex items-center justify-center text-xl">
                         🍲
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs text-amber-600 font-medium tracking-wide">
+                        <p className="text-xs text-warning-600 font-medium tracking-wide">
                           Sopa
                         </p>
                         <p className="text-carbon-900 font-semibold">
                           {dailyMenuDisplay.soupOptions[0].name}
                         </p>
                       </div>
-                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                      <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
                         <svg
-                          className="w-4 h-4 text-emerald-600"
+                          className="w-4 h-4 text-success-600"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -518,21 +518,21 @@ export function OrderForm({
 
                   {/* Principle */}
                   {dailyMenuDisplay.principleOptions.length === 1 && (
-                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-emerald-100 shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center text-xl">
+                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-success-100 shadow-sm">
+                      <div className="w-10 h-10 rounded-xl bg-success-100 flex items-center justify-center text-xl">
                         🥔
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs text-emerald-600 font-medium tracking-wide">
+                        <p className="text-xs text-success-600 font-medium tracking-wide">
                           Principio
                         </p>
                         <p className="text-carbon-900 font-semibold">
                           {dailyMenuDisplay.principleOptions[0].name}
                         </p>
                       </div>
-                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                      <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
                         <svg
-                          className="w-4 h-4 text-emerald-600"
+                          className="w-4 h-4 text-success-600"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -562,9 +562,9 @@ export function OrderForm({
                           {dailyMenuDisplay.saladOptions[0].name}
                         </p>
                       </div>
-                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                      <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
                         <svg
-                          className="w-4 h-4 text-emerald-600"
+                          className="w-4 h-4 text-success-600"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -594,9 +594,9 @@ export function OrderForm({
                           {dailyMenuDisplay.drinkOptions[0].name}
                         </p>
                       </div>
-                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                      <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
                         <svg
-                          className="w-4 h-4 text-emerald-600"
+                          className="w-4 h-4 text-success-600"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -614,21 +614,21 @@ export function OrderForm({
 
                   {/* Extra */}
                   {dailyMenuDisplay.extraOptions.length === 1 && (
-                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-purple-100 shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center text-xl">
+                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-info-100 shadow-sm">
+                      <div className="w-10 h-10 rounded-xl bg-info-100 flex items-center justify-center text-xl">
                         🍌
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs text-purple-600 font-medium tracking-wide">
+                        <p className="text-xs text-info-600 font-medium tracking-wide">
                           Extra
                         </p>
                         <p className="text-carbon-900 font-semibold">
                           {dailyMenuDisplay.extraOptions[0].name}
                         </p>
                       </div>
-                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                      <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
                         <svg
-                          className="w-4 h-4 text-emerald-600"
+                          className="w-4 h-4 text-success-600"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -646,21 +646,21 @@ export function OrderForm({
 
                   {/* Rice */}
                   {dailyMenuDisplay.riceOption && (
-                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-amber-100 shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center text-xl">
+                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-warning-100 shadow-sm">
+                      <div className="w-10 h-10 rounded-xl bg-warning-100 flex items-center justify-center text-xl">
                         🍚
                       </div>
                       <div className="flex-1">
-                        <p className="text-xs text-amber-600 font-medium tracking-wide">
+                        <p className="text-xs text-warning-600 font-medium tracking-wide">
                           Arroz
                         </p>
                         <p className="text-carbon-900 font-semibold">
                           {dailyMenuDisplay.riceOption.name}
                         </p>
                       </div>
-                      <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center">
+                      <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
                         <svg
-                          className="w-4 h-4 text-emerald-600"
+                          className="w-4 h-4 text-success-600"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -700,7 +700,7 @@ export function OrderForm({
       {selectedProtein && (
         <Card variant="elevated" className="p-5 rounded-2xl">
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-100 to-amber-200 text-amber-600 flex items-center justify-center">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-warning-100 to-warning-200 text-warning-600 flex items-center justify-center">
               <ShoppingBag className="w-4 h-4" />
             </div>
             <div>
@@ -771,7 +771,7 @@ export function OrderForm({
       {/* Loose products search & selection */}
       <Card variant="elevated" className="p-6 rounded-2xl">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 text-purple-600 flex items-center justify-center">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-info-100 to-info-200 text-info-600 flex items-center justify-center">
             <Sparkles className="w-6 h-6" />
           </div>
           <div>
@@ -933,7 +933,7 @@ export function OrderForm({
       {/* Order notes */}
       <Card variant="elevated" className="p-6 rounded-2xl">
         <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-100 to-purple-200 text-purple-600 flex items-center justify-center">
+          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-info-100 to-info-200 text-info-600 flex items-center justify-center">
             <svg
               className="w-5 h-5"
               fill="none"

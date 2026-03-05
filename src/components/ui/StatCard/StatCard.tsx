@@ -125,7 +125,7 @@ export function StatCard({
                                     config.change,
                                     change.type === "increase"
                                         ? "text-sage-600"
-                                        : "text-red-600"
+                                        : "text-error-600"
                                 )}
                             >
                                 {change.type === "increase" ? "↑" : "↓"}

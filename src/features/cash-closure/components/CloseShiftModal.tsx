@@ -45,7 +45,7 @@ export const CloseShiftModal: React.FC<CloseShiftModalProps> = ({ isOpen, onClos
         {/* Detailed Breakdown */}
         <div className="bg-carbon-900 text-white rounded-2xl p-5 shadow-xl relative overflow-hidden">
           <div className="relative z-10 space-y-4">
-            <h4 className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest flex items-center gap-2">
+            <h4 className="text-[10px] font-bold text-carbon-400 tracking-wide flex items-center gap-2">
               <Calculator className="w-3.5 h-3.5" />
               Cálculo del Sistema
             </h4>
@@ -76,7 +76,7 @@ export const CloseShiftModal: React.FC<CloseShiftModalProps> = ({ isOpen, onClos
               </div>
 
               <div className="pt-3 border-t border-white/10 flex justify-between items-end">
-                <span className="text-xs font-bold uppercase tracking-wider text-carbon-400">Balance Esperado</span>
+                <span className="text-xs font-medium tracking-wide text-carbon-400">Balance Esperado</span>
                 <span className="text-2xl font-black text-white tracking-tight">
                   ${expected.toLocaleString("es-CO")}
                 </span>
@@ -93,7 +93,7 @@ export const CloseShiftModal: React.FC<CloseShiftModalProps> = ({ isOpen, onClos
             <label className="text-sm font-bold text-carbon-700">Efectivo Físico en Caja</label>
             {actualBalance && (
               <span className={cn(
-                "text-[10px] font-black uppercase px-2 py-0.5 rounded-full flex items-center gap-1 animate-in zoom-in-95 duration-200",
+                "text-[10px] font-semibold px-2 py-0.5 rounded-full flex items-center gap-1 animate-in zoom-in-95 duration-200",
                 difference === 0 ? "bg-success-100 text-success-700" :
                 difference > 0 ? "bg-info-100 text-info-700" : "bg-error-100 text-error-700"
               )}>

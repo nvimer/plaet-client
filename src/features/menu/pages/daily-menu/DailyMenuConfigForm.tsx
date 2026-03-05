@@ -380,7 +380,7 @@ export function DailyMenuConfigForm({
               </div>
             ) : (
               <div className="space-y-2">
-                <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100 font-medium">
+                <p className="text-xs text-warning-600 bg-warning-50 p-3 rounded-xl border border-warning-100 font-medium">
                   Categoría no detectada. Por favor asígnala manualmente:
                 </p>
                 <FilterSelect
@@ -432,7 +432,7 @@ export function DailyMenuConfigForm({
               </div>
             ) : (
               <div className="space-y-2">
-                <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100 font-medium">
+                <p className="text-xs text-warning-600 bg-warning-50 p-3 rounded-xl border border-warning-100 font-medium">
                   Categoría no detectada. Por favor asígnala manualmente:
                 </p>
                 <FilterSelect
@@ -484,7 +484,7 @@ export function DailyMenuConfigForm({
               </div>
             ) : (
               <div className="space-y-2">
-                <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100 font-medium">
+                <p className="text-xs text-warning-600 bg-warning-50 p-3 rounded-xl border border-warning-100 font-medium">
                   Categoría no detectada. Por favor asígnala manualmente:
                 </p>
                 <FilterSelect
@@ -536,7 +536,7 @@ export function DailyMenuConfigForm({
               </div>
             ) : (
               <div className="space-y-2">
-                <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100 font-medium">
+                <p className="text-xs text-warning-600 bg-warning-50 p-3 rounded-xl border border-warning-100 font-medium">
                   Categoría no detectada. Por favor asígnala manualmente:
                 </p>
                 <FilterSelect
@@ -588,7 +588,7 @@ export function DailyMenuConfigForm({
               </div>
             ) : (
               <div className="space-y-2">
-                <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100 font-medium">
+                <p className="text-xs text-warning-600 bg-warning-50 p-3 rounded-xl border border-warning-100 font-medium">
                   Categoría no detectada. Por favor asígnala manualmente:
                 </p>
                 <FilterSelect
@@ -666,14 +666,14 @@ export function DailyMenuConfigForm({
                     })}
                   </div>
                 ) : (
-                  <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl">
+                  <p className="text-xs text-warning-600 bg-warning-50 p-3 rounded-xl">
                     No hay proteínas en esta categoría.
                   </p>
                 )}
               </div>
             ) : (
               <div className="space-y-2">
-                <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100 font-medium">
+                <p className="text-xs text-warning-600 bg-warning-50 p-3 rounded-xl border border-warning-100 font-medium">
                   Categoría no detectada. Por favor asígnala manualmente:
                 </p>
                 <FilterSelect
@@ -755,7 +755,7 @@ export function DailyMenuConfigForm({
                   </div>
                 ) : (
                   <div className="space-y-2">
-                    <p className="text-xs text-amber-600 bg-amber-50 p-3 rounded-xl border border-amber-100 font-medium">
+                    <p className="text-xs text-warning-600 bg-warning-50 p-3 rounded-xl border border-warning-100 font-medium">
                       Categoría no detectada. Por favor asígnala manualmente:
                     </p>
                     <FilterSelect
@@ -814,7 +814,7 @@ export function DailyMenuConfigForm({
           {!showPriceFields ? (
             <div className="space-y-4">
               <div className="flex flex-col items-center text-center space-y-2 mb-4">
-                <div className="w-12 h-12 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-full bg-warning-50 text-warning-600 flex items-center justify-center">
                   <Lock className="w-6 h-6" />
                 </div>
                 <h3 className="font-bold text-carbon-900 text-lg">Zona Restringida</h3>
@@ -871,13 +871,13 @@ export function DailyMenuConfigForm({
                 />
               </div>
 
-              <div className="p-4 rounded-2xl bg-amber-50 border-2 border-amber-200">
+              <div className="p-4 rounded-2xl bg-warning-50 border-2 border-warning-200">
                 <div className="flex items-center justify-between mb-4">
                   <div>
-                    <span className="text-xs font-semibold text-amber-600 tracking-widest">Costo Portacomida</span>
+                    <span className="text-xs font-semibold text-warning-600 tracking-widest">Costo Portacomida</span>
                     <p className="text-2xl font-semibold text-carbon-900">${formState.packagingFee.toLocaleString()}</p>
                   </div>
-                  <Box className="w-8 h-8 text-amber-300" />
+                  <Box className="w-8 h-8 text-warning-300" />
                 </div>
 
                 <div className="grid grid-cols-3 gap-2 mb-4">
@@ -889,7 +889,7 @@ export function DailyMenuConfigForm({
                       className={cn(
                         "py-2 rounded-xl text-xs font-bold transition-all",
                         formState.packagingFee === price
-                          ? "bg-amber-500 text-white shadow-md"
+                          ? "bg-warning-500 text-white shadow-md"
                           : "bg-white border border-carbon-200 text-carbon-600"
                       )}
                     >

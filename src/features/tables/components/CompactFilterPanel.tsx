@@ -46,7 +46,7 @@ export const CompactFilterPanel = ({
       label: 'Ocupadas', 
       value: TableStatus.OCCUPIED, 
       count: counts.occupied,
-      color: 'bg-red-50 text-red-700 hover:bg-red-100 border-red-200'
+      color: 'bg-error-50 text-error-700 hover:bg-error-100 border-error-200'
     },
     { 
       label: 'Limpieza', 
@@ -122,7 +122,7 @@ export const CompactFilterPanel = ({
                 clearFilter('status');
                 clearFilter('location');
               }}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-carbon-600 hover:text-red-600 hover:bg-red-50 rounded-lg border border-sage-border-subtle transition-all duration-150"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-carbon-600 hover:text-error-600 hover:bg-error-50 rounded-lg border border-sage-border-subtle transition-all duration-150"
             >
               <Filter className="w-3 h-3" />
               <span>Limpiar</span>

@@ -74,11 +74,11 @@ export function UserCard({
       case RoleName.ADMIN:
         return { variant: "info", bgColor: "bg-blue-100", textColor: "text-blue-700" };
       case RoleName.WAITER:
-        return { variant: "success", bgColor: "bg-emerald-100", textColor: "text-emerald-700" };
+        return { variant: "success", bgColor: "bg-success-100", textColor: "text-success-700" };
       case RoleName.KITCHEN_MANAGER:
-        return { variant: "warning", bgColor: "bg-amber-100", textColor: "text-amber-700" };
+        return { variant: "warning", bgColor: "bg-warning-100", textColor: "text-warning-700" };
       case RoleName.CASHIER:
-        return { variant: "neutral", bgColor: "bg-purple-100", textColor: "text-purple-700" };
+        return { variant: "neutral", bgColor: "bg-info-100", textColor: "text-info-700" };
       default:
         return { variant: "neutral", bgColor: "bg-sage-100", textColor: "text-carbon-600" };
     }
@@ -165,7 +165,7 @@ export function UserCard({
                 variant="ghost"
                 size="md"
                 onClick={() => setShowDeleteConfirm(true)}
-                className="flex-1 text-red-600 hover:bg-red-50 hover:text-red-700 min-h-[44px]"
+                className="flex-1 text-error-600 hover:bg-error-50 hover:text-error-700 min-h-[44px]"
               >
                 <Trash2 className="w-4 h-4 mr-2" />
                 Eliminar

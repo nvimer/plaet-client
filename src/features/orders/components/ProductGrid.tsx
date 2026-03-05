@@ -108,7 +108,7 @@ export function ProductGrid({
 
               {/* Availability Badge */}
               {!product.isAvailable && (
-                <span className="text-xs text-red-500 mt-2">No disponible</span>
+                <span className="text-xs text-error-500 mt-2">No disponible</span>
               )}
             </div>
           </TouchableCard>

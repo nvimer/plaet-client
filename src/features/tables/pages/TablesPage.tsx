@@ -85,7 +85,7 @@ export function TablesPage() {
         <div className="flex items-center justify-center min-h-[50vh] px-4 sm:px-6 lg:px-8 py-8">
           <Card variant="elevated" padding="lg" className="max-w-md w-full border border-sage-200 shadow-sm rounded-2xl">
             <div className="text-center">
-              <div className="w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-rose-500">
+              <div className="w-14 h-14 bg-error-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-error-500">
                 <TableIcon className="w-7 h-7" />
               </div>
               <h2 className="text-lg font-semibold text-carbon-900 mb-2">Error al cargar mesas</h2>
@@ -108,7 +108,7 @@ export function TablesPage() {
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sage-600">
               <TableIcon className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Operación Local</span>
+              <span className="text-[10px] font-semibold tracking-[0.2em]">Operación Local</span>
             </div>
             <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Estado de Mesas</h1>
             <p className="text-lg text-carbon-500 font-medium">Administra la ocupación y ubicación de las mesas en tiempo real.</p>
@@ -214,7 +214,7 @@ export function TablesPage() {
             />
             
             <div className="pt-4 p-5 rounded-2xl bg-sage-50 border border-sage-100">
-              <h4 className="text-[10px] font-black text-carbon-400 uppercase tracking-widest mb-3 ml-1">Zonificación</h4>
+              <h4 className="text-[10px] font-black text-carbon-400 tracking-wide mb-3 ml-1">Zonificación</h4>
               <p className="text-sm font-medium text-carbon-600 leading-relaxed">
                 Filtra por salón, terraza o barra para gestionar mejor el flujo de clientes.
               </p>

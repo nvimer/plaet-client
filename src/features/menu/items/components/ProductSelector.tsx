@@ -123,7 +123,7 @@ export function ProductSelector({
 
               {/* Availability Badge - Bigger on large screens */}
               {!isAvailable && (
-                <span className="text-xs sm:text-sm lg:text-base text-rose-500 mt-1 sm:mt-2 lg:mt-3 font-medium">
+                <span className="text-xs sm:text-sm lg:text-base text-error-500 mt-1 sm:mt-2 lg:mt-3 font-medium">
                   No disponible
                 </span>
               )}

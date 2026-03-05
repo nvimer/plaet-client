@@ -155,7 +155,7 @@ export function MenuPage() {
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sage-600">
               <Grid3x3 className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Catálogo Comercial</span>
+              <span className="text-[10px] font-semibold tracking-[0.2em]">Catálogo Comercial</span>
             </div>
             <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Productos del Menú</h1>
             <p className="text-lg text-carbon-500 font-medium">Administra los productos, precios y categorías de tu restaurante.</p>
@@ -186,18 +186,18 @@ export function MenuPage() {
 
         {/* Alertas de stock */}
         {hasStockAlerts && (
-          <div className="flex items-center justify-between p-4 bg-amber-50 rounded-2xl border border-amber-100 shadow-soft-sm">
+          <div className="flex items-center justify-between p-4 bg-warning-50 rounded-2xl border border-warning-100 shadow-soft-sm">
             <div className="flex items-center gap-6">
-              <div className="flex items-center gap-2 text-amber-800 font-bold text-sm">
-                <AlertTriangle className="w-5 h-5 text-amber-600" />
+              <div className="flex items-center gap-2 text-warning-800 font-bold text-sm">
+                <AlertTriangle className="w-5 h-5 text-warning-600" />
                 Alertas de Stock
               </div>
-              <div className="h-4 w-px bg-amber-200" />
+              <div className="h-4 w-px bg-warning-200" />
               <div className="flex gap-4">
-                <span className="text-xs font-medium text-amber-700">
+                <span className="text-xs font-medium text-warning-700">
                   <strong className="text-carbon-900">{outOfStockItems?.length ?? 0}</strong> agotados
                 </span>
-                <span className="text-xs font-medium text-amber-700">
+                <span className="text-xs font-medium text-warning-700">
                   <strong className="text-carbon-900">{lowStockItems?.length ?? 0}</strong> bajos
                 </span>
               </div>
@@ -206,7 +206,7 @@ export function MenuPage() {
               variant="ghost"
               size="sm"
               onClick={() => navigate(ROUTES.STOCK_MANAGEMENT)}
-              className="text-amber-900 font-bold hover:bg-amber-100"
+              className="text-warning-900 font-bold hover:bg-warning-100"
             >
               Gestionar
             </Button>
@@ -332,7 +332,7 @@ export function MenuPage() {
             />
             
             <div className="pt-4 p-5 rounded-2xl bg-sage-50 border border-sage-100">
-              <h4 className="text-[10px] font-black text-carbon-400 uppercase tracking-widest mb-3 ml-1">Organización</h4>
+              <h4 className="text-[10px] font-black text-carbon-400 tracking-wide mb-3 ml-1">Organización</h4>
               <p className="text-sm font-medium text-carbon-600 leading-relaxed">
                 Clasifica tus productos por rubros comerciales para facilitar la toma de pedidos y la lectura de reportes.
               </p>

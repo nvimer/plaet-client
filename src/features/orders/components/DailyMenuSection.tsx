@@ -35,10 +35,10 @@ function DailyMenuCategory({
 }: DailyMenuCategoryProps) {
   const colorClasses = {
     sage: "bg-sage-50 border-sage-200 text-sage-700",
-    amber: "bg-amber-50 border-amber-200 text-amber-700",
-    emerald: "bg-emerald-50 border-emerald-200 text-emerald-700",
+    amber: "bg-warning-50 border-warning-200 text-warning-700",
+    emerald: "bg-success-50 border-success-200 text-success-700",
     blue: "bg-blue-50 border-blue-200 text-blue-700",
-    purple: "bg-purple-50 border-purple-200 text-purple-700",
+    purple: "bg-info-50 border-info-200 text-info-700",
   };
 
   const hasOptions = options.length > 0;
@@ -165,7 +165,7 @@ export function DailyMenuSection({
       <div className="p-3 sm:p-5 space-y-3">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <DailyMenuCategory
-            icon={<Soup className="w-5 h-5 text-amber-600" />}
+            icon={<Soup className="w-5 h-5 text-warning-600" />}
             label="Sopas"
             options={soupOptions}
             color="amber"
@@ -174,7 +174,7 @@ export function DailyMenuSection({
           />
 
           <DailyMenuCategory
-            icon={<Leaf className="w-5 h-5 text-emerald-600" />}
+            icon={<Leaf className="w-5 h-5 text-success-600" />}
             label="Principios"
             options={principleOptions}
             color="emerald"
@@ -183,7 +183,7 @@ export function DailyMenuSection({
           />
 
           <DailyMenuCategory
-            icon={<Leaf className="w-5 h-5 text-green-600" />}
+            icon={<Leaf className="w-5 h-5 text-success-600" />}
             label="Ensaladas"
             options={saladOptions}
             color="sage"
@@ -192,7 +192,7 @@ export function DailyMenuSection({
           />
 
           <DailyMenuCategory
-            icon={<CircleDot className="w-5 h-5 text-purple-600" />}
+            icon={<CircleDot className="w-5 h-5 text-info-600" />}
             label="Extras"
             options={extraOptions}
             color="purple"

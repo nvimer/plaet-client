@@ -148,17 +148,40 @@ export function useResetStock() {
 
   return useMutation({
     mutationFn: async (variables: {
-      items: Array<{ menuItemId: number; quantity: number }>;
+      items: Array<{ itemId: number; quantity: number }>;
     }) => {
       const response = await menuApi.dailyStockReset(variables);
       return response;
     },
     onSuccess: () => {
-      // Invalidate all item queries
       queryClient.invalidateQueries({
         queryKey: queryKeys.menu.all,
       });
-      // Invalidate stock-related queries
+      queryClient.invalidateQueries({
+        queryKey: ["menu", "items", "low-stock"],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ["menu", "items", "out-of-stock"],
+      });
+    },
+  });
+}
+
+export function useResetStockByCategory() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async (variables: {
+      categoryId: number;
+      items: Array<{ itemId: number; quantity: number }>;
+    }) => {
+      const response = await menuApi.dailyStockResetByCategory(variables);
+      return response;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.menu.all,
+      });
       queryClient.invalidateQueries({
         queryKey: ["menu", "items", "low-stock"],
       });

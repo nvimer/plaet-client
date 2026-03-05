@@ -313,10 +313,21 @@ export const getStockHistory = async (
  * @returns Response with reset results
  */
 export const dailyStockReset = async (resetData: {
-  items: Array<{ menuItemId: number; quantity: number }>;
+  items: Array<{ itemId: number; quantity: number }>;
 }) => {
   const { data } = await axiosClient.post<ApiResponse<{ resetCount?: number }>>(
     "/menu/items/stock/daily-reset",
+    resetData,
+  );
+  return data;
+};
+
+export const dailyStockResetByCategory = async (resetData: {
+  categoryId: number;
+  items: Array<{ itemId: number; quantity: number }>;
+}) => {
+  const { data } = await axiosClient.post<ApiResponse<{ resetCount?: number }>>(
+    "/menu/items/stock/daily-reset/by-category",
     resetData,
   );
   return data;

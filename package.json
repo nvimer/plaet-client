@@ -8,6 +8,7 @@
     "build": "vite build",
     "type-check": "tsc --noEmit",
     "lint": "eslint .",
+    "fix:ui": "node scripts/standardize-ui.mjs",
     "preview": "vite preview"
   },
   "dependencies": {

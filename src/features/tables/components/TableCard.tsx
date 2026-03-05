@@ -43,18 +43,18 @@ const STATUS_MAP = {
   [TableStatus.OCCUPIED]: {
     label: "Ocupada",
     icon: CircleDot,
-    color: "text-rose-600",
-    bg: "bg-rose-50/30",
-    border: "border-rose-100",
-    dot: "bg-rose-500",
+    color: "text-error-600",
+    bg: "bg-error-50/30",
+    border: "border-error-100",
+    dot: "bg-error-500",
   },
   [TableStatus.NEEDS_CLEANING]: {
     label: "En Limpieza",
     icon: Clock,
-    color: "text-amber-600",
-    bg: "bg-amber-50/30",
-    border: "border-amber-100",
-    dot: "bg-amber-500",
+    color: "text-warning-600",
+    bg: "bg-warning-50/30",
+    border: "border-warning-100",
+    dot: "bg-warning-500",
   },
 } as const;
 
@@ -126,7 +126,7 @@ export function TableCard({ table, onEdit }: TableCardProps) {
             theme.color, theme.border
           )}>
             <StatusIcon className="w-3.5 h-3.5" />
-            <span className="text-[10px] font-black uppercase tracking-widest">{theme.label}</span>
+            <span className="text-[10px] font-semibold tracking-wide">{theme.label}</span>
           </div>
           
           <div className="flex items-center gap-1.5 text-carbon-400 bg-white/50 px-2.5 py-1 rounded-full border border-sage-100">
@@ -153,9 +153,9 @@ export function TableCard({ table, onEdit }: TableCardProps) {
           
           <div className="h-8 mt-3 flex items-center justify-center">
             {table.status === TableStatus.OCCUPIED ? (
-              <div className="flex items-center gap-1.5 text-rose-600 bg-rose-100/50 px-3 py-1 rounded-full animate-pulse border border-rose-200/50">
+              <div className="flex items-center gap-1.5 text-error-600 bg-error-100/50 px-3 py-1 rounded-full animate-pulse border border-error-200/50">
                 <Timer className="w-3 h-3" />
-                <span className="text-[10px] font-black uppercase tracking-wider">{timeLabel}</span>
+                <span className="text-[10px] font-semibold tracking-wide">{timeLabel}</span>
               </div>
             ) : (
               <div className="w-1 h-1 bg-transparent" /> // Placeholder to keep height
@@ -196,7 +196,7 @@ export function TableCard({ table, onEdit }: TableCardProps) {
             </button>
             <button
               onClick={() => setIsDeleteDialogOpen(true)}
-              className="w-11 h-11 flex items-center justify-center rounded-2xl border-2 border-sage-100 text-carbon-300 hover:border-rose-200 hover:text-rose-600 hover:bg-rose-50 transition-all active:scale-95 shadow-soft-sm"
+              className="w-11 h-11 flex items-center justify-center rounded-2xl border-2 border-sage-100 text-carbon-300 hover:border-error-200 hover:text-error-600 hover:bg-error-50 transition-all active:scale-95 shadow-soft-sm"
             >
               <Trash2 className="w-4 h-4" />
             </button>

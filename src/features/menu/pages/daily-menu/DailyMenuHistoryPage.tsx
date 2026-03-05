@@ -118,7 +118,7 @@ export function DailyMenuHistoryPage() {
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-blue-600">
               <History className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Registro Histórico</span>
+              <span className="text-[10px] font-semibold tracking-[0.2em]">Registro Histórico</span>
             </div>
             <h1 className="text-4xl font-bold text-carbon-900 tracking-tight leading-tight">Calendario de Menús</h1>
             <p className="text-lg text-carbon-500 font-medium">Visualiza rápidamente qué se ofreció en fechas pasadas.</p>
@@ -131,7 +131,7 @@ export function DailyMenuHistoryPage() {
             >
               <ChevronLeft className="w-5 h-5" />
             </button>
-            <div className="px-6 text-sm font-black text-carbon-900 uppercase tracking-widest min-w-[160px] text-center">
+            <div className="px-6 text-sm font-black text-carbon-900 tracking-wide min-w-[160px] text-center">
               {monthName} {year}
             </div>
             <button 
@@ -148,7 +148,7 @@ export function DailyMenuHistoryPage() {
           <div className="lg:col-span-2 bg-white rounded-[3rem] p-10 border-2 border-carbon-50 shadow-smooth-xl">
             <div className="grid grid-cols-7 gap-2 mb-8">
               {['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'].map(d => (
-                <div key={d} className="text-center text-[10px] font-black text-carbon-300 uppercase tracking-widest py-2">
+                <div key={d} className="text-center text-[10px] font-black text-carbon-300 tracking-wide py-2">
                   {d}
                 </div>
               ))}
@@ -212,7 +212,7 @@ export function DailyMenuHistoryPage() {
                         <CalendarIcon className="w-7 h-7" />
                       </div>
                       <div className="text-right">
-                        <p className="text-[10px] font-black text-carbon-400 uppercase tracking-widest mb-1">Precio Base</p>
+                        <p className="text-[10px] font-black text-carbon-400 tracking-wide mb-1">Precio Base</p>
                         <p className="text-2xl font-black text-carbon-900 tracking-tight">
                           ${selectedMenu.basePrice.toLocaleString("es-CO")}
                         </p>
@@ -230,11 +230,11 @@ export function DailyMenuHistoryPage() {
                       <div className="grid grid-cols-1 gap-5">
                         {selectedMenu.soupOptions.length > 0 && (
                           <div className="flex items-start gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center flex-shrink-0 border border-amber-100">
+                            <div className="w-10 h-10 rounded-xl bg-warning-50 text-warning-600 flex items-center justify-center flex-shrink-0 border border-warning-100">
                               <UtensilsCrossed className="w-5 h-5" />
                             </div>
                             <div>
-                              <p className="text-[10px] font-black text-carbon-400 uppercase tracking-widest mb-1">Sopas</p>
+                              <p className="text-[10px] font-black text-carbon-400 tracking-wide mb-1">Sopas</p>
                               <p className="text-sm font-bold text-carbon-800 leading-tight">{selectedMenu.soupOptions.map(s => s.name).join(" o ")}</p>
                             </div>
                           </div>
@@ -242,11 +242,11 @@ export function DailyMenuHistoryPage() {
                         
                         {selectedMenu.principleOptions.length > 0 && (
                           <div className="flex items-start gap-4">
-                            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center flex-shrink-0 border border-emerald-100">
+                            <div className="w-10 h-10 rounded-xl bg-success-50 text-success-600 flex items-center justify-center flex-shrink-0 border border-success-100">
                               <Salad className="w-5 h-5" />
                             </div>
                             <div>
-                              <p className="text-[10px] font-black text-carbon-400 uppercase tracking-widest mb-1">Principios</p>
+                              <p className="text-[10px] font-black text-carbon-400 tracking-wide mb-1">Principios</p>
                               <p className="text-sm font-bold text-carbon-800 leading-tight">{selectedMenu.principleOptions.map(p => p.name).join(" o ")}</p>
                             </div>
                           </div>
@@ -258,21 +258,21 @@ export function DailyMenuHistoryPage() {
                               <CupSoda className="w-5 h-5" />
                             </div>
                             <div>
-                              <p className="text-[10px] font-black text-carbon-400 uppercase tracking-widest mb-1">Bebidas</p>
+                              <p className="text-[10px] font-black text-carbon-400 tracking-wide mb-1">Bebidas</p>
                               <p className="text-sm font-bold text-carbon-800 leading-tight">{selectedMenu.drinkOptions.map(d => d.name).join(" o ")}</p>
                             </div>
                           </div>
                         )}
                       </div>
 
-                      <div className="p-6 bg-rose-50/50 rounded-[2rem] border-2 border-rose-100/50">
+                      <div className="p-6 bg-error-50/50 rounded-[2rem] border-2 border-error-100/50">
                         <div className="flex items-center gap-2 mb-4">
-                          <Beef className="w-5 h-5 text-rose-600" />
-                          <p className="text-[10px] font-black text-rose-600 uppercase tracking-widest">Proteínas Disponibles ({selectedMenu.proteinOptions.length})</p>
+                          <Beef className="w-5 h-5 text-error-600" />
+                          <p className="text-[10px] font-black text-error-600 tracking-wide">Proteínas Disponibles ({selectedMenu.proteinOptions.length})</p>
                         </div>
                         <div className="flex flex-wrap gap-2">
                           {selectedMenu.proteinOptions.map(p => (
-                            <span key={p.id} className="px-3 py-1.5 bg-white text-[11px] font-bold text-carbon-800 rounded-xl border border-rose-100 shadow-soft-xs">
+                            <span key={p.id} className="px-3 py-1.5 bg-white text-[11px] font-bold text-carbon-800 rounded-xl border border-error-100 shadow-soft-xs">
                               {p.name}
                             </span>
                           ))}

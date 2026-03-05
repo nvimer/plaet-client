@@ -47,7 +47,7 @@ export function OrdersListPanel({
               <h2 className="text-white font-semibold text-lg sm:text-xl tracking-tight">
                 {isDineIn ? "Pedidos Mesa" : "Pedidos"}
               </h2>
-              <p className="text-carbon-400 text-[10px] sm:text-xs font-semibold uppercase tracking-widest mt-0.5">
+              <p className="text-carbon-400 text-[10px] sm:text-xs font-semibold tracking-wide mt-0.5">
                 {orders.length} {orders.length === 1 ? 'servicio' : 'servicios'}
               </p>
             </div>
@@ -56,7 +56,7 @@ export function OrdersListPanel({
             <p className="text-xl sm:text-2xl font-bold text-white tracking-tight">
               ${Number(tableTotal).toLocaleString("es-CO")}
             </p>
-            <p className="text-carbon-400 text-[10px] sm:text-xs font-semibold uppercase tracking-widest mt-0.5">Total</p>
+            <p className="text-carbon-400 text-[10px] sm:text-xs font-semibold tracking-wide mt-0.5">Total</p>
           </div>
         </div>
       </div>

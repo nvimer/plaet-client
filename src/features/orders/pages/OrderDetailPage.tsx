@@ -209,12 +209,12 @@ export function OrderDetailPage() {
                 <ReceiptText className="w-6 h-6" />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest leading-none mb-1.5">Estado Actual</p>
+                <p className="text-[10px] font-bold text-carbon-400 tracking-wide leading-none mb-1.5">Estado Actual</p>
                 <OrderStatusBadge status={order.status} />
               </div>
             </div>
             <div className="text-right">
-              <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest mb-0.5">Total del Pedido</p>
+              <p className="text-[10px] font-bold text-carbon-400 tracking-wide mb-0.5">Total del Pedido</p>
               <p className="text-3xl font-bold text-carbon-900 tracking-tight">${Number(order.totalAmount).toLocaleString("es-CO")}</p>
             </div>
           </div>
@@ -224,7 +224,7 @@ export function OrderDetailPage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {order.table && (
                 <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest">Ubicación</span>
+                  <span className="text-[10px] font-bold text-carbon-400 tracking-wide">Ubicación</span>
                   <div className="flex items-center gap-2 text-carbon-700 font-bold">
                     <div className="w-8 h-8 rounded-lg bg-sage-100 flex items-center justify-center text-sage-600">
                       <MapPin className="w-4 h-4" />
@@ -236,7 +236,7 @@ export function OrderDetailPage() {
 
               {order.waiter && (
                 <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest">Atendido por</span>
+                  <span className="text-[10px] font-bold text-carbon-400 tracking-wide">Atendido por</span>
                   <div className="flex items-center gap-2 text-carbon-700 font-bold">
                     <div className="w-8 h-8 rounded-lg bg-carbon-100 flex items-center justify-center text-carbon-600">
                       <User className="w-4 h-4" />
@@ -247,7 +247,7 @@ export function OrderDetailPage() {
               )}
 
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest">Fecha</span>
+                <span className="text-[10px] font-bold text-carbon-400 tracking-wide">Fecha</span>
                 <div className="flex items-center gap-2 text-carbon-700 font-bold">
                   <div className="w-8 h-8 rounded-lg bg-carbon-100 flex items-center justify-center text-carbon-600">
                     <Calendar className="w-4 h-4" />
@@ -257,7 +257,7 @@ export function OrderDetailPage() {
               </div>
 
               <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest">Hora</span>
+                <span className="text-[10px] font-bold text-carbon-400 tracking-wide">Hora</span>
                 <div className="flex items-center gap-2 text-carbon-700 font-bold">
                   <div className="w-8 h-8 rounded-lg bg-carbon-100 flex items-center justify-center text-carbon-600">
                     <Clock className="w-4 h-4" />
@@ -305,7 +305,7 @@ export function OrderDetailPage() {
             {/* Right Column: Financial Summary */}
             <div className="space-y-6">
               <h4 className="font-bold text-carbon-900 uppercase text-xs tracking-widest flex items-center gap-2">
-                <div className="w-1.5 h-4 bg-emerald-500 rounded-full" />
+                <div className="w-1.5 h-4 bg-success-500 rounded-full" />
                 Resumen Financiero
               </h4>
               <Card
@@ -314,18 +314,18 @@ export function OrderDetailPage() {
                 className="bg-carbon-900 text-white rounded-3xl border-none shadow-xl overflow-hidden relative"
               >
                 <div className="space-y-4 relative z-10">
-                  <div className="flex justify-between text-carbon-400 font-bold text-xs uppercase tracking-widest">
+                  <div className="flex justify-between text-carbon-400 font-bold text-xs tracking-wide">
                     <span>Subtotal</span>
                     <span>${Number(order.totalAmount).toLocaleString("es-CO")}</span>
                   </div>
                   {paidAmount > 0 && (
-                    <div className="flex justify-between text-emerald-400 font-bold text-xs uppercase tracking-widest">
+                    <div className="flex justify-between text-success-400 font-bold text-xs tracking-wide">
                       <span>Pagado</span>
                       <span>-${paidAmount.toLocaleString("es-CO")}</span>
                     </div>
                   )}
                   <div className="flex justify-between items-end pt-2 border-t border-white/10">
-                    <span className="text-sm font-bold uppercase tracking-widest text-carbon-400">Pendiente</span>
+                    <span className="text-sm font-medium tracking-wide text-carbon-400">Pendiente</span>
                     <span className="text-3xl font-black text-white tracking-tighter">
                       ${remainingAmount.toLocaleString("es-CO")}
                     </span>
@@ -337,21 +337,21 @@ export function OrderDetailPage() {
               {/* Payments History */}
               {order.payments && order.payments.length > 0 && (
                 <div className="space-y-3">
-                  <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest px-1">Pagos Recibidos</p>
+                  <p className="text-[10px] font-bold text-carbon-400 tracking-wide px-1">Pagos Recibidos</p>
                   {order.payments.map((payment) => (
                     <div
                       key={payment.id}
-                      className="flex items-center justify-between p-3 bg-emerald-50/50 rounded-xl border border-emerald-100"
+                      className="flex items-center justify-between p-3 bg-success-50/50 rounded-xl border border-success-100"
                     >
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg bg-emerald-100 flex items-center justify-center text-emerald-600">
+                        <div className="w-8 h-8 rounded-lg bg-success-100 flex items-center justify-center text-success-600">
                           <CreditCard className="w-4 h-4" />
                         </div>
                         <span className="text-carbon-700 font-bold text-sm">
                           {payment.method}
                         </span>
                       </div>
-                      <span className="font-bold text-emerald-700">
+                      <span className="font-bold text-success-700">
                         ${Number(payment.amount).toLocaleString("es-CO")}
                       </span>
                     </div>

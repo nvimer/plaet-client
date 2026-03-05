@@ -104,7 +104,7 @@ export interface StockHistoryEntry {
  */
 export interface DailyStockResetInput {
   items: Array<{
-    menuItemId: number;
+    itemId: number;
     quantity: number;
   }>;
 }

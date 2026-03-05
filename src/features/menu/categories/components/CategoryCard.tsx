@@ -122,7 +122,7 @@ export function CategoryCard({
               variant="ghost"
               size="sm"
               onClick={() => setIsDeleteDialogOpen(true)}
-              className="flex-1 min-h-[40px] touch-manipulation text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+              className="flex-1 min-h-[40px] touch-manipulation text-error-600 hover:bg-error-50 hover:text-error-700"
             >
               <Trash2 className="w-4 h-4 mr-1.5" />
               Eliminar

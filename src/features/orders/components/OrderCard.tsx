@@ -44,12 +44,12 @@ interface OrderCardProps {
 const STATUS_CONFIG = {
   [OrderStatus.OPEN]: {
     label: "Abierto",
-    bg: "bg-emerald-50",
-    border: "border-emerald-200",
-    text: "text-emerald-700",
-    badge: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    accent: "bg-emerald-500",
-    urgencyColor: "text-emerald-600",
+    bg: "bg-success-50",
+    border: "border-success-200",
+    text: "text-success-700",
+    badge: "bg-success-100 text-success-700 border-success-200",
+    accent: "bg-success-500",
+    urgencyColor: "text-success-600",
   },
   [OrderStatus.PAID]: {
     label: "Pagado",
@@ -62,21 +62,21 @@ const STATUS_CONFIG = {
   },
   [OrderStatus.SENT_TO_CASHIER]: {
     label: "En Caja",
-    bg: "bg-purple-50",
-    border: "border-purple-200",
-    text: "text-purple-700",
-    badge: "bg-purple-100 text-purple-700 border-purple-200",
-    accent: "bg-purple-500",
-    urgencyColor: "text-purple-600",
+    bg: "bg-info-50",
+    border: "border-info-200",
+    text: "text-info-700",
+    badge: "bg-info-100 text-info-700 border-info-200",
+    accent: "bg-info-500",
+    urgencyColor: "text-info-600",
   },
   [OrderStatus.CANCELLED]: {
     label: "Cancelado",
-    bg: "bg-rose-50",
-    border: "border-rose-200",
-    text: "text-rose-700",
-    badge: "bg-rose-100 text-rose-700 border-rose-200",
-    accent: "bg-rose-500",
-    urgencyColor: "text-rose-600",
+    bg: "bg-error-50",
+    border: "border-error-200",
+    text: "text-error-700",
+    badge: "bg-error-100 text-error-700 border-error-200",
+    accent: "bg-error-500",
+    urgencyColor: "text-error-600",
   },
 } as const;
 
@@ -243,14 +243,14 @@ export function OrderCard({
           "group flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-200",
           "bg-white hover:shadow-md hover:border-sage-200",
           config.border,
-          waitTime.isUrgent && "border-l-4 border-l-rose-500",
+          waitTime.isUrgent && "border-l-4 border-l-error-500",
         )}
       >
         {/* Wait Time - Prominent */}
         <div
           className={cn(
             "flex-shrink-0 w-16 text-center",
-            waitTime.isUrgent ? "text-rose-600" : config.urgencyColor,
+            waitTime.isUrgent ? "text-error-600" : config.urgencyColor,
           )}
         >
           <div className="text-xl font-bold">{waitTime.text}</div>
@@ -318,7 +318,7 @@ export function OrderCard({
         config.border,
         waitTime.isUrgent &&
           waitTime.minutes > 30 &&
-          "ring-2 ring-rose-200 ring-offset-2",
+          "ring-2 ring-error-200 ring-offset-2",
       )}
     >
       {/* Status accent bar */}
@@ -326,7 +326,7 @@ export function OrderCard({
 
       {/* Urgent badge for long waits */}
       {waitTime.isUrgent && waitTime.minutes > 30 && (
-        <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-rose-100 text-rose-700 rounded-full text-xs font-bold animate-pulse z-10">
+        <div className="absolute top-2 right-2 flex items-center gap-1 px-2 py-1 bg-error-100 text-error-700 rounded-full text-xs font-bold animate-pulse z-10">
           <Flame className="w-3 h-3" />
           Retrasado
         </div>
@@ -341,7 +341,7 @@ export function OrderCard({
             <div
               className={cn(
                 "flex items-baseline gap-2 mb-2",
-                waitTime.isUrgent ? "text-rose-600" : config.urgencyColor,
+                waitTime.isUrgent ? "text-error-600" : config.urgencyColor,
               )}
             >
               <Clock

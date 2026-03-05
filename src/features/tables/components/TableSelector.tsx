@@ -48,11 +48,11 @@ export function TableSelector({
 
   if (filteredTables.length === 0) {
     return (
-      <div className="p-6 bg-amber-50 border-2 border-amber-200 rounded-2xl text-center">
-        <p className="text-sm text-amber-800 font-medium">
+      <div className="p-6 bg-warning-50 border-2 border-warning-200 rounded-2xl text-center">
+        <p className="text-sm text-warning-800 font-medium">
           No hay mesas disponibles
         </p>
-        <p className="text-xs text-amber-600 mt-1">
+        <p className="text-xs text-warning-600 mt-1">
           Todas las mesas están ocupadas o en limpieza
         </p>
       </div>

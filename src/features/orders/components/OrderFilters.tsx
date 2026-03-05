@@ -339,7 +339,7 @@ export function OrderFilters({
 
           <div className="pt-4 p-5 rounded-2xl bg-sage-50 border border-sage-100">
 
-            <h4 className="text-[10px] font-black text-carbon-400 uppercase tracking-widest mb-3 ml-1">Resumen de Filtros</h4>
+            <h4 className="text-[10px] font-black text-carbon-400 tracking-wide mb-3 ml-1">Resumen de Filtros</h4>
 
             <div className="text-sm font-medium text-carbon-600 leading-relaxed">
 

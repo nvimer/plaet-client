@@ -37,10 +37,10 @@ export function StockHistoryModal({
 
   const getTypeColor = (type: StockHistoryEntry["type"]): string => {
     const colors: Record<StockHistoryEntry["type"], string> = {
-      ADD: "text-green-600 bg-green-50 border-green-200",
-      REMOVE: "text-red-600 bg-red-50 border-red-200",
+      ADD: "text-success-600 bg-success-50 border-success-200",
+      REMOVE: "text-error-600 bg-error-50 border-error-200",
       RESET: "text-blue-600 bg-blue-50 border-blue-200",
-      ORDER: "text-purple-600 bg-purple-50 border-purple-200",
+      ORDER: "text-info-600 bg-info-50 border-info-200",
       ADJUSTMENT: "text-yellow-600 bg-yellow-50 border-yellow-200",
     };
     return colors[type] || "text-carbon-600 bg-carbon-50 border-carbon-200";

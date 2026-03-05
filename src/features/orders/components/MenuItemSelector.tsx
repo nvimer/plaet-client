@@ -34,11 +34,11 @@ export function MenuItemSelector({
   riceName,
 }: MenuItemSelectorProps) {
   const colorClasses = {
-    amber: { text: "text-amber-600", bg: "bg-amber-50" },
+    amber: { text: "text-warning-600", bg: "bg-warning-50" },
     emerald: { text: "text-success-600", bg: "bg-success-50" },
     sage: { text: "text-sage-600", bg: "bg-sage-50" },
     blue: { text: "text-blue-600", bg: "bg-blue-50" },
-    purple: { text: "text-purple-600", bg: "bg-purple-50" },
+    purple: { text: "text-info-600", bg: "bg-info-50" },
   };
 
   const colors = colorClasses[color];
@@ -51,7 +51,7 @@ export function MenuItemSelector({
             {icon}
           </div>
           <div>
-            <p className="text-sm font-bold text-carbon-400 uppercase tracking-widest">{label}</p>
+            <p className="text-sm font-bold text-carbon-400 tracking-wide">{label}</p>
             <p className="text-xs text-carbon-400 font-medium">No disponible hoy</p>
           </div>
         </div>
@@ -71,7 +71,7 @@ export function MenuItemSelector({
               {label}
             </span>
             {required && (
-              <span className="text-[9px] bg-carbon-900 text-white px-2 py-0.5 rounded-full font-black uppercase tracking-tighter whitespace-nowrap">
+              <span className="text-[9px] bg-carbon-900 text-white px-2 py-0.5 rounded-full font-semibold tracking-tighter whitespace-nowrap">
                 Obligatorio
               </span>
             )}
@@ -84,7 +84,7 @@ export function MenuItemSelector({
             className="flex items-center gap-1.5 px-2.5 py-1 bg-success-50 rounded-lg border border-success-100"
           >
             <Check className="w-3.5 h-3.5 text-success-600 stroke-[4px]" />
-            <span className="text-[10px] text-success-700 font-black uppercase tracking-widest">Elegido</span>
+            <span className="text-[10px] text-success-700 font-semibold tracking-wide">Elegido</span>
           </motion.div>
         )}
       </div>
@@ -146,9 +146,9 @@ export function MenuItemSelector({
       </div>
 
       {showRiceInfo && riceName && (
-        <div className="p-3 bg-amber-50/50 rounded-xl border border-amber-100 flex items-center gap-2">
+        <div className="p-3 bg-warning-50/50 rounded-xl border border-warning-100 flex items-center gap-2">
           <span className="text-lg">🍚</span>
-          <p className="text-[10px] font-bold text-amber-800 uppercase tracking-widest">
+          <p className="text-[10px] font-bold text-warning-800 tracking-wide">
             Incluye: <span className="text-carbon-900">{riceName}</span>
           </p>
         </div>
@@ -158,10 +158,10 @@ export function MenuItemSelector({
         <motion.div 
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
-          className="flex items-center gap-1.5 text-rose-600 bg-rose-50 px-3 py-2 rounded-lg border border-rose-100"
+          className="flex items-center gap-1.5 text-error-600 bg-error-50 px-3 py-2 rounded-lg border border-error-100"
         >
           <AlertCircle className="w-3.5 h-3.5" />
-          <span className="text-[10px] font-black uppercase tracking-wider">{error}</span>
+          <span className="text-[10px] font-semibold tracking-wide">{error}</span>
         </motion.div>
       )}
     </div>

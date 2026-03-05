@@ -127,7 +127,7 @@ export function ProfilePage() {
             <div className="space-y-1.5">
               <div className="flex items-center gap-2 text-sage-600">
                 <User className="w-5 h-5" />
-                <span className="text-[10px] font-black uppercase tracking-[0.2em]">Configuración Personal</span>
+                <span className="text-[10px] font-semibold tracking-[0.2em]">Configuración Personal</span>
               </div>
               <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Mi Perfil de Usuario</h1>
               <p className="text-sm text-carbon-500 font-medium">Gestiona tu información de contacto y preferencias de cuenta.</p>
@@ -157,7 +157,7 @@ export function ProfilePage() {
                     </h2>
                     <p className="text-sm text-carbon-500 font-medium">{user.email}</p>
                   </div>
-                  <div className="px-3 py-1 rounded-full bg-sage-50 border border-sage-100 text-[10px] font-bold text-sage-600 uppercase tracking-widest">
+                  <div className="px-3 py-1 rounded-full bg-sage-50 border border-sage-100 text-[10px] font-bold text-sage-600 tracking-wide">
                     Usuario Activo
                   </div>
                 </div>

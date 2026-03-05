@@ -23,7 +23,7 @@ function ErrorState({ onRetry }: { onRetry: () => void }) {
   return (
     <Card variant="elevated" padding="lg" className="max-w-md w-full border border-sage-200 shadow-sm rounded-2xl mx-auto">
       <div className="text-center">
-        <div className="w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-rose-500">
+        <div className="w-14 h-14 bg-error-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-error-500">
           <UtensilsCrossed className="w-7 h-7" />
         </div>
         <h2 className="text-lg font-semibold text-carbon-900 mb-2">Error al cargar el menú</h2>
@@ -136,7 +136,7 @@ export function DailyMenuPage() {
           <header className="space-y-2 text-left">
             <div className="flex items-center gap-2 text-sage-600">
               <UtensilsCrossed className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Operación Diaria</span>
+              <span className="text-[10px] font-semibold tracking-[0.2em]">Operación Diaria</span>
             </div>
             <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Menú del Día</h1>
           </header>
@@ -156,7 +156,7 @@ export function DailyMenuPage() {
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sage-600">
               <UtensilsCrossed className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Operación Diaria</span>
+              <span className="text-[10px] font-semibold tracking-[0.2em]">Operación Diaria</span>
             </div>
             <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Menú del Día</h1>
             <p className="text-lg text-carbon-500 font-medium">Gestiona el "Corrientazo" y las ofertas diarias de tu restaurante.</p>
@@ -166,7 +166,7 @@ export function DailyMenuPage() {
           <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl shadow-smooth-md border border-sage-100 ring-4 ring-sage-50/50">
             <div className="flex items-center gap-2 px-3 py-2 bg-sage-50 rounded-xl text-sage-700">
               <Calendar className="w-4 h-4" />
-              <span className="text-xs font-bold uppercase tracking-wider">Fecha</span>
+              <span className="text-xs font-medium tracking-wide">Fecha</span>
             </div>
             <input 
               type="date" 
@@ -230,7 +230,7 @@ export function DailyMenuPage() {
               <div className="flex items-center justify-between p-4 bg-sage-50 rounded-2xl border border-sage-200 shadow-sm mb-6">
                 <div className="flex items-center gap-4">
                   <div className="px-4 py-2 bg-white rounded-xl border border-sage-100 shadow-sm">
-                    <span className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest block mb-0.5">Margen Base</span>
+                    <span className="text-[10px] font-bold text-carbon-400 tracking-wide block mb-0.5">Margen Base</span>
                     <span className="font-bold text-lg text-sage-700">${dailyMenu?.basePrice?.toLocaleString("es-CO")}</span>
                   </div>
                   <div className="hidden sm:block text-sm text-carbon-500 font-medium italic">
@@ -249,25 +249,25 @@ export function DailyMenuPage() {
                   title="Proteínas" 
                   icon={Beef} 
                   items={dailyMenu.proteinOptions} 
-                  colorClass="bg-rose-100 text-rose-600" 
+                  colorClass="bg-error-100 text-error-600" 
                 />
                 <MenuCategoryGroup 
                   title="Sopas" 
                   icon={UtensilsCrossed} 
                   items={dailyMenu.soupOptions} 
-                  colorClass="bg-amber-100 text-amber-600" 
+                  colorClass="bg-warning-100 text-warning-600" 
                 />
                 <MenuCategoryGroup 
                   title="Principios" 
                   icon={Salad} 
                   items={dailyMenu.principleOptions} 
-                  colorClass="bg-emerald-100 text-emerald-600" 
+                  colorClass="bg-success-100 text-success-600" 
                 />
                 <MenuCategoryGroup 
                   title="Ensaladas" 
                   icon={Salad} 
                   items={dailyMenu.saladOptions} 
-                  colorClass="bg-lime-100 text-lime-600" 
+                  colorClass="bg-success-100 text-success-600" 
                 />
                 <MenuCategoryGroup 
                   title="Bebidas" 
@@ -279,13 +279,13 @@ export function DailyMenuPage() {
                   title="Extras" 
                   icon={PlusCircle} 
                   items={dailyMenu.extraOptions} 
-                  colorClass="bg-purple-100 text-purple-600" 
+                  colorClass="bg-info-100 text-info-600" 
                 />
                 <MenuCategoryGroup 
                   title="Postres" 
                   icon={IceCream} 
                   items={dailyMenu.dessertOptions} 
-                  colorClass="bg-pink-100 text-pink-600" 
+                  colorClass="bg-info-100 text-info-600" 
                 />
               </div>
             </div>

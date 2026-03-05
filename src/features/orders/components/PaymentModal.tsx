@@ -130,7 +130,7 @@ export function PaymentModal({
             <button
               onClick={handleSelectAll}
               className={cn(
-                "flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                "flex-1 py-2 rounded-xl text-[10px] font-semibold tracking-wide transition-all",
                 payAll ? "bg-white shadow-sm text-carbon-900" : "text-carbon-400"
               )}
             >
@@ -139,7 +139,7 @@ export function PaymentModal({
             <button
               onClick={() => setPayAll(false)}
               className={cn(
-                "flex-1 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all",
+                "flex-1 py-2 rounded-xl text-[10px] font-semibold tracking-wide transition-all",
                 !payAll ? "bg-white shadow-sm text-carbon-900" : "text-carbon-400"
               )}
             >
@@ -184,7 +184,7 @@ export function PaymentModal({
         {/* Payment Summary Banner */}
         <div className="bg-carbon-900 rounded-[2rem] p-6 text-white relative overflow-hidden shadow-soft-2xl">
           <div className="relative z-10">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-carbon-400 mb-1">Total a Pagar</p>
+            <p className="text-[10px] font-semibold tracking-[0.2em] text-carbon-400 mb-1">Total a Pagar</p>
             <h3 className="text-4xl font-black tracking-tighter">${totalToPay.toLocaleString("es-CO")}</h3>
           </div>
           <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-16 -mt-16 blur-3xl" />
@@ -208,7 +208,7 @@ export function PaymentModal({
                 )}
               >
                 <Icon className={cn("w-6 h-6", isActive ? "text-white" : "text-carbon-400")} />
-                <span className="text-[10px] font-black uppercase tracking-widest">{m.label}</span>
+                <span className="text-[10px] font-semibold tracking-wide">{m.label}</span>
               </button>
             );
           })}
@@ -226,7 +226,7 @@ export function PaymentModal({
                 className="space-y-5"
               >
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Efectivo Recibido</label>
+                  <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Efectivo Recibido</label>
                   <div className="relative">
                     <span className="absolute left-5 top-1/2 -translate-y-1/2 text-carbon-400 font-bold text-xl">$</span>
                     <input
@@ -243,25 +243,25 @@ export function PaymentModal({
                 {cashReceived > 0 && (
                   <div className={cn(
                     "p-5 rounded-3xl border-2 transition-all flex items-center justify-between",
-                    cashReceived >= totalToPay ? "bg-emerald-50 border-emerald-100" : "bg-amber-50 border-amber-100"
+                    cashReceived >= totalToPay ? "bg-success-50 border-success-100" : "bg-warning-50 border-warning-100"
                   )}>
                     <div>
-                      <p className="text-[10px] font-black uppercase tracking-widest text-carbon-500">Devuelta</p>
+                      <p className="text-[10px] font-semibold tracking-wide text-carbon-500">Devuelta</p>
                       <p className={cn(
                         "text-3xl font-black tracking-tighter",
-                        cashReceived >= totalToPay ? "text-emerald-700" : "text-amber-700"
+                        cashReceived >= totalToPay ? "text-success-700" : "text-warning-700"
                       )}>
                         ${change.toLocaleString("es-CO")}
                       </p>
                     </div>
                     {cashReceived >= totalToPay ? (
-                      <div className="w-12 h-12 rounded-full bg-emerald-600 text-white flex items-center justify-center shadow-lg">
+                      <div className="w-12 h-12 rounded-full bg-success-600 text-white flex items-center justify-center shadow-lg">
                         <Check className="w-6 h-6 stroke-[3px]" />
                       </div>
                     ) : (
                       <div className="text-right">
-                        <p className="text-[10px] font-bold text-amber-600 uppercase">Faltan</p>
-                        <p className="text-sm font-black text-amber-700">${(totalToPay - cashReceived).toLocaleString("es-CO")}</p>
+                        <p className="text-[10px] font-bold text-warning-600 uppercase">Faltan</p>
+                        <p className="text-sm font-black text-warning-700">${(totalToPay - cashReceived).toLocaleString("es-CO")}</p>
                       </div>
                     )}
                   </div>
@@ -278,22 +278,22 @@ export function PaymentModal({
                 exit={{ opacity: 0, y: -10 }}
                 className="space-y-4"
               >
-                <div className="bg-purple-50 p-5 rounded-3xl border-2 border-purple-100 flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-purple-600 text-white flex items-center justify-center shadow-md">
+                <div className="bg-info-50 p-5 rounded-3xl border-2 border-info-100 flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-info-600 text-white flex items-center justify-center shadow-md">
                     <Smartphone className="w-6 h-6" />
                   </div>
                   <div>
-                    <h4 className="font-bold text-purple-900">Transferencia Nequi</h4>
-                    <p className="text-xs text-purple-600 font-medium italic">Confirma la recepción en tu App</p>
+                    <h4 className="font-bold text-info-900">Transferencia Nequi</h4>
+                    <p className="text-xs text-info-600 font-medium italic">Confirma la recepción en tu App</p>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Referencia (Opcional)</label>
+                  <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Referencia (Opcional)</label>
                   <input
                     type="text"
                     value={reference}
                     onChange={(e) => setReference(e.target.value)}
-                    className="w-full h-14 px-5 rounded-2xl border-2 border-sage-100 focus:border-purple-600 focus:ring-0 text-lg font-bold text-carbon-900 shadow-inner bg-sage-50/30 transition-all"
+                    className="w-full h-14 px-5 rounded-2xl border-2 border-sage-100 focus:border-info-600 focus:ring-0 text-lg font-bold text-carbon-900 shadow-inner bg-sage-50/30 transition-all"
                     placeholder="Eje: 123456"
                   />
                 </div>
@@ -310,7 +310,7 @@ export function PaymentModal({
                 className="space-y-4"
               >
                 <div className="space-y-2">
-                  <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Celular del Cliente</label>
+                  <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Celular del Cliente</label>
                   <div className="relative">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-5 h-5" />
                     <input
@@ -335,7 +335,7 @@ export function PaymentModal({
                       animate={{ opacity: 1, scale: 1 }}
                       className={cn(
                         "p-5 rounded-3xl border-2 flex flex-col gap-3",
-                        hasActiveTickets ? "bg-blue-50 border-blue-100" : "bg-rose-50 border-rose-100"
+                        hasActiveTickets ? "bg-blue-50 border-blue-100" : "bg-error-50 border-error-100"
                       )}
                     >
                       <div className="flex items-center justify-between">
@@ -345,19 +345,19 @@ export function PaymentModal({
                           </div>
                           <div>
                             <p className="text-sm font-bold text-carbon-900">{customer.firstName} {customer.lastName}</p>
-                            <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest">{customer.phone}</p>
+                            <p className="text-[10px] font-bold text-carbon-400 tracking-wide">{customer.phone}</p>
                           </div>
                         </div>
                         {hasActiveTickets && (
                           <div className="text-right">
-                            <p className="text-[10px] font-black text-blue-600 uppercase tracking-widest">Saldo</p>
+                            <p className="text-[10px] font-black text-blue-600 tracking-wide">Saldo</p>
                             <p className="text-xl font-black text-blue-800">{customer.ticketBooks.find((tb: any) => tb.consumedPortions < tb.totalPortions)?.totalPortions - customer.ticketBooks.find((tb: any) => tb.consumedPortions < tb.totalPortions)?.consumedPortions} Almuerzos</p>
                           </div>
                         )}
                       </div>
                       
                       {!hasActiveTickets && (
-                        <div className="flex items-center gap-2 text-rose-600 text-xs font-bold mt-1">
+                        <div className="flex items-center gap-2 text-error-600 text-xs font-bold mt-1">
                           <AlertCircle className="w-4 h-4" />
                           No tiene tiqueteras activas o disponibles
                         </div>
@@ -365,7 +365,7 @@ export function PaymentModal({
                     </motion.div>
                   )}
                   {isCustomerError && (
-                    <div className="text-center p-4 text-rose-600 font-bold text-sm bg-rose-50 rounded-2xl border border-rose-100">
+                    <div className="text-center p-4 text-error-600 font-bold text-sm bg-error-50 rounded-2xl border border-error-100">
                       Cliente no encontrado
                     </div>
                   )}
@@ -397,8 +397,8 @@ export function PaymentModal({
             }
             className={cn(
               "h-16 rounded-3xl font-black text-white shadow-xl transition-all active:scale-95",
-              method === PaymentMethod.CASH ? "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-100" :
-              method === PaymentMethod.NEQUI ? "bg-purple-600 hover:bg-purple-700 shadow-purple-100" :
+              method === PaymentMethod.CASH ? "bg-success-600 hover:bg-success-700 shadow-success-100" :
+              method === PaymentMethod.NEQUI ? "bg-info-600 hover:bg-info-700 shadow-info-100" :
               "bg-blue-600 hover:bg-blue-700 shadow-blue-100"
             )}
           >

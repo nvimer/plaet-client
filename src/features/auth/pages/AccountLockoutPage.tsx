@@ -148,7 +148,7 @@ export default function AccountLockoutPage() {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="w-24 h-24 rounded-full bg-warning-100 flex items-center justify-center mx-auto mb-6"
           >
-            <Lock className="w-12 h-12 text-amber-600" />
+            <Lock className="w-12 h-12 text-warning-600" />
           </motion.div>
 
           <div className="bg-carbon-50 rounded-2xl p-6 mb-6">

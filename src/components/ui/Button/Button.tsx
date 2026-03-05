@@ -44,7 +44,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         "bg-transparent text-carbon-600 hover:bg-sage-50 active:bg-sage-100 focus:ring-sage-200",
       // Urgent danger
       danger:
-        "bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-500 shadow-soft-sm",
+        "bg-error-600 text-white hover:bg-error-700 focus:ring-error-500 shadow-soft-sm",
     };
 
     const sizeStyles = {

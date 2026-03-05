@@ -3,8 +3,12 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+// Correct path to point to src in the project root (parent of scripts/)
+const ROOT_DIR = path.join(__dirname, '..');
+const SRC_DIR = path.join(ROOT_DIR, 'src');
 
 function walkDir(dir, callback) {
+  if (!fs.existsSync(dir)) return;
   fs.readdirSync(dir).forEach(f => {
     const dirPath = path.join(dir, f);
     const isDirectory = fs.statSync(dirPath).isDirectory();
@@ -35,7 +39,7 @@ const typoMap = [
   { regex: /uppercase tracking-wider/g, replace: 'tracking-wide' }
 ];
 
-walkDir(path.join(__dirname, 'src'), (filePath) => {
+walkDir(SRC_DIR, (filePath) => {
   if (!filePath.endsWith('.tsx') && !filePath.endsWith('.ts') && !filePath.endsWith('.css')) return;
 
   let content = fs.readFileSync(filePath, 'utf8');
@@ -43,7 +47,7 @@ walkDir(path.join(__dirname, 'src'), (filePath) => {
 
   // Replace colors
   Object.entries(colorMap).forEach(([oldColor, newColor]) => {
-    const regex = new RegExp(`\b${oldColor}(\d{2,3})\b`, 'g');
+    const regex = new RegExp(`\\b${oldColor}(\\d{2,3})\\b`, 'g');
     content = content.replace(regex, `${newColor}$1`);
   });
 

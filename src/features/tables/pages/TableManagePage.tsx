@@ -42,29 +42,29 @@ const STATUS_CONFIG = {
   [TableStatus.AVAILABLE]: {
     label: "Disponible",
     icon: CircleCheck,
-    bg: "bg-emerald-50",
-    border: "border-emerald-200",
-    text: "text-emerald-700",
-    pill: "bg-emerald-100 text-emerald-700 border-emerald-200",
-    button: "border-emerald-400 bg-emerald-50 text-emerald-700 ring-2 ring-emerald-100",
+    bg: "bg-success-50",
+    border: "border-success-200",
+    text: "text-success-700",
+    pill: "bg-success-100 text-success-700 border-success-200",
+    button: "border-success-400 bg-success-50 text-success-700 ring-2 ring-success-100",
   },
   [TableStatus.OCCUPIED]: {
     label: "Ocupada",
     icon: CircleDot,
-    bg: "bg-rose-50",
-    border: "border-rose-200",
-    text: "text-rose-700",
-    pill: "bg-rose-100 text-rose-700 border-rose-200",
-    button: "border-rose-400 bg-rose-50 text-rose-700 ring-2 ring-rose-100",
+    bg: "bg-error-50",
+    border: "border-error-200",
+    text: "text-error-700",
+    pill: "bg-error-100 text-error-700 border-error-200",
+    button: "border-error-400 bg-error-50 text-error-700 ring-2 ring-error-100",
   },
   [TableStatus.NEEDS_CLEANING]: {
     label: "Limpieza",
     icon: Clock,
-    bg: "bg-amber-50",
-    border: "border-amber-200",
-    text: "text-amber-700",
-    pill: "bg-amber-100 text-amber-700 border-amber-200",
-    button: "border-amber-400 bg-amber-50 text-amber-700 ring-2 ring-amber-100",
+    bg: "bg-warning-50",
+    border: "border-warning-200",
+    text: "text-warning-700",
+    pill: "bg-warning-100 text-warning-700 border-warning-200",
+    button: "border-warning-400 bg-warning-50 text-warning-700 ring-2 ring-warning-100",
   },
 } as const;
 
@@ -230,14 +230,14 @@ export function TableManagePage() {
                 <StatusIcon className={cn("w-8 h-8", config.text)} />
               </div>
               <div>
-                <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest leading-none mb-1.5">Estado Actual</p>
+                <p className="text-[10px] font-bold text-carbon-400 tracking-wide leading-none mb-1.5">Estado Actual</p>
                 <div className={cn("inline-flex items-center px-3 py-1 rounded-full text-xs font-bold border-2", config.pill)}>
                   {config.label}
                 </div>
               </div>
             </div>
                         <div className="text-right">
-                          <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest mb-1">Ubicación</p>
+                          <p className="text-[10px] font-bold text-carbon-400 tracking-wide mb-1">Ubicación</p>
                           <p className="text-xl font-bold text-carbon-900">{table.location || "Principal"}</p>
                         </div>
                       </div>
@@ -386,7 +386,7 @@ export function TableManagePage() {
                     size="lg"
                     onClick={() => setShowDeleteConfirm(true)}
                     disabled={isDeleting}
-                    className="flex-1 min-h-[44px] text-rose-600 hover:bg-rose-50 hover:text-rose-700"
+                    className="flex-1 min-h-[44px] text-error-600 hover:bg-error-50 hover:text-error-700"
                   >
                     <Trash2 className="w-5 h-5 mr-2" />
                     Eliminar

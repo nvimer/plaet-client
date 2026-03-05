@@ -28,8 +28,8 @@ export function InventoryHubPage() {
       description: "Restablece el stock de insumos al inicio de la jornada.",
       icon: RotateCcw,
       path: ROUTES.STOCK_MANAGEMENT, // Would open modal in real app or specific page
-      color: "text-amber-600",
-      bgColor: "bg-amber-50",
+      color: "text-warning-600",
+      bgColor: "bg-warning-50",
     },
     {
       title: "Historial",
@@ -57,7 +57,7 @@ export function InventoryHubPage() {
         <header className="space-y-2">
           <div className="flex items-center gap-2 text-sage-600">
             <Package className="w-5 h-5" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Operaciones de Stock</span>
+            <span className="text-[10px] font-semibold tracking-[0.2em]">Operaciones de Stock</span>
           </div>
           <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Centro de Inventarios</h1>
           <p className="text-lg text-carbon-500 font-medium">Control total sobre tus insumos, materias primas y productos.</p>

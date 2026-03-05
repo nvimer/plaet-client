@@ -238,15 +238,15 @@ export function ReplacementManager({
             return (
               <Card
                 key={replacement.id}
-                className="p-4 bg-white border-2 border-amber-100 rounded-2xl shadow-sm overflow-hidden relative group"
+                className="p-4 bg-white border-2 border-warning-100 rounded-2xl shadow-sm overflow-hidden relative group"
               >
                 <div className="flex items-center justify-between relative z-10">
                   <div className="flex items-center gap-4 flex-1">
-                    <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
+                    <div className="w-10 h-10 rounded-xl bg-warning-50 flex items-center justify-center text-warning-600">
                       <FromIcon className="w-5 h-5" />
                     </div>
                     <div className="flex flex-col">
-                      <div className="flex items-center gap-2 text-[10px] font-semibold tracking-wide text-amber-600">
+                      <div className="flex items-center gap-2 text-[10px] font-semibold tracking-wide text-warning-600">
                         <span>Sin {replacement.fromName}</span>
                         <ArrowRight className="w-3 h-3 opacity-50" />
                         <span>Extra {replacement.toName}</span>
@@ -258,13 +258,13 @@ export function ReplacementManager({
                   </div>
                   <button
                     onClick={() => onRemoveReplacement(replacement.id)}
-                    className="p-2.5 bg-rose-50 text-rose-500 hover:bg-rose-100 rounded-xl transition-all active:scale-90"
+                    className="p-2.5 bg-error-50 text-error-500 hover:bg-error-100 rounded-xl transition-all active:scale-90"
                     aria-label="Eliminar cambio"
                   >
                     <Trash2 className="w-5 h-5" />
                   </button>
                 </div>
-                <div className="absolute top-0 left-0 w-1 h-full bg-amber-400" />
+                <div className="absolute top-0 left-0 w-1 h-full bg-warning-400" />
               </Card>
             );
           })}
@@ -304,7 +304,7 @@ export function ReplacementManager({
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center shadow-inner">
-                    <ArrowRightLeft className="w-6 h-6 text-amber-400" />
+                    <ArrowRightLeft className="w-6 h-6 text-warning-400" />
                   </div>
                   <div>
                     <h3 className="text-white font-black text-lg sm:text-xl tracking-tight">
@@ -315,7 +315,7 @@ export function ReplacementManager({
                     <div className="flex items-center gap-2 mt-0.5">
                       <div className="flex gap-1">
                         {[0, 1, 2].map((s) => (
-                          <div key={s} className={cn("w-2 h-2 rounded-full transition-colors", s === currentStep ? "bg-amber-400" : "bg-white/20")} />
+                          <div key={s} className={cn("w-2 h-2 rounded-full transition-colors", s === currentStep ? "bg-warning-400" : "bg-white/20")} />
                         ))}
                       </div>
                       <span className="text-carbon-400 text-[10px] font-semibold tracking-wide">
@@ -346,20 +346,20 @@ export function ReplacementManager({
                         <button
                           key={cat.key}
                           onClick={() => handleSelectFrom(cat.key)}
-                          className="flex items-center gap-4 p-5 rounded-2xl border-2 border-white bg-white hover:border-amber-400 hover:shadow-soft-md active:scale-[0.98] transition-all text-left shadow-sm group"
+                          className="flex items-center gap-4 p-5 rounded-2xl border-2 border-white bg-white hover:border-warning-400 hover:shadow-soft-md active:scale-[0.98] transition-all text-left shadow-sm group"
                         >
-                          <div className="w-14 h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600 group-hover:scale-110 transition-transform">
+                          <div className="w-14 h-14 rounded-2xl bg-warning-50 flex items-center justify-center text-warning-600 group-hover:scale-110 transition-transform">
                             <StepIcon className="w-7 h-7" />
                           </div>
                           <div className="flex-1">
                             <span className="font-black text-carbon-900 text-lg block tracking-tight">
                               {cat.name}
                             </span>
-                            <span className="text-xs font-bold text-amber-600 tracking-wide">
+                            <span className="text-xs font-bold text-warning-600 tracking-wide">
                               Quitar del almuerzo
                             </span>
                           </div>
-                          <ArrowRight className="w-6 h-6 text-carbon-200 group-hover:text-amber-400 transition-colors" />
+                          <ArrowRight className="w-6 h-6 text-carbon-200 group-hover:text-warning-400 transition-colors" />
                         </button>
                       );
                     })}
@@ -370,9 +370,9 @@ export function ReplacementManager({
               {currentStep === 1 && (
                 <div className="space-y-4">
                   {/* Current selection breadcrumb */}
-                  <div className="flex items-center justify-between p-4 bg-white rounded-2xl border-2 border-amber-100 shadow-sm">
+                  <div className="flex items-center justify-between p-4 bg-white rounded-2xl border-2 border-warning-100 shadow-sm">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600 opacity-50">
+                      <div className="w-10 h-10 rounded-xl bg-warning-50 flex items-center justify-center text-warning-600 opacity-50">
                         {React.createElement(CATEGORY_ICONS[selectedFrom!], { className: "w-5 h-5" })}
                       </div>
                       <span className="text-carbon-400 font-semibold tracking-wide text-xs line-through">
@@ -415,11 +415,11 @@ export function ReplacementManager({
                       })}
                     </div>
                   ) : (
-                    <div className="p-10 bg-amber-50 rounded-3xl border-2 border-dashed border-amber-200 text-center">
-                      <p className="text-amber-700 font-semibold tracking-wide text-sm">
+                    <div className="p-10 bg-warning-50 rounded-3xl border-2 border-dashed border-warning-200 text-center">
+                      <p className="text-warning-700 font-semibold tracking-wide text-sm">
                         No hay más opciones
                       </p>
-                      <p className="text-amber-600/70 text-xs font-medium mt-2">
+                      <p className="text-warning-600/70 text-xs font-medium mt-2">
                         Todas las categorías disponibles ya están en uso para este cambio.
                       </p>
                     </div>
@@ -457,18 +457,18 @@ export function ReplacementManager({
                         className={cn(
                           "w-full p-5 rounded-2xl border-2 transition-all text-left min-h-[72px] flex items-center justify-between group",
                           selectedItem === item.id
-                            ? "border-emerald-500 bg-emerald-50 shadow-md"
+                            ? "border-success-500 bg-success-50 shadow-md"
                             : "border-white bg-white hover:border-sage-200 shadow-sm",
                         )}
                       >
                         <span className={cn(
                           "font-black text-lg tracking-tight",
-                          selectedItem === item.id ? "text-emerald-900" : "text-carbon-900"
+                          selectedItem === item.id ? "text-success-900" : "text-carbon-900"
                         )}>
                           {item.name}
                         </span>
                         {selectedItem === item.id && (
-                          <div className="w-8 h-8 rounded-full bg-emerald-500 flex items-center justify-center shadow-lg animate-in zoom-in-50">
+                          <div className="w-8 h-8 rounded-full bg-success-500 flex items-center justify-center shadow-lg animate-in zoom-in-50">
                             <Check className="w-5 h-5 text-white stroke-[3px]" />
                           </div>
                         )}

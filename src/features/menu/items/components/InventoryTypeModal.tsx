@@ -116,13 +116,13 @@ export function InventoryTypeModal({
       >
         <div className="space-y-6">
           {/* Warning Banner */}
-          <div className="p-4 bg-amber-50 border-2 border-amber-200 rounded-xl flex items-start gap-3">
-            <AlertTriangle className="w-5 h-5 text-amber-600 flex-shrink-0 mt-0.5" />
+          <div className="p-4 bg-warning-50 border-2 border-warning-200 rounded-xl flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-warning-600 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold text-amber-800">
+              <p className="font-semibold text-warning-800">
                 ¿Estás seguro de este cambio?
               </p>
-              <p className="text-sm text-amber-700 mt-1">
+              <p className="text-sm text-warning-700 mt-1">
                 {isChangingToTracked
                   ? "El item comenzará a rastrearse con el stock inicial configurado."
                   : "Se dejará de rastrear el stock. El stock actual se mantendrá pero no se controlará."}
@@ -327,8 +327,8 @@ export function InventoryTypeModal({
 
         {/* UNLIMITED Warning */}
         {isChangingToUnlimited && hasTypeChanged && (
-          <div className="p-4 bg-amber-50 rounded-xl border-2 border-amber-200">
-            <p className="text-sm text-amber-800">
+          <div className="p-4 bg-warning-50 rounded-xl border-2 border-warning-200">
+            <p className="text-sm text-warning-800">
               <strong>Nota:</strong> Al cambiar a "Ilimitado", se dejará de
               rastrear el stock. El stock actual ({item.stockQuantity ?? 0}{" "}
               unidades) se mantendrá en la base de datos pero no se controlará

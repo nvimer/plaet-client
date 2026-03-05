@@ -234,7 +234,7 @@ export function TopBar({
                   }}
                   className={cn(
                     "w-full px-3 py-2 text-left flex items-center gap-2.5",
-                    "text-sm text-rose-600 hover:bg-rose-50 transition-colors"
+                    "text-sm text-error-600 hover:bg-error-50 transition-colors"
                   )}
                 >
                   <LogOut className="w-4 h-4" />

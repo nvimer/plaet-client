@@ -28,8 +28,8 @@ export function OrdersHubPage() {
       description: "Estado de platos y preparación en tiempo real.",
       icon: ChefHat,
       path: ROUTES.KITCHEN,
-      color: "text-amber-600",
-      bgColor: "bg-amber-50",
+      color: "text-warning-600",
+      bgColor: "bg-warning-50",
     },
     {
       title: "Historial de Ventas",
@@ -44,8 +44,8 @@ export function OrdersHubPage() {
       description: "Pedidos para llevar y entrega a casa.",
       icon: Bike,
       path: ROUTES.ORDERS_LIST, // Filtered in real app
-      color: "text-rose-600",
-      bgColor: "bg-rose-50",
+      color: "text-error-600",
+      bgColor: "bg-error-50",
     },
   ];
 
@@ -56,7 +56,7 @@ export function OrdersHubPage() {
         <header className="space-y-2">
           <div className="flex items-center gap-2 text-primary-600">
             <ShoppingCart className="w-5 h-5" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Terminal de Ventas</span>
+            <span className="text-[10px] font-semibold tracking-[0.2em]">Terminal de Ventas</span>
           </div>
           <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Pedidos y Facturación</h1>
           <p className="text-lg text-carbon-500 font-medium">Gestiona el flujo completo desde la toma hasta la entrega.</p>

@@ -70,7 +70,7 @@ export function RestaurantList({ restaurants, onEdit, onDelete }: RestaurantList
                     onClick={() => onDelete(restaurant.id)}
                     title="Eliminar"
                   >
-                    <Trash2 className="w-4 h-4 text-red-500" />
+                    <Trash2 className="w-4 h-4 text-error-500" />
                   </Button>
                   <Button
                     variant="ghost"

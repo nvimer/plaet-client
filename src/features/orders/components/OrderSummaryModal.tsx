@@ -132,19 +132,19 @@ export function OrderSummaryModal({
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
                       {order.lunch.soup && (
                         <div className="flex items-center gap-2 text-carbon-600 font-medium">
-                          <Soup className="w-4 h-4 text-amber-500" />
+                          <Soup className="w-4 h-4 text-warning-500" />
                           <span className="truncate">{order.lunch.soup.name}</span>
                         </div>
                       )}
                       {order.lunch.principle && (
                         <div className="flex items-center gap-2 text-carbon-600 font-medium">
-                          <Utensils className="w-4 h-4 text-emerald-500" />
+                          <Utensils className="w-4 h-4 text-success-500" />
                           <span className="truncate">{order.lunch.principle.name}</span>
                         </div>
                       )}
                       {order.lunch.salad && (
                         <div className="flex items-center gap-2 text-carbon-600 font-medium">
-                          <Salad className="w-4 h-4 text-lime-500" />
+                          <Salad className="w-4 h-4 text-success-500" />
                           <span className="truncate">{order.lunch.salad.name}</span>
                         </div>
                       )}
@@ -160,14 +160,14 @@ export function OrderSummaryModal({
                   {/* Enhanced Replacements & Extras Notes */}
                   <div className="space-y-2">
                     {order.lunch?.replacements && order.lunch.replacements.length > 0 && (
-                      <div className="bg-amber-50/50 rounded-2xl p-3 border border-amber-100">
+                      <div className="bg-warning-50/50 rounded-2xl p-3 border border-warning-100">
                         <div className="flex items-center gap-2 mb-1.5">
-                          <ArrowRightLeft className="w-3.5 h-3.5 text-amber-600" />
-                          <span className="text-[10px] font-semibold tracking-wide text-amber-700">Cambios Solicitados</span>
+                          <ArrowRightLeft className="w-3.5 h-3.5 text-warning-600" />
+                          <span className="text-[10px] font-semibold tracking-wide text-warning-700">Cambios Solicitados</span>
                         </div>
                         <div className="space-y-1">
                           {order.lunch.replacements.map((r) => (
-                            <div key={r.id} className="flex items-center gap-2 text-[11px] text-amber-800 font-medium">
+                            <div key={r.id} className="flex items-center gap-2 text-[11px] text-warning-800 font-medium">
                               <CircleOff className="w-3 h-3 opacity-50" />
                               <span>Sin {r.fromName}</span>
                               <ArrowRightLeft className="w-3 h-3 opacity-30" />

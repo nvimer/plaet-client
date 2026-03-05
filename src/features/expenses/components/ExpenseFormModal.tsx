@@ -40,9 +40,9 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({ isOpen, onCl
   };
 
   const categories = [
-    { name: "Insumos", icon: ShoppingCart, color: "text-emerald-600", bg: "bg-emerald-50" },
+    { name: "Insumos", icon: ShoppingCart, color: "text-success-600", bg: "bg-success-50" },
     { name: "Servicios", icon: Zap, color: "text-blue-600", bg: "bg-blue-50" },
-    { name: "Nómina", icon: Users, color: "text-purple-600", bg: "bg-purple-50" },
+    { name: "Nómina", icon: Users, color: "text-info-600", bg: "bg-info-50" },
     { name: "Mantenimiento", icon: Wrench, color: "text-warning-600", bg: "bg-warning-50" },
     { name: "Otros", icon: Package, color: "text-carbon-600", bg: "bg-carbon-50" },
   ];
@@ -104,7 +104,7 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({ isOpen, onCl
                   )}
                 >
                   <Icon className={cn("w-4 h-4", isActive ? "text-sage-400" : cat.color)} />
-                  <span className="text-xs font-bold uppercase tracking-tight">{cat.name}</span>
+                  <span className="text-xs font-medium tracking-tight">{cat.name}</span>
                 </button>
               );
             })}
@@ -112,9 +112,9 @@ export const ExpenseFormModal: React.FC<ExpenseFormModalProps> = ({ isOpen, onCl
         </div>
 
         {/* Notice Info */}
-        <div className="bg-amber-50 p-4 rounded-2xl border border-amber-100 flex gap-3">
-          <Calculator className="w-5 h-5 text-amber-600 shrink-0" />
-          <p className="text-xs text-amber-800 font-medium leading-relaxed">
+        <div className="bg-warning-50 p-4 rounded-2xl border border-warning-100 flex gap-3">
+          <Calculator className="w-5 h-5 text-warning-600 shrink-0" />
+          <p className="text-xs text-warning-800 font-medium leading-relaxed">
             Este gasto se restará automáticamente del balance esperado al momento de realizar el <strong>Cierre de Caja</strong> del turno actual.
           </p>
         </div>

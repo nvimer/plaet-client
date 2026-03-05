@@ -67,13 +67,13 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete, highlighted
               <div
                 className={cn(
                   "w-3.5 h-3.5 rounded-full shadow-sm border-2 border-white",
-                  statusVariant === "emerald" && "bg-emerald-500",
-                  statusVariant === "amber" && "bg-amber-500",
-                  statusVariant === "rose" && "bg-rose-500"
+                  statusVariant === "emerald" && "bg-success-500",
+                  statusVariant === "amber" && "bg-warning-500",
+                  statusVariant === "rose" && "bg-error-500"
                 )}
               />
               {item.isExtra && (
-                <div className="p-1 rounded-full bg-amber-400 text-white shadow-sm">
+                <div className="p-1 rounded-full bg-warning-400 text-white shadow-sm">
                   <Star className="w-2.5 h-2.5 fill-current" />
                 </div>
               )}
@@ -115,8 +115,8 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete, highlighted
                 onClick={() => setIsStockModalOpen(true)}
                 className={cn(
                   "w-full flex items-center justify-between px-4 py-2 rounded-xl border-2 transition-all active:scale-95",
-                  isOutOfStock ? "bg-rose-50 border-rose-100 text-rose-700" :
-                  isLowStock ? "bg-amber-50 border-amber-100 text-amber-700" :
+                  isOutOfStock ? "bg-error-50 border-error-100 text-error-700" :
+                  isLowStock ? "bg-warning-50 border-warning-100 text-warning-700" :
                   "bg-sage-50 border-sage-100 text-sage-700 shadow-sm"
                 )}
               >
@@ -155,7 +155,7 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete, highlighted
                 variant="ghost"
                 onClick={() => setIsDeleteDialogOpen(true)}
                 className={cn(
-                  "rounded-xl bg-rose-50 h-11 sm:h-12 text-rose-600 border border-rose-100 transition-all hover:bg-rose-100 shrink-0",
+                  "rounded-xl bg-error-50 h-11 sm:h-12 text-error-600 border border-error-100 transition-all hover:bg-error-100 shrink-0",
                   item.inventoryType === "TRACKED" ? "w-11 sm:w-12" : "flex-1"
                 )}
                 title="Eliminar"

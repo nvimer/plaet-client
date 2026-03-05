@@ -78,7 +78,7 @@ export function ProteinSelector({
         {selectedProteinId && (
           <button 
             onClick={() => onSelect(null)}
-            className="text-[10px] font-bold text-rose-600 uppercase tracking-widest hover:underline"
+            className="text-[10px] font-bold text-error-600 tracking-wide hover:underline"
           >
             Quitar selección
           </button>
@@ -145,7 +145,7 @@ export function ProteinSelector({
                 {/* Extra Badge */}
                 {isExtra && !isSelected && (
                   <div className="absolute top-2.5 right-2.5">
-                    <span className="px-2 py-0.5 bg-amber-100 text-amber-700 text-[9px] font-black uppercase rounded-lg border border-amber-200 shadow-sm">
+                    <span className="px-2 py-0.5 bg-warning-100 text-warning-700 text-[9px] font-semibold rounded-lg border border-warning-200 shadow-sm">
                       Extra
                     </span>
                   </div>
@@ -161,7 +161,7 @@ export function ProteinSelector({
                   {protein.name}
                 </h4>
                 {protein.categoryName && (
-                  <span className="text-[9px] font-black text-carbon-400 uppercase tracking-widest mt-1">
+                  <span className="text-[9px] font-black text-carbon-400 tracking-wide mt-1">
                     {protein.categoryName}
                   </span>
                 )}

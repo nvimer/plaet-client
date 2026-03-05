@@ -46,7 +46,7 @@ export const FilterChips = ({
               <button
                 type="button"
                 onClick={() => onClearFilter(filter.key)}
-                className="ml-1 text-carbon-400 hover:text-red-500 transition-colors duration-150 p-0.5 rounded-full hover:bg-red-50"
+                className="ml-1 text-carbon-400 hover:text-error-500 transition-colors duration-150 p-0.5 rounded-full hover:bg-error-50"
                 aria-label={`Eliminar filtro ${filter.label}`}
               >
                 <X className="w-3 h-3" />

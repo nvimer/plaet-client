@@ -37,8 +37,8 @@ export function DailyMenuHubPage() {
       icon: Settings,
       path: ROUTES.DAILY_MENU_SETUP,
       state: { openPriceModal: true },
-      color: "text-amber-600",
-      bgColor: "bg-amber-50",
+      color: "text-warning-600",
+      bgColor: "bg-warning-50",
     },
   ];
 
@@ -49,7 +49,7 @@ export function DailyMenuHubPage() {
         <header className="space-y-2">
           <div className="flex items-center gap-2 text-sage-600">
             <UtensilsCrossed className="w-5 h-5" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Operación Diaria</span>
+            <span className="text-[10px] font-semibold tracking-[0.2em]">Operación Diaria</span>
           </div>
           <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Menú del Día</h1>
           <p className="text-lg text-carbon-500 font-medium">Gestiona el "Corrientazo" y las ofertas diarias de tu restaurante.</p>

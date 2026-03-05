@@ -183,7 +183,7 @@ export function UserCreatePage() {
               )}
 
               {rolesError && (
-                <div className="text-sm text-red-600 py-4 bg-red-50 rounded-xl text-center">
+                <div className="text-sm text-error-600 py-4 bg-error-50 rounded-xl text-center">
                   Error al cargar roles: {rolesError.message}
                 </div>
               )}

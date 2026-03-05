@@ -38,10 +38,10 @@ export const ExpenseList: React.FC = () => {
 
   const getCategoryColor = (category: string) => {
     switch (category.toLowerCase()) {
-      case "insumos": return "bg-emerald-50 text-emerald-700 border-emerald-100";
+      case "insumos": return "bg-success-50 text-success-700 border-success-100";
       case "servicios": return "bg-blue-50 text-blue-700 border-blue-100";
-      case "nómina": return "bg-purple-50 text-purple-700 border-purple-100";
-      case "mantenimiento": return "bg-amber-50 text-amber-700 border-amber-100";
+      case "nómina": return "bg-info-50 text-info-700 border-info-100";
+      case "mantenimiento": return "bg-warning-50 text-warning-700 border-warning-100";
       default: return "bg-carbon-50 text-carbon-600 border-carbon-100";
     }
   };
@@ -62,7 +62,7 @@ export const ExpenseList: React.FC = () => {
                 <h3 className="font-bold text-carbon-900 tracking-tight leading-tight">{expense.description}</h3>
                 <div className="flex items-center gap-2 mt-1">
                   <span className={cn(
-                    "text-[10px] font-bold px-2 py-0.5 rounded-lg border uppercase tracking-wider",
+                    "text-[10px] font-bold px-2 py-0.5 rounded-lg border tracking-wide",
                     getCategoryColor(expense.category)
                   )}>
                     {expense.category}
@@ -78,7 +78,7 @@ export const ExpenseList: React.FC = () => {
           </div>
 
           <div className="flex items-center justify-between pt-4 border-t border-sage-50 mt-2">
-            <div className="flex flex-wrap gap-4 text-[11px] font-medium text-carbon-400 uppercase tracking-widest">
+            <div className="flex flex-wrap gap-4 text-[11px] font-medium text-carbon-400 tracking-wide">
               <div className="flex items-center gap-1.5">
                 <Calendar className="w-3.5 h-3.5" />
                 {new Date(expense.date).toLocaleDateString("es-CO", { day: 'numeric', month: 'short' })}

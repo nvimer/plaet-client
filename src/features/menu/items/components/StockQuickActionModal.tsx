@@ -173,7 +173,7 @@ export function StockQuickActionModal({
             fullWidth
           />
           {reasonError && (
-            <p className="text-sm text-red-600 mt-1">{reasonError}</p>
+            <p className="text-sm text-error-600 mt-1">{reasonError}</p>
           )}
         </div>
 

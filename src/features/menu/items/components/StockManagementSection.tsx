@@ -169,8 +169,8 @@ export function StockManagementSection({ item }: StockManagementSectionProps) {
         </div>
 
         {/* Add Stock Section */}
-        <div className="mb-6 p-4 bg-green-50 border-2 border-green-200 rounded-xl">
-          <h4 className="font-semibold text-green-900 mb-3 flex items-center gap-2">
+        <div className="mb-6 p-4 bg-success-50 border-2 border-success-200 rounded-xl">
+          <h4 className="font-semibold text-success-900 mb-3 flex items-center gap-2">
             <Plus className="w-4 h-4" />
             Agregar Stock
           </h4>
@@ -202,8 +202,8 @@ export function StockManagementSection({ item }: StockManagementSectionProps) {
         </div>
 
         {/* Remove Stock Section */}
-        <div className="mb-6 p-4 bg-red-50 border-2 border-red-200 rounded-xl">
-          <h4 className="font-semibold text-red-900 mb-3 flex items-center gap-2">
+        <div className="mb-6 p-4 bg-error-50 border-2 border-error-200 rounded-xl">
+          <h4 className="font-semibold text-error-900 mb-3 flex items-center gap-2">
             <Minus className="w-4 h-4" />
             Remover Stock
           </h4>
@@ -222,7 +222,7 @@ export function StockManagementSection({ item }: StockManagementSectionProps) {
                 variant="ghost"
                 onClick={handleRemoveStock}
                 disabled={isRemoving || !removeQuantity || currentStock === 0}
-                className="text-red-600 hover:bg-red-100"
+                className="text-error-600 hover:bg-error-100"
               >
                 {isRemoving ? "Removiendo..." : "Remover"}
               </Button>

@@ -124,10 +124,10 @@ export function OrderSummary({
             {substitutions.map((sub, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-2.5 bg-amber-50 rounded-lg border border-amber-200"
+                className="flex items-center justify-between p-2.5 bg-warning-50 rounded-lg border border-warning-200"
               >
                 <span className="text-sm text-carbon-700">{sub.name}</span>
-                <span className="text-sm font-medium text-amber-700">
+                <span className="text-sm font-medium text-warning-700">
                   Sin costo
                 </span>
               </div>

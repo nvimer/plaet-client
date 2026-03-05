@@ -108,7 +108,7 @@ export function QuickStockModal({ item, isOpen, onClose }: QuickStockModalProps)
             <p className="text-xs text-carbon-400 font-medium tracking-wide">Resultado</p>
             <p className={cn(
               "text-2xl font-black",
-              adjustment > 0 ? "text-emerald-600" : adjustment < 0 ? "text-rose-600" : "text-carbon-400"
+              adjustment > 0 ? "text-success-600" : adjustment < 0 ? "text-error-600" : "text-carbon-400"
             )}>
               {resultStock}
             </p>
@@ -120,14 +120,14 @@ export function QuickStockModal({ item, isOpen, onClose }: QuickStockModalProps)
           <div className="flex items-center justify-center gap-4">
             <Button
               variant="ghost"
-              className="w-16 h-16 rounded-2xl bg-rose-50 text-rose-600 hover:bg-rose-100 p-0"
+              className="w-16 h-16 rounded-2xl bg-error-50 text-error-600 hover:bg-error-100 p-0"
               onClick={() => handleAdjust(-10)}
             >
               <span className="text-lg font-black">-10</span>
             </Button>
             <Button
               variant="ghost"
-              className="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 hover:bg-rose-100 p-0"
+              className="w-14 h-14 rounded-2xl bg-error-50 text-error-600 hover:bg-error-100 p-0"
               onClick={() => handleAdjust(-1)}
             >
               <Minus className="w-6 h-6" />
@@ -136,7 +136,7 @@ export function QuickStockModal({ item, isOpen, onClose }: QuickStockModalProps)
             <div className="w-24 text-center">
               <span className={cn(
                 "text-4xl font-black",
-                adjustment > 0 ? "text-emerald-600" : adjustment < 0 ? "text-rose-600" : "text-carbon-900"
+                adjustment > 0 ? "text-success-600" : adjustment < 0 ? "text-error-600" : "text-carbon-900"
               )}>
                 {adjustment > 0 ? `+${adjustment}` : adjustment}
               </span>
@@ -144,14 +144,14 @@ export function QuickStockModal({ item, isOpen, onClose }: QuickStockModalProps)
 
             <Button
               variant="ghost"
-              className="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 p-0"
+              className="w-14 h-14 rounded-2xl bg-success-50 text-success-600 hover:bg-success-100 p-0"
               onClick={() => handleAdjust(1)}
             >
               <Plus className="w-6 h-6" />
             </Button>
             <Button
               variant="ghost"
-              className="w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 hover:bg-emerald-100 p-0"
+              className="w-16 h-16 rounded-2xl bg-success-50 text-success-600 hover:bg-success-100 p-0"
               onClick={() => handleAdjust(10)}
             >
               <span className="text-lg font-black">+10</span>
@@ -196,8 +196,8 @@ export function QuickStockModal({ item, isOpen, onClose }: QuickStockModalProps)
                   <div key={entry.id} className="flex items-center justify-between p-2 rounded-lg bg-carbon-50 text-xs border border-carbon-100">
                     <div className="flex items-center gap-2">
                       {entry.type === 'ADD' ? 
-                        <TrendingUp className="w-3 h-3 text-emerald-500" /> : 
-                        <TrendingDown className="w-3 h-3 text-rose-500" />
+                        <TrendingUp className="w-3 h-3 text-success-500" /> : 
+                        <TrendingDown className="w-3 h-3 text-error-500" />
                       }
                       <span className="font-bold text-carbon-700">{entry.quantity} ud.</span>
                       <span className="text-carbon-400 truncate max-w-[120px]">{entry.reason}</span>

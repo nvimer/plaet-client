@@ -41,7 +41,7 @@ export const UltraCompactFilter = ({
       label: 'Ocup.', 
       value: TableStatus.OCCUPIED, 
       count: counts.occupied,
-      color: 'bg-red-100 text-red-700 border-red-300'
+      color: 'bg-error-100 text-error-700 border-error-300'
     },
   ];
 
@@ -153,7 +153,7 @@ export const UltraCompactFilter = ({
               {hasActiveFilters && (
                 <button
                   onClick={clearAllFilters}
-                  className="ml-auto text-xs text-red-600 hover:text-red-700 hover:bg-red-50 px-2 py-1 rounded-md transition-all duration-150"
+                  className="ml-auto text-xs text-error-600 hover:text-error-700 hover:bg-error-50 px-2 py-1 rounded-md transition-all duration-150"
                 >
                   Limpiar todo
                 </button>

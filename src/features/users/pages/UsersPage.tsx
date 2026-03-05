@@ -122,7 +122,7 @@ export function UsersPage() {
           <div className="flex items-center justify-center min-h-[50vh]">
             <Card variant="elevated" padding="lg" className="max-w-md w-full border border-sage-200 shadow-sm rounded-2xl">
               <div className="text-center">
-                <div className="w-14 h-14 bg-rose-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-rose-500">
+                <div className="w-14 h-14 bg-error-50 rounded-xl flex items-center justify-center mx-auto mb-4 text-error-500">
                   <UsersIcon className="w-7 h-7" />
                 </div>
                 <h2 className="text-lg font-semibold text-carbon-900 mb-2">Error al cargar usuarios</h2>
@@ -146,7 +146,7 @@ export function UsersPage() {
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sage-600">
               <UsersIcon className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Recursos Humanos</span>
+              <span className="text-[10px] font-semibold tracking-[0.2em]">Recursos Humanos</span>
             </div>
             <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Lista de Equipo</h1>
             <p className="text-sm text-carbon-500 font-medium">Administra el personal, roles y accesos del sistema.</p>
@@ -173,7 +173,7 @@ export function UsersPage() {
                 <UsersIcon className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[10px] font-black text-carbon-400 uppercase tracking-widest leading-none mb-1">Total</p>
+                <p className="text-[10px] font-black text-carbon-400 tracking-wide leading-none mb-1">Total</p>
                 <p className="text-xl font-bold text-carbon-900">{counts.all}</p>
               </div>
             </div>
@@ -184,29 +184,29 @@ export function UsersPage() {
                 <Shield className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[10px] font-black text-carbon-400 uppercase tracking-widest leading-none mb-1">Admins</p>
+                <p className="text-[10px] font-black text-carbon-400 tracking-wide leading-none mb-1">Admins</p>
                 <p className="text-xl font-bold text-carbon-900">{counts.admin}</p>
               </div>
             </div>
           </div>
           <div className="bg-white rounded-2xl border border-sage-100 p-4 shadow-soft-sm">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+              <div className="w-10 h-10 rounded-xl bg-success-50 flex items-center justify-center text-success-600">
                 <Utensils className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[10px] font-black text-carbon-400 uppercase tracking-widest leading-none mb-1">Meseros</p>
+                <p className="text-[10px] font-black text-carbon-400 tracking-wide leading-none mb-1">Meseros</p>
                 <p className="text-xl font-bold text-carbon-900">{counts.waiter}</p>
               </div>
             </div>
           </div>
           <div className="bg-white rounded-2xl border border-sage-100 p-4 shadow-soft-sm">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
+              <div className="w-10 h-10 rounded-xl bg-warning-50 flex items-center justify-center text-warning-600">
                 <UserCheck className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-[10px] font-black text-carbon-400 uppercase tracking-widest leading-none mb-1">Cocina</p>
+                <p className="text-[10px] font-black text-carbon-400 tracking-wide leading-none mb-1">Cocina</p>
                 <p className="text-xl font-bold text-carbon-900">{counts.kitchen}</p>
               </div>
             </div>
@@ -313,7 +313,7 @@ export function UsersPage() {
             />
             
             <div className="pt-4 p-5 rounded-2xl bg-sage-50 border border-sage-100">
-              <h4 className="text-[10px] font-black text-carbon-400 uppercase tracking-widest mb-3 ml-1">Información</h4>
+              <h4 className="text-[10px] font-black text-carbon-400 tracking-wide mb-3 ml-1">Información</h4>
               <p className="text-sm font-medium text-carbon-600 leading-relaxed">
                 Usa los filtros avanzados para gestionar los permisos y accesos de tu equipo de trabajo de forma eficiente.
               </p>

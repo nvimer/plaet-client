@@ -56,7 +56,7 @@ export function RolePermissionsPage() {
         <div className="space-y-1.5">
           <div className="flex items-center gap-2 text-sage-600">
             <ShieldCheck className="w-5 h-5" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Configuración Global</span>
+            <span className="text-[10px] font-semibold tracking-[0.2em]">Configuración Global</span>
           </div>
           <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Roles y Permisos</h1>
           <p className="text-sm text-carbon-500 font-medium">Control granular de accesos y seguridad del sistema.</p>
@@ -82,12 +82,12 @@ export function RolePermissionsPage() {
         </Card>
 
         <div className="space-y-6">
-          <Card className="bg-amber-50 border-amber-100 p-6">
-            <h3 className="text-amber-800 font-bold flex items-center gap-2 mb-3">
+          <Card className="bg-warning-50 border-warning-100 p-6">
+            <h3 className="text-warning-800 font-bold flex items-center gap-2 mb-3">
               <ShieldAlert className="w-5 h-5" />
               Zona Crítica
             </h3>
-            <p className="text-sm text-amber-700 leading-relaxed">
+            <p className="text-sm text-warning-700 leading-relaxed">
               Los cambios en esta matriz se aplican de forma **inmediata** a todos los usuarios. 
               Ten cuidado al remover permisos de lectura, ya que pueden romper la experiencia de usuario.
             </p>

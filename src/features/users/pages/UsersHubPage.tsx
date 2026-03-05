@@ -36,8 +36,8 @@ export function UsersHubPage() {
       description: "Configura qué puede hacer cada perfil en el sistema.",
       icon: ShieldCheck,
       path: ROUTES.PERMISSIONS,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
+      color: "text-info-600",
+      bgColor: "bg-info-50",
     },
   ];
 
@@ -48,7 +48,7 @@ export function UsersHubPage() {
         <header className="space-y-2">
           <div className="flex items-center gap-2 text-sage-600">
             <Users className="w-5 h-5" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Recursos Humanos</span>
+            <span className="text-[10px] font-semibold tracking-[0.2em]">Recursos Humanos</span>
           </div>
           <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Gestión de Equipo</h1>
           <p className="text-lg text-carbon-500 font-medium">Administra el personal, sus accesos y responsabilidades.</p>

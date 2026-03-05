@@ -39,8 +39,8 @@ export default function ResetPasswordPage() {
           animate={{ opacity: 1, y: 0 }}
           className="glass-light rounded-3xl p-10 shadow-soft-xl max-w-md w-full text-center"
         >
-          <div className="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center mx-auto mb-6">
-            <AlertCircle className="w-10 h-10 text-red-600" />
+          <div className="w-20 h-20 rounded-full bg-error-100 flex items-center justify-center mx-auto mb-6">
+            <AlertCircle className="w-10 h-10 text-error-600" />
           </div>
           <h1 className="text-2xl font-bold text-carbon-900 mb-4">
             Enlace Inválido
@@ -233,7 +233,7 @@ export default function ResetPasswordPage() {
             <div className="bg-sage-50 rounded-lg p-4 text-sm text-carbon-600">
               <p className="font-semibold mb-2">Requisitos de contraseña:</p>
               <ul className="space-y-1 ml-2">
-                <li className={password.length >= 12 ? "text-green-600" : ""}>
+                <li className={password.length >= 12 ? "text-success-600" : ""}>
                   ✓ Mínimo 12 caracteres
                 </li>
                 <li className="text-carbon-500">• Una letra mayúscula</li>
@@ -248,10 +248,10 @@ export default function ResetPasswordPage() {
               <motion.div
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-4 bg-red-50 border-2 border-red-200 rounded-xl flex items-start gap-3"
+                className="p-4 bg-error-50 border-2 border-error-200 rounded-xl flex items-start gap-3"
               >
-                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-red-700">{error}</p>
+                <AlertCircle className="w-5 h-5 text-error-600 flex-shrink-0 mt-0.5" />
+                <p className="text-sm text-error-700">{error}</p>
               </motion.div>
             )}
 

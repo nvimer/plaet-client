@@ -113,7 +113,7 @@ export function MenuItemCreatePage() {
                       className={inputClass}
                     />
                     {errors.description && (
-                      <p className="text-sm text-red-600 mt-1">
+                      <p className="text-sm text-error-600 mt-1">
                         {errors.description.message}
                       </p>
                     )}
@@ -136,7 +136,7 @@ export function MenuItemCreatePage() {
                       ))}
                     </select>
                     {errors.categoryId && (
-                      <p className="text-sm text-red-600 mt-1">
+                      <p className="text-sm text-error-600 mt-1">
                         {errors.categoryId.message}
                       </p>
                     )}
@@ -188,7 +188,7 @@ export function MenuItemCreatePage() {
                     </option>
                   </select>
                   {errors.inventoryType && (
-                    <p className="text-sm text-red-600 mt-1">
+                    <p className="text-sm text-error-600 mt-1">
                       {errors.inventoryType.message}
                     </p>
                   )}
@@ -270,7 +270,7 @@ export function MenuItemCreatePage() {
                     <span className={cn(isZeroStock ? "text-carbon-400" : "text-carbon-800")}>
                       Disponible en el menú
                       {isZeroStock && (
-                        <span className="ml-2 text-xs font-bold text-rose-500 uppercase tracking-wider">
+                        <span className="ml-2 text-xs font-bold text-error-500 tracking-wide">
                           (Sin stock)
                         </span>
                       )}

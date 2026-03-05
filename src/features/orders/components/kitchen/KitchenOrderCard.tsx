@@ -110,8 +110,8 @@ export function KitchenOrderCard({
       {/* Header Info */}
       <div className={cn(
         "p-3 flex items-center justify-between border-b transition-colors",
-        timeInfo.isUrgent ? "bg-rose-50 border-rose-100" : 
-        timeInfo.isWarning ? "bg-amber-50 border-amber-100" : "bg-sage-50/50 border-sage-100"
+        timeInfo.isUrgent ? "bg-error-50 border-error-100" : 
+        timeInfo.isWarning ? "bg-warning-50 border-warning-100" : "bg-sage-50/50 border-sage-100"
       )}>
         <div className="flex items-center gap-2">
           {!isMobile && (
@@ -122,13 +122,13 @@ export function KitchenOrderCard({
           <div className="w-8 h-8 rounded-lg bg-carbon-900 flex items-center justify-center text-white shadow-sm">
             <span className="text-sm font-black">{tableNumber}</span>
           </div>
-          <span className="text-[10px] font-black text-carbon-400 uppercase tracking-widest">#{item.order.id.slice(-4)}</span>
+          <span className="text-[10px] font-black text-carbon-400 tracking-wide">#{item.order.id.slice(-4)}</span>
         </div>
 
         <div className={cn(
           "flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-black transition-all",
-          timeInfo.isUrgent ? "bg-rose-500 text-white animate-pulse" : 
-          timeInfo.isWarning ? "bg-amber-500 text-white" : "bg-white text-sage-600 border border-sage-200"
+          timeInfo.isUrgent ? "bg-error-500 text-white animate-pulse" : 
+          timeInfo.isWarning ? "bg-warning-500 text-white" : "bg-white text-sage-600 border border-sage-200"
         )}>
           <Clock className="w-3 h-3" />
           {timeInfo.text}
@@ -143,7 +143,7 @@ export function KitchenOrderCard({
               {item.quantity}x {item.menuItem?.name || "Producto"}
             </h4>
             {item.notes && (
-              <p className="text-[10px] font-bold text-amber-700 mt-1 italic">
+              <p className="text-[10px] font-bold text-warning-700 mt-1 italic">
                 📝 {item.notes}
               </p>
             )}
@@ -159,7 +159,7 @@ export function KitchenOrderCard({
                 : OrderItemStatus.READY;
               onStatusChange(item.orderId, item.id, next);
             }}
-            className="w-full py-2 bg-sage-50 hover:bg-carbon-900 hover:text-white text-carbon-600 font-black uppercase tracking-widest text-[9px] rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 border border-sage-100"
+            className="w-full py-2 bg-sage-50 hover:bg-carbon-900 hover:text-white text-carbon-600 font-semibold tracking-wide text-[9px] rounded-xl flex items-center justify-center gap-2 transition-all active:scale-95 border border-sage-100"
           >
             {item.status === OrderItemStatus.PENDING ? "Empezar" : "Listo"}
             <ArrowRight className="w-3 h-3" />
@@ -171,7 +171,7 @@ export function KitchenOrderCard({
       <div className={cn(
         "absolute bottom-0 left-0 right-0 h-1 transition-all",
         item.status === OrderItemStatus.PENDING ? "bg-blue-400" :
-        item.status === OrderItemStatus.IN_KITCHEN ? "bg-orange-400" : "bg-emerald-400"
+        item.status === OrderItemStatus.IN_KITCHEN ? "bg-orange-400" : "bg-success-400"
       )} />
     </div>
   );

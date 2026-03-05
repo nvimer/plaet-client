@@ -138,7 +138,7 @@ export function DateFilter({
               {/* Custom Range Picker */}
               {showCustomPicker && (
                 <div className="border-t border-sage-50 p-5 space-y-4 bg-sage-50/20 rounded-b-3xl">
-                  <p className="text-[10px] font-black text-carbon-400 uppercase tracking-widest">
+                  <p className="text-[10px] font-black text-carbon-400 tracking-wide">
                     Rango personalizado
                   </p>
                   <div className="grid grid-cols-2 gap-4">

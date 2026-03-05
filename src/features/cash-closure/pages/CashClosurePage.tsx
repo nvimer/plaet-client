@@ -49,7 +49,7 @@ export const CashClosurePage: React.FC = () => {
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sage-600">
             <LogIn className="w-5 h-5" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Caja y Turnos</span>
+            <span className="text-[10px] font-semibold tracking-[0.2em]">Caja y Turnos</span>
           </div>
           <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Control de Caja</h1>
           <p className="text-lg text-carbon-500 font-medium">Gestiona la apertura y cierre de turnos para asegurar tus ingresos.</p>
@@ -98,19 +98,19 @@ export const CashClosurePage: React.FC = () => {
 
             <div className="p-8 space-y-8">
               {hasActiveOrders && (
-                <div className="bg-rose-50 border-2 border-rose-100 rounded-2xl p-5 flex items-start gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                  <div className="w-10 h-10 rounded-xl bg-rose-500 flex items-center justify-center text-white flex-shrink-0 shadow-lg animate-pulse">
+                <div className="bg-error-50 border-2 border-error-100 rounded-2xl p-5 flex items-start gap-4 animate-in fade-in slide-in-from-top-4 duration-500">
+                  <div className="w-10 h-10 rounded-xl bg-error-500 flex items-center justify-center text-white flex-shrink-0 shadow-lg animate-pulse">
                     <ShoppingBag className="w-5 h-5" />
                   </div>
                   <div className="flex-1">
-                    <h4 className="font-bold text-rose-900 text-sm uppercase tracking-wider">No se puede cerrar caja</h4>
-                    <p className="text-sm text-rose-700 mt-1 leading-relaxed">
+                    <h4 className="font-bold text-error-900 text-sm tracking-wide">No se puede cerrar caja</h4>
+                    <p className="text-sm text-error-700 mt-1 leading-relaxed">
                       Hay <strong>{activeOrders.length} pedido(s) activos</strong> en el sistema. 
                       Todos los pedidos deben estar Pagados, Entregados o Cancelados antes de realizar el cierre.
                     </p>
                     <button 
                       onClick={() => window.location.href = ROUTES.ORDERS}
-                      className="mt-3 text-xs font-black text-rose-600 uppercase tracking-widest hover:underline flex items-center gap-1"
+                      className="mt-3 text-xs font-black text-error-600 tracking-wide hover:underline flex items-center gap-1"
                     >
                       Resolver pedidos ahora &rarr;
                     </button>
@@ -151,9 +151,9 @@ export const CashClosurePage: React.FC = () => {
             </div>
           </div>
 
-          <div className="bg-amber-50 rounded-2xl p-4 flex gap-4 border border-amber-100">
-            <AlertCircle className="w-6 h-6 text-amber-500 flex-shrink-0" />
-            <p className="text-sm text-amber-800 leading-relaxed">
+          <div className="bg-warning-50 rounded-2xl p-4 flex gap-4 border border-warning-100">
+            <AlertCircle className="w-6 h-6 text-warning-500 flex-shrink-0" />
+            <p className="text-sm text-warning-800 leading-relaxed">
               <strong>Nota Importante:</strong> El cierre de caja calculará automáticamente las diferencias. 
               Asegúrate de contar físicamente todo el efectivo antes de confirmar.
             </p>

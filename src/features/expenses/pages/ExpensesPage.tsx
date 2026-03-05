@@ -21,7 +21,7 @@ export const ExpensesPage: React.FC = () => {
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sage-600">
               <ReceiptText className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Tesorería y Compras</span>
+              <span className="text-[10px] font-semibold tracking-[0.2em]">Tesorería y Compras</span>
             </div>
             <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Gastos y Egresos</h1>
             <p className="text-lg text-carbon-500 font-medium">Control de compras y pagos operativos del restaurante.</p>
@@ -45,7 +45,7 @@ export const ExpensesPage: React.FC = () => {
               <Wallet className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest">Hoy en Egresos</p>
+              <p className="text-[10px] font-bold text-carbon-400 tracking-wide">Hoy en Egresos</p>
               <p className="text-xl font-bold text-carbon-900">Historial Reciente</p>
             </div>
           </div>
@@ -55,7 +55,7 @@ export const ExpensesPage: React.FC = () => {
               <History className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest">Últimos 7 días</p>
+              <p className="text-[10px] font-bold text-carbon-400 tracking-wide">Últimos 7 días</p>
               <p className="text-xl font-bold text-carbon-900">Control de Caja</p>
             </div>
           </div>
@@ -65,7 +65,7 @@ export const ExpensesPage: React.FC = () => {
               <Filter className="w-6 h-6" />
             </div>
             <div>
-              <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest">Categorización</p>
+              <p className="text-[10px] font-bold text-carbon-400 tracking-wide">Categorización</p>
               <p className="text-xl font-bold text-carbon-900">Detalle por Rubro</p>
             </div>
           </div>

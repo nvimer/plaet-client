@@ -53,13 +53,13 @@ export function OrderStatusBadge({
       label: "Pagado",
       variant: "success",
       icon: CreditCard,
-      className: "bg-emerald-50 text-emerald-700 border-emerald-300",
+      className: "bg-success-50 text-success-700 border-success-300",
     },
     [OrderStatus.CANCELLED]: {
       label: "Cancelado",
       variant: "error",
       icon: XCircle,
-      className: "bg-red-50 text-red-700 border-red-300",
+      className: "bg-error-50 text-error-700 border-error-300",
     },
   };
 

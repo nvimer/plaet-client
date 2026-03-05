@@ -41,7 +41,7 @@ export function ActiveFilterChips({
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex items-center gap-2 mr-2 px-3 py-1.5 bg-carbon-900 rounded-full text-white">
           <SlidersHorizontal className="w-3 h-3 stroke-[3px]" />
-          <span className="text-[10px] font-black uppercase tracking-widest">Activos</span>
+          <span className="text-[10px] font-semibold tracking-wide">Activos</span>
         </div>
         
         <AnimatePresence mode="popLayout">
@@ -58,7 +58,7 @@ export function ActiveFilterChips({
               <button
                 type="button"
                 onClick={() => onClearFilter(chip.key)}
-                className="p-1 rounded-full text-carbon-300 hover:text-rose-600 hover:bg-rose-50 transition-all active:scale-90"
+                className="p-1 rounded-full text-carbon-300 hover:text-error-600 hover:bg-error-50 transition-all active:scale-90"
                 aria-label={`Quitar filtro ${chip.label}`}
               >
                 <X className="w-3 h-3 stroke-[3px]" />
@@ -70,14 +70,14 @@ export function ActiveFilterChips({
         <button
           type="button"
           onClick={onClearAll}
-          className="text-[10px] font-black text-sage-600 uppercase tracking-widest hover:text-carbon-900 transition-colors ml-2 px-2 py-1"
+          className="text-[10px] font-black text-sage-600 tracking-wide hover:text-carbon-900 transition-colors ml-2 px-2 py-1"
         >
           Limpiar Todo
         </button>
       </div>
 
       <div className="flex items-center gap-2 bg-sage-50 px-4 py-1.5 rounded-full border border-sage-100">
-        <span className="text-[10px] font-black text-carbon-400 uppercase tracking-widest">Resultados:</span>
+        <span className="text-[10px] font-black text-carbon-400 tracking-wide">Resultados:</span>
         <span className="text-xs font-black text-carbon-900">
           {resultCount} {resultLabel}
         </span>

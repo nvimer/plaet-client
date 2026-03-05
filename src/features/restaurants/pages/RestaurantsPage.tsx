@@ -60,8 +60,8 @@ export function RestaurantsPage() {
   const stats = [
     { label: "Total Restaurantes", value: meta?.total || 0, icon: Building2, color: "text-carbon-600" },
     { label: "Activos", value: restaurants.filter(r => r.status === RestaurantStatus.ACTIVE).length, icon: CheckCircle2, color: "text-sage-600" },
-    { label: "En Prueba", value: restaurants.filter(r => r.status === RestaurantStatus.TRIAL).length, icon: Clock, color: "text-amber-600" },
-    { label: "Suspendidos", value: restaurants.filter(r => r.status === RestaurantStatus.SUSPENDED).length, icon: AlertCircle, color: "text-red-600" },
+    { label: "En Prueba", value: restaurants.filter(r => r.status === RestaurantStatus.TRIAL).length, icon: Clock, color: "text-warning-600" },
+    { label: "Suspendidos", value: restaurants.filter(r => r.status === RestaurantStatus.SUSPENDED).length, icon: AlertCircle, color: "text-error-600" },
   ];
 
   return (
@@ -72,7 +72,7 @@ export function RestaurantsPage() {
         <div className="space-y-1.5">
           <div className="flex items-center gap-2 text-sage-600">
             <Building2 className="w-5 h-5" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Administración SaaS</span>
+            <span className="text-[10px] font-semibold tracking-[0.2em]">Administración SaaS</span>
           </div>
           <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">Gestión de Restaurantes</h1>
           <p className="text-sm text-carbon-500 font-medium">Panel de control global para la red de comercios asociados.</p>

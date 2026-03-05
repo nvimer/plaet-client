@@ -59,7 +59,7 @@ export function DashboardPage() {
           <header className="space-y-1.5">
             <div className="flex items-center gap-2 text-primary-600">
               <LayoutDashboard className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">SaaS Administration</span>
+              <span className="text-[10px] font-semibold tracking-[0.2em]">SaaS Administration</span>
             </div>
             <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">
               Panel Global
@@ -176,8 +176,8 @@ export function DashboardPage() {
       description: "Configurar platos de hoy",
       icon: UtensilsCrossed,
       path: ROUTES.DAILY_MENU,
-      color: "text-amber-600",
-      bgColor: "bg-amber-50",
+      color: "text-warning-600",
+      bgColor: "bg-warning-50",
     },
     {
       id: "inventory",
@@ -185,8 +185,8 @@ export function DashboardPage() {
       description: "Stock y materias primas",
       icon: Package2,
       path: ROUTES.INVENTORY,
-      color: "text-rose-600",
-      bgColor: "bg-rose-50",
+      color: "text-error-600",
+      bgColor: "bg-error-50",
     },
     {
       id: "admin",
@@ -203,8 +203,8 @@ export function DashboardPage() {
       description: "Personal y asistencia",
       icon: Users,
       path: ROUTES.USERS,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
+      color: "text-info-600",
+      bgColor: "bg-info-50",
     },
   ];
 
@@ -220,7 +220,7 @@ export function DashboardPage() {
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sage-600">
               <LayoutDashboard className="w-5 h-5" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Centro de Operaciones</span>
+              <span className="text-[10px] font-semibold tracking-[0.2em]">Centro de Operaciones</span>
             </div>
             <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">
               {greeting}, {user?.firstName || 'Admin'}
@@ -309,7 +309,7 @@ export function DashboardPage() {
                 <h3 className="text-xl font-bold text-carbon-900 tracking-tight">Tendencia de Ventas</h3>
                 <p className="text-sm text-carbon-500 font-medium italic">Actividad económica en tiempo real</p>
               </div>
-              <div className="bg-success-50 text-success-700 px-4 py-1.5 rounded-full text-xs font-black flex items-center gap-2 uppercase tracking-widest border border-success-100">
+              <div className="bg-success-50 text-success-700 px-4 py-1.5 rounded-full text-xs font-black flex items-center gap-2 tracking-wide border border-success-100">
                 <span className="w-2 h-2 rounded-full bg-success-500 animate-pulse" /> Live
               </div>
             </div>
@@ -330,7 +330,7 @@ export function DashboardPage() {
                     </span>
                     <span className="font-bold text-white text-sm group-hover:text-sage-300 transition-colors">{item.name}</span>
                   </div>
-                  <span className="px-3 py-1 bg-white/10 text-white rounded-lg text-[10px] font-black uppercase">
+                  <span className="px-3 py-1 bg-white/10 text-white rounded-lg text-[10px] font-semibold">
                     {item.count} vendidos
                   </span>
                 </div>

@@ -28,7 +28,7 @@ export const ActiveShiftWidget: React.FC = () => {
         <div className="flex items-center gap-4">
           <div className={cn(
             "w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 duration-300",
-            isOpen ? "bg-success-50 text-success-600" : "bg-amber-50 text-amber-600"
+            isOpen ? "bg-success-50 text-success-600" : "bg-warning-50 text-warning-600"
           )}>
             {isOpen ? <Unlock className="w-7 h-7" /> : <Lock className="w-7 h-7" />}
           </div>
@@ -38,7 +38,7 @@ export const ActiveShiftWidget: React.FC = () => {
             </h4>
             <p className={cn(
               "text-xl font-black",
-              isOpen ? "text-success-700" : "text-amber-700"
+              isOpen ? "text-success-700" : "text-warning-700"
             )}>
               {isOpen ? "Activo" : "Cerrado"}
             </p>
@@ -52,7 +52,7 @@ export const ActiveShiftWidget: React.FC = () => {
               <p className="text-lg font-bold text-carbon-900">${currentShift?.openingBalance.toLocaleString()}</p>
             </>
           ) : (
-            <div className="flex items-center gap-2 text-amber-600 font-bold group-hover:translate-x-1 transition-transform">
+            <div className="flex items-center gap-2 text-warning-600 font-bold group-hover:translate-x-1 transition-transform">
               Abrir <ArrowRight className="w-4 h-4" />
             </div>
           )}
@@ -62,7 +62,7 @@ export const ActiveShiftWidget: React.FC = () => {
       {/* Decorative background element */}
       <Wallet className={cn(
         "absolute -right-4 -bottom-4 w-24 h-24 opacity-5 transform rotate-12",
-        isOpen ? "text-success-900" : "text-amber-900"
+        isOpen ? "text-success-900" : "text-warning-900"
       )} />
     </Card>
   );

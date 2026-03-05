@@ -36,8 +36,8 @@ export function MenuHubPage() {
       description: "Organiza tu menú creando rubros y secciones.",
       icon: FolderPlus,
       path: ROUTES.MENU_CATEGORY_CREATE,
-      color: "text-purple-600",
-      bgColor: "bg-purple-50",
+      color: "text-info-600",
+      bgColor: "bg-info-50",
     },
   ];
 
@@ -48,7 +48,7 @@ export function MenuHubPage() {
         <header className="space-y-2">
           <div className="flex items-center gap-2 text-sage-600">
             <Menu className="w-5 h-5" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Catálogo Comercial</span>
+            <span className="text-[10px] font-semibold tracking-[0.2em]">Catálogo Comercial</span>
           </div>
           <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Catálogo y Menú</h1>
           <p className="text-lg text-carbon-500 font-medium">Administra los productos, categorías y estructura de tu oferta.</p>

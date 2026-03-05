@@ -66,7 +66,7 @@ export const AdminDashboardPage: React.FC = () => {
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sage-600">
             <BarChart3 className="w-5 h-5" />
-            <span className="text-[10px] font-black uppercase tracking-[0.2em]">Panel Administrativo</span>
+            <span className="text-[10px] font-semibold tracking-[0.2em]">Panel Administrativo</span>
           </div>
           <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Análisis de Rendimiento</h1>
           <p className="text-lg text-carbon-500 font-medium">Visualiza el pulso comercial de tu restaurante en tiempo real.</p>
@@ -75,7 +75,7 @@ export const AdminDashboardPage: React.FC = () => {
         <div className="flex items-center gap-3 bg-white p-1.5 rounded-2xl shadow-smooth-md border border-sage-100 ring-4 ring-sage-50/50">
           <div className="flex items-center gap-2 px-3 py-2 bg-sage-50 rounded-xl text-sage-700">
             <Calendar className="w-4 h-4" />
-            <span className="text-xs font-bold uppercase tracking-wider">Fecha</span>
+            <span className="text-xs font-medium tracking-wide">Fecha</span>
           </div>
           <input 
             type="date" 
@@ -154,7 +154,7 @@ export const AdminDashboardPage: React.FC = () => {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
             {dailySummary.salesSummary.byCategory.map((cat: any, index: number) => (
               <div key={index} className="p-4 bg-sage-50/50 border border-sage-100 rounded-2xl space-y-2">
-                <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest truncate">{cat.name}</p>
+                <p className="text-[10px] font-bold text-carbon-400 tracking-wide truncate">{cat.name}</p>
                 <p className="text-lg font-bold text-carbon-900">${Number(cat.total).toLocaleString("es-CO")}</p>
                 <div className="w-full h-1.5 bg-sage-100 rounded-full overflow-hidden">
                   <div 

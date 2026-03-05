@@ -23,8 +23,8 @@ export function Badge({
         neutral: "bg-sage-50 text-carbon-700 border border-sage-border-subtle",
         success:
             "bg-sage-50 text-sage-700 border border-sage-200",
-        warning: "bg-amber-50 text-yellow-700 border border-yellow-200",
-        error: "bg-red-50 text-red-700 border border-red-200",
+        warning: "bg-warning-50 text-yellow-700 border border-yellow-200",
+        error: "bg-error-50 text-error-700 border border-error-200",
         info: "bg-blue-50 text-blue-700 border-blue-200",
     };
 
