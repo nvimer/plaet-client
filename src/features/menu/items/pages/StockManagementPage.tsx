@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { Button, Card, Badge, Skeleton, EmptyState, FilterBar, FilterPills, FilterSearch, FilterSelect, FilterDrawer, ActiveFilterChips } from "@/components";
 import { useItems } from "../hooks";
+import { useCategories } from "../../categories/hooks";
 import {
   DailyResetModal,
   InventoryTypeModal,
@@ -33,6 +34,16 @@ export function StockManagementPage() {
 
   // Queries
   const { data: allItems, isLoading: loadingItems } = useItems();
+  const { data: categories } = useCategories();
+
+  // Category map for quick lookup
+  const categoryMap = useMemo(() => {
+    const map: Record<number, string> = {};
+    categories?.forEach((cat) => {
+      map[cat.id] = cat.name;
+    });
+    return map;
+  }, [categories]);
 
   // Filter options
   const filterOptions = [
@@ -77,6 +88,22 @@ export function StockManagementPage() {
 
     return items;
   }, [allItems, filter, searchTerm]);
+
+  // Group items by category
+  const groupedItems = useMemo(() => {
+    const groups: Record<string, MenuItem[]> = {};
+
+    filteredItems.forEach((item) => {
+      const catName = categoryMap[item.categoryId] || "Sin Categoría";
+      if (!groups[catName]) groups[catName] = [];
+      groups[catName].push(item);
+    });
+
+    // Sort category names alphabetically
+    const sortedKeys = Object.keys(groups).sort();
+
+    return { groups, sortedKeys };
+  }, [filteredItems, categoryMap]);
 
   const activeChips = [
     ...(filter !== "ALL" ? [{ key: "filter", label: "Nivel", value: filter === "LOW_STOCK" ? "Bajo" : "Agotado" }] : []),
@@ -212,17 +239,35 @@ export function StockManagementPage() {
             }}
           />
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredItems.map((item) => (
-              <StockItemCard
-                key={item.id}
-                item={item}
-                onAdjustStock={() => handleAdjustStock(item)}
-                onChangeInventoryType={() => {
-                  setSelectedItem(item);
-                  setIsInventoryTypeModalOpen(true);
-                }}
-              />
+          <div className="space-y-8">
+            {groupedItems.sortedKeys.map((categoryName) => (
+              <div key={categoryName}>
+                {/* Category Header */}
+                <div className="flex items-center gap-3 mb-4 pb-2 border-b border-sage-200">
+                  <h3 className="text-xs font-black text-carbon-400 uppercase tracking-widest">
+                    {categoryName}
+                  </h3>
+                  <span className="text-[10px] font-medium text-carbon-400 bg-carbon-50 px-2 py-0.5 rounded-full">
+                    {groupedItems.groups[categoryName]?.length || 0}
+                  </span>
+                </div>
+
+                {/* Items Grid */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  {(groupedItems.groups[categoryName] || []).map((item) => (
+                    <StockItemCard
+                      key={item.id}
+                      item={item}
+                      categoryName={categoryName}
+                      onAdjustStock={() => handleAdjustStock(item)}
+                      onChangeInventoryType={() => {
+                        setSelectedItem(item);
+                        setIsInventoryTypeModalOpen(true);
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         )}
@@ -293,16 +338,18 @@ export function StockManagementPage() {
 
 /**
  * StockItemCard Component
- * Refined design for inventory items.
+ * Compact design for inventory items with category grouping.
  */
 interface StockItemCardProps {
   item: MenuItem;
+  categoryName: string;
   onAdjustStock: () => void;
   onChangeInventoryType: () => void;
 }
 
 function StockItemCard({
   item,
+  categoryName,
   onAdjustStock,
   onChangeInventoryType,
 }: StockItemCardProps) {
@@ -314,107 +361,103 @@ function StockItemCard({
     currentStock > 0;
   const isOutOfStock = currentStock === 0;
 
+  const statusColor = isOutOfStock
+    ? "text-rose-600 bg-rose-50 border-rose-100"
+    : isLowStock
+      ? "text-amber-600 bg-amber-50 border-amber-100"
+      : "text-sage-600 bg-sage-50 border-sage-100";
+
+  const statusLabel = isOutOfStock
+    ? "Agotado"
+    : isLowStock
+      ? "Bajo"
+      : "OK";
+
   return (
-    <Card
-      variant="elevated"
-      padding="lg"
+    <div
       className={cn(
-        "transition-all duration-300 hover:shadow-soft-lg group rounded-3xl",
+        "group flex flex-col p-4 rounded-2xl border transition-all duration-200 hover:shadow-md",
         isOutOfStock
-          ? "border-2 border-rose-100 bg-rose-50/20"
+          ? "bg-rose-50/50 border-rose-100 hover:border-rose-200"
           : isLowStock
-            ? "border-2 border-amber-100 bg-amber-50/20"
-            : "border border-sage-100 hover:border-sage-300"
+            ? "bg-amber-50/50 border-amber-100 hover:border-amber-200"
+            : "bg-white border-sage-100 hover:border-sage-300"
       )}
     >
       {/* Header */}
-      <div className="flex items-start justify-between mb-6">
-        <div className="flex-1 min-w-0">
-          <h3 className="text-lg font-bold text-carbon-900 mb-1 truncate group-hover:text-sage-700 transition-colors">
+      <div className="flex items-start justify-between mb-3">
+        <div className="flex-1 min-w-0 pr-2">
+          <h4 className="text-sm font-bold text-carbon-900 truncate group-hover:text-sage-700 transition-colors">
             {item.name}
-          </h3>
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-bold text-carbon-400 tracking-wider bg-carbon-50 px-2 py-0.5 rounded-lg border border-carbon-100 uppercase">
-              ID: {item.id}
-            </span>
-          </div>
+          </h4>
         </div>
-        <div className={cn(
-          "w-10 h-10 rounded-xl flex items-center justify-center shadow-inner",
-          isTracked ? "bg-sage-100 text-sage-600" : "bg-carbon-50 text-carbon-300"
-        )}>
-          <Package className="w-5 h-5" />
-        </div>
+        <span className="shrink-0 text-[10px] font-semibold text-carbon-500 bg-carbon-50 px-2 py-0.5 rounded-lg uppercase">
+          {categoryName}
+        </span>
       </div>
 
-      {/* Stock Info */}
+      {/* Stock Info Row */}
       {isTracked ? (
-        <div className="mb-6 space-y-4">
-          <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-sage-50 shadow-soft-xs">
-            <span className="text-xs font-bold text-carbon-400 uppercase tracking-widest">
-              Stock Actual
-            </span>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Package className={cn("w-4 h-4", isOutOfStock ? "text-rose-400" : isLowStock ? "text-amber-400" : "text-sage-400")} />
             <span className={cn(
-              "text-lg font-black px-3 py-1 rounded-xl",
-              isOutOfStock ? "text-rose-600 bg-rose-50" : isLowStock ? "text-amber-600 bg-amber-50" : "text-sage-700 bg-sage-50"
+              "text-sm font-black px-2 py-0.5 rounded-md border",
+              statusColor
             )}>
               {currentStock} ud.
             </span>
           </div>
           {item.lowStockAlert !== undefined && (
-            <div className="flex items-center justify-between px-2">
-              <div className="flex items-center gap-1.5">
-                <AlertTriangle className={cn("w-3.5 h-3.5", isLowStock ? "text-amber-500" : "text-carbon-300")} />
-                <span className="text-[10px] font-black text-carbon-400 uppercase tracking-widest">Alerta en:</span>
-              </div>
-              <span className="text-xs font-bold text-carbon-700">
-                {item.lowStockAlert} ud.
+            <div className="flex items-center gap-1">
+              <AlertTriangle className={cn("w-3 h-3", isLowStock ? "text-amber-500" : "text-carbon-300")} />
+              <span className="text-[10px] font-medium text-carbon-500">
+                {item.lowStockAlert}
               </span>
             </div>
           )}
         </div>
       ) : (
-        <div className="mb-6 p-6 bg-sage-50/50 rounded-2xl border border-dashed border-sage-200">
-          <p className="text-xs font-bold text-carbon-400 text-center flex flex-col items-center gap-2">
-            <Settings2 className="w-5 h-5 opacity-30" />
-            Sin control de inventario
-          </p>
+        <div className="mb-3">
+          <span className="text-[10px] font-medium text-carbon-400 italic">
+            Sin rastreo
+          </span>
         </div>
       )}
 
       {/* Actions */}
-      <div className="flex gap-2">
+      <div className="mt-auto flex gap-2">
         {isTracked ? (
           <Button
             variant="primary"
-            size="md"
+            size="sm"
             onClick={onAdjustStock}
-            className="flex-1 rounded-xl shadow-soft-md bg-carbon-900 hover:bg-carbon-800 text-white font-bold h-12"
+            className="flex-1 rounded-lg h-9 text-xs font-bold"
           >
-            <Plus className="w-4 h-4 mr-2 stroke-[3px]" />
+            <Plus className="w-3 h-3 mr-1.5" />
             Ajustar
           </Button>
         ) : (
           <Button
             variant="outline"
-            size="md"
+            size="sm"
             onClick={onChangeInventoryType}
-            className="flex-1 rounded-xl border-sage-200 text-sage-700 hover:bg-sage-50 font-bold h-12"
+            className="flex-1 rounded-lg h-9 text-xs font-bold border-sage-200 text-sage-700"
           >
-            Activar Rastreo
+            Activar
           </Button>
         )}
         
         <Button
           variant="ghost"
-          size="md"
+          size="sm"
           onClick={onChangeInventoryType}
-          className="w-12 h-12 rounded-xl text-carbon-400 hover:text-carbon-900 hover:bg-carbon-100 flex items-center justify-center p-0"
-          title="Configuración de inventario"
+          className="w-9 h-9 rounded-lg p-0 text-carbon-400 hover:text-carbon-600"
+          title="Configuración"
         >
-          <Settings2 className="w-5 h-5" />
+          <Settings2 className="w-4 h-4" />
         </Button>
       </div>
-    </Card>
+    </div>
   );
 }
