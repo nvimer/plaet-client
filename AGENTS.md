@@ -10,6 +10,7 @@
   - `sage`: Backgrounds and soft accents (`sage-50` to `sage-600`).
   - `carbon`: Primary text and dark elements (`carbon-900` for titles).
   - `success`, `warning`, `error`, `info`: Standardized semantic feedback.
+- **Standardization Script:** Use `npm run fix:ui` to automatically convert raw Tailwind colors (red, green, etc.) to semantic tokens and refine typography.
 - **Typography:** Premium feel using `font-bold` for titles and `tracking-tight`. Use uppercase only for labels with `tracking-[0.2em]`.
 - **Touch Targets:** Minimum 44px for buttons and interactive cards.
 - **Component Geometry:** Prefer `rounded-2xl` for standard cards and `rounded-3xl` for main module hubs or launchpad cards.
@@ -45,13 +46,35 @@
 - **Timezones:** Use `dateUtils` to evaluate dates against local Colombia time (UTC-5), preventing midnight-shift bugs.
 - **Modular Pages:** Extract complex logic into hooks or sub-components. Keep page components clean and focused on layout.
 
-## 🏗️ Structure
+## 🏗️ Project Structure
+
+### Features (`src/features/`)
+Each module is self-contained:
 ```text
 src/features/{feature}/
 ├── components/          # Tactical & layout components
 ├── hooks/               # Specific TanStack Query hooks
 ├── pages/               # Routed pages (including Hub pages)
-├── schemas/             # Zod validation
+├── schemas/             # Zod validation (e.g., {feature}Schemas.ts)
 ├── services/            # API functions
+├── types/               # Module-specific types
 └── index.ts             # Barrel export
 ```
+
+### Shared Components (`src/components/`)
+Organized by responsibility:
+```text
+src/components/
+├── feedback/            # Global Error Boundaries, Toast config
+├── filters/             # Unified FilterBar, Search, Pills
+├── guards/              # ProtectedRoute, RoleGuard, SessionTimeout
+├── layout/              # Sidebar, TopBar, Navigation configs
+├── network/             # OfflineIndicator, NetworkStatusManager
+├── seo/                 # Helmet/Meta wrappers
+└── ui/                  # Atomic Design components (Button, Card, Input)
+```
+
+### Core Configuration
+- `src/app/`: Global routing (`routes.ts`) and breadcrumbs.
+- `src/config/`: Global constants and API base settings.
+- `src/layouts/`: Layout wrappers (`SidebarLayout`, `FullScreenLayout`).

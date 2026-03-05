@@ -9,10 +9,10 @@ import {
   AccountLockoutPage,
   ChangePasswordPage,
 } from "./features/auth";
-import { PrivateRoute } from "./components/PrivateRoute";
+import { ProtectedRoute } from "./components";
 import { FullScreenLayout } from "./layouts/FullScreenLayout";
-import { ErrorBoundary } from "./components/GlobalErrorBoundary";
-import NetworkStatusManager from "./components/NetworkStatusManager";
+import { ErrorBoundary } from "./components";
+import { NetworkStatusManager } from "./components";
 import ErrorPage from "./pages/ErrorPage";
 import { DashboardPage } from "./features/dashboard/pages/DashboardPage";
 import { TablesPage, TablesHubPage } from "./features/tables";
@@ -53,7 +53,7 @@ import { RolePermissionsPage } from "./features/permissions";
 import { AdminDashboardPage } from "./features/analytics/pages/AdminDashboardPage";
 import { CashClosurePage } from "./features/cash-closure/pages/CashClosurePage";
 import { ExpensesPage } from "./features/expenses/pages/ExpensesPage";
-import { RoleProtectedRoute } from "./components/RoleProtectedRoute";
+import { RoleProtectedRoute } from "./components";
 import { RoleName } from "./types";
 import { ROUTES } from "./app/routes";
 
@@ -88,11 +88,11 @@ const App = () => {
             <Route
               path="/register"
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
                     <RegisterForm />
                   </RoleProtectedRoute>
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
             {/* Public Route: Forgot Password */}
@@ -133,9 +133,9 @@ const App = () => {
             <Route
               path={ROUTES.DASHBOARD}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <DashboardPage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -143,11 +143,11 @@ const App = () => {
             <Route
               path={ROUTES.ADMIN_DASHBOARD}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
                     <AdminDashboardPage />
                   </RoleProtectedRoute>
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -155,11 +155,11 @@ const App = () => {
             <Route
               path={ROUTES.RESTAURANTS}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <RoleProtectedRoute allowedRoles={[RoleName.SUPERADMIN]}>
                     <RestaurantsPage />
                   </RoleProtectedRoute>
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -167,11 +167,11 @@ const App = () => {
             <Route
               path={ROUTES.PERMISSIONS}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <RoleProtectedRoute allowedRoles={[RoleName.SUPERADMIN]}>
                     <RolePermissionsPage />
                   </RoleProtectedRoute>
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -179,13 +179,13 @@ const App = () => {
             <Route
               path={ROUTES.CASH_CLOSURE}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <RoleProtectedRoute
                     allowedRoles={[RoleName.ADMIN, RoleName.CASHIER]}
                   >
                     <CashClosurePage />
                   </RoleProtectedRoute>
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -193,11 +193,11 @@ const App = () => {
             <Route
               path={ROUTES.EXPENSES}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
                     <ExpensesPage />
                   </RoleProtectedRoute>
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -205,18 +205,18 @@ const App = () => {
             <Route
               path={ROUTES.TABLES}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <TablesHubPage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
             <Route
               path={ROUTES.TABLES_MAP}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <TablesPage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -224,18 +224,18 @@ const App = () => {
             <Route
               path={ROUTES.MENU}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <MenuHubPage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
             <Route
               path={ROUTES.MENU_LIST}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <MenuPage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -243,18 +243,18 @@ const App = () => {
             <Route
               path={ROUTES.ORDERS}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <OrdersHubPage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
             <Route
               path={ROUTES.ORDERS_LIST}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <OrdersPage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -262,9 +262,9 @@ const App = () => {
             <Route
               path={ROUTES.ORDER_CREATE}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <OrderCreatePage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -272,9 +272,9 @@ const App = () => {
             <Route
               path={ROUTES.ORDER_DETAIL}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <OrderDetailPage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -282,9 +282,9 @@ const App = () => {
             <Route
               path={ROUTES.ORDER_EDIT}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <OrderEditPage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -292,7 +292,7 @@ const App = () => {
             <Route
               path={ROUTES.KITCHEN}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <RoleProtectedRoute
                     allowedRoles={[RoleName.KITCHEN_MANAGER, RoleName.ADMIN]}
                   >
@@ -300,7 +300,7 @@ const App = () => {
                       <KitchenOrdersPage />
                     </FullScreenLayout>
                   </RoleProtectedRoute>
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -308,9 +308,9 @@ const App = () => {
             <Route
               path={ROUTES.TABLE_CREATE}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <TableCreatePage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -318,9 +318,9 @@ const App = () => {
             <Route
               path={ROUTES.TABLE_MANAGE}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <TableManagePage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -328,9 +328,9 @@ const App = () => {
             <Route
               path={ROUTES.MENU_CATEGORY_CREATE}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <CategoryCreatePage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -338,9 +338,9 @@ const App = () => {
             <Route
               path={ROUTES.MENU_CATEGORY_EDIT}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <CategoryEditPage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -348,9 +348,9 @@ const App = () => {
             <Route
               path={ROUTES.MENU_ITEM_CREATE}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <MenuItemCreatePage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -358,9 +358,9 @@ const App = () => {
             <Route
               path={ROUTES.MENU_ITEM_EDIT}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <MenuItemEditPage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -368,26 +368,26 @@ const App = () => {
             <Route
               path={ROUTES.INVENTORY}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <RoleProtectedRoute
                     allowedRoles={[RoleName.ADMIN, RoleName.KITCHEN_MANAGER]}
                   >
                     <InventoryHubPage />
                   </RoleProtectedRoute>
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
             <Route
               path={ROUTES.STOCK_MANAGEMENT}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <RoleProtectedRoute
                     allowedRoles={[RoleName.ADMIN, RoleName.KITCHEN_MANAGER]}
                   >
                     <StockManagementPage />
                   </RoleProtectedRoute>
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -395,27 +395,27 @@ const App = () => {
             <Route
               path={ROUTES.DAILY_MENU}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <DailyMenuHubPage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
             <Route
               path={ROUTES.DAILY_MENU_HISTORY}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <DailyMenuHistoryPage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
             <Route
               path={ROUTES.DAILY_MENU_SETUP}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <DailyMenuPage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -423,22 +423,22 @@ const App = () => {
             <Route
               path={ROUTES.USERS}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
                     <UsersHubPage />
                   </RoleProtectedRoute>
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
             <Route
               path={ROUTES.USERS_LIST}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
                     <UsersPage />
                   </RoleProtectedRoute>
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -446,11 +446,11 @@ const App = () => {
             <Route
               path={ROUTES.USER_CREATE}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
                     <UserCreatePage />
                   </RoleProtectedRoute>
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -458,11 +458,11 @@ const App = () => {
             <Route
               path={ROUTES.USER_EDIT}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
                     <UserEditPage />
                   </RoleProtectedRoute>
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -470,9 +470,9 @@ const App = () => {
             <Route
               path={ROUTES.PROFILE}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <ProfilePage />
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 
@@ -480,11 +480,11 @@ const App = () => {
             <Route
               path={ROUTES.CHANGE_PASSWORD}
               element={
-                <PrivateRoute>
+                <ProtectedRoute>
                   <FullScreenLayout>
                     <ChangePasswordPage />
                   </FullScreenLayout>
-                </PrivateRoute>
+                </ProtectedRoute>
               }
             />
 

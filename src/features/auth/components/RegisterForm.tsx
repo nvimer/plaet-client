@@ -414,12 +414,10 @@ export default function RegisterForm() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, delay: 0.4 }}
-          className="mt-6 text-center"
+          className="mt-6 text-center text-carbon-400 text-xs flex items-center justify-center gap-2"
         >
-          <p>
-            <ShieldCheck />
-            Registro seguro y protegido
-          </p>
+          <ShieldCheck className="w-4 h-4" />
+          Registro seguro y protegido
         </motion.div>
       </motion.div>
     </div>

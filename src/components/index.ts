@@ -7,9 +7,16 @@ export { Seo } from "./seo/Seo";
 // Filters (unified design for all modules)
 export * from "./filters";
 
-// Route Components
-export { PrivateRoute } from "./PrivateRoute";
-export * from "./RoleProtectedRoute";
-export * from "./Guard";
-export * from "./SessionTimeoutWarning";
-export type { RoleProtectedRouteProps } from "./RoleProtectedRoute";
+// Feedback
+export { GlobalErrorBoundary as ErrorBoundary } from "./feedback/GlobalErrorBoundary";
+
+// Network
+export { NetworkStatusManager } from "./network/NetworkStatusManager";
+export { OfflineIndicator } from "./network/OfflineIndicator";
+
+// Guards & Routing
+export { default as ProtectedRoute } from "./guards/ProtectedRoute";
+export { RoleProtectedRoute } from "./guards/RoleProtectedRoute";
+export { Guard } from "./guards/Guard";
+export { SessionTimeoutWarning } from "./guards/SessionTimeoutWarning";
+export type { RoleProtectedRouteProps } from "./guards/RoleProtectedRoute";
