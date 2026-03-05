@@ -4,7 +4,7 @@ import type { MenuItem } from "@/types";
 import { Button, ConfirmDialog } from "@/components";
 import { cn } from "@/utils/cn";
 import { formatCurrency } from "@/utils/formatUtils";
-import { QuickStockModal } from "./QuickStockModal";
+import { QuickStockModal } from "@/features/inventory/components/QuickStockModal";
 
 interface MenuItemCardProps {
   item: MenuItem;
