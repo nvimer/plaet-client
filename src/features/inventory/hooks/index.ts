@@ -1,1 +1,1 @@
-export { useStockManagement } from "./useStockManagement";
+export * from "./useStockManagement";
