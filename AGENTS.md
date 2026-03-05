@@ -1,80 +1,47 @@
-# AGENTS.md - Coding Guidelines & Context for AI Agents (Client)
+# AGENTS.md - Coding Guidelines for AI & Developers
 
-## 🏢 Architecture: Multi-Tenant SaaS
-- **Tenant Context:** User's `restaurantId` is stored in Auth Context.
-- **Isolation:** Trust backend for data isolation; do not filter by `restaurantId` manually on frontend.
-- **Hierarchical Routing:** Follow the `Inicio > Hub > Page` structure. Main modules (Tables, Orders, Inventory, Daily Menu) have a central "Hub" before reaching specific management pages.
+This document defines the strict technical rules and structural conventions for the Plaet client application.
 
-## 🎨 Premium & Tactile UX Standards
-- **Color Palette:** Strictly use semantic colors from `tailwind.config.js`:
-  - `sage`: Backgrounds and soft accents (`sage-50` to `sage-600`).
-  - `carbon`: Primary text and dark elements (`carbon-900` for titles).
-  - `success`, `warning`, `error`, `info`: Standardized semantic feedback.
-- **Standardization Script:** Use `npm run fix:ui` to automatically convert raw Tailwind colors (red, green, etc.) to semantic tokens and refine typography.
-- **Typography:** Premium feel using `font-bold` for titles and `tracking-tight`. Use uppercase only for labels with `tracking-[0.2em]`.
-- **Touch Targets:** Minimum 44px for buttons and interactive cards.
-- **Component Geometry:** Prefer `rounded-2xl` for standard cards and `rounded-3xl` for main module hubs or launchpad cards.
-- **Shadows:** Use custom shadow utilities like `shadow-smooth-md` or `shadow-soft-xl`.
-- **Motion & Animations:** Use the "Soft & Minimal" engine (`src/utils/motion.ts`). **NEVER use spring physics** (bouncing/jumping) unless explicitly requested. Use `variants.fadeInUp` and `transitions.soft` (Cubic Bezier: `[0.22, 1, 0.36, 1]`) for elegant, premium feel.
+## 🏢 SaaS & Multi-Tenant Architecture
+- **Tenant Isolation:** The `restaurantId` is managed in the Auth Context. Trust the backend for data isolation; do not filter by `restaurantId` manually on the frontend unless required for specific UI logic.
+- **Hierarchical Routing:** Follow the `Home > Hub > Page` structure. Main modules must have a central "Hub" page before reaching management pages.
 
-## 🍽️ Order & Kitchen Workflow
-- **Table-Centric:** All operational filtering (Billing, Kitchen, Ready) must be grouped by the `Table` (or individual customer for Take-out). The entire table moves from "In Kitchen" to "Ready" ONLY when all its items are finished.
-- **Pay First:** Orders must be `PAID` to appear in the Kitchen Kanban.
-- **Data Capture:** Take-out and Delivery modes must collect numeric phone numbers to support auto-saving customers in the database.
-- **Packaging:** Portacomida fees are fixed via the Daily Menu configuration, but their quantity is manually adjusted in the order form.
+## 🎨 Design System & UX
+- **Semantic Tokens:** Never use literal colors (e.g., `red-500`, `green-200`). Use the semantic tokens from `tailwind.config.js`:
+  - `sage`: Backgrounds and soft accents.
+  - `carbon`: Primary text and dark elements.
+  - `success`, `warning`, `error`, `info`: Semantic feedback.
+- **Auto-Standardization:** The script `npm run fix:ui` (found in `scripts/standardize-ui.ts`) must be executed after creating new UI components to enforce color and typography consistency.
+- **Geometry:** 
+  - `rounded-2xl` for standard cards.
+  - `rounded-3xl` for Launchpad cards and Module Hubs.
+- **Motion:** Use `transitions.soft` (Cubic Bezier: `[0.22, 1, 0.36, 1]`) and `variants.fadeInUp` for all page transitions.
 
-## 🛰️ Navigation System (Sidebar 2.0)
-- **Hover & Click:** Sidebar groups (accordions) must support both **Hover to Expand** (desktop) and **Click to Navigate** (to the module Hub).
-- **Active States:** Use the `sidebar-active-pill` (sage-600 vertical bar) for direct links.
-- **Transitions:** All sidebar animations must use `framer-motion` with `ease-[0.4,0,0.2,1]` and a duration of `700ms` for a "liquid" feel.
-- **TopBar:** Must be visible on all pages (no `hideHeader`). Use `hideTitle={true}` when the page has its own premium header to avoid redundancy.
+## 🏗️ Structural Conventions
 
-## 🚀 Dashboard & Launchpad
-- **The Launchpad:** The main dashboard is a central command center with large action cards.
-- **Role-Based:** Content and available launchpad cards must adapt to the user's role (SuperAdmin vs Admin vs Staff).
-- **KPI Grid:** Maintain a top row of summary statistics (StatCards) for immediate business oversight.
-
-## 🔐 Permissions & Access Control
-- **Granular Checks:** Use `usePermissions().hasPermission("module:action")` for O(1) checks.
-- **UI Guard:** Use the `<Guard permission="name" />` component to show/hide UI elements declaratively.
-
-## 🛠️ Quality Standards
-- **Zero Tolerance:** NO `any` or `unknown`. Use `import type` for interfaces.
-- **Logging:** Use `logger.ts` for all frontend logs. Raw `console.log` is strictly forbidden to maintain production cleanliness.
-- **Functional Comments:** Code comments must be strictly functional. Focus on *why* or complex logic.
-- **Form Patterns:** Always `react-hook-form` + `zod`.
-- **Timezones:** Use `dateUtils` to evaluate dates against local Colombia time (UTC-5), preventing midnight-shift bugs.
-- **Modular Pages:** Extract complex logic into hooks or sub-components. Keep page components clean and focused on layout.
-
-## 🏗️ Project Structure
-
-### Features (`src/features/`)
-Each module is self-contained:
-```text
-src/features/{feature}/
-├── components/          # Tactical & layout components
-├── hooks/               # Specific TanStack Query hooks
-├── pages/               # Routed pages (including Hub pages)
-├── schemas/             # Zod validation (e.g., {feature}Schemas.ts)
-├── services/            # API functions
-├── types/               # Module-specific types
-└── index.ts             # Barrel export
-```
+### Feature Structure (`src/features/{name}/`)
+Each feature must be self-contained:
+1. `components/`: Module-specific tactical components.
+2. `hooks/`: TanStack Query hooks.
+3. `pages/`: Routed components (including the Hub).
+4. `schemas/`: Zod validation schemas.
+5. `services/`: API call functions (Axios).
+6. `index.ts`: Module barrel export.
 
 ### Shared Components (`src/components/`)
-Organized by responsibility:
-```text
-src/components/
-├── feedback/            # Global Error Boundaries, Toast config
-├── filters/             # Unified FilterBar, Search, Pills
-├── guards/              # ProtectedRoute, RoleGuard, SessionTimeout
-├── layout/              # Sidebar, TopBar, Navigation configs
-├── network/             # OfflineIndicator, NetworkStatusManager
-├── seo/                 # Helmet/Meta wrappers
-└── ui/                  # Atomic Design components (Button, Card, Input)
-```
+Organized by domain:
+- `guards/`: `ProtectedRoute`, `RoleProtectedRoute`, `Guard`, `SessionTimeout`.
+- `network/`: `OfflineIndicator`, `NetworkStatusManager`.
+- `feedback/`: `ErrorBoundary`, `GlobalErrorBoundary`.
+- `ui/`: Atomic design components (Buttons, Inputs, etc.).
 
-### Core Configuration
-- `src/app/`: Global routing (`routes.ts`) and breadcrumbs.
-- `src/config/`: Global constants and API base settings.
-- `src/layouts/`: Layout wrappers (`SidebarLayout`, `FullScreenLayout`).
+## 🔐 Access Control (RBAC)
+- **Permissions:** Use `usePermissions().hasPermission("module:action")` for O(1) checks.
+- **Declarative UI:** Prefer the `<Guard permission="name" />` component to show/hide UI elements.
+
+## 🛠️ Quality Standards
+- **Zero Tolerance Policy:** NO `any` or `unknown`. Use `import type` for interfaces.
+- **Logging:** Use the professional `logger.ts`. Raw `console.log` is strictly forbidden in the codebase.
+- **Forms:** Always use `react-hook-form` + `zod`.
+- **Timezones:** Use `dateUtils` for all date calculations to ensure consistency with Colombia time (UTC-5).
+- **Barrel Files:** Keep `index.ts` files updated to allow clean imports via `@/features/...` or `@/components`.
