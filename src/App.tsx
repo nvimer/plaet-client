@@ -20,12 +20,16 @@ import { LandingPage, PrivacyPage, TermsPage } from "./features/landing/pages";
 import { 
   MenuPage, 
   MenuHubPage,
+} from "./features/menu";
+import {
   StockManagementPage, 
   InventoryHubPage,
+} from "./features/inventory";
+import {
   DailyMenuPage,
   DailyMenuHubPage,
   DailyMenuHistoryPage
-} from "./features/menu";
+} from "./features/daily-menu";
 import { OrdersPage, OrdersHubPage } from "./features/orders";
 import { OrderCreatePage } from "./features/orders/pages/OrderCreatePage";
 import { OrderDetailPage } from "./features/orders/pages/OrderDetailPage";

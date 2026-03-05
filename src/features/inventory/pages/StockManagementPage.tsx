@@ -1,8 +1,8 @@
 import { useState, useMemo } from "react";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { Button, Card, Badge, Skeleton, EmptyState, FilterBar, FilterPills, FilterSearch, FilterSelect, FilterDrawer, ActiveFilterChips } from "@/components";
-import { useItems } from "../hooks";
-import { useCategories } from "../../categories/hooks";
+import { useItems } from "@/features/menu/hooks";
+import { useCategories } from "@/features/menu/categories/hooks";
 import {
   DailyResetModal,
   InventoryTypeModal,

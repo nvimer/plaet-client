@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
-import { useDailyMenuHistory } from "../../hooks/useDailyMenu";
+import { useDailyMenuHistory } from "../hooks/useDailyMenu";
 import { Card, Button } from "@/components";
 import { ROUTES } from "@/app/routes";
 import { 
