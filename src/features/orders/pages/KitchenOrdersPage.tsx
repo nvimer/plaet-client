@@ -1,5 +1,5 @@
 import { KitchenKanban } from "../components/kitchen";
-import { useDailyMenuToday } from "@/features/menu/hooks/useDailyMenu";
+import { useDailyMenuToday } from "@/features/daily-menu/hooks";
 
 export function KitchenOrdersPage() {
   const { data: dailyMenu } = useDailyMenuToday();

@@ -9,7 +9,7 @@ import axios from "axios";
 import { useCreateOrder, useBatchCreateOrders } from "./useCreateOrder";
 import { useTables, useUpdateTableStatus } from "@/features/tables";
 import { useItems } from "@/features/menu";
-import { useDailyMenuToday, useDailyMenuByDate } from "@/features/menu/hooks/useDailyMenu";
+import { useDailyMenuToday, useDailyMenuByDate } from "@/features/daily-menu/hooks";
 import { OrderType, TableStatus, OrderStatus, PaymentMethod, OrderItemStatus } from "@/types";
 import { paymentApi, orderApi } from "@/services";
 import type { Order } from "@/types";

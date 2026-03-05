@@ -6,7 +6,7 @@ import {
   useUpdateDailyMenu,
   useUpdateDailyMenuByDate,
   useItemsByCategory,
-} from "@/features/menu/hooks/useDailyMenu";
+} from "@/features/daily-menu/hooks";
 import {
   type DailyMenu,
   type UpdateDailyMenuData,

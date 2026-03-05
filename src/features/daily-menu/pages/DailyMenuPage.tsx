@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { Card, Button } from "@/components";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { DailyMenuConfigForm } from "./DailyMenuConfigForm";
-import { useDailyMenuToday, useDailyMenuByDate } from "@/features/menu/hooks/useDailyMenu";
+import { useDailyMenuToday, useDailyMenuByDate } from "@/features/daily-menu/hooks";
 import { useAuth } from "@/hooks";
 import { RoleName } from "@/types";
 import { Calendar, RefreshCw, UtensilsCrossed, Edit2, ArrowLeft, Beef, Salad, CupSoda, IceCream, PlusCircle, Settings2, type LucideIcon } from "lucide-react";
