@@ -90,13 +90,17 @@ export interface RemoveStockInput {
  * Stock history entry
  */
 export interface StockHistoryEntry {
-  id: number;
+  id: string;
   menuItemId: number;
+  previousStock: number;
+  newStock: number;
   quantity: number;
-  type: "ADD" | "REMOVE" | "RESET" | "ORDER" | "ADJUSTMENT";
+  adjustmentType: "MANUAL_ADD" | "MANUAL_REMOVE" | "DAILY_RESET" | "ORDER_DEDUCT" | "ORDER_CANCELLED";
   reason?: string;
+  userId?: string;
+  orderId?: string;
   createdAt: string;
-  createdBy?: string;
+  menuItem?: MenuItem;
 }
 
 /**

@@ -7,7 +7,7 @@ import {
   EmptyState,
   Pagination,
 } from "@/components";
-import { useAllStockHistory } from "../hooks";
+import { useAllStockHistory } from "@/features/inventory/hooks";
 import {
   History,
   ArrowUpCircle,
@@ -15,10 +15,9 @@ import {
   RotateCcw,
   ShoppingBag,
   Info,
+  XCircle,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
-import { format } from "date-fns";
-import { es } from "date-fns/locale";
 
 /**
  * InventoryHistoryPage Component
@@ -31,6 +30,22 @@ export function InventoryHistoryPage() {
 
   const { data: historyData, isLoading } = useAllStockHistory({ page, limit });
 
+  const formatDate = (dateString: string) => {
+    return new Intl.DateTimeFormat("es-CO", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }).format(new Date(dateString));
+  };
+
+  const formatTime = (dateString: string) => {
+    return new Intl.DateTimeFormat("es-CO", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: false,
+    }).format(new Date(dateString));
+  };
+
   const getAdjustmentIcon = (type: string) => {
     switch (type) {
       case "MANUAL_ADD":
@@ -41,6 +56,8 @@ export function InventoryHistoryPage() {
         return <RotateCcw className="w-5 h-5 text-warning-500" />;
       case "ORDER_DEDUCT":
         return <ShoppingBag className="w-5 h-5 text-blue-500" />;
+      case "ORDER_CANCELLED":
+        return <XCircle className="w-5 h-5 text-success-400" />;
       default:
         return <Info className="w-5 h-5 text-carbon-400" />;
     }
@@ -56,6 +73,8 @@ export function InventoryHistoryPage() {
         return "Reinicio Diario";
       case "ORDER_DEDUCT":
         return "Venta";
+      case "ORDER_CANCELLED":
+        return "Cancelación";
       default:
         return type;
     }
@@ -100,11 +119,11 @@ export function InventoryHistoryPage() {
                     <tr key={entry.id} className="hover:bg-sage-50/30 transition-colors">
                       <td className="px-6 py-4">
                         <div className="flex flex-col">
-                          <span className="text-sm font-bold text-carbon-900">
-                            {format(new Date(entry.createdAt), "dd MMM, yyyy", { locale: es })}
+                          <span className="text-sm font-bold text-carbon-900 capitalize">
+                            {formatDate(entry.createdAt)}
                           </span>
                           <span className="text-[10px] text-carbon-400 font-medium">
-                            {format(new Date(entry.createdAt), "HH:mm 'hs'", { locale: es })}
+                            {formatTime(entry.createdAt)} hs
                           </span>
                         </div>
                       </td>
@@ -124,13 +143,17 @@ export function InventoryHistoryPage() {
                       <td className="px-6 py-4 text-center">
                         <Badge
                           variant={
-                            entry.adjustmentType === "MANUAL_ADD" || entry.adjustmentType === "DAILY_RESET"
+                            entry.adjustmentType === "MANUAL_ADD" || 
+                            entry.adjustmentType === "DAILY_RESET" ||
+                            entry.adjustmentType === "ORDER_CANCELLED"
                               ? "success"
                               : "error"
                           }
                           className="font-black"
                         >
-                          {entry.adjustmentType === "MANUAL_ADD" || entry.adjustmentType === "DAILY_RESET" ? "+" : "-"}
+                          {entry.adjustmentType === "MANUAL_ADD" || 
+                           entry.adjustmentType === "DAILY_RESET" ||
+                           entry.adjustmentType === "ORDER_CANCELLED" ? "+" : "-"}
                           {Math.abs(entry.quantity)}
                         </Badge>
                       </td>

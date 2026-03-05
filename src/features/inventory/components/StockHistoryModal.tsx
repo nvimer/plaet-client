@@ -24,24 +24,24 @@ export function StockHistoryModal({
 }: StockHistoryModalProps) {
   const { data: history, isLoading } = useStockHistory(itemId);
 
-  const getTypeLabel = (type: StockHistoryEntry["type"]): string => {
-    const labels: Record<StockHistoryEntry["type"], string> = {
-      ADD: "Agregado",
-      REMOVE: "Removido",
-      RESET: "Reset Diario",
-      ORDER: "Pedido",
-      ADJUSTMENT: "Ajuste",
+  const getTypeLabel = (type: StockHistoryEntry["adjustmentType"]): string => {
+    const labels: Record<StockHistoryEntry["adjustmentType"], string> = {
+      MANUAL_ADD: "Agregado",
+      MANUAL_REMOVE: "Removido",
+      DAILY_RESET: "Reset Diario",
+      ORDER_DEDUCT: "Pedido",
+      ORDER_CANCELLED: "Cancelación",
     };
     return labels[type] || type;
   };
 
-  const getTypeColor = (type: StockHistoryEntry["type"]): string => {
-    const colors: Record<StockHistoryEntry["type"], string> = {
-      ADD: "text-success-600 bg-success-50 border-success-200",
-      REMOVE: "text-error-600 bg-error-50 border-error-200",
-      RESET: "text-blue-600 bg-blue-50 border-blue-200",
-      ORDER: "text-info-600 bg-info-50 border-info-200",
-      ADJUSTMENT: "text-yellow-600 bg-yellow-50 border-yellow-200",
+  const getTypeColor = (type: StockHistoryEntry["adjustmentType"]): string => {
+    const colors: Record<StockHistoryEntry["adjustmentType"], string> = {
+      MANUAL_ADD: "text-success-600 bg-success-50 border-success-200",
+      MANUAL_REMOVE: "text-error-600 bg-error-50 border-error-200",
+      DAILY_RESET: "text-blue-600 bg-blue-50 border-blue-200",
+      ORDER_DEDUCT: "text-info-600 bg-info-50 border-info-200",
+      ORDER_CANCELLED: "text-success-600 bg-success-50 border-success-200",
     };
     return colors[type] || "text-carbon-600 bg-carbon-50 border-carbon-200";
   };
@@ -76,17 +76,17 @@ export function StockHistoryModal({
             {history.map((entry) => (
               <div
                 key={entry.id}
-                className={`p-4 rounded-xl border-2 ${getTypeColor(entry.type)}`}
+                className={`p-4 rounded-xl border-2 ${getTypeColor(entry.adjustmentType)}`}
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <Package className="w-4 h-4" />
                     <span className="font-semibold">
-                      {getTypeLabel(entry.type)}
+                      {getTypeLabel(entry.adjustmentType)}
                     </span>
                     <span className="font-bold text-lg">
-                      {entry.type === "REMOVE" ? "-" : "+"}
-                      {entry.quantity}
+                      {entry.adjustmentType === "MANUAL_REMOVE" || entry.adjustmentType === "ORDER_DEDUCT" ? "-" : "+"}
+                      {Math.abs(entry.quantity)}
                     </span>
                   </div>
                   <span className="text-sm opacity-75">
