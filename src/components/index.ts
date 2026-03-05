@@ -11,7 +11,7 @@ export * from "./filters";
 export { GlobalErrorBoundary as ErrorBoundary } from "./feedback/GlobalErrorBoundary";
 
 // Network
-export { NetworkStatusManager } from "./network/NetworkStatusManager";
+export { default as NetworkStatusManager } from "./network/NetworkStatusManager";
 export { OfflineIndicator } from "./network/OfflineIndicator";
 
 // Guards & Routing
