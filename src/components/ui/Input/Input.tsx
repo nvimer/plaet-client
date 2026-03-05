@@ -8,6 +8,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   fullWidth?: boolean;
   required?: boolean;
   optional?: boolean;
+  originalValue?: string | number | readonly string[] | undefined;
 }
 
 /**
@@ -15,6 +16,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
  *
  * Modern, visible input with clear boundaries.
  * Designed for easy recognition of editable fields.
+ * Supports dirty tracking with originalValue prop.
  */
 export const Input = forwardRef<HTMLInputElement, InputProps>(
   (
@@ -27,10 +29,15 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
       optional = false,
       className = "",
       id,
+      value,
+      defaultValue,
+      originalValue,
       ...props
     },
     ref,
   ) => {
+    const isModified = originalValue !== undefined && String(value) !== String(originalValue);
+
     return (
       <div className={fullWidth ? "w-full" : ""}>
         {/* Label */}
@@ -55,6 +62,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         <input
           ref={ref}
           id={id}
+          value={value}
+          defaultValue={defaultValue}
           className={cn(
             // Base
             "w-full px-4 py-3 text-base",
@@ -72,6 +81,8 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             "disabled:bg-sage-100 disabled:text-carbon-400 disabled:cursor-not-allowed",
             // Error state
             error && "border-red-400 bg-red-50/50 focus:border-red-500 focus:ring-red-500/10",
+            // Modified state (dirty tracking)
+            isModified && "border-sage-500 bg-sage-100/50",
             className
           )}
           {...props}

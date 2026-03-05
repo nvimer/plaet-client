@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { Check, Trash2, XCircle } from "lucide-react";
 import { useState } from "react";
 import type { AxiosErrorWithResponse } from "@/types/common";
+import { cn } from "@/utils/cn";
 
 /**
  * CategoryEditPage Component
@@ -32,6 +33,7 @@ export function CategoryEditPage() {
     register,
     handleSubmit,
     formState: { errors, isValid },
+    watch,
   } = useForm<UpdateCategoryInput>({
     resolver: zodResolver(updateCategorySchema),
     values: category
@@ -44,6 +46,15 @@ export function CategoryEditPage() {
     mode: "onChange",
   });
 
+  const watchedValues = watch();
+  const originalValues = category
+    ? {
+        name: category.name,
+        description: category.description || "",
+        order: category.order,
+      }
+    : undefined;
+
   const onSubmit = (data: UpdateCategoryInput) => {
     if (!category) return;
     updateCategory(
@@ -53,7 +64,7 @@ export function CategoryEditPage() {
           toast.success("Categoría actualizada", {
             description: `"${data.name || category.name}" ha sido actualizada`,
           });
-          navigate(ROUTES.MENU_LIST_LIST);
+          navigate(ROUTES.MENU_LIST, { state: { highlightId: category.id } });
         },
         onError: (error: AxiosErrorWithResponse) => {
           toast.error("Error al actualizar categoría", {
@@ -69,7 +80,7 @@ export function CategoryEditPage() {
     deleteCategory(category.id, {
       onSuccess: () => {
         toast.success("Categoría eliminada");
-        navigate(ROUTES.MENU_LIST_LIST);
+        navigate(ROUTES.MENU_LIST);
       },
       onError: (error: AxiosErrorWithResponse) => {
         toast.error("Error al eliminar categoría", {
@@ -137,6 +148,7 @@ export function CategoryEditPage() {
                   error={errors.name?.message}
                   fullWidth
                   className="text-lg"
+                  originalValue={originalValues?.name}
                 />
 
                 <div>
@@ -148,7 +160,11 @@ export function CategoryEditPage() {
                     {...register("description")}
                     placeholder="Describe la categoría..."
                     rows={4}
-                    className="w-full px-4 py-3 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 placeholder:text-carbon-400 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:border-sage-400"
+                    className={cn(
+                      "w-full px-4 py-3 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 placeholder:text-carbon-400 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:border-sage-400",
+                      watchedValues.description !== originalValues?.description &&
+                        "border-sage-500 bg-sage-100/50"
+                    )}
                   />
                   {errors.description && (
                     <p className="text-sm text-red-600 mt-1">
@@ -168,6 +184,7 @@ export function CategoryEditPage() {
                     {...register("order", { valueAsNumber: true })}
                     error={errors.order?.message}
                     fullWidth
+                    originalValue={String(originalValues?.order ?? "")}
                   />
                   <p className="mt-2 text-sm text-carbon-400">
                     Número menor = aparece primero en el menú

@@ -75,6 +75,23 @@ export function MenuItemEditPage() {
     mode: "onTouched",
   });
 
+  const watchedValues = watch();
+  const originalValues = item
+    ? {
+        name: item.name,
+        description: item.description || "",
+        categoryId: item.categoryId,
+        price: item.price,
+        isAvailable: item.isAvailable,
+        imageUrl: item.imageUrl || "",
+        inventoryType:
+          (item.inventoryType as InventoryType) || InventoryType.UNLIMITED,
+        stockQuantity: item.stockQuantity ?? undefined,
+        lowStockAlert: item.lowStockAlert ?? undefined,
+        autoMarkUnavailable: item.autoMarkUnavailable,
+      }
+    : undefined;
+
   const inventoryType = watch("inventoryType");
   const isTracked = inventoryType === InventoryType.TRACKED;
   const wasTracked = item?.inventoryType === InventoryType.TRACKED;
@@ -186,7 +203,7 @@ export function MenuItemEditPage() {
       toast.success("Producto actualizado", {
         description: `"${data.name || item.name}" ha sido actualizado correctamente`,
       });
-      navigate(ROUTES.MENU_LIST_LIST);
+      navigate(ROUTES.MENU_LIST, { state: { highlightId: item.id } });
     } catch (error) {
       console.error("Update error:", error);
       toast.error("Error al actualizar producto", {
@@ -202,7 +219,7 @@ export function MenuItemEditPage() {
     try {
       await deleteItem(item.id);
       toast.success("Producto eliminado");
-      navigate(ROUTES.MENU_LIST_LIST);
+      navigate(ROUTES.MENU_LIST);
     } catch (error) {
       toast.error("Error al eliminar producto", {
         description: error instanceof Error ? error.message : "Error desconocido",
@@ -240,6 +257,7 @@ export function MenuItemEditPage() {
                       error={errors.name?.message}
                       fullWidth
                       className="text-lg"
+                      originalValue={originalValues?.name}
                     />
                     <div>
                       <label className="block text-sm font-semibold text-carbon-800 mb-3">
@@ -250,7 +268,11 @@ export function MenuItemEditPage() {
                         {...register("description")}
                         placeholder="Describe el producto..."
                         rows={3}
-                        className={inputClass}
+                        className={cn(
+                          inputClass,
+                          watchedValues.description !== originalValues?.description &&
+                            "border-sage-500 bg-sage-100/50"
+                        )}
                       />
                       {errors.description && (
                         <p className="text-sm text-red-600 mt-1">
@@ -265,7 +287,11 @@ export function MenuItemEditPage() {
                       </label>
                       <select
                         {...register("categoryId", { valueAsNumber: true })}
-                        className={inputClass}
+                        className={cn(
+                          inputClass,
+                          watchedValues.categoryId !== originalValues?.categoryId &&
+                            "border-sage-500 bg-sage-100/50"
+                        )}
                         disabled={loadingCategories}
                       >
                         <option value="">Selecciona una categoría</option>
@@ -297,6 +323,7 @@ export function MenuItemEditPage() {
                       {...register("price")}
                       error={errors.price?.message}
                       fullWidth
+                      originalValue={String(originalValues?.price)}
                     />
                     <Input
                       label="URL de imagen"
@@ -306,6 +333,7 @@ export function MenuItemEditPage() {
                       {...register("imageUrl")}
                       error={errors.imageUrl?.message}
                       fullWidth
+                      originalValue={originalValues?.imageUrl}
                     />
                   </div>
                 </section>
@@ -321,7 +349,11 @@ export function MenuItemEditPage() {
                     </label>
                     <select
                       {...register("inventoryType")}
-                      className={inputClass}
+                      className={cn(
+                        inputClass,
+                        watchedValues.inventoryType !== originalValues?.inventoryType &&
+                          "border-sage-500 bg-sage-100/50"
+                      )}
                     >
                       <option value={InventoryType.UNLIMITED}>
                         Ilimitado (sin control)
@@ -360,6 +392,7 @@ export function MenuItemEditPage() {
                           min={0}
                           fullWidth
                           disabled={wasTracked}
+                          originalValue={String(originalValues?.stockQuantity ?? "")}
                         />
                         {wasTracked && (
                           <p className="text-xs text-carbon-500 mt-2">
@@ -382,13 +415,18 @@ export function MenuItemEditPage() {
                           error={errors.lowStockAlert?.message}
                           min={0}
                           fullWidth
+                          originalValue={String(originalValues?.lowStockAlert ?? "")}
                         />
                       </div>
                       <label className="flex items-center gap-3 cursor-pointer">
                         <input
                           type="checkbox"
                           {...register("autoMarkUnavailable")}
-                          className="w-5 h-5 rounded border-sage-300 text-sage-600 focus:ring-sage-400"
+                          className={cn(
+                            "w-5 h-5 rounded border-sage-300 text-sage-600 focus:ring-sage-400",
+                            watchedValues.autoMarkUnavailable !== originalValues?.autoMarkUnavailable &&
+                              "ring-2 ring-sage-500 ring-offset-1"
+                          )}
                         />
                         <div>
                           <span className="text-carbon-800 font-medium">
@@ -410,7 +448,11 @@ export function MenuItemEditPage() {
                                       type="checkbox"
                                       {...register("isAvailable")}
                                       disabled={isZeroStock}
-                                      className="w-5 h-5 rounded border-sage-300 text-sage-600 focus:ring-sage-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                                      className={cn(
+                                        "w-5 h-5 rounded border-sage-300 text-sage-600 focus:ring-sage-400 disabled:opacity-50 disabled:cursor-not-allowed",
+                                        watchedValues.isAvailable !== originalValues?.isAvailable &&
+                                          "ring-2 ring-sage-500 ring-offset-1"
+                                      )}
                                     />
                                     <span className={cn(isZeroStock ? "text-carbon-400" : "text-carbon-800")}>
                                       Disponible en el menú

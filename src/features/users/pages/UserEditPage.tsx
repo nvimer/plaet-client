@@ -12,6 +12,7 @@ import { useState, useEffect } from "react";
 import type { UserRole, Role } from "@/types";
 import { RoleName } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
+import { cn } from "@/utils/cn";
 
 /**
  * UserEditPage Component
@@ -31,6 +32,7 @@ export function UserEditPage() {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<UpdateUserInput>({
     resolver: zodResolver(updateUserSchema),
     values: user
@@ -42,6 +44,16 @@ export function UserEditPage() {
         }
       : undefined,
   });
+
+  const watchedValues = watch();
+  const originalValues = user
+    ? {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phone || "",
+      }
+    : undefined;
 
   // Update selected roles when user data loads
   useEffect(() => {
@@ -166,6 +178,7 @@ export function UserEditPage() {
                   {...register("firstName")}
                   error={errors.firstName?.message}
                   fullWidth
+                  originalValue={originalValues?.firstName}
                 />
 
                 {/* Last Name */}
@@ -176,6 +189,7 @@ export function UserEditPage() {
                   {...register("lastName")}
                   error={errors.lastName?.message}
                   fullWidth
+                  originalValue={originalValues?.lastName}
                 />
               </div>
 
@@ -188,6 +202,7 @@ export function UserEditPage() {
                   {...register("email")}
                   error={errors.email?.message}
                   fullWidth
+                  originalValue={originalValues?.email}
                 />
               </div>
 
@@ -200,6 +215,7 @@ export function UserEditPage() {
                   {...register("phone")}
                   error={errors.phone?.message}
                   fullWidth
+                  originalValue={originalValues?.phone}
                 />
               </div>
             </div>

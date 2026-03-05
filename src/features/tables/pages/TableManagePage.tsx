@@ -91,6 +91,7 @@ export function TableManagePage() {
     formState: { errors },
     reset,
     setError,
+    watch,
   } = useForm<UpdateTableInput>({
     resolver: zodResolver(updateTableSchema),
     values: table
@@ -101,6 +102,15 @@ export function TableManagePage() {
         }
       : undefined,
   });
+
+  const watchedValues = watch();
+  const originalValues = table
+    ? {
+        number: table.number,
+        location: table.location || "",
+        status: table.status,
+      }
+    : undefined;
 
   if (isLoading) {
     return (
@@ -249,6 +259,7 @@ export function TableManagePage() {
                       {...register("number")}
                       error={errors.number?.message}
                       fullWidth
+                      originalValue={originalValues?.number}
                     />
                   </div>
 
@@ -263,6 +274,7 @@ export function TableManagePage() {
                       {...register("location")}
                       error={errors.location?.message}
                       fullWidth
+                      originalValue={originalValues?.location}
                     />
                   </div>
 
