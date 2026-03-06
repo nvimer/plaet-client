@@ -52,6 +52,7 @@ import {
 import { RestaurantsPage } from "./features/restaurants";
 import { RolePermissionsPage } from "./features/permissions";
 import { AdminDashboardPage } from "./features/analytics/pages/AdminDashboardPage";
+import { AdminHubPage } from "./features/analytics/pages/AdminHubPage";
 import { CashClosurePage } from "./features/cash-closure/pages/CashClosurePage";
 import { ExpensesPage } from "./features/expenses/pages/ExpensesPage";
 import { RoleProtectedRoute } from "./components";
@@ -136,6 +137,19 @@ const App = () => {
               element={
                 <ProtectedRoute>
                   <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+
+            
+            {/* Admin Hub */}
+            <Route
+              path={ROUTES.ADMIN}
+              element={
+                <ProtectedRoute>
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
+                    <AdminHubPage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />

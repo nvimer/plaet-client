@@ -106,12 +106,12 @@ export function InventoryHistoryPage() {
               <table className="w-full text-left border-collapse">
                 <thead>
                   <tr className="bg-sage-50/50 border-b border-sage-100">
-                    <th className="px-6 py-4 text-[10px] font-black text-carbon-400 uppercase tracking-widest">Fecha</th>
-                    <th className="px-6 py-4 text-[10px] font-black text-carbon-400 uppercase tracking-widest">Producto</th>
-                    <th className="px-6 py-4 text-[10px] font-black text-carbon-400 uppercase tracking-widest">Tipo</th>
-                    <th className="px-6 py-4 text-[10px] font-black text-carbon-400 uppercase tracking-widest text-center">Cantidad</th>
-                    <th className="px-6 py-4 text-[10px] font-black text-carbon-400 uppercase tracking-widest">Stock Final</th>
-                    <th className="px-6 py-4 text-[10px] font-black text-carbon-400 uppercase tracking-widest">Nota</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-carbon-400 tracking-wide">Fecha</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-carbon-400 tracking-wide">Producto</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-carbon-400 tracking-wide">Tipo</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-carbon-400 tracking-wide text-center">Cantidad</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-carbon-400 tracking-wide">Stock Final</th>
+                    <th className="px-6 py-4 text-[10px] font-black text-carbon-400 tracking-wide">Nota</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-sage-50">

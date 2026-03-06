@@ -140,7 +140,7 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean): NavItem
     },
     {
       id: "admin-group",
-      path: "/admin",
+      path: ROUTES.ADMIN,
       name: "Administración",
       icon: Settings,
       description: "Finanzas y reportes",

@@ -37,3 +37,25 @@ export const getTopProducts = async (limit: number = 5, date?: string): Promise<
   });
   return data.data;
 };
+
+
+export const getMenuEngineering = async (startDate: string, endDate: string) => {
+  const { data } = await axiosClient.get("/analytics/menu-engineering", {
+    params: { startDate, endDate },
+  });
+  return data.data;
+};
+
+export const getSalesPrediction = async (targetDate: string) => {
+  const { data } = await axiosClient.get("/analytics/predictions", {
+    params: { targetDate },
+  });
+  return data.data;
+};
+
+export const getHeatmap = async (startDate: string, endDate: string) => {
+  const { data } = await axiosClient.get("/analytics/heatmap", {
+    params: { startDate, endDate },
+  });
+  return data.data;
+};
