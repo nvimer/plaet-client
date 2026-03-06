@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { motion, AnimatePresence } from "framer-motion";
-import { transitions, variants } from "@/components/ui/motion";
+import { transitions, variants } from "@/utils/motion";
 import { LineChart, Activity, PieChart } from "lucide-react";
 
 // Views

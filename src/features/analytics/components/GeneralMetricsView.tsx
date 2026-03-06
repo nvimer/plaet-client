@@ -1,7 +1,7 @@
 import { useAnalytics } from "../hooks/useAnalytics";
-import { Skeleton } from "@/components/ui/Skeleton";
+import { Skeleton } from "@/components";
 import { AlertCircle, TrendingUp, DollarSign, ShoppingBag } from "lucide-react";
-import { formatCurrency } from "@/utils/formatters";
+import { formatCurrency } from "@/utils/formatUtils";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";
 
 export const GeneralMetricsView = () => {
