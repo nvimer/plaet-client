@@ -12,6 +12,15 @@ import { useState, useEffect } from "react";
 import type { UserRole, Role } from "@/types";
 import { RoleName } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
+import { useAuth } from "@/hooks";
+
+const ROLE_NAME_MAP: Record<string, string> = {
+  SUPERADMIN: "Superadministrador",
+  ADMIN: "Administrador",
+  KITCHEN_MANAGER: "Jefe de Cocina",
+  CASHIER: "Cajero",
+  WAITER: "Mesero",
+};
 
 /**
  * UserEditPage Component
@@ -22,9 +31,11 @@ import type { AxiosErrorWithResponse } from "@/types/common";
 export function UserEditPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
   const { data: user, isLoading, error } = useUser(id!);
   const { mutate: updateUser, isPending } = useUpdateUser();
   const { data: roles } = useRoles();
+  const isSuperadmin = currentUser?.roles?.some((r) => r.name === "SUPERADMIN") ?? false;
   const [selectedRoleIds, setSelectedRoleIds] = useState<number[]>([]);
 
   const {
@@ -34,6 +45,7 @@ export function UserEditPage() {
     setError,
   } = useForm<UpdateUserInput>({
     resolver: zodResolver(updateUserSchema),
+    mode: "onChange",
     values: user
       ? {
           firstName: user.firstName,
@@ -218,8 +230,11 @@ export function UserEditPage() {
                 </h2>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                  {roles.map((role) => {
+                  {roles
+                    .filter((role) => role.name !== "SUPERADMIN" || isSuperadmin)
+                    .map((role) => {
                     const isSelected = selectedRoleIds.includes(role.id);
+                    const roleNameEs = ROLE_NAME_MAP[role.name] || role.name;
                     
                     // Assign icon and color based on role
                     let RoleIcon = UserCircle;
@@ -262,7 +277,7 @@ export function UserEditPage() {
 
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className={`font-semibold text-base ${isSelected ? "text-carbon-900" : "text-carbon-700"}`}>
-                            {role.name}
+                            {roleNameEs}
                           </h3>
                         </div>
                         

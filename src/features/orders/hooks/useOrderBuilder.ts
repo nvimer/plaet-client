@@ -618,8 +618,8 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
         if (!isFastHistoricalEntry) toast.success("Pedido creado exitosamente");
       } else {
         const res = await createBatchOrders({
-          tableId: selectedTable || 0,
-          orders: ordersPayload
+          tableId: selectedTable || undefined,
+          orders: ordersPayload as any
         });
         
         createdOrdersList = res && (res as any).orders ? (res as any).orders : [];

@@ -1,7 +1,7 @@
 import React from "react";
 import { useCashClosure } from "@/features/cash-closure/hooks/useCashClosure";
 import { Card } from "@/components/ui/Card/Card";
-import { Wallet, ArrowRight, Lock, Unlock } from "lucide-react";
+import { ArrowRight, Lock, Unlock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/app/routes";
 import { cn } from "@/utils/cn";
@@ -24,7 +24,7 @@ export const ActiveShiftWidget: React.FC = () => {
       )}
       onClick={() => navigate(ROUTES.CASH_CLOSURE)}
     >
-      <div className="p-6 flex items-center justify-between">
+      <div className="p-6 flex items-center justify-between relative z-10">
         <div className="flex items-center gap-4">
           <div className={cn(
             "w-14 h-14 rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 duration-300",
@@ -58,12 +58,6 @@ export const ActiveShiftWidget: React.FC = () => {
           )}
         </div>
       </div>
-      
-      {/* Decorative background element */}
-      <Wallet className={cn(
-        "absolute -right-4 -bottom-4 w-24 h-24 opacity-5 transform rotate-12",
-        isOpen ? "text-success-900" : "text-warning-900"
-      )} />
     </Card>
   );
 };

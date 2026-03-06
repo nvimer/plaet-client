@@ -50,7 +50,12 @@ import {
   ProfilePage,
 } from "./features/users/pages";
 import { RestaurantsPage } from "./features/restaurants";
-import { RolePermissionsPage } from "./features/permissions";
+import {
+  RolePermissionsPage,
+  RolesListPage,
+  RoleCreatePage,
+  RoleEditPage,
+} from "./features/permissions";
 import { AdminDashboardPage } from "./features/analytics/pages/AdminDashboardPage";
 import { AdminHubPage } from "./features/analytics/pages/AdminHubPage";
 import { CashClosurePage } from "./features/cash-closure/pages/CashClosurePage";
@@ -178,13 +183,49 @@ const App = () => {
               }
             />
 
-            {/* SuperAdmin - Roles & Permissions Management */}
+            {/* Admin+ - Roles & Permissions Management */}
             <Route
               path={ROUTES.PERMISSIONS}
               element={
                 <ProtectedRoute>
-                  <RoleProtectedRoute allowedRoles={[RoleName.SUPERADMIN]}>
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN]}>
                     <RolePermissionsPage />
+                  </RoleProtectedRoute>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin+ - Roles List */}
+            <Route
+              path={ROUTES.ROLES}
+              element={
+                <ProtectedRoute>
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN]}>
+                    <RolesListPage />
+                  </RoleProtectedRoute>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin+ - Create Role */}
+            <Route
+              path={ROUTES.ROLE_CREATE}
+              element={
+                <ProtectedRoute>
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN]}>
+                    <RoleCreatePage />
+                  </RoleProtectedRoute>
+                </ProtectedRoute>
+              }
+            />
+
+            {/* Admin+ - Edit Role */}
+            <Route
+              path={ROUTES.ROLE_EDIT}
+              element={
+                <ProtectedRoute>
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN]}>
+                    <RoleEditPage />
                   </RoleProtectedRoute>
                 </ProtectedRoute>
               }

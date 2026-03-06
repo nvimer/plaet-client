@@ -10,6 +10,15 @@ import { toast } from "sonner";
 import { Check, UserCheck, ArrowLeft, Shield, ShieldCheck, Cog, UserCircle } from "lucide-react";
 import { useState } from "react";
 import type { AxiosErrorWithResponse } from "@/types/common";
+import { useAuth } from "@/hooks";
+
+const ROLE_NAME_MAP: Record<string, string> = {
+  SUPERADMIN: "Superadministrador",
+  ADMIN: "Administrador",
+  KITCHEN_MANAGER: "Jefe de Cocina",
+  CASHIER: "Cajero",
+  WAITER: "Mesero",
+};
 
 /**
  * UserCreatePage Component
@@ -19,7 +28,9 @@ import type { AxiosErrorWithResponse } from "@/types/common";
  */
 export function UserCreatePage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { mutate: createUser, isPending } = useCreateUser();
+  const isSuperadmin = user?.roles?.some((r) => r.name === "SUPERADMIN") ?? false;
   const {
     data: roles,
     isLoading: isLoadingRoles,
@@ -34,6 +45,7 @@ export function UserCreatePage() {
     setError,
   } = useForm<CreateUserInput>({
     resolver: zodResolver(createUserSchema),
+    mode: "onChange",
     defaultValues: {
       firstName: "",
       lastName: "",
@@ -184,15 +196,18 @@ export function UserCreatePage() {
 
               {roles && roles.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
-                  {roles.map((role) => {
+                  {roles
+                    .filter((role) => role.name !== "SUPERADMIN" || isSuperadmin)
+                    .map((role) => {
                     const isSelected = selectedRoleIds.includes(role.id);
+                    const roleNameEs = ROLE_NAME_MAP[role.name] || role.name;
                     
                     // Assign icon and color based on role
                     let RoleIcon = UserCircle;
                     
-                    if (role.name === RoleName.SUPERADMIN || role.name === RoleName.ADMIN) { RoleIcon = ShieldCheck; }
-                    if (role.name === RoleName.KITCHEN_MANAGER) { RoleIcon = Cog; }
-                    if (role.name === RoleName.CASHIER) { RoleIcon = Shield; }
+                    if (role.name === "SUPERADMIN" || role.name === "ADMIN") { RoleIcon = ShieldCheck; }
+                    if (role.name === "KITCHEN_MANAGER") { RoleIcon = Cog; }
+                    if (role.name === "CASHIER") { RoleIcon = Shield; }
 
                     return (
                       <label
@@ -229,7 +244,7 @@ export function UserCreatePage() {
 
                         <div className="flex items-center gap-2 mb-1">
                           <h3 className={`font-semibold text-base ${isSelected ? "text-carbon-900" : "text-carbon-700"}`}>
-                            {role.name}
+                            {roleNameEs}
                           </h3>
                         </div>
                         

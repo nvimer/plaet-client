@@ -35,14 +35,14 @@ export function Sidebar() {
   } = useSidebar();
 
   const location = useLocation();
-  const { isSuperAdmin, user } = usePermissions();
+  const { isSuperAdmin, user, permissions } = usePermissions();
 
   // Load navigation items based on current context
   const navigationItems = useMemo(() => {
     const roleName = user?.roles?.[0] || 'USER';
     const roleString = typeof roleName === 'object' ? roleName.name : roleName;
-    return getNavigationItems(roleString, isSuperAdmin());
-  }, [isSuperAdmin, user]);
+    return getNavigationItems(roleString, isSuperAdmin(), permissions);
+  }, [isSuperAdmin, user, permissions]);
 
   const handleNavClick = () => {
     if (isMobile) {

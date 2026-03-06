@@ -50,9 +50,9 @@ export function RolePermissionsPage() {
 
   return (
     <SidebarLayout hideTitle fullWidth>
-      <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto pb-24">
+      <div className="p-8 sm:p-12 lg:p-16 pb-24">
       {/* ============ PAGE HEADER =============== */}
-      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
         <div className="space-y-1.5">
           <div className="flex items-center gap-2 text-sage-600">
             <ShieldCheck className="w-5 h-5" />
@@ -63,48 +63,48 @@ export function RolePermissionsPage() {
         </div>
       </header>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card variant="elevated" className="lg:col-span-2 p-0 overflow-hidden">
-          {isLoading ? (
-            <div className="p-12 text-center text-carbon-500">
-              <div className="animate-spin w-8 h-8 border-4 border-sage-500 border-t-transparent rounded-full mx-auto mb-4"></div>
-              Cargando matriz de permisos...
-            </div>
-          ) : (
-            <RolePermissionMatrix
-              roles={rolesResponse?.data || []}
-              permissions={permsResponse?.data || []}
-              onToggle={handleTogglePermission}
-              isUpdating={assignMutation.isPending}
-              updatingRoleId={updatingRoleId}
-            />
-          )}
+      {/* Full Width Matrix */}
+      <Card variant="elevated" className="p-0 max-w-3xl mx-auto">
+        {isLoading ? (
+          <div className="p-12 text-center text-carbon-500">
+            <div className="animate-spin w-8 h-8 border-4 border-sage-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+            Cargando matriz de permisos...
+          </div>
+        ) : (
+          <RolePermissionMatrix
+            roles={rolesResponse?.data || []}
+            permissions={permsResponse?.data || []}
+            onToggle={handleTogglePermission}
+            isUpdating={assignMutation.isPending}
+            updatingRoleId={updatingRoleId}
+          />
+        )}
+      </Card>
+
+      {/* Info Cards - Below matrix */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6 max-w-5xl mx-auto">
+        <Card className="bg-warning-50 border-warning-100 p-6">
+          <h3 className="text-warning-800 font-bold flex items-center gap-2 mb-3">
+            <ShieldAlert className="w-5 h-5" />
+            Zona Crítica
+          </h3>
+          <p className="text-sm text-warning-700 leading-relaxed">
+            Los cambios en esta matriz se aplican de forma <strong>inmediata</strong> a todos los usuarios. 
+            Ten cuidado al remover permisos de lectura, ya que pueden romper la experiencia de usuario.
+          </p>
         </Card>
 
-        <div className="space-y-6">
-          <Card className="bg-warning-50 border-warning-100 p-6">
-            <h3 className="text-warning-800 font-bold flex items-center gap-2 mb-3">
-              <ShieldAlert className="w-5 h-5" />
-              Zona Crítica
-            </h3>
-            <p className="text-sm text-warning-700 leading-relaxed">
-              Los cambios en esta matriz se aplican de forma **inmediata** a todos los usuarios. 
-              Ten cuidado al remover permisos de lectura, ya que pueden romper la experiencia de usuario.
-            </p>
-          </Card>
-
-          <Card className="bg-sage-50 border-sage-100 p-6">
-            <h3 className="text-sage-800 font-bold flex items-center gap-2 mb-3">
-              <Info className="w-5 h-5" />
-              Sugerencias
-            </h3>
-            <ul className="text-sm text-sage-700 space-y-2 list-disc pl-4">
-              <li>El rol **SUPERADMIN** siempre tiene todos los permisos habilitados.</li>
-              <li>Agrupa permisos por módulo para mantener el orden.</li>
-              <li>Los cambios requieren que el usuario refresque su sesión para verse reflejados en la UI.</li>
-            </ul>
-          </Card>
-        </div>
+        <Card className="bg-sage-50 border-sage-100 p-6">
+          <h3 className="text-sage-800 font-bold flex items-center gap-2 mb-3">
+            <Info className="w-5 h-5" />
+            Sugerencias
+          </h3>
+          <ul className="text-sm text-sage-700 space-y-2 list-disc pl-4">
+            <li>El rol <strong>SUPERADMIN</strong> siempre tiene todos los permisos habilitados.</li>
+            <li>Agrupa permisos por módulo para mantener el orden.</li>
+            <li>Los cambios requieren que el usuario refresque su sesión para verse reflejados en la UI.</li>
+          </ul>
+        </Card>
       </div>
     </div>
   </SidebarLayout>

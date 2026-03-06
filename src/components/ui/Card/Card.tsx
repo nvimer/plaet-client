@@ -16,7 +16,7 @@ export function Card({
   ...props
 }: CardProps) {
   // Base styles
-  const baseStyles = "rounded-2xl transition-all duration-400";
+  const baseStyles = "rounded-2xl transition-all duration-400 overflow-hidden";
 
   // Variant styles
   const variantStyles = {

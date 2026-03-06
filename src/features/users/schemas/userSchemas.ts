@@ -7,11 +7,13 @@ export const createUserSchema = z.object({
   firstName: z
     .string()
     .min(2, "El nombre debe tener al menos 2 caracteres")
-    .max(50, "El nombre no puede exceder 50 caracteres"),
+    .max(50, "El nombre no puede exceder 50 caracteres")
+    .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "El nombre solo puede contener letras"),
   lastName: z
     .string()
     .min(2, "El apellido debe tener al menos 2 caracteres")
-    .max(50, "El apellido no puede exceder 50 caracteres"),
+    .max(50, "El apellido no puede exceder 50 caracteres")
+    .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "El apellido solo puede contener letras"),
   email: z.string().email("Email inválido"),
   password: z
     .string()
@@ -31,11 +33,13 @@ export const updateUserSchema = z.object({
     .string()
     .min(2, "El nombre debe tener al menos 2 caracteres")
     .max(50, "El nombre no puede exceder 50 caracteres")
+    .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "El nombre solo puede contener letras")
     .optional(),
   lastName: z
     .string()
     .min(2, "El apellido debe tener al menos 2 caracteres")
     .max(50, "El apellido no puede exceder 50 caracteres")
+    .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "El apellido solo puede contener letras")
     .optional(),
   email: z.string().email("Email inválido").optional(),
   phone: z.string().regex(/^\d{10}$/, "Debe contener exactamente 10 dígitos (ej. 3001234567)").optional().or(z.literal("")),
@@ -52,11 +56,13 @@ export const updateProfileSchema = z.object({
     .string()
     .min(2, "El nombre debe tener al menos 2 caracteres")
     .max(50, "El nombre no puede exceder 50 caracteres")
+    .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "El nombre solo puede contener letras")
     .optional(),
   lastName: z
     .string()
     .min(2, "El apellido debe tener al menos 2 caracteres")
     .max(50, "El apellido no puede exceder 50 caracteres")
+    .regex(/^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/, "El apellido solo puede contener letras")
     .optional(),
   email: z.string().email("Email inválido").optional(),
   phone: z.string().regex(/^\d{10}$/, "Debe contener exactamente 10 dígitos (ej. 3001234567)").optional().or(z.literal("")),

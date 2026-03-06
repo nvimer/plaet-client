@@ -43,7 +43,7 @@ export function SidebarLayout({
   const { isCollapsed, isMobile } = useSidebar();
 
   return (
-    <div className="min-h-screen bg-sage-50">
+    <div className="min-h-screen bg-sage-50 overflow-x-hidden">
       <Sidebar />
 
       <div
@@ -66,8 +66,9 @@ export function SidebarLayout({
 
         <main
           className={cn(
-            "flex-1",
+            "flex-1 overflow-x-hidden",
             !fullWidth && "max-w-5xl mx-auto w-full px-4 sm:px-6 py-6",
+            fullWidth && "w-full",
             contentClassName
           )}
         >

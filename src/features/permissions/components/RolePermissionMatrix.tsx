@@ -25,15 +25,15 @@ export function RolePermissionMatrix({
   ).sort();
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-carbon-100 bg-white">
-      <table className="w-full text-left border-collapse min-w-[800px]">
+    <div className="overflow-auto rounded-2xl border-2 border-carbon-100 bg-white">
+      <table className="w-full text-left border-collapse">
         <thead>
-          <tr className="bg-carbon-50 border-b border-carbon-100">
-            <th className="py-4 px-6 text-sm font-bold text-carbon-700 w-[300px] sticky left-0 bg-carbon-50 z-10">
+          <tr className="bg-carbon-50 border-b-2 border-carbon-100">
+            <th className="py-5 px-6 text-sm font-bold text-carbon-700 w-[280px] sticky left-0 bg-carbon-50 z-10">
               Permiso / Módulo
             </th>
             {roles.map((role) => (
-              <th key={role.id} className="py-4 px-4 text-sm font-bold text-carbon-700 text-center">
+              <th key={role.id} className="py-5 px-5 text-sm font-bold text-carbon-700 text-center min-w-[120px]">
                 <div className="flex flex-col items-center gap-1">
                   <span>{role.name}</span>
                   {isUpdating && updatingRoleId === role.id && (
@@ -48,10 +48,10 @@ export function RolePermissionMatrix({
           {categories.map((category) => (
             <React.Fragment key={category}>
               {/* Category Header */}
-              <tr className="bg-sage-50/50">
+              <tr className="bg-sage-50/70">
                 <td 
                   colSpan={roles.length + 1} 
-                  className="py-2 px-6 text-[10px] font-semibold tracking-wide text-sage-700 border-y border-carbon-50"
+                  className="py-3 px-6 text-[11px] font-bold tracking-wide text-sage-800 border-y-2 border-carbon-100"
                 >
                   Módulo: {category}
                 </td>
@@ -62,11 +62,11 @@ export function RolePermissionMatrix({
                 .filter((p) => p.name.startsWith(`${category}:`))
                 .sort((a, b) => a.name.localeCompare(b.name))
                 .map((permission) => (
-                  <tr key={permission.id} className="border-b border-carbon-50 hover:bg-carbon-50/30 transition-colors">
-                    <td className="py-3 px-6 sticky left-0 bg-white z-10">
+                  <tr key={permission.id} className="border-b border-carbon-100 hover:bg-carbon-50/50 transition-colors">
+                    <td className="py-4 px-6 sticky left-0 bg-white z-10">
                       <div className="flex flex-col">
-                        <span className="text-sm font-medium text-carbon-900">{permission.name}</span>
-                        <span className="text-xs text-carbon-400">{permission.description}</span>
+                        <span className="text-sm font-semibold text-carbon-900">{permission.name}</span>
+                        <span className="text-xs text-carbon-500 mt-0.5">{permission.description}</span>
                       </div>
                     </td>
                     {roles.map((role) => {
@@ -76,18 +76,18 @@ export function RolePermissionMatrix({
                       );
 
                       return (
-                        <td key={`${role.id}-${permission.id}`} className="py-3 px-4 text-center">
+                        <td key={`${role.id}-${permission.id}`} className="py-4 px-5 text-center">
                           <button
                             type="button"
                             onClick={() => onToggle(role.id, permission.id, isAssigned)}
                             disabled={isUpdating || role.name === "SUPERADMIN"}
                             className={cn(
-                              "w-6 h-6 rounded-md border-2 transition-all mx-auto flex items-center justify-center",
+                              "w-7 h-7 rounded-lg border-2 transition-all mx-auto flex items-center justify-center",
                               role.name === "SUPERADMIN" 
                                 ? "bg-sage-100 border-sage-200 cursor-not-allowed opacity-70" 
                                 : isAssigned
-                                  ? "bg-sage-500 border-sage-500 text-white shadow-sm"
-                                  : "bg-white border-carbon-200 hover:border-sage-300"
+                                  ? "bg-sage-500 border-sage-500 text-white shadow-md"
+                                  : "bg-white border-carbon-200 hover:border-sage-300 hover:bg-sage-50"
                             )}
                           >
                             {(isAssigned || role.name === "SUPERADMIN") && <Check className="w-4 h-4 stroke-[3px]" />}

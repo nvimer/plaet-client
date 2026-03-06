@@ -25,6 +25,11 @@ export const ROUTES = {
   CASH_CLOSURE: "/admin/cash-closure",
   EXPENSES: "/admin/expenses",
 
+  // Roles (Admin only)
+  ROLES: "/admin/roles",
+  ROLE_CREATE: "/admin/roles/new",
+  ROLE_EDIT: "/admin/roles/:id/edit",
+
   // Orders Hub
   ORDERS: "/orders",
   ORDERS_LIST: "/orders/list",
@@ -84,3 +89,4 @@ export const getCategoryEditRoute = (id: string | number) =>
   `/menu/categories/${id}/edit`;
 export const getTableManageRoute = (id: string | number) => `/tables/${id}`;
 export const getUserEditRoute = (id: string | number) => `/users/${id}/edit`;
+export const getRoleEditRoute = (id: string | number) => `/admin/roles/${id}/edit`;

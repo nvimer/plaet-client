@@ -46,7 +46,9 @@ export interface NavItem {
   children?: NavChild[];
 }
 
-export const getNavigationItems = (role: string, isSuperAdmin: boolean): NavItem[] => {
+export const getNavigationItems = (role: string, isSuperAdmin: boolean, userPermissions?: Set<string>): NavItem[] => {
+  const canManageRoles = isSuperAdmin || userPermissions?.has("roles:manage") || false;
+
   if (isSuperAdmin) {
     return [
       {
@@ -66,9 +68,16 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean): NavItem
       {
         id: "super-permissions",
         path: ROUTES.PERMISSIONS,
-        name: "Roles y Permisos",
+        name: "Matriz de Permisos",
         icon: ShieldCheck,
-        description: "Matriz de seguridad",
+        description: "Configurar permisos",
+      },
+      {
+        id: "super-roles",
+        path: ROUTES.ROLES,
+        name: "Roles",
+        icon: Users,
+        description: "Gestionar roles",
       },
     ];
   }
@@ -159,7 +168,10 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean): NavItem
       children: [
         { type: "link", path: ROUTES.USERS_LIST, name: "Lista de Equipo", icon: Users },
         { type: "link", path: ROUTES.USER_CREATE, name: "Nuevo Usuario", icon: Plus },
-        { type: "link", path: ROUTES.PERMISSIONS, name: "Roles y Permisos", icon: ShieldCheck },
+        ...(canManageRoles ? [
+          { type: "link", path: ROUTES.ROLES, name: "Gestionar Roles", icon: ShieldCheck },
+          { type: "link", path: ROUTES.PERMISSIONS, name: "Permisos", icon: ShieldCheck },
+        ] : []),
       ]
     },
   ];
