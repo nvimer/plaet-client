@@ -18,6 +18,7 @@ export const ROUTES = {
 
   // Dashboard
   DASHBOARD: "/dashboard",
+  ADMIN: "/admin",
   ADMIN_DASHBOARD: "/admin/dashboard",
   RESTAURANTS: "/admin/restaurants",
   PERMISSIONS: "/admin/permissions",

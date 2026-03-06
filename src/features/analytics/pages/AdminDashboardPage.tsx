@@ -26,7 +26,7 @@ export const AdminDashboardPage = () => {
         {/* Header */}
         <header className="space-y-2">
           <h1 className="text-3xl font-bold text-carbon-900 tracking-tight">
-            Hub Analítico
+            Analítica de Negocio
           </h1>
           <p className="text-carbon-500">
             Analiza el rendimiento, proyecta tus ventas y optimiza tu menú.
