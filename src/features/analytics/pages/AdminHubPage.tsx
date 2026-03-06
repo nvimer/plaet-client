@@ -23,8 +23,8 @@ export function AdminHubPage() {
       description: "Revisa y aprueba los cierres de turno de los cajeros.",
       icon: Wallet,
       path: ROUTES.CASH_CLOSURE,
-      color: "text-emerald-600",
-      bgColor: "bg-emerald-50",
+      color: "text-success-600",
+      bgColor: "bg-success-50",
     },
     {
       title: "Gestión de Gastos",

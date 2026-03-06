@@ -17,7 +17,7 @@ export const createUserSchema = z.object({
     .string()
     .min(8, "La contraseña debe tener al menos 8 caracteres")
     .max(100, "La contraseña no puede exceder 100 caracteres"),
-  phone: z.string().optional(),
+  phone: z.string().regex(/^\d{10}$/, "Debe contener exactamente 10 dígitos (ej. 3001234567)").optional().or(z.literal("")),
   roleIds: z.array(z.number()).optional(),
 });
 
@@ -38,7 +38,7 @@ export const updateUserSchema = z.object({
     .max(50, "El apellido no puede exceder 50 caracteres")
     .optional(),
   email: z.string().email("Email inválido").optional(),
-  phone: z.string().optional(),
+  phone: z.string().regex(/^\d{10}$/, "Debe contener exactamente 10 dígitos (ej. 3001234567)").optional().or(z.literal("")),
   roleIds: z.array(z.number()).optional(),
 });
 
@@ -59,7 +59,7 @@ export const updateProfileSchema = z.object({
     .max(50, "El apellido no puede exceder 50 caracteres")
     .optional(),
   email: z.string().email("Email inválido").optional(),
-  phone: z.string().optional(),
+  phone: z.string().regex(/^\d{10}$/, "Debe contener exactamente 10 dígitos (ej. 3001234567)").optional().or(z.literal("")),
   // No incluir roleIds - usuarios no pueden cambiar sus propios roles
 });
 

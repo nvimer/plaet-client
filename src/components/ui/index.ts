@@ -6,7 +6,7 @@ export * from "./Card/Card";
 export * from "./ConfirmDialog/ConfirmDialog";
 export * from "./Drawer/Drawer";
 export * from "./EmptyState/EmptyState";
-export * from "./Input/Input";
+export * from "./Input";
 export * from "./Pagination/Pagination";
 export * from "./RadioGroup/RadioGroup";
 export * from "./SearchInput/SearchInput";

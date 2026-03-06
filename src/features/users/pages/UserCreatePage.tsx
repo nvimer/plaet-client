@@ -2,14 +2,13 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
-import { Button, Input, Badge, Card } from "@/components";
+import { Button, Input, PasswordInput, Card } from "@/components";
 import { useCreateUser, useRoles } from "../hooks";
 import { createUserSchema, type CreateUserInput } from "../schemas/userSchemas";
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
-import { Check, UserCheck, ArrowLeft } from "lucide-react";
+import { Check, UserCheck, ArrowLeft, Shield, ShieldCheck, Cog, UserCircle } from "lucide-react";
 import { useState } from "react";
-import { RoleName } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
 
 /**
@@ -32,6 +31,7 @@ export function UserCreatePage() {
     register,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm<CreateUserInput>({
     resolver: zodResolver(createUserSchema),
     defaultValues: {
@@ -59,31 +59,20 @@ export function UserCreatePage() {
           navigate(ROUTES.USERS);
         },
         onError: (error: AxiosErrorWithResponse) => {
-          toast.error("Error al crear usuario", {
-            description: error.response?.data?.message || error.message,
-            icon: "❌",
-          });
+          const message = error.response?.data?.message || error.message;
+          
+          // Map backend "Email already taken" to form field
+          if (message.includes("taken") || message.includes("already") || error.response?.data?.code === "EMAIL_CONFLICT") {
+            setError("email", { type: "server", message: "Este correo ya está en uso" });
+          } else {
+            toast.error("Error al crear usuario", {
+              description: message,
+              icon: "❌",
+            });
+          }
         },
       }
     );
-  };
-
-  const handleRoleToggle = (roleId: number) => {
-    setSelectedRoleIds((prev) =>
-      prev.includes(roleId)
-        ? prev.filter((id) => id !== roleId)
-        : [...prev, roleId]
-    );
-  };
-
-  const getRoleVariant = (
-    roleName: RoleName | string
-  ): "neutral" | "success" | "warning" | "error" | "info" => {
-    if (roleName === RoleName.ADMIN) return "info";
-    if (roleName === RoleName.WAITER) return "success";
-    if (roleName === RoleName.KITCHEN_MANAGER) return "warning";
-    if (roleName === RoleName.CASHIER) return "info";
-    return "neutral";
   };
 
   return (
@@ -140,7 +129,7 @@ export function UserCreatePage() {
                 <Input
                   label="Teléfono (opcional)"
                   type="tel"
-                  placeholder="Ej: +57 300 123 4567"
+                  placeholder="Ej: 3001234567"
                   {...register("phone")}
                   error={errors.phone?.message}
                   fullWidth
@@ -157,9 +146,8 @@ export function UserCreatePage() {
                 Contraseña
               </h2>
 
-              <Input
+              <PasswordInput
                 label="Contraseña"
-                type="password"
                 placeholder="Mínimo 8 caracteres"
                 {...register("password")}
                 error={errors.password?.message}
@@ -195,55 +183,74 @@ export function UserCreatePage() {
               )}
 
               {roles && roles.length > 0 && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                   {roles.map((role) => {
                     const isSelected = selectedRoleIds.includes(role.id);
+                    
+                    // Assign icon and color based on role
+                    let RoleIcon = UserCircle;
+                    
+                    if (role.name === RoleName.SUPERADMIN || role.name === RoleName.ADMIN) { RoleIcon = ShieldCheck; }
+                    if (role.name === RoleName.KITCHEN_MANAGER) { RoleIcon = Cog; }
+                    if (role.name === RoleName.CASHIER) { RoleIcon = Shield; }
 
                     return (
                       <label
                         key={role.id}
                         className={`
-                          relative flex items-start gap-3 p-4 
-                          border-2 rounded-xl cursor-pointer 
-                          transition-all duration-200
+                          relative flex flex-col p-5 border-2 rounded-2xl cursor-pointer 
+                          transition-all duration-200 h-full group
                           ${
                             isSelected
-                              ? "border-sage-500 bg-sage-50 shadow-md"
-                              : "border-sage-200 bg-white hover:border-sage-300 hover:bg-sage-50/50"
+                              ? "border-sage-500 bg-sage-50/50 shadow-sm"
+                              : "border-sage-200 hover:border-sage-300 hover:bg-sage-50/30 bg-white"
                           }
                         `}
                       >
+                        <div className="flex justify-between items-start mb-3">
+                          <div className={`p-2.5 rounded-xl ${isSelected ? 'bg-sage-200 text-sage-700' : 'bg-sage-100 text-sage-500 group-hover:bg-sage-200'}`}>
+                            <RoleIcon className="w-5 h-5" />
+                          </div>
+                          <div
+                            className={`
+                              w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors
+                              ${
+                                isSelected
+                                  ? "bg-sage-600 border-sage-600"
+                                  : "border-carbon-300"
+                              }
+                            `}
+                          >
+                            {isSelected && (
+                              <Check className="w-3.5 h-3.5 text-white" />
+                            )}
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 mb-1">
+                          <h3 className={`font-semibold text-base ${isSelected ? "text-carbon-900" : "text-carbon-700"}`}>
+                            {role.name}
+                          </h3>
+                        </div>
+                        
+                        <p className="text-sm text-carbon-500 leading-relaxed mt-1">
+                          {role.description || "Sin descripción adicional"}
+                        </p>
+
                         <input
                           type="checkbox"
+                          className="sr-only"
                           checked={isSelected}
-                          onChange={() => handleRoleToggle(role.id)}
-                          className="mt-1 w-5 h-5 text-sage-600 border-sage-300 rounded focus:ring-2 focus:ring-sage-300 focus:ring-offset-2 cursor-pointer"
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setSelectedRoleIds((prev) => [...prev, role.id]);
+                            } else {
+                              setSelectedRoleIds((prev) =>
+                                prev.filter((id) => id !== role.id)
+                              );
+                            }
+                          }}
                         />
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <p className="font-semibold text-carbon-900">
-                              {role.name}
-                            </p>
-                            <Badge
-                              variant={getRoleVariant(role.name)}
-                              size="sm"
-                            >
-                              {role.name}
-                            </Badge>
-                          </div>
-                          {role.description && (
-                            <p className="text-sm text-carbon-600 leading-relaxed">
-                              {role.description}
-                            </p>
-                          )}
-                        </div>
-                        {isSelected && (
-                          <div className="absolute top-2 right-2">
-                            <div className="w-6 h-6 bg-sage-500 rounded-full flex items-center justify-center">
-                              <Check className="w-4 h-4 text-white" />
-                            </div>
-                          </div>
-                        )}
                       </label>
                     );
                   })}
