@@ -212,7 +212,7 @@ export function OrderCreatePage() {
           >
             {[
               { type: OrderType.DINE_IN, label: "Para Mesa", desc: "Comer en el local", icon: UtensilsCrossed, color: "text-sage-600", bg: "bg-sage-50" },
-              { type: OrderType.TAKE_OUT, label: "Llevar", desc: "Recoger pedido", icon: ShoppingBag, color: "text-warning-600", bg: "bg-warning-50" },
+              { type: OrderType.TAKE_OUT, label: "Recoger", desc: "Recoger pedido", icon: ShoppingBag, color: "text-warning-600", bg: "bg-warning-50" },
               { type: OrderType.DELIVERY, label: "Domicilio", desc: "Entrega a casa", icon: Bike, color: "text-blue-600", bg: "bg-blue-50" },
             ].map((opt) => (
               <motion.button

@@ -24,7 +24,7 @@ export function OrderTypeBadge({ type, size = "sm" }: OrderTypeBadgeProps) {
     { label: string; icon: typeof UtensilsCrossed }
   > = {
     [OrderType.DINE_IN]: { label: "Para comer aquí", icon: UtensilsCrossed },
-    [OrderType.TAKE_OUT]: { label: "Para llevar", icon: ShoppingBag },
+    [OrderType.TAKE_OUT]: { label: "Recoger", icon: ShoppingBag },
     [OrderType.DELIVERY]: { label: "Domicilio", icon: Bike },
     [OrderType.WHATSAPP]: { label: "Whatsapp", icon: MessageCircle },
   };
