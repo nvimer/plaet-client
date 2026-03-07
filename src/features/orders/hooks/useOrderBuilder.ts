@@ -6,6 +6,7 @@
 import { useState, useMemo, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import axios from "axios";
+import { getLocalDateString } from "@/utils/dateUtils";
 import { useCreateOrder, useBatchCreateOrders } from "./useCreateOrder";
 import { useTables, useUpdateTableStatus } from "@/features/tables";
 import { useItems } from "@/features/menu";
@@ -571,6 +572,8 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
     setShowSummaryModal(false);
 
+    const todayStr = getLocalDateString(new Date());
+
     const ordersPayload = tableOrders.map((order) => {
       const items: OrderItemInput[] = [];
       
@@ -600,7 +603,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
         customerPhone: customerPhone || undefined,
         items,
         notes: order.notes,
-        createdAt: backdatedDate ? new Date(backdatedDate).toISOString() : undefined,
+        createdAt: (backdatedDate && backdatedDate !== todayStr) 
+          ? new Date(backdatedDate).toISOString() 
+          : undefined,
       };
     }).filter(order => order.items.length > 0);
 
