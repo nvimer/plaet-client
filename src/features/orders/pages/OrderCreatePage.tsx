@@ -33,10 +33,14 @@ import { cn } from "@/utils/cn";
 import { useMemo } from "react";
 import { variants, transitions } from "@/utils/motion";
 
+import { getLocalDateString } from "@/utils/dateUtils";
+
 import { useSidebar } from "@/contexts/SidebarContext";
 
 export function OrderCreatePage() {
   const { user } = useAuth();
+// ... (omitting some lines for context matching if needed, but I'll use a better block)
+
   const { isCollapsed, isMobile } = useSidebar();
   const isAdmin = user?.roles?.some(r => 
     (typeof r === 'object' && 'name' in r ? r.name : r) === RoleName.ADMIN
@@ -342,7 +346,7 @@ export function OrderCreatePage() {
                 <Calendar className="w-4 h-4 text-sage-500" />
                 <input
                   type="date"
-                  value={backdatedDate || new Date().toISOString().split('T')[0]}
+                  value={backdatedDate || getLocalDateString(new Date())}
                   onChange={(e) => setBackdatedDate(e.target.value)}
                   className="bg-transparent border-none text-[11px] font-black text-carbon-900 focus:ring-0 cursor-pointer p-0 w-28 uppercase"
                 />
