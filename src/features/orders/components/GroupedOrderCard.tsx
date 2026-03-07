@@ -167,8 +167,13 @@ export function GroupedOrderCard({
               </h3>
               <div className="flex items-center gap-2">
                 <span className={cn("text-xl font-bold", isExpanded ? "text-white" : "text-carbon-900")}>
-                  {groupedOrder.table ? `Local ${groupedOrder.table.number}` : `#${groupedOrder.id.slice(-4).toUpperCase()}`}
+                  {groupedOrder.table ? `Mesa ${groupedOrder.table.number}` : `#${groupedOrder.id.slice(-4).toUpperCase()}`}
                 </span>
+                {groupedOrder.table && (
+                  <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-md", isExpanded ? "bg-white/20 text-white" : "bg-carbon-100 text-carbon-500")}>
+                    #{groupedOrder.id.slice(-4).toUpperCase()}
+                  </span>
+                )}
               </div>
             </div>
           </div>

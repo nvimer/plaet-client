@@ -704,10 +704,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
         }));
         toast.success("Registro histórico guardado y liquidado", { icon: "📜" });
       }
-
-      if (selectedOrderType === OrderType.DINE_IN && selectedTable && !isFastHistoricalEntry) {
-        updateTableStatus({ id: selectedTable, status: TableStatus.OCCUPIED });
-      }
       
       setTableOrders([]);
       setSelectedTable(null);
