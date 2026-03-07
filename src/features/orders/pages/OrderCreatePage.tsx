@@ -382,8 +382,12 @@ export function OrderCreatePage() {
                 setCustomerName={orderBuilder.setCustomerName}
                 customerPhone={orderBuilder.customerPhone}
                 setCustomerPhone={orderBuilder.setCustomerPhone}
+                customerPhone2={orderBuilder.customerPhone2}
+                setCustomerPhone2={orderBuilder.setCustomerPhone2}
                 deliveryAddress={orderBuilder.deliveryAddress}
                 setDeliveryAddress={orderBuilder.setDeliveryAddress}
+                address2={orderBuilder.address2}
+                setAddress2={orderBuilder.setAddress2}
                 packagingFee={orderBuilder.packagingFee}
                 packagingQuantity={orderBuilder.packagingQuantity}
                 setPackagingQuantity={orderBuilder.setPackagingQuantity}
