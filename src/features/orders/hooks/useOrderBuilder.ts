@@ -28,6 +28,7 @@ import type { Replacement } from "../components";
 export interface UseOrderBuilderReturn {
   // Loading states
   isLoading: boolean;
+  isMenuLoading: boolean;
   isPending: boolean;
   
   // Data
@@ -203,14 +204,10 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const { data: menuItems, isLoading: itemsLoading } = useItems();
   
   // Daily Menu Data fetching logic
-  const todayStr = getLocalDateString(new Date());
-  const isTodaySelected = !backdatedDate || backdatedDate === todayStr;
+  const dailyMenu = useDailyMenuByDate(backdatedDate || getLocalDateString(new Date()));
   
-  const todayMenu = useDailyMenuToday();
-  const historicalMenu = useDailyMenuByDate(backdatedDate || todayStr);
-  
-  const dailyMenuData = isTodaySelected ? todayMenu.data : historicalMenu.data;
-  const menuLoading = isTodaySelected ? todayMenu.isLoading : historicalMenu.isLoading;
+  const dailyMenuData = dailyMenu.data;
+  const menuLoading = dailyMenu.isLoading;
 
   // Set default quantity when order type changes
   useEffect(() => {
@@ -751,7 +748,8 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   }, [clearCurrentOrder, dailyMenuData]);
 
   return {
-    isLoading: tablesLoading || itemsLoading || menuLoading,
+    isLoading: tablesLoading || itemsLoading,
+    isMenuLoading: menuLoading,
     isPending,
     tables,
     availableTables,
