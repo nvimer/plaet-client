@@ -30,7 +30,7 @@ export function useDailyMenuHistory(page = 1, limit = 20) {
   return useQuery({
     queryKey: DAILY_MENU_KEYS.history(page, limit),
     queryFn: () => getHistory(page, limit),
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
   });
 }
 
@@ -48,7 +48,7 @@ export function useDailyMenuToday() {
         throw error;
       }
     },
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
     retry: (failureCount, error: unknown) => {
       if (axios.isAxiosError(error) && error.response?.status === 404) return false;
       return failureCount < 1;
@@ -71,7 +71,7 @@ export function useDailyMenuByDate(date: string) {
       }
     },
     enabled: !!date,
-    staleTime: 1000 * 60 * 5,
+    staleTime: 0,
     retry: (failureCount, error: unknown) => {
       // Don't retry on 404s
       if (axios.isAxiosError(error) && error.response?.status === 404) return false;
