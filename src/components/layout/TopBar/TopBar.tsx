@@ -127,7 +127,11 @@ export function TopBar({
                 {title}
               </h1>
             )}
-            {breadcrumbs.length > 1 && <Breadcrumbs items={breadcrumbs} />}
+            {breadcrumbs.length > 1 && (
+              <div className="hidden sm:block">
+                <Breadcrumbs items={breadcrumbs} />
+              </div>
+            )}
             {!hideTitle && subtitle && (
               <p className="text-xs sm:text-sm text-carbon-400 truncate hidden sm:block font-medium">
                 {subtitle}

@@ -356,10 +356,10 @@ export function OrderCreatePage() {
               variant="secondary"
               size="sm"
               onClick={handleBackToOrderType}
-              className="rounded-xl h-10 px-4"
+              className="rounded-xl h-10 px-3 sm:px-4"
             >
-              <ArrowLeft className="w-3.5 h-3.5 mr-2" />
-              <span>Tipo</span>
+              <ArrowLeft className="w-3.5 h-3.5 sm:mr-2" />
+              <span className="hidden sm:inline">Tipo</span>
             </Button>
           </div>
         }
