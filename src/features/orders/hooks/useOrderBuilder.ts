@@ -431,28 +431,33 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   }, [validationErrors, touchedFields]);
 
   const buildOrderNotes = useCallback((): string => {
-    let note = "";
+    const sections: string[] = [];
 
+    // 1. Customer Info Section
     if (selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) {
-      note += `👤 CLIENTE: ${customerName}\n📞 TEL: ${customerPhone}`;
+      let customerInfo = `👤 CLIENTE: ${customerName} | 📞 TEL: ${customerPhone}`;
       if (selectedOrderType === OrderType.DELIVERY && deliveryAddress) {
-        note += `\n📍 DIR: ${deliveryAddress}`;
+        customerInfo += ` | 📍 DIR: ${deliveryAddress}`;
       }
-      note += "\n-------------------\n";
+      sections.push(customerInfo);
     }
     
-    if (selectedProtein) {
-      if (replacements.length > 0) {
-        const replText = replacements.map(r => `[-] Sin ${r.fromName} [+] Extra ${r.itemName}`).join(" | ");
-        note += `${replText}`;
-      }
+    // 2. Replacements Section (Dynamic)
+    if (selectedProtein && replacements.length > 0) {
+      const replText = replacements
+        .map(r => `[-] Sin ${r.fromName} [+] Extra ${r.itemName}`)
+        .join(" | ");
+      sections.push(`🔄 CAMBIOS: ${replText}`);
     }
     
-    if (orderNotes) {
-      note += note ? `\n📝 NOTAS: ${orderNotes}` : `📝 NOTAS: ${orderNotes}`;
+    // 3. Manual User Notes
+    if (orderNotes.trim()) {
+      // If we are editing, we might have previous auto-notes in the string. 
+      // We should ideally only have the manual part here.
+      sections.push(`📝 NOTAS: ${orderNotes.trim()}`);
     }
     
-    return note;
+    return sections.join("\n-------------------\n");
   }, [selectedProtein, replacements, orderNotes, selectedOrderType, customerName, customerPhone, deliveryAddress]);
 
   const handleAddLooseItem = useCallback((item: { id: number; name: string; price: number }) => {
@@ -577,7 +582,26 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       setLooseItems([...order.looseItems]);
     }
 
-    setOrderNotes(order.notes || "");
+    // Extract manual notes by stripping automated sections
+    let manualNotes = order.notes || "";
+    
+    // Split by the divider we use
+    const sections = manualNotes.split("\n-------------------\n");
+    
+    // Filter out sections that start with our automated prefixes
+    const manualParts = sections.filter(s => 
+      !s.includes("👤 CLIENTE:") && 
+      !s.includes("🔄 CAMBIOS:") &&
+      !s.startsWith("📝 NOTAS:")
+    );
+
+    // Also look for the "📝 NOTAS:" prefix within a section and strip it
+    const cleanManualNotes = sections
+      .find(s => s.includes("📝 NOTAS:"))
+      ?.replace("📝 NOTAS:", "")
+      .trim() || manualParts.join("\n").trim();
+
+    setOrderNotes(cleanManualNotes);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [tableOrders, selectedOrderType]);
 
