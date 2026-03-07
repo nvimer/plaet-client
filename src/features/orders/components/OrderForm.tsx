@@ -49,8 +49,12 @@ interface OrderFormProps {
   setCustomerName: (name: string) => void;
   customerPhone: string;
   setCustomerPhone: (phone: string) => void;
+  customerPhone2: string;
+  setCustomerPhone2: (phone: string) => void;
   deliveryAddress: string;
   setDeliveryAddress: (address: string) => void;
+  address2: string;
+  setAddress2: (address: string) => void;
   packagingFee: number;
   packagingQuantity: number;
   setPackagingQuantity: (qty: number) => void;
@@ -138,8 +142,12 @@ export function OrderForm({
   setCustomerName,
   customerPhone,
   setCustomerPhone,
+  customerPhone2,
+  setCustomerPhone2,
   deliveryAddress,
   setDeliveryAddress,
+  address2,
+  setAddress2,
   packagingFee,
   packagingQuantity,
   setPackagingQuantity,
@@ -211,7 +219,7 @@ export function OrderForm({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Teléfono de Contacto</label>
+              <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Teléfono Principal</label>
               <div className="relative">
                 <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
                 <Input
@@ -227,6 +235,21 @@ export function OrderForm({
             </div>
 
             <div className="space-y-2">
+              <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Teléfono Secundario (Opcional)</label>
+              <div className="relative">
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4 opacity-50" />
+                <Input
+                  type="tel"
+                  placeholder="Otro número..."
+                  value={customerPhone2}
+                  onChange={(e) => setCustomerPhone2(e.target.value)}
+                  className="pl-11"
+                  fullWidth
+                />
+              </div>
+            </div>
+
+            <div className="sm:col-span-2 space-y-2">
               <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Nombre del Cliente</label>
               <div className="relative">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
@@ -242,23 +265,36 @@ export function OrderForm({
               </div>
             </div>
 
-            {selectedOrderType === OrderType.DELIVERY && (
-              <div className="sm:col-span-2 space-y-2">
-                <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Dirección de Entrega</label>
-                <div className="relative">
-                  <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
-                  <Input
-                    type="text"
-                    placeholder="Ej: Calle 123 # 45-67, Apto 401"
-                    value={deliveryAddress}
-                    onChange={(e) => setDeliveryAddress(e.target.value)}
-                    className="pl-11"
-                    error={hasError("deliveryAddress") ? validationErrors.find(e => e.field === "deliveryAddress")?.message : undefined}
-                    fullWidth
-                  />
-                </div>
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Dirección Principal</label>
+              <div className="relative">
+                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
+                <Input
+                  type="text"
+                  placeholder="Calle 123 # 45-67"
+                  value={deliveryAddress}
+                  onChange={(e) => setDeliveryAddress(e.target.value)}
+                  className="pl-11"
+                  error={hasError("deliveryAddress") ? validationErrors.find(e => e.field === "deliveryAddress")?.message : undefined}
+                  fullWidth
+                />
               </div>
-            )}
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Dirección Secundaria (Opcional)</label>
+              <div className="relative">
+                <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4 opacity-50" />
+                <Input
+                  type="text"
+                  placeholder="Apartamento, local, etc..."
+                  value={address2}
+                  onChange={(e) => setAddress2(e.target.value)}
+                  className="pl-11"
+                  fullWidth
+                />
+              </div>
+            </div>
 
             <div className="sm:col-span-2 pt-2">
               <div className="flex items-center justify-between p-4 bg-white rounded-2xl border border-primary-100 shadow-sm">

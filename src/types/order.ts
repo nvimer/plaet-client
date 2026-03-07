@@ -22,6 +22,9 @@ export interface Customer {
   firstName: string;
   lastName: string;
   phone: string;
+  phone2?: string;
+  address1?: string;
+  address2?: string;
   email?: string;
   createdAt: string;
   updatedAt: string;

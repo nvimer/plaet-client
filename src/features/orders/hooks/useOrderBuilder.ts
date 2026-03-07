@@ -46,7 +46,9 @@ export interface UseOrderBuilderReturn {
   // Customer info for non-table orders
   customerName: string;
   customerPhone: string;
+  customerPhone2: string;
   deliveryAddress: string;
+  address2: string;
   packagingFee: number;
   
   // Current order state
@@ -116,7 +118,9 @@ export interface UseOrderBuilderReturn {
   setBackdatedDate: (date: string | null) => void;
   setCustomerName: (name: string) => void;
   setCustomerPhone: (phone: string) => void;
+  setCustomerPhone2: (phone: string) => void;
   setDeliveryAddress: (address: string) => void;
+  setAddress2: (address: string) => void;
   packagingQuantity: number;
   setPackagingQuantity: (qty: number) => void;
   
@@ -150,7 +154,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   // Customer info state
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
-  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [customerPhone2, setCustomerPhone2] = useState("");
+  const [deliveryAddress, setDeliveryAddress] = useState(""); // This is address1
+  const [address2, setAddress2] = useState("");
 
   // Handler for customer name with validation (only letters and spaces)
   const handleSetCustomerName = useCallback((name: string) => {
@@ -170,16 +176,24 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
         const response = await customerApi.getCustomerByPhone(cleanPhone);
         if (response.success && response.data) {
           setCustomerName(`${response.data.firstName} ${response.data.lastName}`.trim());
+          setCustomerPhone2(response.data.phone2 || "");
+          setDeliveryAddress(response.data.address1 || "");
+          setAddress2(response.data.address2 || "");
+          
           toast.success("Cliente encontrado", {
             description: `Bienvenido de nuevo, ${response.data.firstName}`,
             icon: "👤",
           });
         }
       } catch (error) {
-        // Silent error if customer not found, it's expected for new customers
+        // Silent error if customer not found
         console.debug("Customer not found for phone:", cleanPhone);
       }
     }
+  }, []);
+
+  const handleSetCustomerPhone2 = useCallback((phone: string) => {
+    setCustomerPhone2(phone.replace(/\D/g, ""));
   }, []);
   const [packagingFee, setPackagingFee] = useState(1000);
   const [packagingQuantity, setPackagingQuantity] = useState(0);
@@ -631,6 +645,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
         customerId: undefined,
         customerName: customerName || undefined,
         customerPhone: customerPhone || undefined,
+        customerPhone2: customerPhone2 || undefined,
+        address1: deliveryAddress || undefined,
+        address2: address2 || undefined,
         items,
         notes: order.notes,
         createdAt: (backdatedDate && backdatedDate !== todayStr) 
@@ -744,7 +761,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     backdatedDate,
     customerName,
     customerPhone,
+    customerPhone2,
     deliveryAddress,
+    address2,
     packagingFee,
     selectedProtein,
     looseItems,
@@ -791,7 +810,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setBackdatedDate,
     setCustomerName: handleSetCustomerName,
     setCustomerPhone: handleSetCustomerPhone,
+    setCustomerPhone2: handleSetCustomerPhone2,
     setDeliveryAddress,
+    setAddress2,
     packagingQuantity,
     setPackagingQuantity,
     handleAddLooseItem,
