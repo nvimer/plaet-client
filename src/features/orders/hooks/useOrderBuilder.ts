@@ -149,7 +149,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const [selectedTable, setSelectedTable] = useState<number | null>(null);
   const [tableOrders, setTableOrders] = useState<TableOrder[]>([]);
   const [currentOrderIndex, setCurrentOrderIndex] = useState<number | null>(null);
-  const [backdatedDate, setBackdatedDate] = useState<string | null>(null);
+  const [backdatedDate, setBackdatedDate] = useState<string | null>(getLocalDateString(new Date()));
 
   // Customer info state
   const [customerName, setCustomerName] = useState("");
@@ -203,11 +203,14 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const { data: menuItems, isLoading: itemsLoading } = useItems();
   
   // Daily Menu Data fetching logic
-  const todayMenu = useDailyMenuToday();
-  const historicalMenu = useDailyMenuByDate(backdatedDate || "");
+  const todayStr = getLocalDateString(new Date());
+  const isTodaySelected = !backdatedDate || backdatedDate === todayStr;
   
-  const dailyMenuData = backdatedDate ? historicalMenu.data : todayMenu.data;
-  const menuLoading = backdatedDate ? historicalMenu.isLoading : todayMenu.isLoading;
+  const todayMenu = useDailyMenuToday();
+  const historicalMenu = useDailyMenuByDate(backdatedDate || todayStr);
+  
+  const dailyMenuData = isTodaySelected ? todayMenu.data : historicalMenu.data;
+  const menuLoading = isTodaySelected ? todayMenu.isLoading : historicalMenu.isLoading;
 
   // Set default quantity when order type changes
   useEffect(() => {
