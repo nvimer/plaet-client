@@ -618,7 +618,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
         if (!isFastHistoricalEntry) toast.success("Pedido creado exitosamente");
       } else {
         const res = await createBatchOrders({
-          tableId: selectedTable || undefined,
+          tableId: selectedOrderType === OrderType.DINE_IN ? (selectedTable || undefined) : undefined,
           orders: ordersPayload as any
         });
         
