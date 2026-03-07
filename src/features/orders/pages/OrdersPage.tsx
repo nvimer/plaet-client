@@ -225,29 +225,38 @@ export function OrdersPage() {
       // 3. PHASE THREE: Tab Filtering (State Management)
       const groupedOrders = useMemo(() => {
         return allGroupedOrders.filter((group) => {
+          // Helper to check if an item actually goes to kitchen
+          const isKitchenBound = (i: any) => i.menuItemId && !i.notes?.toLowerCase().includes("portacomida");
+
           // BILLING: Group has at least one order that is NOT paid
           if (activeTab === "BILLING") {
             return group.orders.some(o => o.status === OrderStatus.OPEN || o.status === OrderStatus.SENT_TO_CASHIER);
           }
   
-          // PREPARATION: All orders paid AND group has at least one item pending/cooking
+          // PREPARATION: All orders paid AND group has at least one kitchen item pending/cooking
           if (activeTab === "PREPARATION") {
             const anyUnpaid = group.orders.some(o => o.status !== OrderStatus.PAID);
             if (anyUnpaid) return false;
   
             return group.orders.some(o => 
-              o.items?.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status))
+              o.items?.some(i => isKitchenBound(i) && [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status))
             );
           }
   
-          // READY: All orders paid AND nothing cooking AND at least one item ready
+          // READY: All orders paid AND no kitchen items cooking AND at least one kitchen item is ready
           if (activeTab === "READY") {
             const anyUnpaid = group.orders.some(o => o.status !== OrderStatus.PAID);
             if (anyUnpaid) return false;
   
             const allItems = group.orders.flatMap(o => o.items || []);
-            const hasCooking = allItems.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status));
-            const hasReady = allItems.some(i => i.status === OrderItemStatus.READY);
+            const kitchenItems = allItems.filter(isKitchenBound);
+            
+            // If it has NO kitchen items, it goes straight to History once paid (delivered automatically logic)
+            // If it has kitchen items, check if they are all done
+            if (kitchenItems.length === 0) return false;
+
+            const hasCooking = kitchenItems.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status));
+            const hasReady = kitchenItems.some(i => i.status === OrderItemStatus.READY);
             
             return !hasCooking && hasReady;
           }
@@ -274,8 +283,9 @@ export function OrdersPage() {
             return group.orders.every(o => {
               if (o.status === OrderStatus.CANCELLED) return true;
               if (o.status === OrderStatus.PAID) {
+                // Only consider items that actually require a preparation workflow
                 const hasActiveItems = o.items?.some(i => 
-                  [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN, OrderItemStatus.READY].includes(i.status)
+                  isKitchenBound(i) && [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN, OrderItemStatus.READY].includes(i.status)
                 );
                 return !hasActiveItems;
               }
@@ -289,20 +299,24 @@ export function OrdersPage() {
   
       // 4. Counts based on the SAME grouping logic
       const counts = useMemo(() => {
+        const isKitchenBound = (i: any) => i.menuItemId && !i.notes?.toLowerCase().includes("portacomida");
+
         const billing = allGroupedOrders.filter(g => g.orders.some(o => o.status === OrderStatus.OPEN || o.status === OrderStatus.SENT_TO_CASHIER)).length;
         
         const inKitchen = allGroupedOrders.filter(g => {
           const anyUnpaid = g.orders.some(o => o.status !== OrderStatus.PAID);
           if (anyUnpaid) return false;
-          return g.orders.some(o => o.items?.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status)));
+          return g.orders.some(o => o.items?.some(i => isKitchenBound(i) && [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status)));
         }).length;
   
         const ready = allGroupedOrders.filter(g => {
           const anyUnpaid = g.orders.some(o => o.status !== OrderStatus.PAID);
           if (anyUnpaid) return false;
           const allItems = g.orders.flatMap(o => o.items || []);
-          const hasCooking = allItems.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status));
-          const hasReady = allItems.some(i => i.status === OrderItemStatus.READY);
+          const kitchenItems = allItems.filter(isKitchenBound);
+          if (kitchenItems.length === 0) return false;
+          const hasCooking = kitchenItems.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status));
+          const hasReady = kitchenItems.some(i => i.status === OrderItemStatus.READY);
           return !hasCooking && hasReady;
         }).length;
   
@@ -320,7 +334,7 @@ export function OrdersPage() {
           return g.orders.every(o => {
             if (o.status === OrderStatus.CANCELLED) return true;
             if (o.status === OrderStatus.PAID) {
-              const hasActiveItems = o.items?.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN, OrderItemStatus.READY].includes(i.status));
+              const hasActiveItems = o.items?.some(i => isKitchenBound(i) && [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN, OrderItemStatus.READY].includes(i.status));
               return !hasActiveItems;
             }
             return false;
