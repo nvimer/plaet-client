@@ -22,3 +22,4 @@ export * as analyticsApi from "./analyticsApi";
 export * as cashClosureApi from "./cashClosureApi";
 export * as expensesApi from "./expensesApi";
 export * as paymentApi from "./paymentApi";
+export * as customerApi from "./customerApi";

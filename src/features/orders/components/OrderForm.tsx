@@ -211,6 +211,22 @@ export function OrderForm({
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
+              <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Teléfono de Contacto</label>
+              <div className="relative">
+                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
+                <Input
+                  type="tel"
+                  placeholder="Ej: 300 123 4567"
+                  value={customerPhone}
+                  onChange={(e) => setCustomerPhone(e.target.value)}
+                  className="pl-11"
+                  error={hasError("customerPhone") ? validationErrors.find(e => e.field === "customerPhone")?.message : undefined}
+                  fullWidth
+                />
+              </div>
+            </div>
+
+            <div className="space-y-2">
               <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Nombre del Cliente</label>
               <div className="relative">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
@@ -223,23 +239,6 @@ export function OrderForm({
                   error={hasError("customerName") ? validationErrors.find(e => e.field === "customerName")?.message : undefined}
                   fullWidth
                 />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Teléfono de Contacto</label>
-              <div className="relative">
-                <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
-                                      <Input
-                                        type="tel"
-                                        placeholder="Ej: 300 123 4567"
-                                        value={customerPhone}
-                                        onChange={(e) => setCustomerPhone(e.target.value.replace(/\D/g, ""))}
-                                        className="pl-11"
-                                        error={hasError("customerPhone") ? validationErrors.find(e => e.field === "customerPhone")?.message : undefined}
-                                        fullWidth
-                                      />
-                
               </div>
             </div>
 

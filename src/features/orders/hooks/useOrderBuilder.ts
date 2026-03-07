@@ -12,7 +12,7 @@ import { useTables, useUpdateTableStatus } from "@/features/tables";
 import { useItems } from "@/features/menu";
 import { useDailyMenuToday, useDailyMenuByDate } from "@/features/daily-menu/hooks";
 import { OrderType, TableStatus, OrderStatus, PaymentMethod, OrderItemStatus } from "@/types";
-import { paymentApi, orderApi } from "@/services";
+import { paymentApi, orderApi, customerApi } from "@/services";
 import type { Order } from "@/types";
 import type {
   MenuOption,
@@ -151,6 +151,36 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const [customerName, setCustomerName] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
   const [deliveryAddress, setDeliveryAddress] = useState("");
+
+  // Handler for customer name with validation (only letters and spaces)
+  const handleSetCustomerName = useCallback((name: string) => {
+    // Regex allows letters (including accented ones and ñ) and spaces
+    const onlyLetters = name.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
+    setCustomerName(onlyLetters);
+  }, []);
+
+  // Handler for customer phone with auto-lookup
+  const handleSetCustomerPhone = useCallback(async (phone: string) => {
+    const cleanPhone = phone.replace(/\D/g, "");
+    setCustomerPhone(cleanPhone);
+
+    // If phone has 10 digits, attempt to lookup customer
+    if (cleanPhone.length === 10) {
+      try {
+        const response = await customerApi.getCustomerByPhone(cleanPhone);
+        if (response.success && response.data) {
+          setCustomerName(`${response.data.firstName} ${response.data.lastName}`.trim());
+          toast.success("Cliente encontrado", {
+            description: `Bienvenido de nuevo, ${response.data.firstName}`,
+            icon: "👤",
+          });
+        }
+      } catch (error) {
+        // Silent error if customer not found, it's expected for new customers
+        console.debug("Customer not found for phone:", cleanPhone);
+      }
+    }
+  }, []);
   const [packagingFee, setPackagingFee] = useState(1000);
   const [packagingQuantity, setPackagingQuantity] = useState(0);
 
@@ -759,8 +789,8 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setTableOrders,
     setCurrentOrderIndex,
     setBackdatedDate,
-    setCustomerName,
-    setCustomerPhone,
+    setCustomerName: handleSetCustomerName,
+    setCustomerPhone: handleSetCustomerPhone,
     setDeliveryAddress,
     packagingQuantity,
     setPackagingQuantity,
