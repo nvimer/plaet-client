@@ -96,7 +96,7 @@ export function KitchenKanban({
   useEffect(() => {
     const interval = setInterval(() => {
       refetch();
-    }, 30000);
+    }, 10000);
 
     return () => clearInterval(interval);
   }, [refetch]);

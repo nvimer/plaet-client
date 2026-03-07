@@ -18,8 +18,8 @@ export function useOrders(params?: OrdersFilterParams) {
             const response = await orderApi.getOrders(params);
             return response.data;
         },
-        // Refetch every 30 seconds for semi-realtime updates (cancellations, etc)
-        refetchInterval: 30000,
+        // Refetch every 10 seconds for semi-realtime updates (cancellations, etc)
+        refetchInterval: 10000,
     });
 }
 
@@ -38,8 +38,8 @@ export function useKitchenOrders(status?: string) {
             const response = await orderApi.getKitchenOrders(status);
             return response.data;
         },
-        // Refetch every 30 seconds for real-time updates
-        refetchInterval: 30000,
+        // Refetch every 10 seconds for real-time updates
+        refetchInterval: 10000,
     });
 }
 
