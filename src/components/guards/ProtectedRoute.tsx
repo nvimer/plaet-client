@@ -87,38 +87,57 @@ const AccessDenied = ({
   message: string;
   onBack?: () => void;
 }) => (
-  <div className="min-h-screen bg-sage-50 flex items-center justify-center p-6">
+  <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center">
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.6 }}
-      className="max-w-md w-full"
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="max-w-md w-full space-y-8"
     >
-      <div className="glass-light rounded-3xl p-10 shadow-soft-xl text-center">
+      {/* Premium Shield Icon */}
+      <div className="relative mx-auto w-32 h-32">
         <motion.div
-          initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="w-20 h-20 rounded-full bg-error-100 flex items-center justify-center mx-auto mb-6"
-        >
-          <ShieldX className="w-10 h-10 text-error-600" />
-        </motion.div>
+          initial={{ opacity: 0, rotate: -20 }}
+          animate={{ opacity: 1, rotate: 0 }}
+          transition={{ delay: 0.2, duration: 0.8 }}
+          className="absolute inset-0 bg-error-50 rounded-[2.5rem] rotate-6"
+        />
+        <div className="absolute inset-0 bg-white border-2 border-error-100 rounded-[2.5rem] shadow-soft-xl flex items-center justify-center">
+          <ShieldX className="w-16 h-16 text-error-600 stroke-[1.5px]" />
+        </div>
+      </div>
 
-        <h1 className="text-2xl font-bold text-carbon-900 mb-4">
-          Acceso Denegado
+      <div className="space-y-3">
+        <h1 className="text-4xl font-black text-carbon-900 tracking-tight">
+          Zona Restringida
         </h1>
+        <p className="text-lg text-carbon-500 font-medium leading-relaxed">
+          {message || "No tienes los permisos necesarios para acceder a este módulo."}
+        </p>
+      </div>
 
-        <p className="text-carbon-600 mb-6">{message}</p>
-
+      <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-4">
         <motion.button
-          onClick={onBack}
+          onClick={onBack || (() => window.history.back())}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          className="inline-flex items-center px-6 py-3 bg-sage-600 text-white font-semibold rounded-xl hover:bg-sage-700 transition-colors"
+          className="w-full sm:w-auto px-8 py-4 bg-carbon-900 text-white font-bold rounded-2xl shadow-smooth-lg hover:bg-carbon-800 transition-all"
         >
           Regresar
         </motion.button>
+        <motion.button
+          onClick={() => window.location.href = "/dashboard"}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="w-full sm:w-auto px-8 py-4 bg-sage-50 text-sage-700 font-bold rounded-2xl border border-sage-100 hover:bg-sage-100 transition-all"
+        >
+          Ir al Inicio
+        </motion.button>
       </div>
+
+      <p className="pt-8 text-[10px] font-bold text-carbon-300 uppercase tracking-[0.2em]">
+        Plaet POS · Seguridad de Acceso
+      </p>
     </motion.div>
   </div>
 );
