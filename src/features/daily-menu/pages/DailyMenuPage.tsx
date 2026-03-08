@@ -6,6 +6,7 @@ import { DailyMenuConfigForm } from "./DailyMenuConfigForm";
 import { useDailyMenuToday, useDailyMenuByDate } from "@/features/daily-menu/hooks";
 import { useAuth } from "@/hooks";
 import { RoleName } from "@/types";
+import { getLocalDateString } from "@/utils/dateUtils";
 import { Calendar, RefreshCw, UtensilsCrossed, Edit2, ArrowLeft, Beef, Salad, CupSoda, IceCream, PlusCircle, Settings2, type LucideIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { toast } from "sonner";
@@ -170,7 +171,7 @@ export function DailyMenuPage() {
             </div>
             <input 
               type="date" 
-              value={selectedDate || new Date().toISOString().split("T")[0]}
+              value={selectedDate || getLocalDateString(new Date())}
               onChange={(e) => {
                 setSelectedDate(e.target.value);
                 setIsEditing(false);
