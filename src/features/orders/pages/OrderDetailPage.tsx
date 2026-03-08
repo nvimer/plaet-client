@@ -17,6 +17,8 @@ import {
   Calculator,
   Info,
   ReceiptText,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import { toast } from "sonner";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
@@ -50,6 +52,7 @@ export function OrderDetailPage() {
   
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [showDetailedBreakdown, setShowDetailedBreakdown] = useState(false);
 
   // Early returns
   if (isLoading) {
@@ -271,10 +274,30 @@ export function OrderDetailPage() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column: Items List */}
             <div className="lg:col-span-2 space-y-4">
-              <h4 className="font-bold text-carbon-900 uppercase text-xs tracking-widest flex items-center gap-2">
-                <div className="w-1.5 h-4 bg-sage-500 rounded-full" />
-                Items del Pedido ({order.items?.length || 0})
-              </h4>
+              <div className="flex items-center justify-between">
+                <h4 className="font-bold text-carbon-900 uppercase text-xs tracking-widest flex items-center gap-2">
+                  <div className="w-1.5 h-4 bg-sage-500 rounded-full" />
+                  Items del Pedido ({order.items?.length || 0})
+                </h4>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setShowDetailedBreakdown(!showDetailedBreakdown)}
+                  className="text-xs font-bold text-carbon-500 flex items-center gap-1"
+                >
+                  {showDetailedBreakdown ? (
+                    <>
+                      <ChevronUp className="w-4 h-4" />
+                      Menos detalles
+                    </>
+                  ) : (
+                    <>
+                      <ChevronDown className="w-4 h-4" />
+                      Más detalles
+                    </>
+                  )}
+                </Button>
+              </div>
               <div className="space-y-2">
                 {order.items?.map((item) => (
                   <div
@@ -285,18 +308,30 @@ export function OrderDetailPage() {
                       <p className="font-bold text-carbon-900">
                         {item.quantity}x {item.menuItem?.name || "Producto"}
                       </p>
+                      {showDetailedBreakdown && (
+                        <p className="text-xs text-carbon-400 mt-1 font-medium">
+                          Unitario: ${Number(item.priceAtOrder).toLocaleString("es-CO")}
+                        </p>
+                      )}
                       {item.notes && (
                         <p className="text-sm text-carbon-500 italic mt-1 font-medium">
                           📝 {item.notes}
                         </p>
                       )}
                     </div>
-                    <p className="font-bold text-carbon-900 text-lg">
-                      $
-                      {Number(item.priceAtOrder * item.quantity).toLocaleString(
-                        "es-CO",
+                    <div className="text-right">
+                      <p className="font-bold text-carbon-900 text-lg">
+                        $
+                        {Number(item.priceAtOrder * item.quantity).toLocaleString(
+                          "es-CO",
+                        )}
+                      </p>
+                      {showDetailedBreakdown && (
+                        <p className="text-xs text-carbon-400 font-medium">
+                          ({item.quantity} × ${Number(item.priceAtOrder).toLocaleString("es-CO")})
+                        </p>
                       )}
-                    </p>
+                    </div>
                   </div>
                 ))}
               </div>
