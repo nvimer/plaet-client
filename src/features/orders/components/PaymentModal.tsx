@@ -300,204 +300,204 @@ export function PaymentModal({
           </div>
         )}
 
-        {/* Method Selectors */}
+        {/* Method Selectors and Payment Input */}
         {remainingToPay > 0 && (
           <>
-            <div className="grid grid-cols-3 gap-3">
-              {methods.map((m) => {
-                const Icon = m.icon;
-                const isActive = method === m.id;
-                return (
-                  <button
-                    key={m.id}
-                    onClick={() => setMethod(m.id)}
-                    className={cn(
-                      "flex flex-col items-center justify-center p-4 rounded-3xl border-2 transition-all duration-300 gap-2 active:scale-95",
-                      isActive 
-                        ? "border-carbon-900 bg-carbon-900 text-white shadow-soft-lg" 
-                        : "border-sage-100 bg-white text-carbon-500 hover:border-sage-300 hover:bg-sage-50/50"
-                    )}
-                  >
-                    <Icon className={cn("w-6 h-6", isActive ? "text-white" : "text-carbon-400")} />
-                    <span className="text-[10px] font-semibold tracking-wide">{m.label}</span>
-                  </button>
-                );
-              })}
-            </div>
+            <div className="space-y-4">
+              <div className="grid grid-cols-3 gap-3">
+                {methods.map((m) => {
+                  const Icon = m.icon;
+                  const isActive = method === m.id;
+                  return (
+                    <button
+                      key={m.id}
+                      onClick={() => setMethod(m.id)}
+                      className={cn(
+                        "flex flex-col items-center justify-center p-4 rounded-3xl border-2 transition-all duration-300 gap-2 active:scale-95",
+                        isActive 
+                          ? "border-carbon-900 bg-carbon-900 text-white shadow-soft-lg" 
+                          : "border-sage-100 bg-white text-carbon-500 hover:border-sage-300 hover:bg-sage-50/50"
+                      )}
+                    >
+                      <Icon className={cn("w-6 h-6", isActive ? "text-white" : "text-carbon-400")} />
+                      <span className="text-[10px] font-semibold tracking-wide">{m.label}</span>
+                    </button>
+                  );
+                })}
+              </div>
 
-        {remainingToPay > 0 && (
-          <div className="min-h-[180px]">
-            <AnimatePresence mode="wait">
-              {/* CASH FLOW */}
-              {method === PaymentMethod.CASH && (
-                <motion.div
-                  key="cash"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-4"
-                >
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Monto en Efectivo</label>
-                    <div className="relative">
-                      <span className="absolute left-5 top-1/2 -translate-y-1/2 text-carbon-400 font-bold text-xl">$</span>
-                      <input
-                        type="number"
-                        autoFocus
-                        value={currentAmount || ""}
-                        onChange={(e) => setCurrentAmount(Number(e.target.value))}
-                        className="w-full h-16 pl-10 pr-6 rounded-2xl border-2 border-sage-100 focus:border-carbon-900 focus:ring-0 text-2xl font-black text-carbon-900 transition-all shadow-inner bg-sage-50/30"
-                        placeholder="0"
-                      />
-                    </div>
-                  </div>
-
-                  {currentAmount > 0 && (
-                    <div className={cn(
-                      "p-4 rounded-2xl border-2 transition-all flex items-center justify-between",
-                      currentAmount >= remainingToPay ? "bg-success-50 border-success-100" : "bg-warning-50 border-warning-100"
-                    )}>
-                      <div>
-                        <p className="text-[10px] font-semibold tracking-wide text-carbon-500">Cambio</p>
-                        <p className={cn(
-                          "text-2xl font-black tracking-tighter",
-                          currentAmount >= remainingToPay ? "text-success-700" : "text-warning-700"
-                        )}>
-                          ${Math.max(0, currentAmount - remainingToPay).toLocaleString("es-CO")}
-                        </p>
-                      </div>
-                      {currentAmount >= remainingToPay ? (
-                        <div className="w-10 h-10 rounded-full bg-success-600 text-white flex items-center justify-center">
-                          <Check className="w-5 h-5 stroke-[3px]" />
+              <div className="min-h-[180px]">
+                <AnimatePresence mode="wait">
+                  {/* CASH FLOW */}
+                  {method === PaymentMethod.CASH && (
+                    <motion.div
+                      key="cash"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="space-y-4"
+                    >
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Monto en Efectivo</label>
+                        <div className="relative">
+                          <span className="absolute left-5 top-1/2 -translate-y-1/2 text-carbon-400 font-bold text-xl">$</span>
+                          <input
+                            type="number"
+                            autoFocus
+                            value={currentAmount || ""}
+                            onChange={(e) => setCurrentAmount(Number(e.target.value))}
+                            className="w-full h-16 pl-10 pr-6 rounded-2xl border-2 border-sage-100 focus:border-carbon-900 focus:ring-0 text-2xl font-black text-carbon-900 transition-all shadow-inner bg-sage-50/30"
+                            placeholder="0"
+                          />
                         </div>
-                      ) : null}
-                    </div>
-                  )}
-                </motion.div>
-              )}
+                      </div>
 
-              {/* NEQUI FLOW */}
-              {method === PaymentMethod.NEQUI && (
-                <motion.div
-                  key="nequi"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-4"
-                >
-                  <div className="bg-info-50 p-4 rounded-2xl border-2 border-info-100 flex items-center gap-4">
-                    <div className="w-10 h-10 rounded-xl bg-info-600 text-white flex items-center justify-center">
-                      <Smartphone className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h4 className="font-bold text-info-900 text-sm">Transferencia Nequi</h4>
-                      <p className="text-xs text-info-600 font-medium italic">Confirma la recepción en tu App</p>
-                    </div>
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Monto</label>
-                    <div className="relative">
-                      <span className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 font-bold text-lg">$</span>
-                      <input
-                        type="number"
-                        value={currentAmount || ""}
-                        onChange={(e) => setCurrentAmount(Number(e.target.value))}
-                        className="w-full h-14 pl-9 pr-4 rounded-2xl border-2 border-sage-100 focus:border-info-600 focus:ring-0 text-xl font-bold text-carbon-900 shadow-inner bg-sage-50/30"
-                        placeholder="0"
-                      />
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* TICKET BOOK FLOW */}
-              {method === PaymentMethod.TICKET_BOOK && (
-                <motion.div
-                  key="ticket"
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  className="space-y-4"
-                >
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Celular del Cliente</label>
-                    <div className="relative">
-                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-5 h-5" />
-                      <input
-                        type="tel"
-                        value={customerPhone}
-                        onChange={(e) => setCustomerPhone(e.target.value)}
-                        className="w-full h-14 pl-12 pr-6 rounded-2xl border-2 border-sage-100 focus:border-blue-600 focus:ring-0 text-lg font-bold text-carbon-900 shadow-inner bg-sage-50/30 transition-all"
-                        placeholder="Buscar por número..."
-                      />
-                      {isLoadingCustomer && (
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent" />
+                      {currentAmount > 0 && (
+                        <div className={cn(
+                          "p-4 rounded-2xl border-2 transition-all flex items-center justify-between",
+                          currentAmount >= remainingToPay ? "bg-success-50 border-success-100" : "bg-warning-50 border-warning-100"
+                        )}>
+                          <div>
+                            <p className="text-[10px] font-semibold tracking-wide text-carbon-500">Cambio</p>
+                            <p className={cn(
+                              "text-2xl font-black tracking-tighter",
+                              currentAmount >= remainingToPay ? "text-success-700" : "text-warning-700"
+                            )}>
+                              ${Math.max(0, currentAmount - remainingToPay).toLocaleString("es-CO")}
+                            </p>
+                          </div>
+                          {currentAmount >= remainingToPay ? (
+                            <div className="w-10 h-10 rounded-full bg-success-600 text-white flex items-center justify-center">
+                              <Check className="w-5 h-5 stroke-[3px]" />
+                            </div>
+                          ) : null}
                         </div>
                       )}
-                    </div>
-                  </div>
+                    </motion.div>
+                  )}
 
-                  <AnimatePresence>
-                    {customer && (
-                      <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className={cn(
-                          "p-4 rounded-2xl border-2 flex flex-col gap-3",
-                          hasActiveTickets ? "bg-blue-50 border-blue-100" : "bg-error-50 border-error-100"
-                        )}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-blue-600">
-                              <User className="w-4 h-4" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-bold text-carbon-900">{customer.firstName} {customer.lastName}</p>
-                              <p className="text-[10px] font-bold text-carbon-400 tracking-wide">{customer.phone}</p>
-                            </div>
-                          </div>
-                          {hasActiveTickets && (
-                            <div className="text-right">
-                              <p className="text-[10px] font-black text-blue-600 tracking-wide">Saldo</p>
-                              <p className="text-lg font-black text-blue-800">{customer.ticketBooks.find((tb: any) => tb.consumedPortions < tb.totalPortions)?.totalPortions - customer.ticketBooks.find((tb: any) => tb.consumedPortions < tb.totalPortions)?.consumedPortions} Almuerzos</p>
+                  {/* NEQUI FLOW */}
+                  {method === PaymentMethod.NEQUI && (
+                    <motion.div
+                      key="nequi"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="space-y-4"
+                    >
+                      <div className="bg-info-50 p-4 rounded-2xl border-2 border-info-100 flex items-center gap-4">
+                        <div className="w-10 h-10 rounded-xl bg-info-600 text-white flex items-center justify-center">
+                          <Smartphone className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h4 className="font-bold text-info-900 text-sm">Transferencia Nequi</h4>
+                          <p className="text-xs text-info-600 font-medium italic">Confirma la recepción en tu App</p>
+                        </div>
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Monto</label>
+                        <div className="relative">
+                          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 font-bold text-lg">$</span>
+                          <input
+                            type="number"
+                            value={currentAmount || ""}
+                            onChange={(e) => setCurrentAmount(Number(e.target.value))}
+                            className="w-full h-14 pl-9 pr-4 rounded-2xl border-2 border-sage-100 focus:border-info-600 focus:ring-0 text-xl font-bold text-carbon-900 shadow-inner bg-sage-50/30"
+                            placeholder="0"
+                          />
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {/* TICKET BOOK FLOW */}
+                  {method === PaymentMethod.TICKET_BOOK && (
+                    <motion.div
+                      key="ticket"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      className="space-y-4"
+                    >
+                      <div className="space-y-2">
+                        <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Celular del Cliente</label>
+                        <div className="relative">
+                          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-5 h-5" />
+                          <input
+                            type="tel"
+                            value={customerPhone}
+                            onChange={(e) => setCustomerPhone(e.target.value)}
+                            className="w-full h-14 pl-12 pr-6 rounded-2xl border-2 border-sage-100 focus:border-blue-600 focus:ring-0 text-lg font-bold text-carbon-900 shadow-inner bg-sage-50/30 transition-all"
+                            placeholder="Buscar por número..."
+                          />
+                          {isLoadingCustomer && (
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                              <div className="animate-spin rounded-full h-5 w-5 border-2 border-blue-600 border-t-transparent" />
                             </div>
                           )}
                         </div>
-                        
-                        {!hasActiveTickets && (
-                          <div className="flex items-center gap-2 text-error-600 text-xs font-bold mt-1">
-                            <AlertCircle className="w-4 h-4" />
-                            No tiene tiqueteras activas
+                      </div>
+
+                      <AnimatePresence>
+                        {customer && (
+                          <motion.div
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            className={cn(
+                              "p-4 rounded-2xl border-2 flex flex-col gap-3",
+                              hasActiveTickets ? "bg-blue-50 border-blue-100" : "bg-error-50 border-error-100"
+                            )}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center text-blue-600">
+                                  <User className="w-4 h-4" />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-bold text-carbon-900">{customer.firstName} {customer.lastName}</p>
+                                  <p className="text-[10px] font-bold text-carbon-400 tracking-wide">{customer.phone}</p>
+                                </div>
+                              </div>
+                              {hasActiveTickets && (
+                                <div className="text-right">
+                                  <p className="text-[10px] font-black text-blue-600 tracking-wide">Saldo</p>
+                                  <p className="text-lg font-black text-blue-800">{customer.ticketBooks.find((tb: any) => tb.consumedPortions < tb.totalPortions)?.totalPortions - customer.ticketBooks.find((tb: any) => tb.consumedPortions < tb.totalPortions)?.consumedPortions} Almuerzos</p>
+                                </div>
+                              )}
+                            </div>
+                            
+                            {!hasActiveTickets && (
+                              <div className="flex items-center gap-2 text-error-600 text-xs font-bold mt-1">
+                                <AlertCircle className="w-4 h-4" />
+                                No tiene tiqueteras activas
+                              </div>
+                            )}
+                          </motion.div>
+                        )}
+                        {isCustomerError && (
+                          <div className="text-center p-3 text-error-600 font-bold text-xs bg-error-50 rounded-xl border border-error-100">
+                            Cliente no encontrado
                           </div>
                         )}
-                      </motion.div>
-                    )}
-                    {isCustomerError && (
-                      <div className="text-center p-3 text-error-600 font-bold text-xs bg-error-50 rounded-xl border border-error-100">
-                        Cliente no encontrado
-                      </div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        )}
+                      </AnimatePresence>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
 
-        {/* Add Payment Button */}
-        {remainingToPay > 0 && (
-          <Button
-            variant="outline"
-            fullWidth
-            onClick={handleAddPayment}
-            disabled={!canAddPayment}
-            className="h-12 rounded-2xl font-bold border-2 border-sage-300 text-sage-700 hover:bg-sage-50"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            AGREGAR PAGO
-          </Button>
+            {/* Add Payment Button */}
+            <Button
+              variant="outline"
+              fullWidth
+              onClick={handleAddPayment}
+              disabled={!canAddPayment}
+              className="h-12 rounded-2xl font-bold border-2 border-sage-300 text-sage-700 hover:bg-sage-50"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              AGREGAR PAGO
+            </Button>
+          </>
         )}
 
         {/* Action Buttons */}
