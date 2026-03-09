@@ -19,7 +19,7 @@ import {
   Ticket
 } from "lucide-react";
 import { cn } from "@/utils/cn";
-import { OrderCard, OrderFilters, GroupedOrderCard, PaymentModal } from "../components"; 
+import { OrderCard, OrderFilters, GroupedOrderCard, PaymentModal, type PaymentEntry } from "../components"; 
 import { ROUTES, getOrderDetailRoute } from "@/app/routes";
 import type { Order } from "@/types";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
@@ -118,7 +118,7 @@ export function OrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const { data: orders, isLoading, error: _error, refetch: _refetch } = useOrders({ limit: 100 });
-  const { mutate: addPayment, isPending: isAddingPayment } = useAddPayment();
+  const { mutate: addPayment, mutateAsync: addPaymentAsync, isPending: isAddingPayment } = useAddPayment();
 
   // Payment Modal State - Storing IDs for dynamic sync with React Query
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -135,67 +135,62 @@ export function OrdersPage() {
     setIsPaymentModalOpen(true);
   };
 
-  const handleConfirmPayment = (method: PaymentMethod, _totalAmount: number, orderIds: string[], options?: { reference?: string; phone?: string }) => {
-    let processedCount = 0;
-    const totalToProcess = orderIds.length;
-    
-    // We'll track if after this batch there are still pending orders in the group
-    const remainingInGroup = currentOrdersToPay.filter(o => !orderIds.includes(o.id));
+  const handleConfirmPayment = async (payments: PaymentEntry[], orderIds: string[]) => {
+    try {
+      // 1. Determine orders with remaining balance
+      const ordersToPay = currentOrdersToPay.filter(o => orderIds.includes(o.id));
+      
+      let ordersWithBalance = ordersToPay.map(order => {
+        const paid = order.payments?.reduce((sum, p) => sum + Number(p.amount), 0) || 0;
+        return {
+          id: order.id,
+          remaining: Math.max(0, Number(order.totalAmount) - paid)
+        };
+      }).filter(o => o.remaining > 0);
 
-    orderIds.forEach(orderId => {
-      const order = currentOrdersToPay.find(o => o.id === orderId);
-      if (!order) return;
+      // 2. Distribute each payment fragment across orders
+      for (const payment of payments) {
+        let amountToDistribute = payment.amount;
 
-      const paid = order.payments?.reduce((sum, p) => sum + Number(p.amount), 0) || 0;
-      const remaining = Math.max(0, Number(order.totalAmount) - paid);
+        for (const orderBalance of ordersWithBalance) {
+          if (amountToDistribute <= 0) break;
+          if (orderBalance.remaining <= 0) continue;
 
-      if (remaining <= 0) {
-        processedCount++;
-        return;
+          const amountForThisOrder = Math.min(amountToDistribute, orderBalance.remaining);
+          
+          await addPaymentAsync({
+            orderId: orderBalance.id,
+            paymentData: {
+              method: payment.method,
+              amount: amountForThisOrder,
+              transactionRef: payment.reference,
+              phone: payment.phone
+            }
+          });
+
+          amountToDistribute -= amountForThisOrder;
+          orderBalance.remaining -= orderBalance.remaining > 0 ? amountForThisOrder : 0;
+        }
       }
 
-      addPayment({
-        orderId,
-        paymentData: {
-          method,
-          amount: remaining,
-          transactionRef: options?.reference,
-          phone: options?.phone
-        }
-      }, {
-        onSuccess: () => {
-          processedCount++;
-          if (processedCount === totalToProcess) {
-            toast.success("Pago registrado correctamente");
-            
-            // Check if there's any order left in the group with pending balance
-            // We use status as the primary source of truth if payments array is missing
-            const anyBalanceLeft = remainingInGroup.some(o => {
-              const isPaid = [
-                OrderStatus.PAID, 
-                OrderStatus.CANCELLED
-              ].includes(o.status);
+      toast.success("Pagos registrados correctamente");
 
-              if (isPaid) return false;
-
-              const p = o.payments?.reduce((s, pay) => s + Number(pay.amount), 0) || 0;
-              return Number(o.totalAmount) - p > 0;
-            });
-
-            if (!anyBalanceLeft) {
-              setIsPaymentModalOpen(false);
-              // Cambiar a la pestaña "En Cocina" para ver los pedidos pagados
-              setActiveTab("PREPARATION");
-            }
-          }
-        },
-        onError: (error: AxiosErrorWithResponse) => {
-          toast.error(`Error en pedido #${orderId.slice(-4)}`, {
-            description: error.response?.data?.message || error.message
-          });
-        }
+      // 3. UI Updates
+      const remainingInGroup = currentOrdersToPay.filter(o => !orderIds.includes(o.id));
+      const anyBalanceLeftInGroup = remainingInGroup.some(o => {
+        const p = o.payments?.reduce((s, pay) => s + Number(pay.amount), 0) || 0;
+        return Number(o.totalAmount) - p > 0;
       });
-    });
+
+      if (!anyBalanceLeftInGroup) {
+        setIsPaymentModalOpen(false);
+        setActiveTab("PREPARATION");
+      }
+    } catch (error: any) {
+      toast.error("Error al registrar pagos", {
+        description: error.response?.data?.message || error.message
+      });
+    }
   };
 
       // ================ COMPUTED VALUES =================

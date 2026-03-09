@@ -24,7 +24,7 @@ import { toast } from "sonner";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { OrderStatusBadge } from "../components/OrderStatusBadge";
 import { OrderTypeBadge } from "../components/OrderTypeBadge";
-import { PaymentModal } from "../components/PaymentModal";
+import { PaymentModal, type PaymentEntry } from "../components/PaymentModal";
 import {
   Button,
   Card,
@@ -47,7 +47,7 @@ export function OrderDetailPage() {
   const { data: order, isLoading, error } = useOrder(id);
   const { mutate: updateStatus, isPending: isUpdatingStatus } =
     useUpdateOrderStatus();
-  const { mutate: addPayment, isPending: isAddingPayment } = useAddPayment();
+  const { mutate: addPayment, mutateAsync: addPaymentAsync, isPending: isAddingPayment } = useAddPayment();
   const { mutate: deleteOrder, isPending: isDeleting } = useDeleteOrder();
   
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -154,34 +154,33 @@ export function OrderDetailPage() {
     );
   };
 
-  const handleConfirmPayment = (method: PaymentMethod, amount: number, orderIds: string[], options?: { reference?: string; phone?: string }) => {
-    // Process each order (in this page it's only one, but we keep the same signature)
-    orderIds.forEach(orderId => {
-      // Calculate amount for this specific order if it was a group, 
-      // but since it's OrderDetailPage, it's just the current order.
-      // For simplicity in individual page, we use the total 'amount' passed.
-      addPayment({
-        orderId,
-        paymentData: {
-          method,
-          amount,
-          transactionRef: options?.reference,
-          phone: options?.phone
-        }
-      }, {
-        onSuccess: () => {
-          setIsPaymentModalOpen(false);
-          toast.success("Pago registrado correctamente");
-          // Redirigir a la lista de pedidos después de pagar
-          navigate(ROUTES.ORDERS);
-        },
-        onError: (error: AxiosErrorWithResponse) => {
-          toast.error("Error al registrar pago", {
-            description: error.response?.data?.message || error.message
+  const handleConfirmPayment = async (payments: PaymentEntry[], orderIds: string[]) => {
+    try {
+      // We process each payment in sequence for robustness
+      // Although normally there's only one orderId in this page
+      for (const payment of payments) {
+        for (const orderId of orderIds) {
+          await addPaymentAsync({
+            orderId,
+            paymentData: {
+              method: payment.method,
+              amount: payment.amount,
+              transactionRef: payment.reference,
+              phone: payment.phone
+            }
           });
         }
+      }
+      
+      setIsPaymentModalOpen(false);
+      toast.success("Pago registrado correctamente");
+      // Redirigir a la lista de pedidos después de pagar
+      navigate(ROUTES.ORDERS);
+    } catch (error: any) {
+      toast.error("Error al registrar pagos", {
+        description: error.response?.data?.message || error.message
       });
-    });
+    }
   };
 
   const handleDelete = () => {
