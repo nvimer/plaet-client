@@ -35,6 +35,7 @@ interface PaymentEntry {
   phone?: string;
 }
 
+// Payment modal with combined payments support
 export function PaymentModal({
   isOpen,
   onClose,
