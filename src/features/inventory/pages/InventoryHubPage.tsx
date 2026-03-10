@@ -1,10 +1,21 @@
 import { useNavigate } from "react-router-dom";
-import { Package, RotateCcw, History, Settings, Plus, LayoutGrid } from "lucide-react";
+import { Package, RotateCcw, History, Plus, LayoutGrid, type LucideIcon } from "lucide-react";
 import { Button, Card } from "@/components";
 import { ROUTES } from "@/app/routes";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { motion } from "framer-motion";
 import { cn } from "@/utils/cn";
+
+interface InventoryOption {
+  title: string;
+  description: string;
+  icon: LucideIcon;
+  path: string;
+  color: string;
+  bgColor: string;
+  disabled?: boolean;
+  state?: Record<string, unknown>;
+}
 
 /**
  * InventoryHubPage Component
@@ -14,7 +25,7 @@ import { cn } from "@/utils/cn";
 export function InventoryHubPage() {
   const navigate = useNavigate();
 
-  const options = [
+  const options: InventoryOption[] = [
     {
       title: "Stock Actual",
       description: "Monitorea existencias y ajusta cantidades en tiempo real.",
@@ -80,7 +91,7 @@ export function InventoryHubPage() {
                   "group h-full cursor-pointer transition-all duration-300 hover:shadow-soft-xl hover:-translate-y-1 rounded-3xl border-2 border-transparent hover:border-sage-100",
                   option.disabled && "opacity-60 cursor-not-allowed hover:translate-y-0 hover:shadow-none"
                 )}
-                onClick={() => !option.disabled && navigate(option.path, { state: (option as any).state })}
+                onClick={() => !option.disabled && navigate(option.path, { state: option.state })}
               >
                 <div className="p-8 flex flex-col h-full">
                   <div className={cn("w-14 h-14 rounded-2xl flex items-center justify-center mb-6 transition-transform group-hover:scale-110", option.bgColor, option.color)}>

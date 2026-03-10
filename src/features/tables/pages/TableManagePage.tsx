@@ -91,7 +91,6 @@ export function TableManagePage() {
     formState: { errors },
     reset,
     setError,
-    watch,
   } = useForm<UpdateTableInput>({
     resolver: zodResolver(updateTableSchema),
     values: table
@@ -103,7 +102,6 @@ export function TableManagePage() {
       : undefined,
   });
 
-  const watchedValues = watch();
   const originalValues = table
     ? {
         number: table.number,

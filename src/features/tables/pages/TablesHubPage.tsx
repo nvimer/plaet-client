@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { LayoutGrid, Calendar, Settings, Plus, Table as TableIcon } from "lucide-react";
+import { LayoutGrid, Settings, Plus, Table as TableIcon } from "lucide-react";
 import { Button, Card } from "@/components";
 import { ROUTES } from "@/app/routes";
 import { SidebarLayout } from "@/layouts/SidebarLayout";

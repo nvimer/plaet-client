@@ -4,6 +4,7 @@ import { Skeleton } from "@/components";
 import { AlertCircle, Star, TrendingDown, Target, HelpCircle } from "lucide-react";
 import { formatCurrency } from "@/utils/formatUtils";
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ZAxis } from "recharts";
+import type { MenuEngineeringItem } from "@/services/analyticsApi";
 
 export const MenuEngineeringView = () => {
   const today = new Date();
@@ -26,10 +27,10 @@ export const MenuEngineeringView = () => {
   }
 
   // Pre-process for chart
-  const stars = data.filter((d: any) => d.category === "Star");
-  const plowhorses = data.filter((d: any) => d.category === "Plowhorse");
-  const puzzles = data.filter((d: any) => d.category === "Puzzle");
-  const dogs = data.filter((d: any) => d.category === "Dog");
+  const stars = data.filter((d: MenuEngineeringItem) => d.category === "Star");
+  const plowhorses = data.filter((d: MenuEngineeringItem) => d.category === "Plowhorse");
+  const puzzles = data.filter((d: MenuEngineeringItem) => d.category === "Puzzle");
+  const dogs = data.filter((d: MenuEngineeringItem) => d.category === "Dog");
 
   return (
     <div className="space-y-6">
@@ -66,16 +67,16 @@ export const MenuEngineeringView = () => {
               <Tooltip cursor={{ strokeDasharray: '3 3' }} formatter={(val: number, name: string) => name === "Ingreso" ? formatCurrency(val) : val} />
               
               <Scatter name="Stars" data={stars} fill="#10b981">
-                {stars.map((e: any, index: number) => <Cell key={`star-${index}`} fill="#10b981" />)}
+                {stars.map((_e: MenuEngineeringItem, index: number) => <Cell key={`star-${index}`} fill="#10b981" />)}
               </Scatter>
               <Scatter name="Plowhorses" data={plowhorses} fill="#3b82f6">
-                {plowhorses.map((e: any, index: number) => <Cell key={`plow-${index}`} fill="#3b82f6" />)}
+                {plowhorses.map((_e: MenuEngineeringItem, index: number) => <Cell key={`plow-${index}`} fill="#3b82f6" />)}
               </Scatter>
               <Scatter name="Puzzles" data={puzzles} fill="#f59e0b">
-                {puzzles.map((e: any, index: number) => <Cell key={`puz-${index}`} fill="#f59e0b" />)}
+                {puzzles.map((_e: MenuEngineeringItem, index: number) => <Cell key={`puz-${index}`} fill="#f59e0b" />)}
               </Scatter>
               <Scatter name="Dogs" data={dogs} fill="#ef4444">
-                {dogs.map((e: any, index: number) => <Cell key={`dog-${index}`} fill="#ef4444" />)}
+                {dogs.map((_e: MenuEngineeringItem, index: number) => <Cell key={`dog-${index}`} fill="#ef4444" />)}
               </Scatter>
             </ScatterChart>
           </ResponsiveContainer>
@@ -88,7 +89,7 @@ export const MenuEngineeringView = () => {
               <h4 className="font-semibold text-sm">Estrellas ({stars.length})</h4>
               <p className="text-xs opacity-80 mb-2">Alta popularidad, alto margen. Mantenlos muy visibles.</p>
               <div className="text-xs max-h-24 overflow-y-auto space-y-1">
-                {stars.slice(0,5).map((d: any) => <div key={d.name}>• {d.name}</div>)}
+                {stars.slice(0,5).map((d: MenuEngineeringItem) => <div key={d.name}>• {d.name}</div>)}
               </div>
             </div>
           </div>
@@ -98,7 +99,7 @@ export const MenuEngineeringView = () => {
               <h4 className="font-semibold text-sm">Caballitos ({plowhorses.length})</h4>
               <p className="text-xs opacity-80 mb-2">Alta popularidad, bajo margen. Sube el precio o reduce costo.</p>
               <div className="text-xs max-h-24 overflow-y-auto space-y-1">
-                {plowhorses.slice(0,5).map((d: any) => <div key={d.name}>• {d.name}</div>)}
+                {plowhorses.slice(0,5).map((d: MenuEngineeringItem) => <div key={d.name}>• {d.name}</div>)}
               </div>
             </div>
           </div>
@@ -108,7 +109,7 @@ export const MenuEngineeringView = () => {
               <h4 className="font-semibold text-sm">Rompecabezas ({puzzles.length})</h4>
               <p className="text-xs opacity-80 mb-2">Baja popularidad, alto margen. Mejora su ubicación en el menú.</p>
               <div className="text-xs max-h-24 overflow-y-auto space-y-1">
-                {puzzles.slice(0,5).map((d: any) => <div key={d.name}>• {d.name}</div>)}
+                {puzzles.slice(0,5).map((d: MenuEngineeringItem) => <div key={d.name}>• {d.name}</div>)}
               </div>
             </div>
           </div>
@@ -118,7 +119,7 @@ export const MenuEngineeringView = () => {
               <h4 className="font-semibold text-sm">Perros ({dogs.length})</h4>
               <p className="text-xs opacity-80 mb-2">Baja popularidad, bajo margen. Considera eliminarlos.</p>
               <div className="text-xs max-h-24 overflow-y-auto space-y-1">
-                {dogs.slice(0,5).map((d: any) => <div key={d.name}>• {d.name}</div>)}
+                {dogs.slice(0,5).map((d: MenuEngineeringItem) => <div key={d.name}>• {d.name}</div>)}
               </div>
             </div>
           </div>

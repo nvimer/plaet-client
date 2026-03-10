@@ -1,14 +1,14 @@
 import { Button, Card, StatCard } from "@/components";
 import { useTables } from "@/features/tables";
 import { useOrders } from "@/features/orders";
-import { getTableManageRoute, ROUTES } from "@/app/routes";
-import { TableStatus, OrderStatus } from "@/types";
+import { ROUTES } from "@/app/routes";
+import { OrderStatus } from "@/types";
 import type { Order, OrderItem } from "@/types";
+import type { LucideIcon } from "lucide-react";
 import {
   Table2,
   ClipboardList,
   DollarSign,
-  Plus,
   Clock,
   LayoutDashboard,
   ArrowRight,
@@ -16,7 +16,6 @@ import {
   Building2,
   Users,
   LayoutGrid,
-  Menu as MenuIcon,
   Package2,
   UtensilsCrossed,
   Settings,
@@ -39,71 +38,70 @@ interface LaunchOption {
   id: string;
   title: string;
   description: string;
-  icon: any;
+  icon: LucideIcon;
   path: string;
   color: string;
   bgColor: string;
   roles?: string[];
 }
 
-export function DashboardPage() {
-  const { user } = useAuth();
-  const { isSuperAdmin, isAdmin } = usePermissions();
+function SuperAdminDashboard() {
   const navigate = useNavigate();
 
-  // 1. SuperAdmin Special View
-  if (isSuperAdmin()) {
-    return (
-      <SidebarLayout hideTitle fullWidth>
-        <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
-          <header className="space-y-1.5">
-            <div className="flex items-center gap-2 text-primary-600">
-              <LayoutDashboard className="w-5 h-5" />
-              <span className="text-[10px] font-semibold tracking-[0.2em]">SaaS Administration</span>
-            </div>
-            <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">
-              Panel Global
-            </h1>
-            <p className="text-lg text-carbon-500 font-medium">
-              Gestión centralizada de la red de restaurantes Plaet.
-            </p>
-          </header>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <Card 
-              variant="elevated" 
-              padding="lg" 
-              className="flex flex-col items-center text-center p-12 hover:shadow-2xl transition-all cursor-pointer rounded-3xl border-2 border-transparent hover:border-primary-100"
-              onClick={() => navigate(ROUTES.RESTAURANTS)}
-            >
-              <div className="w-20 h-20 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center mb-6">
-                <Building2 className="w-10 h-10" />
-              </div>
-              <h3 className="text-2xl font-bold text-carbon-900 mb-3">Gestión de Restaurantes</h3>
-              <p className="text-carbon-500 mb-8 max-w-xs">Administra los clientes, sus suscripciones y estados operativos.</p>
-              <Button size="lg" className="rounded-xl px-8">Ver Restaurantes</Button>
-            </Card>
-
-            <Card 
-              variant="elevated" 
-              padding="lg" 
-              className="flex flex-col items-center text-center p-12 hover:shadow-2xl transition-all cursor-pointer rounded-3xl border-2 border-transparent hover:border-sage-100"
-              onClick={() => navigate(ROUTES.PERMISSIONS)}
-            >
-              <div className="w-20 h-20 rounded-2xl bg-sage-50 text-sage-600 flex items-center justify-center mb-6">
-                <Users className="w-10 h-10" />
-              </div>
-              <h3 className="text-2xl font-bold text-carbon-900 mb-3">Seguridad y Roles</h3>
-              <p className="text-carbon-500 mb-8 max-w-xs">Controla los permisos globales y la jerarquía del sistema.</p>
-              <Button size="lg" variant="primary" className="rounded-xl px-8">Configurar Acceso</Button>
-            </Card>
+  return (
+    <SidebarLayout hideTitle fullWidth>
+      <div className="space-y-8 p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+        <header className="space-y-1.5">
+          <div className="flex items-center gap-2 text-primary-600">
+            <LayoutDashboard className="w-5 h-5" />
+            <span className="text-[10px] font-semibold tracking-[0.2em]">SaaS Administration</span>
           </div>
-        </div>
-      </SidebarLayout>
-    );
-  }
+          <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">
+            Panel Global
+          </h1>
+          <p className="text-lg text-carbon-500 font-medium">
+            Gestión centralizada de la red de restaurantes Plaet.
+          </p>
+        </header>
 
-  // 2. Regular User Dashboard Logic
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card 
+            variant="elevated" 
+            padding="lg" 
+            className="flex flex-col items-center text-center p-12 hover:shadow-2xl transition-all cursor-pointer rounded-3xl border-2 border-transparent hover:border-primary-100"
+            onClick={() => navigate(ROUTES.RESTAURANTS)}
+          >
+            <div className="w-20 h-20 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center mb-6">
+              <Building2 className="w-10 h-10" />
+            </div>
+            <h3 className="text-2xl font-bold text-carbon-900 mb-3">Gestión de Restaurantes</h3>
+            <p className="text-carbon-500 mb-8 max-w-xs">Administra los clientes, sus suscripciones y estados operativos.</p>
+            <Button size="lg" className="rounded-xl px-8">Ver Restaurantes</Button>
+          </Card>
+
+          <Card 
+            variant="elevated" 
+            padding="lg" 
+            className="flex flex-col items-center text-center p-12 hover:shadow-2xl transition-all cursor-pointer rounded-3xl border-2 border-transparent hover:border-sage-100"
+            onClick={() => navigate(ROUTES.PERMISSIONS)}
+          >
+            <div className="w-20 h-20 rounded-2xl bg-sage-50 text-sage-600 flex items-center justify-center mb-6">
+              <Users className="w-10 h-10" />
+            </div>
+            <h3 className="text-2xl font-bold text-carbon-900 mb-3">Seguridad y Roles</h3>
+            <p className="text-carbon-500 mb-8 max-w-xs">Controla los permisos globales y la jerarquía del sistema.</p>
+            <Button size="lg" variant="primary" className="rounded-xl px-8">Configurar Acceso</Button>
+          </Card>
+        </div>
+      </div>
+    </SidebarLayout>
+  );
+}
+
+function UserDashboard() {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+
   const { data: tablesData } = useTables();
   const tables = tablesData?.tables;
 
@@ -276,7 +274,7 @@ export function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             <StatCard
               title="Ingresos"
-              value={`$${todayMetrics.totalRevenue.toLocaleString()}`}
+              value={`${todayMetrics.totalRevenue.toLocaleString()}`}
               variant="success"
               icon={<DollarSign className="w-6 h-6" />}
             />
@@ -344,4 +342,14 @@ export function DashboardPage() {
       </motion.div>
     </SidebarLayout>
   );
+}
+
+export function DashboardPage() {
+  const { isSuperAdmin } = usePermissions();
+
+  if (isSuperAdmin()) {
+    return <SuperAdminDashboard />;
+  }
+
+  return <UserDashboard />;
 }

@@ -1,10 +1,25 @@
 import { axiosClient } from "./axiosClient";
-import type { DailyAnalytics, TopProduct, ApiResponse } from "../types";
+import type { TopProduct, ApiResponse } from "../types";
 
 /**
  * ANALYTICS API - Client
  * Serves dashboard data for sales and performance.
  */
+
+export type MenuEngineeringCategory = "Star" | "Plowhorse" | "Puzzle" | "Dog";
+
+export interface MenuEngineeringItem {
+  id: number;
+  name: string;
+  quantity: number;
+  revenue: number;
+  category: MenuEngineeringCategory;
+}
+
+export interface PredictionDataPoint {
+  date: string;
+  sales: number;
+}
 
 export interface DailySummaryResponse {
   salesSummary: {

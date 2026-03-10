@@ -16,7 +16,7 @@ import { SidebarLayout } from "@/layouts/SidebarLayout";
  * SuperAdmin page to manage all restaurant tenants.
  */
 import { RestaurantStatus } from "@/types";
-import { Plus, Building2, MapPin, Phone, Globe, Trash2, Edit, CheckCircle2, Clock, AlertCircle } from "lucide-react";
+import { Plus, Building2, CheckCircle2, Clock, AlertCircle } from "lucide-react";
 
 export function RestaurantsPage() {
   const [page, setPage] = useState(1);

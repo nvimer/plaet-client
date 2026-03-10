@@ -11,12 +11,16 @@ export default defineConfig({
       },
     }),
   ],
-  // Configurar alias @ para importaciones limpias
-  // Ahora puedes hacer: import { Order } from '@/types'
-  // En lugar de: import { Order } from '../../../types'
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
+  },
+  // @ts-expect-error - Vitest configuration
+  test: {
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./src/tests/setup.ts",
+    include: ["src/**/*.{test,spec}.{ts,tsx}"],
   },
 });

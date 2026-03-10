@@ -26,6 +26,7 @@ import { Check, Trash2, XCircle, Package } from "lucide-react";
 import { useState, useEffect } from "react";
 import { InventoryType } from "@/types";
 import { cn } from "@/utils/cn";
+import { logger } from "@/utils";
 
 const inputClass =
   "w-full px-4 py-3 rounded-xl border-2 border-sage-300 bg-sage-50/80 text-carbon-900 placeholder:text-carbon-400 focus:outline-none focus:ring-2 focus:ring-sage-400 focus:border-sage-400";
@@ -204,7 +205,7 @@ export function MenuItemEditPage() {
       });
       navigate(ROUTES.MENU_LIST, { state: { highlightId: item.id } });
     } catch (error) {
-      console.error("Update error:", error);
+      logger.error("Update error", error instanceof Error ? error : new Error(String(error)));
       toast.error("Error al actualizar producto", {
         description:
           error instanceof Error ? error.message : "Error desconocido",

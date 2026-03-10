@@ -8,7 +8,7 @@ import { useTables } from "@/features/tables";
 import { useOrder, useUpdateOrder } from "../hooks";
 import { ROUTES, getOrderDetailRoute } from "@/app/routes";
 import { toast } from "sonner";
-import { Bike, ShoppingBag, UtensilsCrossed, Edit2, ArrowLeft } from "lucide-react";
+import { Bike, UtensilsCrossed } from "lucide-react";
 
 /**
  * OrderEditPage Component

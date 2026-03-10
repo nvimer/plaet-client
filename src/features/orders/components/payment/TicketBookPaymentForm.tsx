@@ -1,11 +1,23 @@
 import { Search, User, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/utils/cn";
+import type { Customer } from "@/types/order";
+
+interface TicketBook {
+  id: string;
+  consumedPortions: number;
+  totalPortions: number;
+  status: string;
+}
+
+interface CustomerWithTickets extends Customer {
+  ticketBooks: TicketBook[];
+}
 
 interface TicketBookPaymentFormProps {
   amount: number;
   phone: string;
-  customer: any;
+  customer: CustomerWithTickets | null;
   isLoading: boolean;
   isError: boolean;
   onPhoneChange: (val: string) => void;
@@ -73,7 +85,7 @@ export function TicketBookPaymentForm({
                 <div className="text-right">
                   <p className="text-[10px] font-black text-blue-600 tracking-wide uppercase">Saldo</p>
                   <p className="text-lg font-black text-blue-800">
-                    {customer.ticketBooks.find((tb: any) => tb.consumedPortions < tb.totalPortions)?.totalPortions - customer.ticketBooks.find((tb: any) => tb.consumedPortions < tb.totalPortions)?.consumedPortions} Almuerzos
+                    {customer.ticketBooks.find((tb) => tb.consumedPortions < tb.totalPortions)?.totalPortions - customer.ticketBooks.find((tb) => tb.consumedPortions < tb.totalPortions)?.consumedPortions} Almuerzos
                   </p>
                 </div>
               )}

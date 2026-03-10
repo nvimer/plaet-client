@@ -10,9 +10,6 @@ import {
   ChevronDown,
   ChevronUp,
   ReceiptText,
-  Eye,
-  UtensilsCrossed,
-  ChefHat,
   DollarSign,
   Truck,
   XCircle,
@@ -24,8 +21,8 @@ import { OrderStatusBadge } from "./OrderStatusBadge";
 import { OrderTypeBadge } from "./OrderTypeBadge";
 import { cn } from "@/utils/cn";
 import type { GroupedOrder } from "../pages/OrdersPage";
-import { useUpdateOrderStatus, useUpdateOrderItemStatus } from "../hooks";
-import { OrderStatus, OrderItemStatus, type Order } from "@/types";
+import { useUpdateOrderItemStatus } from "../hooks";
+import { OrderStatus, OrderItemStatus, type Order, type OrderItem } from "@/types";
 
 interface GroupedOrderCardProps {
   groupedOrder: GroupedOrder;
@@ -71,7 +68,6 @@ export function GroupedOrderCard({
   onPayTable,
 }: GroupedOrderCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { mutate: updateStatus } = useUpdateOrderStatus();
   const { mutate: updateItemStatus } = useUpdateOrderItemStatus();
   
   const waitTime = getWaitTime(groupedOrder.createdAt);
@@ -91,18 +87,16 @@ export function GroupedOrderCard({
   );
 
   // Helper to check if an item actually goes to kitchen
-  const isKitchenBound = (i: any) => i.menuItemId && !i.notes?.toLowerCase().includes("portacomida");
+  const isKitchenBound = (i: OrderItem) => i.menuItemId && !i.notes?.toLowerCase().includes("portacomida");
 
   // Logic for primary actions based on account and items
   const activeOrders = groupedOrder.orders.filter(o => o.status === OrderStatus.OPEN || o.status === OrderStatus.SENT_TO_CASHIER);
   const allItems = groupedOrder.orders.flatMap(o => o.items || []);
   const kitchenItems = allItems.filter(isKitchenBound);
 
-  const itemsPendingKitchen = kitchenItems.filter(i => i.status === OrderItemStatus.PENDING);
   const itemsReadyForDelivery = kitchenItems.filter(i => i.status === OrderItemStatus.READY);
   
   const needsBilling = activeOrders.length > 0;
-  const canSendToKitchen = itemsPendingKitchen.length > 0;
   const canDeliver = itemsReadyForDelivery.length > 0;
   
   // An order is "all delivered" if all its kitchen items are delivered
@@ -112,13 +106,6 @@ export function GroupedOrderCard({
     : groupedOrder.orders.every(o => o.status === OrderStatus.PAID);
 
   const allCancelled = groupedOrder.orders.every(o => o.status === OrderStatus.CANCELLED);
-
-  const handleSendAllToKitchen = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    itemsPendingKitchen.forEach(item => {
-      updateItemStatus({ orderId: item.orderId, itemId: item.id, status: OrderItemStatus.IN_KITCHEN });
-    });
-  };
 
   const handleDeliverAll = (e: React.MouseEvent) => {
     e.stopPropagation();

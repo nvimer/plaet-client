@@ -4,7 +4,7 @@
  */
 
 import { Button } from "@/components";
-import { X, Check, ReceiptText, Soup, Salad, CupSoda, IceCream, Utensils, CircleOff, ArrowRightLeft, Info, PackagePlus, FastForward } from "lucide-react";
+import { X, Check, ReceiptText, Soup, Salad, CupSoda, Utensils, CircleOff, ArrowRightLeft, Info, PackagePlus, FastForward } from "lucide-react";
 import type { TableOrder } from "../types/orderBuilder";
 import { OrderType } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";

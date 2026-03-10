@@ -1,8 +1,7 @@
 import { useState } from "react";
-import { OrderStatus, OrderType, PaymentMethod } from "@/types";
+import { OrderType, PaymentMethod } from "@/types";
 import {
   FilterBar,
-  FilterPills,
   FilterSearch,
   FilterSelect,
   ActiveFilterChips,
@@ -10,7 +9,7 @@ import {
   FilterDrawer,
 } from "@/components";
 import type { DateFilterType, DateRange } from "@/components";
-import { SlidersHorizontal, Search, Wallet } from "lucide-react";
+import { SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components";
 
 interface OrderFiltersProps {

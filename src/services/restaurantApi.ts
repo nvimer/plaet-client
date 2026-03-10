@@ -47,7 +47,7 @@ export const getRestaurants = async (params?: PaginationParams) => {
 export const searchRestaurants = async (params: PaginationParams & RestaurantSearchParams) => {
   const { page = 1, limit = 20, search, status } = params;
 
-  const queryParams: any = {
+  const queryParams: Record<string, string> = {
     page: String(page),
     limit: String(limit),
   };

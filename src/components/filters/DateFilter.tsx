@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChevronDown, Calendar, X } from "lucide-react";
+import { ChevronDown, Calendar } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { getLocalDateString } from "@/utils/dateUtils";
 

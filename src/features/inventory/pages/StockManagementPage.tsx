@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Button, Card, Badge, Skeleton, EmptyState, FilterBar, FilterPills, FilterSearch, FilterSelect, FilterDrawer, ActiveFilterChips } from "@/components";
+import { Button, Skeleton, EmptyState, FilterBar, FilterPills, FilterSearch, FilterSelect, FilterDrawer, ActiveFilterChips } from "@/components";
 import { useItems } from "@/features/menu/hooks";
 import { useCategories } from "@/features/menu/categories/hooks";
 import {
@@ -380,12 +380,6 @@ function StockItemCard({
     : isLowStock
       ? "text-warning-600 bg-warning-50 border-warning-100"
       : "text-sage-600 bg-sage-50 border-sage-100";
-
-  const statusLabel = isOutOfStock
-    ? "Agotado"
-    : isLowStock
-      ? "Bajo"
-      : "OK";
 
   return (
     <div

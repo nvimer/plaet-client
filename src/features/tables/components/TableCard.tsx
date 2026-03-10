@@ -2,7 +2,7 @@ import { TableStatus, type Table } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
 import { useUpdateTableStatus } from "../hooks";
 import { useDeleteTable } from "../hooks/useDeleteTable";
-import { Button, Badge } from "@/components";
+import { Button } from "@/components";
 import { Edit2, Trash2, CircleCheck, CircleDot, Clock, Users, Timer } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
@@ -104,7 +104,7 @@ export function TableCard({ table, onEdit }: TableCardProps) {
   const handleDelete = () => {
     deleteTable(table.id, {
       onSuccess: () => toast.success("Mesa eliminada"),
-      onError: (error: AxiosErrorWithResponse) => toast.error("Error al eliminar"),
+      onError: (_error: AxiosErrorWithResponse) => toast.error("Error al eliminar"),
     });
   };
 

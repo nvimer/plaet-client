@@ -1,5 +1,4 @@
-import { ShoppingBag, ReceiptText } from "lucide-react";
-import { cn } from "@/utils/cn";
+import { ReceiptText } from "lucide-react";
 
 interface LooseItem {
   id: number;
@@ -25,10 +24,10 @@ export function FixedOrderSummaryBar({
   currentOrderTotal = 0,
   tableTotal = 0,
   hasProtein = false,
-  currentProteinName,
+  _currentProteinName,
   onAddOrder,
   onShowSummary,
-  scrollToOrder,
+  _scrollToOrder,
   ordersCount = 0,
 }: FixedOrderSummaryBarProps) {
   const currentItemCount = looseItems.reduce((sum, item) => sum + item.quantity, 0);

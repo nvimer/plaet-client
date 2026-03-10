@@ -4,6 +4,7 @@ import { Skeleton } from "@/components";
 import { AlertCircle, Calendar, TrendingUp } from "lucide-react";
 import { formatCurrency } from "@/utils/formatUtils";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import type { PredictionDataPoint } from "@/services/analyticsApi";
 
 const formatShortDate = (dateStr: string) => {
   return new Intl.DateTimeFormat('es-CO', { month: 'short', day: 'numeric' }).format(new Date(dateStr));
@@ -30,7 +31,7 @@ export const PredictionsView = () => {
     );
   }
 
-  const chartData = [...(data.historicalData || [])].reverse().map((d: any) => ({
+  const chartData = [...(data.historicalData || [])].reverse().map((d: PredictionDataPoint) => ({
     name: formatShortDate(d.date),
     ventas: d.sales,
   }));

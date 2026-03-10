@@ -24,6 +24,7 @@ import {
   type RegisterFormData,
 } from "@/features/auth/schemas/authSchemas";
 import { z } from "zod";
+import { logger } from "@/utils";
 
 /**
  * Register Form Component
@@ -113,8 +114,8 @@ export default function RegisterForm() {
           type: "success",
         },
       });
-    } catch {
-      console.error("Registration error");
+    } catch (error) {
+      logger.error("Registration error", error instanceof Error ? error : new Error(String(error)));
       // Error is handled in the context
     } finally {
       setIsLoading(false);

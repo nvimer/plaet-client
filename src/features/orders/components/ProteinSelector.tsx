@@ -1,7 +1,6 @@
 import { cn } from "@/utils/cn";
-import { Beef, Fish, Drumstick, AlertCircle, Check } from "lucide-react";
+import { Beef, Fish, Drumstick, Check } from "lucide-react";
 import type { ProteinOption } from "../types/orderBuilder";
-import { motion } from "framer-motion";
 
 export interface ProteinSelectorProps {
   proteins: ProteinOption[];

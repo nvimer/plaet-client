@@ -2,7 +2,7 @@ import { useState, forwardRef } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { Input } from "./Input";
 
-interface PasswordInputProps extends React.ComponentProps<typeof Input> {}
+type PasswordInputProps = React.ComponentProps<typeof Input>;
 
 /**
  * PasswordInput Component

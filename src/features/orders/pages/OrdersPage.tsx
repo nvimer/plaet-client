@@ -1,4 +1,4 @@
-import { OrderStatus, OrderType, PaymentMethod, OrderItemStatus } from "@/types";
+import { OrderType, PaymentMethod, type GroupedOrder } from "@/types";
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,104 +7,21 @@ import { Button, Skeleton, EmptyState, Card } from "@/components";
 import { variants, transitions } from "@/utils/motion";
 import type { DateFilterType, DateRange } from "@/components";
 import {
-  CheckCircle,
   Plus,
   ShoppingCart,
   TrendingUp,
-  DollarSign,
-  ChefHat,
   History,
   Wallet,
   Smartphone,
   Ticket
 } from "lucide-react";
 import { cn } from "@/utils/cn";
-import { OrderCard, OrderFilters, GroupedOrderCard, PaymentModal, type PaymentEntry } from "../components"; 
+import { OrderFilters, GroupedOrderCard, PaymentModal, type PaymentEntry } from "../components"; 
 import { ROUTES, getOrderDetailRoute } from "@/app/routes";
 import type { Order } from "@/types";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
-import { 
-  isToday as checkIsToday, 
-  isYesterday as checkIsYesterday, 
-  getLocalDateString 
-} from "@/utils/dateUtils";
-import { toast } from "sonner";
-import type { AxiosErrorWithResponse } from "@/types/common";
-
-/**
- * Grouped Order Interface
- */
-export interface GroupedOrder {
-  id: string; 
-  tableId?: number;
-  table?: { number: number };
-  createdAt: string;
-  status: OrderStatus;
-  type: OrderType;
-  orders: Order[];
-  totalAmount: number;
-}
-
-/**
- * Group orders by table and time
- */
-const groupOrders = (orders: Order[]): GroupedOrder[] => {
-  const grouped: GroupedOrder[] = [];
-  const processedIds = new Set<string>();
-  // Sort by arrival (FIFO): Oldest first for operational tabs
-  const sorted = [...orders].sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
-
-  sorted.forEach((order) => {
-    if (processedIds.has(order.id)) return;
-          const groupMembers = sorted.filter((other) => {
-            if (processedIds.has(other.id)) return false;
-            if (other.type !== order.type) return false;
-            
-            // CRITICAL: Only group if it is DINE_IN and has a valid Table ID
-            // Takeaway/Delivery should NOT group (each customer is independent)
-            if (order.type !== OrderType.DINE_IN || !order.tableId) {
-              return other.id === order.id;
-            }
-    
-            if (other.tableId !== order.tableId) return false;
-            const timeDiff = Math.abs(new Date(order.createdAt).getTime() - new Date(other.createdAt).getTime());
-            return timeDiff <= 2 * 60 * 1000;
-          });
-    
-    groupMembers.forEach((m) => processedIds.add(m.id));
-    grouped.push({
-      id: order.id,
-      tableId: order.tableId,
-      table: order.table,
-      createdAt: order.createdAt,
-      status: order.status,
-      type: order.type,
-      orders: groupMembers,
-      totalAmount: groupMembers.reduce((sum, o) => sum + Number(o.totalAmount), 0),
-    });
-  });
-  return grouped;
-};
-
-const isToday = (dateString: string): boolean => {
-  return checkIsToday(dateString);
-};
-
-const isYesterday = (dateString: string): boolean => {
-  return checkIsYesterday(dateString);
-};
-
-const isWithinLastWeek = (dateString: string): boolean => {
-  const datePart = dateString.split('T')[0];
-  const weekAgo = new Date();
-  weekAgo.setDate(weekAgo.getDate() - 7);
-  return datePart >= getLocalDateString(weekAgo);
-};
-
-const isWithinDateRange = (dateString: string, range: DateRange): boolean => {
-  const datePart = dateString.split('T')[0];
-  return datePart >= range.start && datePart <= range.end;
-};
+import { groupOrders } from "@/utils/orderUtils";
+import { ORDER_TABS, calculateOrderCounts, calculateFinancialSummary, filterOrdersByTab, filterOrdersByTypeAndSearch } from "../utils/orderFilters";
 
 export function OrdersPage() {
   const navigate = useNavigate();
@@ -118,7 +35,7 @@ export function OrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const { data: orders, isLoading, error: _error, refetch: _refetch } = useOrders({ limit: 100 });
-  const { mutate: addPayment, mutateAsync: addPaymentAsync, isPending: isAddingPayment } = useAddPayment();
+  const { mutateAsync: addPaymentAsync, isPending: isAddingPayment } = useAddPayment();
 
   // Payment Modal State - Storing IDs for dynamic sync with React Query
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -140,7 +57,7 @@ export function OrdersPage() {
       // 1. Determine orders with remaining balance
       const ordersToPay = currentOrdersToPay.filter(o => orderIds.includes(o.id));
       
-      let ordersWithBalance = ordersToPay.map(order => {
+      const ordersWithBalance = ordersToPay.map(order => {
         const paid = order.payments?.reduce((sum, p) => sum + Number(p.amount), 0) || 0;
         return {
           id: order.id,
@@ -186,183 +103,35 @@ export function OrdersPage() {
         setIsPaymentModalOpen(false);
         setActiveTab("PREPARATION");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } }; message?: string };
       toast.error("Error al registrar pagos", {
-        description: error.response?.data?.message || error.message
+        description: err.response?.data?.message || err.message
       });
     }
   };
 
       // ================ COMPUTED VALUES =================
       
-      // 1. PHASE ONE: Fundamental filters (Type, Search)
       const baseFilteredOrders = useMemo(() => {
-        if (!orders) return [];
-        
-        return orders.filter((order) => {
-          const matchesType = typeFilter === "ALL" || order.type === typeFilter;
-          if (!matchesType) return false;
-  
-          const matchesSearch = searchTerm === "" || 
-            order.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            (order.waiter && `${order.waiter.firstName} ${order.waiter.lastName}`.toLowerCase().includes(searchTerm.toLowerCase())) ||
-            (order.notes && order.notes.toLowerCase().includes(searchTerm.toLowerCase()));
-  
-          return matchesSearch;
-        });
+        return filterOrdersByTypeAndSearch(orders, typeFilter, searchTerm);
       }, [orders, typeFilter, searchTerm]);
-  
-      // 2. PHASE TWO: Grouping (UNIT OF WORK)
+
       const allGroupedOrders = useMemo(() => {
         return groupOrders(baseFilteredOrders);
       }, [baseFilteredOrders]);
-  
-      // 3. PHASE THREE: Tab Filtering (State Management)
+
       const groupedOrders = useMemo(() => {
-        return allGroupedOrders.filter((group) => {
-          // Helper to check if an item actually goes to kitchen
-          const isKitchenBound = (i: any) => i.menuItemId && !i.notes?.toLowerCase().includes("portacomida");
-
-          // BILLING: Group has at least one order that is NOT paid
-          if (activeTab === "BILLING") {
-            return group.orders.some(o => o.status === OrderStatus.OPEN || o.status === OrderStatus.SENT_TO_CASHIER);
-          }
-  
-          // PREPARATION: All orders paid AND group has at least one kitchen item pending/cooking
-          if (activeTab === "PREPARATION") {
-            const anyUnpaid = group.orders.some(o => o.status !== OrderStatus.PAID);
-            if (anyUnpaid) return false;
-  
-            return group.orders.some(o => 
-              o.items?.some(i => isKitchenBound(i) && [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status))
-            );
-          }
-  
-          // READY: All orders paid AND no kitchen items cooking AND at least one kitchen item is ready
-          if (activeTab === "READY") {
-            const anyUnpaid = group.orders.some(o => o.status !== OrderStatus.PAID);
-            if (anyUnpaid) return false;
-  
-            const allItems = group.orders.flatMap(o => o.items || []);
-            const kitchenItems = allItems.filter(isKitchenBound);
-            
-            // If it has NO kitchen items, it goes straight to History once paid (delivered automatically logic)
-            // If it has kitchen items, check if they are all done
-            if (kitchenItems.length === 0) return false;
-
-            const hasCooking = kitchenItems.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status));
-            const hasReady = kitchenItems.some(i => i.status === OrderItemStatus.READY);
-            
-            return !hasCooking && hasReady;
-          }
-  
-          // HISTORY: Audit records (Show individual groups that are finished)
-          if (activeTab === "HISTORY") {
-            // Date Check (Only in History)
-            let matchesDate = true;
-            switch (dateFilter) {
-              case "TODAY": matchesDate = isToday(group.createdAt); break;
-              case "YESTERDAY": matchesDate = isYesterday(group.createdAt); break;
-              case "WEEK": matchesDate = isWithinLastWeek(group.createdAt); break;
-              case "CUSTOM": matchesDate = customDateRange ? isWithinDateRange(group.createdAt, customDateRange) : true; break;
-            }
-            if (!matchesDate) return false;
-  
-            // Payment Check (Only in History)
-            if (paymentMethodFilter !== "ALL") {
-              const hasMethod = group.orders.some(o => o.payments?.some(p => p.method === paymentMethodFilter));
-              if (!hasMethod) return false;
-            }
-  
-            // Finish Check: All orders either Cancelled or fully Delivered
-            return group.orders.every(o => {
-              if (o.status === OrderStatus.CANCELLED) return true;
-              if (o.status === OrderStatus.PAID) {
-                // Only consider items that actually require a preparation workflow
-                const hasActiveItems = o.items?.some(i => 
-                  isKitchenBound(i) && [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN, OrderItemStatus.READY].includes(i.status)
-                );
-                return !hasActiveItems;
-              }
-              return false;
-            });
-          }
-  
-          return true;
-        });
+        return filterOrdersByTab(allGroupedOrders, activeTab, dateFilter, customDateRange, paymentMethodFilter);
       }, [allGroupedOrders, activeTab, dateFilter, customDateRange, paymentMethodFilter]);
-  
-      // 4. Counts based on the SAME grouping logic
-      const counts = useMemo(() => {
-        const isKitchenBound = (i: any) => i.menuItemId && !i.notes?.toLowerCase().includes("portacomida");
 
-        const billing = allGroupedOrders.filter(g => g.orders.some(o => o.status === OrderStatus.OPEN || o.status === OrderStatus.SENT_TO_CASHIER)).length;
-        
-        const inKitchen = allGroupedOrders.filter(g => {
-          const anyUnpaid = g.orders.some(o => o.status !== OrderStatus.PAID);
-          if (anyUnpaid) return false;
-          return g.orders.some(o => o.items?.some(i => isKitchenBound(i) && [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status)));
-        }).length;
-  
-        const ready = allGroupedOrders.filter(g => {
-          const anyUnpaid = g.orders.some(o => o.status !== OrderStatus.PAID);
-          if (anyUnpaid) return false;
-          const allItems = g.orders.flatMap(o => o.items || []);
-          const kitchenItems = allItems.filter(isKitchenBound);
-          if (kitchenItems.length === 0) return false;
-          const hasCooking = kitchenItems.some(i => [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN].includes(i.status));
-          const hasReady = kitchenItems.some(i => i.status === OrderItemStatus.READY);
-          return !hasCooking && hasReady;
-        }).length;
-  
-        const history = allGroupedOrders.filter(g => {
-          // Date Check
-          let matchesDate = true;
-          switch (dateFilter) {
-            case "TODAY": matchesDate = isToday(g.createdAt); break;
-            case "YESTERDAY": matchesDate = isYesterday(g.createdAt); break;
-            case "WEEK": matchesDate = isWithinLastWeek(g.createdAt); break;
-            case "CUSTOM": matchesDate = customDateRange ? isWithinDateRange(g.createdAt, customDateRange) : true; break;
-          }
-          if (!matchesDate) return false;
-  
-          return g.orders.every(o => {
-            if (o.status === OrderStatus.CANCELLED) return true;
-            if (o.status === OrderStatus.PAID) {
-              const hasActiveItems = o.items?.some(i => isKitchenBound(i) && [OrderItemStatus.PENDING, OrderItemStatus.IN_KITCHEN, OrderItemStatus.READY].includes(i.status));
-              return !hasActiveItems;
-            }
-            return false;
-          });
-        }).length;
-  
-        return { all: allGroupedOrders.length, billing, inKitchen, ready, history };
-      }, [allGroupedOrders, dateFilter, customDateRange]);
-  
+      const counts = useMemo(() => {
+        return calculateOrderCounts(allGroupedOrders, dateFilter, customDateRange, paymentMethodFilter);
+      }, [allGroupedOrders, dateFilter, customDateRange, paymentMethodFilter]);
+
       const financialSummary = useMemo(() => {
-        const summary = { total: 0, cash: 0, nequi: 0, ticket: 0, count: groupedOrders.length };
-        
-        baseFilteredOrders.forEach(order => {
-          let matchesDate = true;
-          switch (dateFilter) {
-            case "TODAY": matchesDate = isToday(order.createdAt); break;
-            case "YESTERDAY": matchesDate = isYesterday(order.createdAt); break;
-            case "WEEK": matchesDate = isWithinLastWeek(order.createdAt); break;
-            case "CUSTOM": matchesDate = customDateRange ? isWithinDateRange(order.createdAt, customDateRange) : true; break;
-          }
-          if (!matchesDate) return;
-  
-          if (order.status !== OrderStatus.CANCELLED) {
-            summary.total += Number(order.totalAmount);
-            order.payments?.forEach(p => {
-              if (p.method === PaymentMethod.CASH) summary.cash += Number(p.amount);
-              if (p.method === PaymentMethod.NEQUI) summary.nequi += Number(p.amount);
-              if (p.method === PaymentMethod.TICKET_BOOK) summary.ticket += Number(p.amount);
-            });
-          }
-        });
-        return summary;
-      }, [baseFilteredOrders, dateFilter, customDateRange, groupedOrders.length]);
+        return calculateFinancialSummary(orders ?? [], dateFilter, customDateRange, groupedOrders.length);
+      }, [orders, dateFilter, customDateRange, groupedOrders.length]);
     const handleClearAll = () => {
     setTypeFilter("ALL");
     setPaymentMethodFilter("ALL");
@@ -397,40 +166,38 @@ export function OrdersPage() {
 
         {/* Operational Tabs */}
         <div className="flex items-center gap-2 p-1.5 bg-sage-50 rounded-2xl border border-sage-100 overflow-x-auto no-scrollbar">
-          {[
-            { id: "BILLING", label: "Por Cobrar", icon: DollarSign, count: counts.billing },
-            { id: "PREPARATION", label: "En Cocina", icon: ChefHat, count: counts.inKitchen },
-            { 
-              id: "READY", 
-              label: "Listos", 
-              icon: CheckCircle, 
-              count: counts.ready,
-              alert: counts.ready > 0
-            },
-            { id: "HISTORY", label: "Historial", icon: History, count: counts.history }
-          ].map((tab) => (
+          {ORDER_TABS.map((tab) => {
+            const tabCounts = {
+              BILLING: counts.billing,
+              PREPARATION: counts.inKitchen,
+              READY: counts.ready,
+              HISTORY: counts.history,
+            };
+            const count = tabCounts[tab.id];
+            const alert = tab.id === "READY" && count > 0;
+            return (
             <button
               key={tab.id}
-              onClick={() => setActiveTab(tab.id as any)}
+              onClick={() => setActiveTab(tab.id)}
               className={cn(
                 "flex-1 min-w-[130px] flex items-center justify-center gap-2 py-3.5 rounded-xl text-xs font-semibold tracking-wide transition-all relative overflow-hidden",
                 activeTab === tab.id ? "bg-carbon-900 text-white shadow-soft-lg" : "text-carbon-400 hover:text-carbon-600",
-                tab.alert && "ring-2 ring-success-500 ring-inset"
+                alert && "ring-2 ring-success-500 ring-inset"
               )}
             >
-              {tab.alert && (
+              {alert && (
                 <span className="absolute inset-0 bg-success-500/10 animate-pulse" />
               )}
-              <tab.icon className={cn("w-4 h-4 z-10", tab.alert && "text-success-500 animate-bounce")} />
+              <tab.icon className={cn("w-4 h-4 z-10", alert && "text-success-500 animate-bounce")} />
               <span className="z-10">{tab.label}</span>
               <span className={cn("px-2 py-0.5 rounded-lg text-[10px] z-10", 
                 activeTab === tab.id ? "bg-white/20" : 
-                tab.alert ? "bg-success-500 text-white" : "bg-sage-100 text-sage-600"
+                alert ? "bg-success-500 text-white" : "bg-sage-100 text-sage-600"
               )}>
-                {tab.count}
+                {count}
               </span>
             </button>
-          ))}
+          );})}
         </div>
 
         {/* Financial Summary Card (Only in History) */}
@@ -499,7 +266,7 @@ export function OrdersPage() {
             className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6"
           >
             <AnimatePresence mode="popLayout">
-              {groupedOrders.map((item: any) => (
+              {groupedOrders.map((item: GroupedOrder) => (
                 <motion.div
                   key={item.id}
                   variants={variants.fadeInUp}

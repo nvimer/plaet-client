@@ -1,6 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { getRoles, getRoleWithPermissions, assignPermissionsToRole } from "@/services/rolesApi";
+import { getRoles, assignPermissionsToRole } from "@/services/rolesApi";
 import { getPermissions } from "@/services/permissionsApi";
 import { toast } from "sonner";
 import type { RoleWithPermissions } from "@/types";

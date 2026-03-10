@@ -1,5 +1,4 @@
 import type { Restaurant } from "@/types";
-import { Card } from "@/components/ui/Card/Card";
 import { Button } from "@/components/ui/Button/Button";
 import { RestaurantStatusBadge } from "./RestaurantStatusBadge";
 import { Edit2, Trash2, ExternalLink } from "lucide-react";

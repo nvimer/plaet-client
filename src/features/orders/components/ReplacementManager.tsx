@@ -1,21 +1,14 @@
-import React, { useState, useMemo } from "react";
+import React from "react";
 import { Card, Button } from "@/components";
-import { cn } from "@/utils/cn";
-import { X, Plus, ArrowRight, ArrowLeft, Check, Soup, Salad, CupSoda, IceCream, Utensils, CircleOff, ArrowRightLeft, PackageCheck, Trash2, type LucideIcon } from "lucide-react";
+import { ArrowRight, Trash2 } from "lucide-react";
+import type { Replacement } from "./ReplacementManager";
+import { useReplacementWizard } from "../utils/useReplacementWizard";
+import { ReplacementModal } from "./ReplacementModal";
+import { CATEGORY_NAMES, CATEGORY_ICONS, type ReplacementCategory } from "../utils/replacementConstants";
 
 interface MenuOption {
   id: number;
   name: string;
-}
-
-export interface Replacement {
-  id: string;
-  from: "soup" | "principle" | "salad" | "drink" | "extra" | "rice";
-  fromName: string;
-  to: "soup" | "principle" | "salad" | "drink" | "extra" | "rice";
-  toName: string;
-  itemId: number;
-  itemName: string;
 }
 
 interface ReplacementManagerProps {
@@ -33,30 +26,6 @@ interface ReplacementManagerProps {
   disabled?: boolean;
 }
 
-const CATEGORY_NAMES: Record<string, string> = {
-  soup: "Sopa",
-  principle: "Principio",
-  salad: "Ensalada",
-  drink: "Bebida",
-  extra: "Extra",
-  rice: "Arroz",
-};
-
-const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  soup: Soup,
-  principle: Utensils,
-  salad: Salad,
-  drink: CupSoda,
-  extra: IceCream,
-  rice: PackageCheck,
-};
-
-const STEPS = [
-  { id: "select", label: "Quitar" },
-  { id: "replace", label: "Agregar" },
-  { id: "item", label: "Elegir" },
-];
-
 export function ReplacementManager({
   availableItems,
   replacements,
@@ -64,140 +33,28 @@ export function ReplacementManager({
   onRemoveReplacement,
   disabled = false,
 }: ReplacementManagerProps) {
-  const [showAddModal, setShowAddModal] = useState(false);
-  const [currentStep, setCurrentStep] = useState(0);
-  const [selectedFrom, setSelectedFrom] = useState<string | null>(null);
-  const [selectedTo, setSelectedTo] = useState<string | null>(null);
-  const [selectedItem, setSelectedItem] = useState<number | null>(null);
-
-  const replaceableCategories = useMemo(() => {
-    const categories: Array<{
-      key: string;
-      name: string;
-      icon: any;
-      hasItems: boolean;
-    }> = [
-      {
-        key: "soup",
-        name: "Sopa",
-        icon: CATEGORY_ICONS.soup,
-        hasItems: availableItems.soup.length > 0,
-      },
-      {
-        key: "principle",
-        name: "Principio",
-        icon: CATEGORY_ICONS.principle,
-        hasItems: availableItems.principle.length > 0,
-      },
-      {
-        key: "salad",
-        name: "Ensalada",
-        icon: CATEGORY_ICONS.salad,
-        hasItems: availableItems.salad.length > 0,
-      },
-      {
-        key: "drink",
-        name: "Bebida",
-        icon: CATEGORY_ICONS.drink,
-        hasItems: availableItems.drink.length > 0,
-      },
-      {
-        key: "extra",
-        name: "Extra",
-        icon: CATEGORY_ICONS.extra,
-        hasItems: availableItems.extra.length > 0,
-      },
-      {
-        key: "rice",
-        name: "Arroz",
-        icon: CATEGORY_ICONS.rice,
-        hasItems: (availableItems.rice?.length || 0) > 0,
-      },
-    ];
-    return categories.filter((c) => c.hasItems);
-  }, [availableItems]);
-
-  const availableTargets = useMemo(() => {
-    if (!selectedFrom) return [];
-
-    return replaceableCategories.filter(
-      (cat) =>
-        cat.key !== selectedFrom &&
-        !replacements.some((r) => r.from === selectedFrom && r.to === cat.key),
-    );
-  }, [selectedFrom, replaceableCategories, replacements]);
-
-  const targetItems = useMemo(() => {
-    if (!selectedTo) return [];
-    return (availableItems as Record<string, MenuOption[]>)[selectedTo] || [];
-  }, [selectedTo, availableItems]);
-
-  const handleStartReplacement = () => {
-    setShowAddModal(true);
-    setCurrentStep(0);
-    setSelectedFrom(null);
-    setSelectedTo(null);
-    setSelectedItem(null);
-  };
-
-  const handleCloseModal = () => {
-    setShowAddModal(false);
-    setCurrentStep(0);
-    setSelectedFrom(null);
-    setSelectedTo(null);
-    setSelectedItem(null);
-  };
-
-  const handleSelectFrom = (categoryKey: string) => {
-    setSelectedFrom(categoryKey);
-    setCurrentStep(1);
-  };
-
-  const handleSelectTo = (categoryKey: string) => {
-    setSelectedTo(categoryKey);
-    setCurrentStep(2);
-  };
-
-  const handleSelectItem = (itemId: number) => {
-    setSelectedItem(itemId);
-  };
-
-  const handleGoBack = () => {
-    if (currentStep === 2) {
-      setSelectedItem(null);
-      setCurrentStep(1);
-    } else if (currentStep === 1) {
-      setSelectedTo(null);
-      setCurrentStep(0);
-    }
-  };
-
-  const handleConfirmReplacement = () => {
-    if (!selectedFrom || !selectedTo || !selectedItem) return;
-
-    const fromName = CATEGORY_NAMES[selectedFrom];
-    const toName = CATEGORY_NAMES[selectedTo];
-    const item = targetItems.find((i) => i.id === selectedItem);
-
-    if (!item) return;
-
-    const newReplacement: Replacement = {
-      id: Date.now().toString(),
-      from: selectedFrom as Replacement["from"],
-      fromName,
-      to: selectedTo as Replacement["to"],
-      toName,
-      itemId: item.id,
-      itemName: item.name,
-    };
-
-    onAddReplacement(newReplacement);
-    handleCloseModal();
-  };
-
-  const isCategoryReplaced = (categoryKey: string) => {
-    return replacements.some((r) => r.from === categoryKey);
-  };
+  const {
+    replaceableCategories,
+    availableTargets,
+    targetItems,
+    selectedFrom,
+    selectedTo,
+    selectedItem,
+    currentStep,
+    showAddModal,
+    isCategoryReplaced,
+    handleStartReplacement,
+    handleCloseModal,
+    handleSelectFrom,
+    handleSelectTo,
+    handleSelectItem,
+    handleGoBack,
+    handleConfirmReplacement,
+  } = useReplacementWizard({
+    availableItems,
+    replacements,
+    onAddReplacement,
+  });
 
   if (disabled) {
     return (
@@ -211,7 +68,6 @@ export function ReplacementManager({
 
   return (
     <div className="space-y-4">
-      {/* Header */}
       <div className="flex items-center justify-between">
         <div>
           <h3 className="font-semibold text-carbon-900 text-lg">Cambios personalizados</h3>
@@ -224,17 +80,16 @@ export function ReplacementManager({
             onClick={handleStartReplacement}
             className="flex items-center gap-2 min-h-[44px] rounded-xl border-sage-200 text-sage-700"
           >
-            <Plus className="w-4 h-4" />
+            <span className="w-4 h-4">+</span>
             Nuevo Cambio
           </Button>
         )}
       </div>
 
-      {/* Active Replacements */}
       {replacements.length > 0 && (
         <div className="space-y-3">
           {replacements.map((replacement) => {
-            const FromIcon = CATEGORY_ICONS[replacement.from];
+            const FromIcon = CATEGORY_ICONS[replacement.from as ReplacementCategory];
             return (
               <Card
                 key={replacement.id}
@@ -271,7 +126,6 @@ export function ReplacementManager({
         </div>
       )}
 
-      {/* Empty state */}
       {replacements.length === 0 && replaceableCategories.length > 0 && (
         <button
           onClick={handleStartReplacement}
@@ -279,7 +133,7 @@ export function ReplacementManager({
         >
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform text-sage-600">
-              <Plus className="w-6 h-6" />
+              <span className="text-2xl">+</span>
             </div>
             <div>
               <p className="font-semibold text-carbon-800 text-lg">Agregar cambio</p>
@@ -289,222 +143,25 @@ export function ReplacementManager({
         </button>
       )}
 
-      {/* Professional Bottom Sheet Modal */}
-      {showAddModal && (
-        <div
-          className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-carbon-900/60 backdrop-blur-sm"
-          onClick={handleCloseModal}
-        >
-          <div
-            className="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-lg w-full h-[85vh] sm:h-auto sm:max-h-[85vh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-300"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Header - Matching OrderSummaryModal */}
-            <div className="bg-gradient-to-br from-carbon-900 to-carbon-800 px-6 py-5 sm:py-6 flex-shrink-0">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-2xl bg-white/10 flex items-center justify-center shadow-inner">
-                    <ArrowRightLeft className="w-6 h-6 text-warning-400" />
-                  </div>
-                  <div>
-                    <h3 className="text-white font-black text-lg sm:text-xl tracking-tight">
-                      {currentStep === 0 && "¿Qué quitamos?"}
-                      {currentStep === 1 && "¿Qué agregamos?"}
-                      {currentStep === 2 && "Selecciona el item"}
-                    </h3>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <div className="flex gap-1">
-                        {[0, 1, 2].map((s) => (
-                          <div key={s} className={cn("w-2 h-2 rounded-full transition-colors", s === currentStep ? "bg-warning-400" : "bg-white/20")} />
-                        ))}
-                      </div>
-                      <span className="text-carbon-400 text-[10px] font-semibold tracking-wide">
-                        Paso {currentStep + 1} de 3
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={handleCloseModal}
-                  className="p-2.5 bg-white/5 hover:bg-white/10 rounded-2xl text-carbon-400 hover:text-white transition-all"
-                >
-                  <X className="w-6 h-6" />
-                </button>
-              </div>
-            </div>
-
-            {/* Content */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-6 bg-sage-50/30">
-              {/* Step 1: Select what to replace */}
-              {currentStep === 0 && (
-                <div className="grid gap-3">
-                  {replaceableCategories
-                    .filter((cat) => !isCategoryReplaced(cat.key))
-                    .map((cat) => {
-                      const StepIcon = cat.icon;
-                      return (
-                        <button
-                          key={cat.key}
-                          onClick={() => handleSelectFrom(cat.key)}
-                          className="flex items-center gap-4 p-5 rounded-2xl border-2 border-white bg-white hover:border-warning-400 hover:shadow-soft-md active:scale-[0.98] transition-all text-left shadow-sm group"
-                        >
-                          <div className="w-14 h-14 rounded-2xl bg-warning-50 flex items-center justify-center text-warning-600 group-hover:scale-110 transition-transform">
-                            <StepIcon className="w-7 h-7" />
-                          </div>
-                          <div className="flex-1">
-                            <span className="font-black text-carbon-900 text-lg block tracking-tight">
-                              {cat.name}
-                            </span>
-                            <span className="text-xs font-bold text-warning-600 tracking-wide">
-                              Quitar del almuerzo
-                            </span>
-                          </div>
-                          <ArrowRight className="w-6 h-6 text-carbon-200 group-hover:text-warning-400 transition-colors" />
-                        </button>
-                      );
-                    })}
-                </div>
-              )}
-
-              {/* Step 2: Select what to replace with */}
-              {currentStep === 1 && (
-                <div className="space-y-4">
-                  {/* Current selection breadcrumb */}
-                  <div className="flex items-center justify-between p-4 bg-white rounded-2xl border-2 border-warning-100 shadow-sm">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-xl bg-warning-50 flex items-center justify-center text-warning-600 opacity-50">
-                        {React.createElement(CATEGORY_ICONS[selectedFrom!], { className: "w-5 h-5" })}
-                      </div>
-                      <span className="text-carbon-400 font-semibold tracking-wide text-xs line-through">
-                        {CATEGORY_NAMES[selectedFrom!]}
-                      </span>
-                    </div>
-                    <button
-                      onClick={handleGoBack}
-                      className="flex items-center gap-2 text-xs font-black text-sage-600 hover:text-sage-700 bg-sage-50 px-3 py-2 rounded-lg transition-colors"
-                    >
-                      <ArrowLeft className="w-3.5 h-3.5" />
-                      VOLVER
-                    </button>
-                  </div>
-
-                  {availableTargets.length > 0 ? (
-                    <div className="grid gap-3">
-                      {availableTargets.map((cat) => {
-                        const StepIcon = cat.icon;
-                        return (
-                          <button
-                            key={cat.key}
-                            onClick={() => handleSelectTo(cat.key)}
-                            className="flex items-center gap-4 p-5 rounded-2xl border-2 border-white bg-white hover:border-sage-400 hover:shadow-soft-md active:scale-[0.98] transition-all text-left shadow-sm group"
-                          >
-                            <div className="w-14 h-14 rounded-2xl bg-sage-50 flex items-center justify-center text-sage-600 group-hover:scale-110 transition-transform">
-                              <StepIcon className="w-7 h-7" />
-                            </div>
-                            <div className="flex-1">
-                              <span className="font-black text-carbon-900 text-lg block tracking-tight">
-                                {cat.name}
-                              </span>
-                              <span className="text-xs font-bold text-sage-600 tracking-wide">
-                                Agregar como extra
-                              </span>
-                            </div>
-                            <ArrowRight className="w-6 h-6 text-carbon-200 group-hover:text-sage-400 transition-colors" />
-                          </button>
-                        );
-                      })}
-                    </div>
-                  ) : (
-                    <div className="p-10 bg-warning-50 rounded-3xl border-2 border-dashed border-warning-200 text-center">
-                      <p className="text-warning-700 font-semibold tracking-wide text-sm">
-                        No hay más opciones
-                      </p>
-                      <p className="text-warning-600/70 text-xs font-medium mt-2">
-                        Todas las categorías disponibles ya están en uso para este cambio.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Step 3: Select specific item */}
-              {currentStep === 2 && (
-                <div className="space-y-4">
-                  {/* Summary breadcrumb */}
-                  <div className="flex items-center justify-between p-4 bg-white rounded-2xl border-2 border-sage-100 shadow-sm">
-                    <div className="flex items-center gap-3">
-                      <span className="text-carbon-400 font-semibold tracking-wide text-[10px] line-through">
-                        {CATEGORY_NAMES[selectedFrom!]}
-                      </span>
-                      <ArrowRightLeft className="w-3.5 h-3.5 text-carbon-300" />
-                      <span className="text-sage-600 font-semibold tracking-wide text-[10px]">
-                        EXTRA {CATEGORY_NAMES[selectedTo!]}
-                      </span>
-                    </div>
-                    <button
-                      onClick={handleGoBack}
-                      className="text-xs font-black text-sage-600"
-                    >
-                      CAMBIAR
-                    </button>
-                  </div>
-
-                  <div className="grid gap-2">
-                    {targetItems.map((item) => (
-                      <button
-                        key={item.id}
-                        onClick={() => handleSelectItem(item.id)}
-                        className={cn(
-                          "w-full p-5 rounded-2xl border-2 transition-all text-left min-h-[72px] flex items-center justify-between group",
-                          selectedItem === item.id
-                            ? "border-success-500 bg-success-50 shadow-md"
-                            : "border-white bg-white hover:border-sage-200 shadow-sm",
-                        )}
-                      >
-                        <span className={cn(
-                          "font-black text-lg tracking-tight",
-                          selectedItem === item.id ? "text-success-900" : "text-carbon-900"
-                        )}>
-                          {item.name}
-                        </span>
-                        {selectedItem === item.id && (
-                          <div className="w-8 h-8 rounded-full bg-success-500 flex items-center justify-center shadow-lg animate-in zoom-in-50">
-                            <Check className="w-5 h-5 text-white stroke-[3px]" />
-                          </div>
-                        )}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Footer - Fixed Bottom */}
-            <div className="p-6 bg-white border-t border-carbon-100">
-              {currentStep === 2 && selectedItem ? (
-                <Button
-                  variant="primary"
-                  fullWidth
-                  onClick={handleConfirmReplacement}
-                  className="rounded-2xl h-14 sm:h-16 bg-carbon-900 hover:bg-carbon-800 text-white font-black text-lg shadow-xl shadow-carbon-200"
-                >
-                  <Check className="w-6 h-6 mr-2 stroke-[3px]" />
-                  Confirmar Cambio
-                </Button>
-              ) : (
-                <Button
-                  variant="ghost"
-                  fullWidth
-                  onClick={handleCloseModal}
-                  className="rounded-2xl h-14 font-bold text-carbon-400"
-                >
-                  Cancelar
-                </Button>
-              )}
-            </div>
-          </div>
-        </div>
-      )}
+      <ReplacementModal
+        showAddModal={showAddModal}
+        currentStep={currentStep}
+        replaceableCategories={replaceableCategories}
+        availableTargets={availableTargets}
+        targetItems={targetItems}
+        selectedFrom={selectedFrom}
+        selectedTo={selectedTo}
+        selectedItem={selectedItem}
+        isCategoryReplaced={isCategoryReplaced}
+        onClose={handleCloseModal}
+        onSelectFrom={handleSelectFrom}
+        onSelectTo={handleSelectTo}
+        onSelectItem={handleSelectItem}
+        onGoBack={handleGoBack}
+        onConfirm={handleConfirmReplacement}
+        CATEGORY_NAMES={CATEGORY_NAMES}
+        CATEGORY_ICONS={CATEGORY_ICONS}
+      />
     </div>
   );
 }

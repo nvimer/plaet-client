@@ -1,5 +1,5 @@
 import React from "react";
-import { Trash2, ReceiptText, Calendar, User, Tag, ArrowDownCircle } from "lucide-react";
+import { Trash2, ReceiptText, Calendar, User, ArrowDownCircle } from "lucide-react";
 import { useExpenses } from "../hooks/useExpenses";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { ConfirmDialog } from "@/components/ui/ConfirmDialog/ConfirmDialog";

@@ -100,7 +100,7 @@ axiosClient.interceptors.response.use(
               isRefreshing = false;
               processQueue(null);
               return axiosClient(originalRequest);
-            } catch (refreshError) {
+            } catch (_refreshError) {
               isRefreshing = false;
               const authError = new Error("TOKEN_REFRESH_FAILED");
               (authError as { code?: string }).code = "AUTH_REFRESH_FAILED";
@@ -135,10 +135,8 @@ axiosClient.interceptors.response.use(
 
         case 423: {
           const responseData = error.response?.data as {
-            message?: string;
             lockedUntil?: string;
           };
-          const message = responseData?.message || "Tu cuenta está bloqueada.";
           const lockedUntil = responseData?.lockedUntil;
 
           if (

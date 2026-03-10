@@ -34,7 +34,6 @@ import {
   ROUTES,
   getMenuItemEditRoute,
 } from "@/app/routes";
-import { cn } from "@/utils/cn";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 
 /**

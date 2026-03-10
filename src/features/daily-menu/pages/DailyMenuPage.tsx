@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useLocation } from "react-router-dom";
 import { Card, Button } from "@/components";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
@@ -7,7 +7,7 @@ import { useDailyMenuToday, useDailyMenuByDate } from "@/features/daily-menu/hoo
 import { useAuth } from "@/hooks";
 import { RoleName } from "@/types";
 import { getLocalDateString } from "@/utils/dateUtils";
-import { Calendar, RefreshCw, UtensilsCrossed, Edit2, ArrowLeft, Beef, Salad, CupSoda, IceCream, PlusCircle, Settings2, type LucideIcon } from "lucide-react";
+import { Calendar, RefreshCw, UtensilsCrossed, Edit2, ArrowLeft, Beef, Salad, CupSoda, IceCream, PlusCircle, type LucideIcon } from "lucide-react";
 import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { toast } from "sonner";
 import { motion } from "framer-motion";

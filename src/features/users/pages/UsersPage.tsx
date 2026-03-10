@@ -20,6 +20,15 @@ import { usePermissions } from "@/hooks";
 import { RoleName } from "@/types";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 
+interface UserWithRoles {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone?: string;
+  roles?: Array<{ name?: string; role?: { name?: string } }>;
+}
+
 /**
  * Premium Users Page
  * Redesigned with advanced filter system and launchpad consistency.
@@ -63,7 +72,7 @@ export function UsersPage() {
   const counts = useMemo(() => {
     if (!users) return { all: 0, admin: 0, waiter: 0, kitchen: 0, cashier: 0 };
 
-    const getRoleName = (user: any): string | null => {
+    const getRoleName = (user: UserWithRoles): string | null => {
       if (!user.roles || user.roles.length === 0) return null;
       const firstRole = user.roles[0];
       return "role" in firstRole ? firstRole.role.name : firstRole.name;

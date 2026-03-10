@@ -24,6 +24,7 @@ import { useAddStock, useRemoveStock, useStockHistory } from "../hooks";
 import { toast } from "sonner";
 import type { MenuItem } from "@/types";
 import { cn } from "@/utils/cn";
+import { logger } from "@/utils";
 
 interface QuickStockModalProps {
   item: MenuItem;
@@ -75,7 +76,7 @@ export function QuickStockModal({ item, isOpen, onClose }: QuickStockModalProps)
       setReason("");
       onClose();
     } catch (error) {
-      console.error(error);
+      logger.error("Failed to update stock", error instanceof Error ? error : new Error(String(error)));
       toast.error("Error al actualizar stock");
     }
   };

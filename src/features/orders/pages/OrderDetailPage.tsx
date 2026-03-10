@@ -1,21 +1,17 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { OrderStatus, PaymentMethod } from "@/types";
+import { OrderStatus } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
-import { useOrder, useDeleteOrder, useUpdateOrderStatus, useAddPayment } from "../hooks";
+import type { LucideIcon } from "lucide-react";
+import { useOrder, useDeleteOrder, useUpdateOrderStatus } from "../hooks";
 import {
   Calendar,
-  CheckCircle,
-  ChefHat,
   Clock,
   CreditCard,
   DollarSign,
   MapPin,
   Trash2,
-  Truck,
   User,
   XCircle,
-  Calculator,
-  Info,
   ReceiptText,
   ChevronDown,
   ChevronUp,
@@ -23,7 +19,6 @@ import {
 import { toast } from "sonner";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { OrderStatusBadge } from "../components/OrderStatusBadge";
-import { OrderTypeBadge } from "../components/OrderTypeBadge";
 import { PaymentModal, type PaymentEntry } from "../components/PaymentModal";
 import {
   Button,
@@ -47,7 +42,6 @@ export function OrderDetailPage() {
   const { data: order, isLoading, error } = useOrder(id);
   const { mutate: updateStatus, isPending: isUpdatingStatus } =
     useUpdateOrderStatus();
-  const { mutate: addPayment, mutateAsync: addPaymentAsync, isPending: isAddingPayment } = useAddPayment();
   const { mutate: deleteOrder, isPending: isDeleting } = useDeleteOrder();
   
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -101,7 +95,7 @@ export function OrderDetailPage() {
     from: OrderStatus[];
     to: OrderStatus;
     label: string;
-    icon: any;
+    icon: LucideIcon;
     variant: "primary" | "secondary" | "outline";
   }[] = [
     {
@@ -176,9 +170,10 @@ export function OrderDetailPage() {
       toast.success("Pago registrado correctamente");
       // Redirigir a la lista de pedidos después de pagar
       navigate(ROUTES.ORDERS);
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as { response?: { data?: { message?: string } }; message?: string };
       toast.error("Error al registrar pagos", {
-        description: error.response?.data?.message || error.message
+        description: err.response?.data?.message || err.message
       });
     }
   };

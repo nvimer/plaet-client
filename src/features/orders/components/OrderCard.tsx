@@ -14,14 +14,12 @@
 
 import { OrderStatus, PaymentMethod, type Order } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
+import type { LucideIcon } from "lucide-react";
 import { useUpdateOrderStatus, useAddPayment } from "../hooks";
 import {
-  CheckCircle,
-  ChefHat,
+  MapPin,
   Clock,
   Eye,
-  MapPin,
-  Truck,
   User,
   AlertCircle,
   Flame,
@@ -162,13 +160,10 @@ export function OrderCard({
   const itemsCount =
     order.items?.reduce((sum, item) => sum + item.quantity, 0) || 0;
 
-  const paidAmount = order.payments?.reduce((sum, p) => sum + Number(p.amount), 0) || 0;
-  const remainingAmount = Math.max(0, Number(order.totalAmount) - paidAmount);
-
   const getNextStatus = (): {
     status: OrderStatus;
     label: string;
-    icon: any;
+    icon: LucideIcon;
     action?: () => void;
   } | null => {
     switch (order.status) {

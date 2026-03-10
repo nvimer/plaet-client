@@ -4,7 +4,6 @@ import {
   Leaf,
   CircleDot,
   Sparkles,
-  Check,
   ChefHat,
 } from "lucide-react";
 import { Card } from "@/components";

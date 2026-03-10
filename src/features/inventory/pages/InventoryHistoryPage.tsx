@@ -17,7 +17,6 @@ import {
   Info,
   XCircle,
 } from "lucide-react";
-import { cn } from "@/utils/cn";
 
 /**
  * InventoryHistoryPage Component

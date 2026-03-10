@@ -4,11 +4,7 @@ import { RolePermissionMatrix } from "../components/RolePermissionMatrix";
 import { Card } from "@/components/ui/Card/Card";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import type { RoleWithPermissions } from "@/types";
-import { 
-  ShieldCheck, Check, X, Shield, Lock, Layout, 
-  User, Users, Store, ClipboardList, Database, 
-  Bell, Settings, Info, RefreshCw, ShieldAlert 
-} from "lucide-react";
+import { ShieldCheck, Info, ShieldAlert } from "lucide-react";
 
 /**
  * PAGE: RolePermissionsPage

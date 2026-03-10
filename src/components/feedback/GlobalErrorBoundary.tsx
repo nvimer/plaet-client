@@ -16,6 +16,7 @@ import type { ErrorInfo } from "react";
 import { motion } from "framer-motion";
 import { ChefHat, RefreshCw, Home, AlertTriangle, Bug } from "lucide-react";
 import { Button } from "@/components";
+import { logger } from "@/utils";
 
 interface Props {
   children: ReactNode;
@@ -41,8 +42,8 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   public componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
-    console.error("[ErrorBoundary] Caught error:", error);
-    console.error("[ErrorBoundary] Component stack:", errorInfo.componentStack);
+    logger.error("[ErrorBoundary] Caught error", error);
+    logger.debug("[ErrorBoundary] Component stack", errorInfo.componentStack);
 
     const componentStack = errorInfo.componentStack || null;
     this.setState({ errorInfo: componentStack });

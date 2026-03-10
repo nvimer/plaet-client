@@ -2,12 +2,11 @@ import { useMemo, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useGesture } from "@use-gesture/react";
-import { Clock, CheckCircle, ArrowRight, ArrowLeft, GripVertical } from "lucide-react";
+import { Clock, ArrowRight, GripVertical } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { OrderItemStatus } from "@/types";
 import { type KitchenItem } from "./KitchenKanban";
 import { type KitchenCategoryConfig } from "./kitchenCategories";
-import { motion, AnimatePresence } from "framer-motion";
 
 export interface KitchenOrderCardProps {
   item: KitchenItem;
@@ -89,7 +88,7 @@ export function KitchenOrderCard({
     const now = new Date().getTime();
     const created = new Date(item.createdAt).getTime();
     const diffMinutes = Math.floor((now - created) / (1000 * 60));
-    let text = diffMinutes < 1 ? "< 1 min" : `${diffMinutes} min`;
+    const text = diffMinutes < 1 ? "< 1 min" : `${diffMinutes} min`;
     const isWarning = diffMinutes > 15;
     const isUrgent = diffMinutes > 25;
     return { text, isWarning, isUrgent, diffMinutes };

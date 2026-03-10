@@ -3,9 +3,8 @@
  * Left column of order creation with lunch configuration
  */
 
-import { Card, Input, Button } from "@/components";
+import { Card, Input } from "@/components";
 import {
-  DailyMenuSection,
   ProteinSelector,
   MenuItemSelector,
   ReplacementManager,
@@ -14,18 +13,12 @@ import {
 import {
   Plus,
   Minus,
-  X,
-  ChevronDown,
-  ChevronUp,
-  ChefHat,
   UtensilsCrossed,
   Sparkles,
   ShoppingBag,
   Search,
   User,
-  Phone,
-  MapPin,
-  Box,
+  X,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { OrderType } from "@/types";
@@ -151,8 +144,8 @@ export function OrderForm({
   packagingFee,
   packagingQuantity,
   setPackagingQuantity,
-  showDailyMenu,
-  setShowDailyMenu,
+  _showDailyMenu,
+  _setShowDailyMenu,
   dailyMenuDisplay,
   dailyMenuPrices,
   selectedSoup,
@@ -165,7 +158,7 @@ export function OrderForm({
   setSelectedDrink,
   selectedExtra,
   setSelectedExtra,
-  selectedRice,
+  _selectedRice,
   _setSelectedRice,
   proteins,
   selectedProtein,
@@ -184,7 +177,7 @@ export function OrderForm({
   setOrderNotes,
   validationErrors,
   hasError,
-  onAddToTable,
+  _onAddToTable,
   onCancelEdit,
   isLoading,
 }: OrderFormProps) {

@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { ROUTES } from "@/app/routes";
-import { BrandName } from "@/components";
 import { useSidebar } from "@/contexts/SidebarContext";
 import { usePermissions } from "@/hooks";
 import { getNavigationItems } from "./navigationConfig";

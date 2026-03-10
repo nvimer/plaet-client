@@ -6,7 +6,6 @@ import {
   Smartphone, 
   Ticket, 
   Check, 
-  X, 
   Calculator, 
   Plus
 } from "lucide-react";
@@ -62,7 +61,7 @@ export function PaymentModal({
 
   // --- DERIVED STATE ---
   const hasActiveTickets = useMemo(() => {
-    return !!(customer?.ticketBooks && customer.ticketBooks.some((tb: any) => tb.consumedPortions < tb.totalPortions));
+    return !!(customer?.ticketBooks && customer.ticketBooks.some((tb) => tb.consumedPortions < tb.totalPortions));
   }, [customer]);
 
   const remainingAmountsPerOrder = useMemo(() => {
@@ -116,14 +115,14 @@ export function PaymentModal({
       }, 0);
       setCurrentAmount(initialRemaining);
     }
-  }, [isOpen, ordersIdsHash]);
+  }, [isOpen, ordersIdsHash, orders]);
 
   // Sync currentAmount when remainingToPay changes (if user hasn't typed anything else)
   useEffect(() => {
     if (isOpen && remainingToPay > 0 && (currentAmount === 0 || currentAmount > remainingToPay)) {
       setCurrentAmount(remainingToPay);
     }
-  }, [remainingToPay, isOpen]);
+  }, [remainingToPay, isOpen, currentAmount]);
 
   // --- HANDLERS ---
   const handleToggleOrder = (orderId: string) => {

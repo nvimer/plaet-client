@@ -3,7 +3,7 @@ import { BaseModal } from "@/components/ui/BaseModal/BaseModal";
 import { Button } from "@/components/ui/Button/Button";
 import { useCashClosure } from "../hooks/useCashClosure";
 import type { CashClosure } from "@/types";
-import { DollarSign, ArrowDownCircle, ArrowUpCircle, Calculator, AlertCircle, CheckCircle2 } from "lucide-react";
+import { ArrowDownCircle, ArrowUpCircle, Calculator, AlertCircle, CheckCircle2 } from "lucide-react";
 import { cn } from "@/utils/cn";
 
 interface CloseShiftModalProps {

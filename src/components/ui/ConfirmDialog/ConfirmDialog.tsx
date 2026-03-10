@@ -179,7 +179,7 @@ export function ConfirmDialog({
     <>
       {/* Trigger Render */}
       {trigger && isValidElement(trigger) && 
-        cloneElement(trigger as React.ReactElement<any>, { 
+        cloneElement(trigger as React.ReactElement<Record<string, unknown>>, { 
           onClick: (e: React.MouseEvent) => {
             e.stopPropagation(); // Prevent parent clicks
             handleOpen();

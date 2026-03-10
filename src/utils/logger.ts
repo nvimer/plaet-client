@@ -20,7 +20,7 @@ export const logger = {
    * Technical details only for developers.
    * Silenced in production.
    */
-  debug: (message: string, ...args: any[]) => {
+  debug: (message: string, ...args: unknown[]) => {
     if (isDev) {
       console.debug(formatMessage('debug', message), ...args);
     }
@@ -30,7 +30,7 @@ export const logger = {
    * General application flow info.
    * Silenced in production.
    */
-  info: (message: string, ...args: any[]) => {
+  info: (message: string, ...args: unknown[]) => {
     if (isDev) {
       console.info(formatMessage('info', message), ...args);
     }
@@ -40,7 +40,7 @@ export const logger = {
    * Potential issues that don't break the app.
    * Always visible in console for troubleshooting.
    */
-  warn: (message: string, ...args: any[]) => {
+  warn: (message: string, ...args: unknown[]) => {
     console.warn(formatMessage('warn', message), ...args);
   },
 
@@ -48,7 +48,7 @@ export const logger = {
    * Critical failures. 
    * Always visible. Recommended to hook this to Sentry in the future.
    */
-  error: (message: string, ...args: any[]) => {
+  error: (message: string, ...args: unknown[]) => {
     console.error(formatMessage('error', message), ...args);
   }
 };

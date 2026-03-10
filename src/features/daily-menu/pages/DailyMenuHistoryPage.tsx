@@ -31,7 +31,7 @@ export function DailyMenuHistoryPage() {
   
   // Fetch a larger set of history to populate the calendar (up to 100 items cover 3+ months)
   const { data, isLoading } = useDailyMenuHistory(1, 100);
-  const menus = data?.data || [];
+  const menus = useMemo(() => data?.data || [], [data]);
 
   const [selectedMenuId, setSelectedMenuId] = useState<string | null>(null);
 
@@ -48,7 +48,7 @@ export function DailyMenuHistoryPage() {
     const days = [];
     
     // Fill leading empty slots (adjusting for Monday start)
-    let firstDayIndex = firstDayOfMonth.getDay(); // 0 = Sun, 1 = Mon
+    const firstDayIndex = firstDayOfMonth.getDay(); // 0 = Sun, 1 = Mon
     // Convert to Monday = 0, ..., Sunday = 6
     const leadingSlots = firstDayIndex === 0 ? 6 : firstDayIndex - 1;
     

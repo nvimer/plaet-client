@@ -15,6 +15,7 @@ import { useCategories } from "@/features/menu/categories/hooks";
 import { BaseModal } from "@/components/ui/BaseModal/BaseModal";
 import { toast } from "sonner";
 import { cn } from "@/utils/cn";
+import { logger } from "@/utils";
 
 interface DailyMenuConfigFormProps {
   initialData?: DailyMenu | null;
@@ -262,7 +263,7 @@ export function DailyMenuConfigForm({
       setIsSaved(true);
       onSuccess?.();
     } catch (error) {
-      console.error("Failed to update daily menu:", error);
+      logger.error("Failed to update daily menu", error instanceof Error ? error : new Error(String(error)));
       toast.error("Error al guardar el menú del día");
     }
   };

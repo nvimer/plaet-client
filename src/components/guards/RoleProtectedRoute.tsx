@@ -3,6 +3,7 @@ import { usePermissions } from "@/hooks/usePermissions";
 import { RoleName } from "@/types";
 import { Navigate } from "react-router-dom";
 import { ROUTES } from "@/app/routes";
+import { logger } from "@/utils";
 
 /**
  * RoleProtectedRoute Props
@@ -61,11 +62,9 @@ export function RoleProtectedRoute({
   if (!hasAccess) {
     if (showMessage) {
       // You could show a message here or redirect
-      if (import.meta.env.DEV) {
-        console.warn(
-          `Access denied. Required roles: ${allowedRoles.join(", ")}`
-        );
-      }
+      logger.warn(
+        `Access denied. Required roles: ${allowedRoles.join(", ")}`
+      );
     }
     return <Navigate to={fallbackRoute} replace />;
   }

@@ -1,12 +1,9 @@
 import { Badge } from "@/components";
 import { OrderStatus } from "@/types";
 import {
-  CheckCircle,
-  ChefHat,
   Clock,
   CreditCard,
   ReceiptText,
-  Truck,
   XCircle,
 } from "lucide-react";
 

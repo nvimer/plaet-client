@@ -3,7 +3,6 @@ import type React from "react";
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
-import { cn } from "@/utils/cn";
 import { variants, transitions } from "@/utils/motion";
 
 interface DrawerProps {

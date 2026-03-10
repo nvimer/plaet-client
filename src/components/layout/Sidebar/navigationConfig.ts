@@ -14,7 +14,6 @@ import {
   Settings,
   Building2,
   ShieldCheck,
-  Package,
   Calendar,
   UtensilsCrossed,
 } from "lucide-react";

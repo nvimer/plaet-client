@@ -22,7 +22,7 @@ import { KitchenColumn } from "./KitchenColumn";
 import { KitchenOrderCard } from "./KitchenOrderCard"; // We will adapt this or use a new ItemCard
 import { Skeleton, EmptyState } from "@/components";
 import { cn } from "@/utils/cn";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { variants, transitions } from "@/utils/motion";
 
 type TabType = "pending" | "inKitchen" | "ready";

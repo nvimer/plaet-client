@@ -8,12 +8,14 @@ import { toast } from "sonner";
 import axios from "axios";
 import { getLocalDateString } from "@/utils/dateUtils";
 import { useCreateOrder, useBatchCreateOrders } from "./useCreateOrder";
-import { useTables, useUpdateTableStatus } from "@/features/tables";
+import { useTables } from "@/features/tables";
 import { useItems } from "@/features/menu";
-import { useDailyMenuToday, useDailyMenuByDate } from "@/features/daily-menu/hooks";
-import { OrderType, TableStatus, OrderStatus, PaymentMethod, OrderItemStatus } from "@/types";
+import { useDailyMenuByDate } from "@/features/daily-menu/hooks";
+import { PaymentMethod, OrderItemStatus, OrderType } from "@/types";
 import { paymentApi, orderApi, customerApi } from "@/services";
+import { logger } from "@/utils";
 import type { Order } from "@/types";
+import type { DailyMenuResponse } from "@/services/dailyMenuApi";
 import type {
   MenuOption,
   ProteinOption,
@@ -35,7 +37,7 @@ export interface UseOrderBuilderReturn {
   tables: Array<{ id: number; status: string }>;
   availableTables: Array<{ id: number; status: string }>;
   menuItems: Array<{ id: number; name: string; price: string; isAvailable: boolean }> | undefined;
-  dailyMenuData: any;
+  dailyMenuData: DailyMenuResponse | undefined;
   
   // Order type and table state
   selectedOrderType: OrderType | null;
@@ -186,9 +188,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
             icon: "👤",
           });
         }
-      } catch (error) {
+      } catch (_error) {
         // Silent error if customer not found
-        console.debug("Customer not found for phone:", cleanPhone);
+        logger.debug("Customer not found for phone:", cleanPhone);
       }
     }
   }, []);
@@ -227,7 +229,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   
   const { mutateAsync: createOrder, isPending: isCreating } = useCreateOrder();
   const { mutateAsync: createBatchOrders, isPending: isBatchCreating } = useBatchCreateOrders();
-  const { mutate: updateTableStatus } = useUpdateTableStatus();
   
   const isPending = isCreating || isBatchCreating;
 
@@ -290,7 +291,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       return [];
     }
     
-    return dailyMenuData.proteinOptions.map((item: any) => ({
+    return dailyMenuData.proteinOptions.map((item: ProteinOption) => ({
       id: item.id,
       name: item.name,
       price: item.price,
@@ -555,7 +556,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     clearCurrentOrder();
     setValidationErrors([]);
     setTouchedFields(new Set());
-  }, [selectedProtein, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedRice, dailyMenuDisplay.riceOption, replacements, looseItems, currentOrderTotal, buildOrderNotes, currentOrderIndex, tableOrders.length, validateOrder, clearCurrentOrder, packagingFee, packagingQuantity, selectedOrderType]);
+  }, [selectedProtein, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedRice, dailyMenuDisplay.riceOption, replacements, looseItems, currentOrderTotal, buildOrderNotes, currentOrderIndex, tableOrders.length, validateOrder, clearCurrentOrder, packagingFee, packagingQuantity]);
 
   const handleEditOrder = useCallback((index: number) => {
     const order = tableOrders[index];
@@ -583,7 +584,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     }
 
     // Extract manual notes by stripping automated sections
-    let manualNotes = order.notes || "";
+    const manualNotes = order.notes || "";
     
     // Split by the divider we use
     const sections = manualNotes.split("\n-------------------\n");
@@ -695,10 +696,10 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       } else {
         const res = await createBatchOrders({
           tableId: selectedOrderType === OrderType.DINE_IN ? (selectedTable || undefined) : undefined,
-          orders: ordersPayload as any
+          orders: ordersPayload
         });
         
-        createdOrdersList = res && (res as any).orders ? (res as any).orders : [];
+        createdOrdersList = res?.data?.orders || [];
         
         if (!isFastHistoricalEntry) {
           if (selectedOrderType === OrderType.DINE_IN && selectedTable) {
@@ -723,7 +724,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
               ));
             }
           } catch (payErr) {
-            console.error(`Error processing historical payment/items for ${createdOrder.id}:`, payErr);
+            logger.error(`Error processing historical payment/items for ${createdOrder.id}`, payErr instanceof Error ? payErr : new Error(String(payErr)));
           }
         }));
         toast.success("Registro histórico guardado y liquidado", { icon: "📜" });
@@ -739,7 +740,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       setSelectedOrderType(null); 
 
     } catch (error: unknown) {
-      console.error("Order Creation Error:", error);
+      logger.error("Order Creation Error", error instanceof Error ? error : new Error(String(error)));
       let description = "Intenta nuevamente";
       
       if (axios.isAxiosError(error)) {
@@ -750,7 +751,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       
       toast.error("Error al crear los pedidos", { description });
     }
-  }, [selectedTable, selectedOrderType, tableOrders, createOrder, backdatedDate, updateTableStatus, clearCurrentOrder, createBatchOrders, customerName, customerPhone, deliveryAddress]);
+  }, [selectedTable, selectedOrderType, tableOrders, createOrder, backdatedDate, clearCurrentOrder, createBatchOrders, customerName, customerPhone, deliveryAddress, address2, customerPhone2, dailyMenuData]);
 
   const handleSelectOrderType = useCallback((type: OrderType) => {
     setSelectedOrderType(type);
@@ -762,7 +763,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setTableOrders([]);
     setCustomerName("");
     setCustomerPhone("");
+    setCustomerPhone2("");
     setDeliveryAddress("");
+    setAddress2("");
     setPackagingFee(Number(dailyMenuData?.packagingFee || 1000));
     clearCurrentOrder();
   }, [clearCurrentOrder, dailyMenuData]);

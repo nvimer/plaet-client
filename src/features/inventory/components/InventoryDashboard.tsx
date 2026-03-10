@@ -11,7 +11,6 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend,
 } from "recharts";
 import type { MenuItem } from "@/types";
 import { InventoryType } from "@/types";
@@ -62,12 +61,6 @@ export function InventoryDashboard({ items }: InventoryDashboardProps) {
     { name: "Rastreado", value: stats.tracked, color: "#769B86" },
     { name: "Ilimitado", value: stats.unlimited, color: "#9CA3AF" },
   ];
-
-  const stockStatusData = [
-    { name: "Stock OK", value: stats.healthyStock, color: "#22c55e" },
-    { name: "Stock Bajo", value: stats.lowStock, color: "#f59e0b" },
-    { name: "Sin Stock", value: stats.outOfStock, color: "#ef4444" },
-  ].filter((item) => item.value > 0);
 
   const weeklyMovementsData = [
     { day: "Lun", entradas: 45, salidas: 38 },
