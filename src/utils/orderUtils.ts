@@ -68,60 +68,48 @@ const GROUP_TIME_WINDOW_MS = 2 * 60 * 1000;
 export function groupOrders(orders: Order[]): GroupedOrder[] {
   if (!orders || orders.length === 0) return [];
 
-  const grouped: GroupedOrder[] = [];
-  const processedIds = new Set<string>();
-
-  const sorted = [...orders].sort(
-    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-  );
-
-  for (const order of sorted) {
-    if (processedIds.has(order.id)) continue;
-
-    const groupMembers: Order[] = [];
+  // 1. First Pass: Grouping into buckets O(N)
+  const groupMap = new Map<string, Order[]>();
+  
+  orders.forEach(order => {
+    const timeValue = new Date(order.createdAt).getTime();
+    // Bucket key: window based on window size
+    // DINE_IN orders are grouped by table, others stay individual (unique id in key)
+    const isDineIn = order.type === OrderType.DINE_IN && order.tableId;
+    const timeBucket = Math.floor(timeValue / GROUP_TIME_WINDOW_MS);
     
-    for (const other of sorted) {
-      if (processedIds.has(other.id)) continue;
-      if (other.type !== order.type) continue;
+    const key = isDineIn 
+      ? `${order.type}-${order.tableId}-${timeBucket}` 
+      : `individual-${order.id}`;
+    
+    if (!groupMap.has(key)) groupMap.set(key, []);
+    groupMap.get(key)!.push(order);
+  });
 
-      if (order.type !== OrderType.DINE_IN || !order.tableId) {
-        if (other.id === order.id) {
-          groupMembers.push(other);
-          processedIds.add(other.id);
-        }
-        continue;
-      }
+  // 2. Second Pass: Mapping to GroupedOrder O(N)
+  const grouped = Array.from(groupMap.values()).map(members => {
+    // Sort members within group by time (usually already sorted but to be safe)
+    const sortedMembers = members.sort(
+      (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    );
+    
+    const primary = sortedMembers[0];
+    return {
+      id: primary.id,
+      tableId: primary.tableId,
+      table: primary.table,
+      createdAt: primary.createdAt,
+      status: primary.status,
+      type: primary.type,
+      orders: sortedMembers,
+      totalAmount: sortedMembers.reduce((sum, o) => sum + Number(o.totalAmount), 0),
+    };
+  });
 
-      if (other.tableId !== order.tableId) continue;
-      
-      const timeDiff = Math.abs(
-        new Date(order.createdAt).getTime() - new Date(other.createdAt).getTime()
-      );
-      
-      if (timeDiff <= GROUP_TIME_WINDOW_MS) {
-        groupMembers.push(other);
-        processedIds.add(other.id);
-      }
-    }
-
-    if (groupMembers.length > 0) {
-      grouped.push({
-        id: order.id,
-        tableId: order.tableId,
-        table: order.table,
-        createdAt: order.createdAt,
-        status: order.status,
-        type: order.type,
-        orders: groupMembers,
-        totalAmount: groupMembers.reduce(
-          (sum, o) => sum + Number(o.totalAmount),
-          0
-        ),
-      });
-    }
-  }
-
-  return grouped;
+  // Final Sort: Newest groups first
+  return grouped.sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  );
 }
 
 export const isToday = (dateString: string): boolean => {
