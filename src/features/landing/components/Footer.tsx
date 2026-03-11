@@ -49,8 +49,8 @@ export function Footer() {
                 <img src="/plaet.png" alt="Plaet Logo" className="w-8 h-8 object-contain mix-blend-multiply" />
               </div>
               <BrandName
-                className="text-2xl font-bold text-carbon-900 tracking-tight"
-                accentClassName="text-primary-600"
+                className="text-2xl font-black tracking-tighter text-carbon-900 leading-none"
+                accentClassName="bg-primary-500"
               />
             </Link>
 
@@ -107,8 +107,10 @@ export function Footer() {
         {/* Bottom Section */}
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Copyright */}
-          <p className="text-sm text-carbon-500 font-light">
-            © {new Date().getFullYear()} <BrandName className="inline-flex" />. Todos los derechos reservados.
+          <p className="text-sm text-carbon-500 font-light flex items-center gap-1">
+            © {new Date().getFullYear()} 
+            <BrandName className="ml-1" />
+            . Todos los derechos reservados.
           </p>
 
           <div className="flex items-center gap-4">

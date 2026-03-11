@@ -13,7 +13,7 @@ export function BenefitsSection() {
         "Control de stock por porciones",
         "Precios dinámicos",
       ],
-      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=2070",
+      image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=60&w=1200",
     },
     {
       number: "02",
@@ -25,7 +25,7 @@ export function BenefitsSection() {
         "Asignación de roles al personal",
         "Botones optimizados para táctil",
       ],
-      image: "https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&q=80&w=2070",
+      image: "https://images.unsplash.com/photo-1556742044-3c52d6e88c62?auto=format&fit=crop&q=60&w=1200",
     },
     {
       number: "03",
@@ -37,7 +37,7 @@ export function BenefitsSection() {
         "Cierre de caja y gastos",
         "Reportes instantáneos",
       ],
-      image: "https://images.unsplash.com/photo-1556745753-b2904692b3cd?auto=format&fit=crop&q=80&w=2070",
+      image: "https://images.unsplash.com/photo-1556745753-b2904692b3cd?auto=format&fit=crop&q=60&w=1200",
     },
   ];
 

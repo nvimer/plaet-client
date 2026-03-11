@@ -1,8 +1,7 @@
-import { Badge, Button } from "@/components";
+import { Badge, Button, BrandName } from "@/components";
 import { Link } from "react-router-dom";
-import { motion, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
+import { motion, useScroll, useTransform } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { useEffect } from "react";
 
 /**
  * HeroSection Component
@@ -10,32 +9,10 @@ import { useEffect } from "react";
  * Main hero section with high-impact animations and interactive elements
  */
 export function HeroSection() {
-  // Parallax Scroll Effect
+  // Simplified Scroll Effect for performance
   const { scrollY } = useScroll();
-  const y1 = useTransform(scrollY, [0, 500], [0, 200]);
-  const y2 = useTransform(scrollY, [0, 500], [0, -150]);
-  const opacity = useTransform(scrollY, [0, 300], [1, 0]);
-
-  // Mouse Tracking for Background
-  const mouseX = useMotionValue(0);
-  const mouseY = useMotionValue(0);
-
-  const springConfig = { damping: 25, stiffness: 150 };
-  const boostX = useSpring(mouseX, springConfig);
-  const boostY = useSpring(mouseY, springConfig);
-
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const { clientX, clientY } = e;
-      const moveX = (clientX - window.innerWidth / 2) / 40;
-      const moveY = (clientY - window.innerHeight / 2) / 40;
-      mouseX.set(moveX);
-      mouseY.set(moveY);
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, [mouseX, mouseY]);
+  const y1 = useTransform(scrollY, [0, 500], [0, 100]);
+  const opacity = useTransform(scrollY, [0, 200], [1, 0]);
 
   return (
     <section
@@ -44,46 +21,15 @@ export function HeroSection() {
     >
       {/* ============== BACKGROUND DECORATION ============= */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {/* Abstract Background Image */}
+        {/* Abstract Background Image - Simplified */}
         <motion.div 
-          style={{ 
-            y: y1,
-            backgroundImage: 'url("https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=80&w=2070")'
-          }}
-          className="absolute inset-0 opacity-[0.04] grayscale bg-cover bg-center scale-110"
+          style={{ y: y1 }}
+          className="absolute inset-0 opacity-[0.03] grayscale bg-[url('https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&q=60&w=1200')] bg-cover bg-center scale-105"
         />
 
-        {/* Interactive Gradients Orbs */}
-        <motion.div
-          style={{ x: boostX, y: boostY }}
-          animate={{
-            scale: [1, 1.1, 1],
-            opacity: [0.3, 0.4, 0.3],
-          }}
-          transition={{
-            duration: 10,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-          className="absolute top-0 left-1/4 w-[40rem] h-[40rem] bg-sage-200 rounded-full blur-[100px] opacity-30"
-        />
-        <motion.div
-          style={{ 
-            x: useTransform(boostX, (val) => -val * 1.5), 
-            y: useTransform(boostY, (val) => -val * 1.5) 
-          }}
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.2, 0.3, 0.2],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "easeInOut",
-            delay: 1,
-          }}
-          className="absolute -bottom-20 right-1/4 w-[45rem] h-[45rem] bg-sage-100 rounded-full blur-[120px] opacity-20"
-        />
+        {/* Static Decorative Orbs - Reduced complexity */}
+        <div className="absolute top-0 left-1/4 w-[30rem] h-[30rem] bg-primary-100 rounded-full blur-[100px] opacity-20" />
+        <div className="absolute -bottom-20 right-1/4 w-[35rem] h-[35rem] bg-primary-50 rounded-full blur-[120px] opacity-15" />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-6 lg:px-8 py-20">
@@ -95,13 +41,8 @@ export function HeroSection() {
           >
             {/* Badge */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
+              initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ 
-                type: "spring",
-                stiffness: 260,
-                damping: 20 
-              }}
               className="inline-flex items-center gap-2 mb-8"
             >
               <Badge variant="success" size="md" className="bg-primary-50 text-primary-700 border-primary-100 shadow-soft-sm px-4 py-1.5 font-bold">
@@ -111,6 +52,17 @@ export function HeroSection() {
             </motion.div>
 
             <div className="mb-8">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6 }}
+                className="flex items-center justify-center lg:justify-start mb-4"
+              >
+                <BrandName
+                  className="text-2xl font-black tracking-tighter text-carbon-900 leading-none"
+                  accentClassName="bg-primary-500"
+                />
+              </motion.div>
               <motion.h1
                 initial={{ opacity: 0, y: 30 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -133,7 +85,7 @@ export function HeroSection() {
             <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
               className="text-xl md:text-2xl text-carbon-700 font-light leading-relaxed mb-10 max-w-2xl mx-auto lg:mx-0"
             >
               La plataforma todo-en-uno que {""}
@@ -147,7 +99,7 @@ export function HeroSection() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              transition={{ duration: 1, delay: 0.5 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
               className="flex flex-wrap items-center gap-x-8 gap-y-4 mb-12 justify-center lg:justify-start"
             >
               {[
@@ -159,7 +111,7 @@ export function HeroSection() {
                   key={text} 
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.6 + i * 0.1 }}
+                  transition={{ delay: 0.5 + i * 0.1 }}
                   className="flex items-center gap-2"
                 >
                   <div className="w-1.5 h-1.5 rounded-full bg-primary-400"></div>
@@ -174,25 +126,17 @@ export function HeroSection() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.7 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
               <Link to="/login">
                 <Button
                   variant="primary"
                   size="lg"
-                  className="group relative overflow-hidden shadow-xl shadow-sage-200/50 hover:shadow-2xl hover:shadow-sage-300/50 transition-all duration-300 transform hover:-translate-y-1"
+                  className="group shadow-xl shadow-primary-200/50 hover:shadow-2xl hover:shadow-primary-300/50 transition-all duration-300 transform hover:-translate-y-1"
                 >
-                  <span className="relative z-10 flex items-center">
-                    Comenzar Ahora
-                    <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                  {/* Shimmer Effect */}
-                  <motion.div
-                    animate={{ x: ["-100%", "200%"] }}
-                    transition={{ duration: 2, repeat: Infinity, ease: "linear", repeatDelay: 1 }}
-                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -skew-x-12 z-0"
-                  />
+                  Comenzar Ahora
+                  <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
                 </Button>
               </Link>
 

@@ -13,6 +13,7 @@ import { usePermissions } from "@/hooks";
 import { getNavigationItems } from "./navigationConfig";
 import { SidebarItem } from "./components/SidebarItem";
 import { SidebarGroup } from "./components/SidebarGroup";
+import { BrandName } from "@/components";
 
 /**
  * Sidebar Component - Premium Version 2.0
@@ -95,10 +96,10 @@ export function Sidebar() {
             </div>
             {(!isCollapsed || isMobile) && (
               <div className="flex flex-col">
-                <div className="flex items-center gap-1">
-                  <span className="text-2xl font-black tracking-tighter text-carbon-900 leading-none">Plaet</span>
-                  <div className="w-1.5 h-1.5 rounded-full bg-sage-500 mt-1" />
-                </div>
+                <BrandName 
+                  className="text-2xl font-black tracking-tighter text-carbon-900 leading-none"
+                  accentClassName="bg-sage-500"
+                />
                 <span className="text-[10px] font-bold text-carbon-400 uppercase tracking-[0.3em] mt-1 leading-none">Management</span>
               </div>
             )}

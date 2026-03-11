@@ -60,10 +60,10 @@ export function Navbar() {
               <img src="/plaet.png" alt="Plaet Logo" className="w-8 h-8 object-contain mix-blend-multiply" />
             </div>
 
-            {/* Brand Name */}
+            {/* Brand Name Normalized */}
             <BrandName
-              className="text-2xl font-bold text-carbon-900 tracking-tight"
-              accentClassName="text-primary-600"
+              className="text-2xl font-black tracking-tighter text-carbon-900 leading-none"
+              accentClassName="bg-primary-500"
             />
           </Link>
 
