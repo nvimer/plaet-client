@@ -212,7 +212,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
   // 5. Pricing Logic (Encapsulated)
   const { lunchPrice, currentOrderTotal, tableTotal } = useOrderPricing(
-    Number(dailyMenuData?.basePrice || 0),
+    Number(dailyMenuData?.basePrice || 3000),
     selectedProtein,
     looseItems,
     packagingFee,
@@ -510,19 +510,14 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     }
 
     try {
-      let createdOrdersList: Order[] = [];
-      
       if (ordersPayload.length === 1 && selectedOrderType !== OrderType.DINE_IN) {
-        const res = await createOrder(ordersPayload[0]);
-        createdOrdersList = [res];
+        await createOrder(ordersPayload[0]);
         if (!isFastHistoricalEntry) toast.success("Pedido creado exitosamente");
       } else {
-        const res = await createBatchOrders({
+        await createBatchOrders({
           tableId: selectedOrderType === OrderType.DINE_IN ? (selectedTable || undefined) : undefined,
           orders: ordersPayload
         });
-        
-        createdOrdersList = res?.data?.orders || [];
         
         if (!isFastHistoricalEntry) {
           if (selectedOrderType === OrderType.DINE_IN && selectedTable) {
