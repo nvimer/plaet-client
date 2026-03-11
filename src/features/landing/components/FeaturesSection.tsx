@@ -23,7 +23,7 @@ export function FeaturesSection() {
       title: "Punto de Venta Táctil",
       description:
         "Interfaz optimizada para tablets y kioscos con botones grandes. Rápida y sin complicaciones para cajeros y meseros.",
-      color: "from-sage-300 to-sage-400",
+      color: "from-primary-300 to-primary-400",
       delay: 0.2,
     },
     {
@@ -31,7 +31,7 @@ export function FeaturesSection() {
       title: "Gestión de Mesas Visual",
       description:
         "Mapa interactivo en tiempo real. Visualiza el estado de cada mesa, asigna pedidos y controla la ocupación al instante.",
-      color: "from-sage-200 to-sage-400",
+      color: "from-sage-200 to-primary-400",
       delay: 0.3,
     },
     {
@@ -39,7 +39,7 @@ export function FeaturesSection() {
       title: "Kanban de Cocina",
       description:
         "Tablero interactivo para la cocina. Recibe pedidos en tiempo real y gestiona su estado con un simple arrastrar y soltar.",
-      color: "from-sage-300 to-sage-500",
+      color: "from-primary-300 to-sage-500",
       delay: 0.4,
     },
     {
@@ -55,7 +55,7 @@ export function FeaturesSection() {
       title: "Roles y Permisos",
       description:
         "Seguridad basada en roles (RBAC). Accesos personalizados y seguros para administradores, meseros y personal de cocina.",
-      color: "from-sage-300 to-sage-400",
+      color: "from-primary-300 to-primary-400",
       delay: 0.6,
     },
   ];
@@ -73,8 +73,8 @@ export function FeaturesSection() {
             transition={{ duration: 0.6 }}
             className="inline-flex mb-6"
           >
-            <Badge variant="success" size="md" className="glass-sage-light">
-              <span className=" w-2 h-2 bg-sage-400 rounded-full animate-pulse mr-2"></span>
+            <Badge variant="success" size="md" className="bg-primary-50 text-primary-700 border-primary-100">
+              <span className=" w-2 h-2 bg-primary-400 rounded-full animate-pulse mr-2"></span>
               Características Poderosas
             </Badge>
           </motion.div>
@@ -113,22 +113,22 @@ export function FeaturesSection() {
                   variant="bordered"
                   padding="lg"
                   hover
-                  className="h-full group relative overflow-hidden bg-white/50 backdrop-blur-sm border-sage-100 hover:border-sage-300 transition-all duration-500 shadow-soft-sm hover:shadow-xl"
+                  className="h-full group relative overflow-hidden bg-white/50 backdrop-blur-sm border-sage-100 hover:border-primary-200 transition-all duration-500 shadow-soft-sm hover:shadow-xl"
                 >
                   {/* Icon Container */}
                   <div className="relative mb-8">
                     <div
-                      className={`inline-flex p-5 rounded-[1.5rem] bg-gradient-to-br ${feature.color} group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-sage-100`}
+                      className={`inline-flex p-5 rounded-[1.5rem] bg-gradient-to-br ${feature.color} group-hover:scale-110 transition-transform duration-500 shadow-lg shadow-primary-50`}
                     >
                       <Icon className="w-8 h-8 text-white" />
                     </div>
 
                     {/* Decorative Element */}
-                    <div className="absolute -top-4 -right-4 w-24 h-24 bg-sage-100 rounded-full blur-3xl opacity-0 group-hover:opacity-60 transition-opacity duration-500"></div>
+                    <div className="absolute -top-4 -right-4 w-24 h-24 bg-primary-50 rounded-full blur-3xl opacity-0 group-hover:opacity-60 transition-opacity duration-500"></div>
                   </div>
 
                   {/* Title */}
-                  <h3 className="text-2xl font-black text-carbon-900 mb-4 group-hover:text-sage-600 transition-colors duration-300">
+                  <h3 className="text-2xl font-black text-carbon-900 mb-4 group-hover:text-primary-600 transition-colors duration-300">
                     {feature.title}
                   </h3>
 
@@ -138,7 +138,7 @@ export function FeaturesSection() {
                   </p>
 
                   {/* Hover Accent Line */}
-                  <div className="absolute bottom-0 left-0 w-0 h-1.5 bg-gradient-to-r from-sage-300 to-sage-500 group-hover:w-full transition-all duration-700 rounded-b-3xl"></div>
+                  <div className="absolute bottom-0 left-0 w-0 h-1.5 bg-gradient-to-r from-primary-300 to-primary-500 group-hover:w-full transition-all duration-700 rounded-b-3xl"></div>
                 </Card>
               </motion.div>
             );

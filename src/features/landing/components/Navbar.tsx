@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import { cn } from "@/utils/cn";
 
 /**
  * Navbar Component
@@ -52,14 +53,17 @@ export function Navbar() {
           {/* ============ LOGO ============ */}
           <Link to="/" className="flex items-center gap-3 group">
             {/* Logo Icon  */}
-            <div className="w-10 h-10 flex items-center justify-center group-hover:animate-glow-pulse transition-all">
-              <img src="/plaet.png" alt="Plaet Logo" className="w-full h-full object-contain mix-blend-multiply" />
+            <div className={cn(
+              "w-11 h-11 flex items-center justify-center transition-all duration-700",
+              "bg-gradient-to-tr from-white to-sage-50 rounded-2xl shadow-soft-md group-hover:shadow-soft-lg group-hover:scale-105"
+            )}>
+              <img src="/plaet.png" alt="Plaet Logo" className="w-8 h-8 object-contain mix-blend-multiply" />
             </div>
 
             {/* Brand Name */}
             <BrandName
               className="text-2xl font-bold text-carbon-900 tracking-tight"
-              accentClassName="text-sage-600"
+              accentClassName="text-primary-600"
             />
           </Link>
 
@@ -73,7 +77,7 @@ export function Navbar() {
                 initial={{ opacity: 0, y: -10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="text-carbon-700 hover:text-sage-600 font-medium transition-colors duration-200 relative group"
+                className="text-carbon-700 hover:text-primary-600 font-medium transition-colors duration-200 relative group"
               >
                 {link.label}
                 {/* Underline effect  */}
@@ -123,7 +127,7 @@ export function Navbar() {
                 key={item.href}
                 href={item.href}
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className=" block py-2 text-carbon-700 hover:text-sage-600 font-medium transition-colors"
+                className=" block py-2 text-carbon-700 hover:text-primary-600 font-medium transition-colors"
               >
                 {item.label}
               </a>

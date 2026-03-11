@@ -45,12 +45,12 @@ export function Footer() {
           <div className="lg:col-span-2">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 mb-6">
-              <div className="w-10 h-10 flex items-center justify-center">
-                <img src="/plaet.png" alt="Plaet Logo" className="w-full h-full object-contain mix-blend-multiply" />
+              <div className="w-11 h-11 flex items-center justify-center bg-gradient-to-tr from-white to-sage-50 rounded-2xl shadow-soft-md">
+                <img src="/plaet.png" alt="Plaet Logo" className="w-8 h-8 object-contain mix-blend-multiply" />
               </div>
               <BrandName
                 className="text-2xl font-bold text-carbon-900 tracking-tight"
-                accentClassName="text-sage-600"
+                accentClassName="text-primary-600"
               />
             </Link>
 
@@ -72,7 +72,7 @@ export function Footer() {
                   fullWidth
                   className="flex-1"
                 />
-                <Button variant="primary" size="md">
+                <Button variant="primary" size="md" className="bg-primary-600 hover:bg-primary-700 shadow-soft-sm">
                   <Mail className="w-5 h-5" />
                 </Button>
               </div>
@@ -90,7 +90,7 @@ export function Footer() {
                   <li key={link.label}>
                     <a
                       href={link.href}
-                      className="text-carbon-700 hover:text-sage-600 transition-colors font-light"
+                      className="text-carbon-700 hover:text-primary-600 transition-colors font-light"
                     >
                       {link.label}
                     </a>
@@ -120,9 +120,9 @@ export function Footer() {
                   target="_blank"
                   rel="noonpener noreferrer"
                   aria-label={social.label}
-                  className="w-10 h-10 rounded-xl bg-sage-50 flex items-center justify-center hover:bg-sage-100 transition-colors group"
+                  className="w-10 h-10 rounded-xl bg-sage-50 flex items-center justify-center hover:bg-primary-50 transition-colors group"
                 >
-                  <Icon className="w-5 h-5 text-carbon-700 group-hover:text-sage-600 transition-colors" />
+                  <Icon className="w-5 h-5 text-carbon-700 group-hover:text-primary-600 transition-colors" />
                 </a>
               );
             })}

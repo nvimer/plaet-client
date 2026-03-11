@@ -60,8 +60,8 @@ export function CTASection() {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="inline-flex mb-8"
           >
-            <Badge variant="success" size="md" className="glass-sage-light">
-              <CheckCircle className="w-4 h-4 mr-2" />
+            <Badge variant="success" size="md" className="bg-primary-50 text-primary-700 border-primary-100 font-bold">
+              <CheckCircle className="w-4 h-4 mr-2 text-primary-500" />
               Más de 500 restaurantes ya lo usan
             </Badge>
           </motion.div>
@@ -103,7 +103,7 @@ export function CTASection() {
                 key={feature}
                 className="flex items-center gap-2 justify-center lg:justify-start"
               >
-                <div className="w-2 h-2 rounded-full bg-sage-400"></div>
+                <div className="w-2 h-2 rounded-full bg-primary-400"></div>
                 <span className="text-carbon-700 font-medium">{feature}</span>
               </div>
             ))}

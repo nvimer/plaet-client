@@ -79,7 +79,7 @@ function StatCard({ stat, index, isInView }: StatCardProps) {
       >
         {/* Icon */}
         <div
-          className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${stat.color} mb-6 group-hover:animate-glow-pulse transition-all shadow-lg shadow-sage-100`}
+          className={`inline-flex p-4 rounded-2xl bg-gradient-to-br ${stat.color} mb-6 group-hover:animate-glow-pulse transition-all shadow-lg shadow-primary-100`}
         >
           <Icon className="w-8 h-8 text-white" />
         </div>
@@ -92,7 +92,7 @@ function StatCard({ stat, index, isInView }: StatCardProps) {
 
         {/* Label */}
         <div className="text-carbon-500 font-medium tracking-wide text-xs mb-1">{stat.label}</div>
-        <div className="text-sage-600 font-medium text-sm">{stat.description}</div>
+        <div className="text-primary-600 font-medium text-sm">{stat.description}</div>
       </Card>
     </motion.div>
   );
@@ -122,7 +122,7 @@ export function StatsSection() {
       suffix: "+",
       label: "Usuarios Diarios",
       description: "Gestionando pedidos",
-      color: "from-sage-300 to-sage-400",
+      color: "from-primary-300 to-primary-400",
     },
     {
       icon: TrendingUp,

@@ -91,7 +91,7 @@ export function PricingSection() {
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20 w-full flex justify-center">
-                  <Badge variant="success" size="lg" className="bg-sage-400 text-white border-none shadow-lg px-6 py-1 whitespace-nowrap">
+                  <Badge variant="success" size="lg" className="bg-primary-600 text-white border-none shadow-lg px-6 py-1 whitespace-nowrap">
                     <Sparkles className="w-4 h-4 mr-2" />
                     Recomendado
                   </Badge>
@@ -102,7 +102,7 @@ export function PricingSection() {
                 variant={plan.popular ? "elevated" : "bordered"}
                 padding="lg"
                 className={`flex-1 flex flex-col relative overflow-hidden transition-all duration-500 ${
-                  plan.popular ? "ring-4 ring-sage-200 border-none scale-105 z-10" : "bg-white/80 backdrop-blur-sm"
+                  plan.popular ? "ring-4 ring-primary-100 border-none scale-105 z-10" : "bg-white/80 backdrop-blur-sm"
                 }`}
               >
                 <div className="mb-8">
@@ -114,7 +114,7 @@ export function PricingSection() {
                   {plan.originalPrice && (
                     <div className="flex items-center gap-2 mb-1">
                       <span className="text-lg text-carbon-400 line-through font-light">${plan.originalPrice}</span>
-                      <Badge variant="success" size="sm" className="bg-sage-100 text-sage-700 border-none text-[10px] font-bold">
+                      <Badge variant="success" size="sm" className="bg-primary-50 text-primary-700 border-none text-[10px] font-bold">
                         OFERTA
                       </Badge>
                     </div>
@@ -131,7 +131,7 @@ export function PricingSection() {
                   <ul className="space-y-4">
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-sage-500 flex-shrink-0 mt-0.5" strokeWidth={3} />
+                        <Check className="w-5 h-5 text-primary-500 flex-shrink-0 mt-0.5" strokeWidth={3} />
                         <span className="text-carbon-700 text-sm font-medium">{feature}</span>
                       </li>
                     ))}
@@ -142,7 +142,7 @@ export function PricingSection() {
                   variant={plan.popular ? "primary" : "secondary"}
                   fullWidth
                   size="lg"
-                  className={plan.popular ? "shadow-lg shadow-sage-200" : ""}
+                  className={plan.popular ? "shadow-lg shadow-primary-100" : ""}
                 >
                   {plan.cta}
                 </Button>

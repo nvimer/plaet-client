@@ -104,8 +104,8 @@ export function HeroSection() {
               }}
               className="inline-flex items-center gap-2 mb-8"
             >
-              <Badge variant="success" size="md" className="bg-white/80 backdrop-blur-md text-sage-700 border-sage-200 shadow-soft-sm px-4 py-1.5">
-                <Sparkles className="w-4 h-4 mr-1 text-sage-500 animate-pulse" />
+              <Badge variant="success" size="md" className="bg-primary-50 text-primary-700 border-primary-100 shadow-soft-sm px-4 py-1.5 font-bold">
+                <Sparkles className="w-4 h-4 mr-1 text-primary-500 animate-pulse" />
                 Sistema #1 en Gestión de Restaurantes
               </Badge>
             </motion.div>
@@ -137,7 +137,7 @@ export function HeroSection() {
               className="text-xl md:text-2xl text-carbon-700 font-light leading-relaxed mb-10 max-w-2xl mx-auto lg:mx-0"
             >
               La plataforma todo-en-uno que {""}
-              <span className="font-semibold text-sage-600">
+              <span className="font-semibold text-primary-600">
                 simplifica
               </span>{" "}
               cada aspecto de tu negocio, desde el menú hasta la caja.
@@ -162,7 +162,7 @@ export function HeroSection() {
                   transition={{ delay: 0.6 + i * 0.1 }}
                   className="flex items-center gap-2"
                 >
-                  <div className="w-1.5 h-1.5 rounded-full bg-sage-400"></div>
+                  <div className="w-1.5 h-1.5 rounded-full bg-primary-400"></div>
                   <span className="text-carbon-600 font-medium text-sm md:text-base">
                     {text}
                   </span>
@@ -284,7 +284,7 @@ export function HeroSection() {
                     initial={{ height: 0 }}
                     animate={{ height: `${h}%` }}
                     transition={{ duration: 1.5, delay: 1 + i * 0.1, ease: "easeOut" }}
-                    className="w-full bg-gradient-to-t from-primary-300 to-primary-400 rounded-t-xl shadow-lg shadow-primary-200/20"
+                    className="w-full bg-gradient-to-t from-primary-400 to-primary-500 rounded-t-xl shadow-lg shadow-primary-200/20"
                   />
                 ))}
               </div>
@@ -301,7 +301,7 @@ export function HeroSection() {
               className="absolute -top-10 -right-6 lg:-right-16 bg-white/90 backdrop-blur-xl rounded-3xl p-5 shadow-2xl border border-white z-20 max-w-[220px]"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 bg-primary-400 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-200/50">
+                <div className="w-12 h-12 bg-primary-500 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-200/50">
                   <Sparkles className="w-7 h-7 text-white" />
                 </div>
                 <div>
