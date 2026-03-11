@@ -1,7 +1,7 @@
 import { useState, cloneElement, isValidElement } from "react";
 import { createPortal } from "react-dom";
 import { AlertTriangle, Info, X, Trash2 } from "lucide-react";
-import { Button } from "../Button/Button";
+import { Button } from "@/components";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/utils/cn";
 
