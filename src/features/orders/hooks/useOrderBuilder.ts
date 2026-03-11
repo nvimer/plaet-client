@@ -499,6 +499,8 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
         createdAt: (backdatedDate && backdatedDate !== todayStr) 
           ? new Date(backdatedDate).toISOString() 
           : undefined,
+        status: isFastHistoricalEntry ? OrderStatus.PAID : undefined,
+        itemStatus: isFastHistoricalEntry ? OrderItemStatus.DELIVERED : undefined,
       };
     }).filter(order => order.items.length > 0);
 
