@@ -15,7 +15,6 @@ import { useItems } from "@/features/menu";
 import { useDailyMenuByDate } from "@/features/daily-menu/hooks";
 import { OrderItemStatus, OrderType } from "@/types";
 import { logger } from "@/utils";
-import type { Order } from "@/types";
 import type { DailyMenuResponse } from "@/services/dailyMenuApi";
 import type {
   MenuOption,
@@ -211,8 +210,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const availableTables = tables.filter((t) => t.status === "AVAILABLE");
 
   // 5. Pricing Logic (Encapsulated)
+  const currentBasePrice = dailyMenuData ? (Number(dailyMenuData.basePrice) || 3000) : 0;
   const { lunchPrice, currentOrderTotal, tableTotal } = useOrderPricing(
-    Number(dailyMenuData?.basePrice || 3000),
+    currentBasePrice,
     selectedProtein,
     looseItems,
     packagingFee,
@@ -293,13 +293,13 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       drinkOptions: dailyMenuData.drinkOptions || [],
       dessertOptions: dailyMenuData.dessertOptions || [],
       riceOption: dailyMenuData.riceOptions?.[0] || null,
-      basePrice: Number(dailyMenuData.basePrice || 0),
+      basePrice: Number(dailyMenuData.basePrice) || 3000,
       isConfigured: true,
     };
   }, [dailyMenuData]);
 
   const dailyMenuPrices = useMemo(() => ({
-    basePrice: Number(dailyMenuData?.basePrice || 0),
+    basePrice: dailyMenuData ? (Number(dailyMenuData.basePrice) || 3000) : 0,
     isConfigured: !!dailyMenuData,
   }), [dailyMenuData]);
 
