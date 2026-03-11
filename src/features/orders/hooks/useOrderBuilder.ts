@@ -295,6 +295,11 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     };
   }, [dailyMenuData]);
 
+  const dailyMenuPrices = useMemo(() => ({
+    basePrice: Number(dailyMenuData?.basePrice || 0),
+    isConfigured: !!dailyMenuData,
+  }), [dailyMenuData]);
+
   // Auto-select single options
   useEffect(() => {
     if (dailyMenuDisplay.isConfigured) {
