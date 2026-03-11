@@ -1,12 +1,13 @@
 /**
  * USE ENHANCED AUTH HOOK
  *
- * Custom hook to use the enhanced authentication context
+ * Custom hook to use the enhanced authentication store (Zustand)
  * Provides type-safe access to auth functionality
+ * 
+ * Migrated from Context API to Zustand for better performance.
  */
 
-import { useContext } from "react";
-import { AuthContext } from "@/contexts/EnhancedAuthContext";
+import { useAuthStore } from "@/stores/useAuthStore";
 import type { Role, UserRole } from "@/types";
 
 /**
@@ -15,27 +16,25 @@ import type { Role, UserRole } from "@/types";
  * Provides access to authentication state and functions.
  */
 export function useAuth() {
-  const context = useContext(AuthContext);
-
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-
-  return context;
+  return useAuthStore();
 }
 
 /**
  * Hook for authentication state only
  */
 export function useAuthState() {
-  const auth = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const error = useAuthStore((state) => state.error);
+  const lastActivity = useAuthStore((state) => state.lastActivity);
 
   return {
-    user: auth.user,
-    isAuthenticated: auth.isAuthenticated,
-    isLoading: auth.isLoading,
-    error: auth.error,
-    lastActivity: auth.lastActivity,
+    user,
+    isAuthenticated,
+    isLoading,
+    error,
+    lastActivity,
   };
 }
 
@@ -43,16 +42,22 @@ export function useAuthState() {
  * Hook for authentication actions only
  */
 export function useAuthActions() {
-  const auth = useAuth();
+  const login = useAuthStore((state) => state.login);
+  const register = useAuthStore((state) => state.register);
+  const logout = useAuthStore((state) => state.logout);
+  const refreshToken = useAuthStore((state) => state.refreshToken);
+  const checkAuth = useAuthStore((state) => state.checkAuth);
+  const clearError = useAuthStore((state) => state.clearError);
+  const updateUser = useAuthStore((state) => state.updateUser);
 
   return {
-    login: auth.login,
-    register: auth.register,
-    logout: auth.logout,
-    refreshToken: auth.refreshToken,
-    checkAuth: auth.checkAuth,
-    clearError: auth.clearError,
-    updateUser: auth.updateUser,
+    login,
+    register,
+    logout,
+    refreshToken,
+    checkAuth,
+    clearError,
+    updateUser,
   };
 }
 
@@ -60,24 +65,25 @@ export function useAuthActions() {
  * Hook for user information only
  */
 export function useUser() {
-  const auth = useAuth();
+  const user = useAuthStore((state) => state.user);
+  const updateUser = useAuthStore((state) => state.updateUser);
 
   return {
-    user: auth.user,
-    updateUser: auth.updateUser,
+    user,
+    updateUser,
     hasRole: (roleName: string) => {
-      if (!auth.user?.roles) return false;
+      if (!user?.roles) return false;
       
-      return auth.user.roles.some((roleEntry) => {
+      return user.roles.some((roleEntry) => {
         // Handle both Role and UserRole structures
         const role = 'role' in roleEntry ? (roleEntry as UserRole).role : (roleEntry as Role);
         return role.name === roleName;
       });
     },
     hasPermission: (permissionName: string) => {
-      if (!auth.user?.roles) return false;
+      if (!user?.roles) return false;
 
-      return auth.user.roles.some((roleEntry) => {
+      return user.roles.some((roleEntry) => {
         // Safe check for UserRole structure with nested permissions
         if ('role' in roleEntry) {
           const userRole = roleEntry as UserRole & { 
