@@ -26,7 +26,7 @@ interface DailyMenuConfigFormProps {
 }
 
 const defaultPrices = {
-  basePrice: 4000,
+  basePrice: 3000,
 };
 
 const DEFAULT_CATEGORY_NAMES = {
