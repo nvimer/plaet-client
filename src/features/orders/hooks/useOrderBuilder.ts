@@ -53,6 +53,7 @@ export interface UseOrderBuilderReturn {
   tableOrders: TableOrder[];
   currentOrderIndex: number | null;
   backdatedDate: string | null;
+  isHistoricalMode: boolean;
   
   // Customer info
   customerName: string;
@@ -127,6 +128,7 @@ export interface UseOrderBuilderReturn {
   setTableOrders: (orders: TableOrder[] | ((prev: TableOrder[]) => TableOrder[])) => void;
   setCurrentOrderIndex: (index: number | null) => void;
   setBackdatedDate: (date: string | null) => void;
+  setIsHistoricalMode: (isHistorical: boolean) => void;
   setCustomerName: (name: string) => void;
   setCustomerPhone: (phone: string) => void;
   setCustomerPhone2: (phone: string) => void;
@@ -162,6 +164,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     tableOrders, setTableOrders,
     currentOrderIndex, setCurrentOrderIndex,
     backdatedDate, setBackdatedDate,
+    isHistoricalMode, setIsHistoricalMode,
     selectedProtein, setSelectedProtein,
     selectedSoup, setSelectedSoup,
     selectedPrinciple, setSelectedPrinciple,
@@ -528,27 +531,10 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
         }
       }
 
-      if (isFastHistoricalEntry && createdOrdersList && createdOrdersList.length > 0) {
-        await Promise.all(createdOrdersList.map(async (createdOrder) => {
-          try {
-            const { paymentApi, orderApi } = await import("@/services");
-            await paymentApi.createPayment(createdOrder.id, {
-              method: PaymentMethod.CASH,
-              amount: Number(createdOrder.totalAmount)
-            });
-
-            if (createdOrder.items) {
-              await Promise.all(createdOrder.items.map(item => 
-                orderApi.updateOrderItemStatus(createdOrder.id, item.id, OrderItemStatus.DELIVERED)
-              ));
-            }
-          } catch (payErr) {
-            logger.error(`Error processing historical payment/items for ${createdOrder.id}`, payErr instanceof Error ? payErr : new Error(String(payErr)));
-          }
-        }));
-        toast.success("Registro histórico guardado y liquidado", { icon: "📜" });
+      if (isFastHistoricalEntry) {
+        toast.success("Registro histórico guardado", { icon: "📜" });
       }
-      
+
       clearAll();
       resetCustomer();
       setPackagingFee(Number(dailyMenuData?.packagingFee || 1000));
@@ -583,6 +569,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     tableOrders,
     currentOrderIndex,
     backdatedDate,
+    isHistoricalMode,
     customerName,
     customerPhone,
     customerPhone2,
@@ -632,6 +619,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setTableOrders,
     setCurrentOrderIndex,
     setBackdatedDate,
+    setIsHistoricalMode,
     setCustomerName: handleSetCustomerName,
     setCustomerPhone: handleSetCustomerPhone,
     setCustomerPhone2: handleSetCustomerPhone2,

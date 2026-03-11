@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { OrderStatus } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
 import type { LucideIcon } from "lucide-react";
-import { useOrder, useDeleteOrder, useUpdateOrderStatus } from "../hooks";
+import { useOrder, useDeleteOrder, useUpdateOrderStatus, useAddPayment } from "../hooks";
 import {
   Calendar,
   Clock,
@@ -43,6 +43,7 @@ export function OrderDetailPage() {
   const { mutate: updateStatus, isPending: isUpdatingStatus } =
     useUpdateOrderStatus();
   const { mutate: deleteOrder, isPending: isDeleting } = useDeleteOrder();
+  const { mutateAsync: addPaymentAsync, isPending: isAddingPayment } = useAddPayment();
   
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);

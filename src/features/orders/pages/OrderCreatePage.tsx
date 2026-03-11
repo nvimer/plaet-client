@@ -70,7 +70,9 @@ export function OrderCreatePage() {
     currentOrderIndex,
     showSummaryModal,
     backdatedDate,
+    isHistoricalMode,
     setBackdatedDate,
+    setIsHistoricalMode,
     setShowSummaryModal,
     setSelectedOrderType,
     setSelectedTable,
@@ -343,14 +345,42 @@ export function OrderCreatePage() {
         actions={
           <div className="flex items-center gap-2">
             {isAdmin && (
-              <div className="hidden sm:flex items-center gap-2 px-3 py-2 bg-white border border-sage-100 rounded-xl shadow-soft-sm mr-2">
-                <Calendar className="w-4 h-4 text-sage-500" />
-                <input
-                  type="date"
-                  value={backdatedDate || getLocalDateString(new Date())}
-                  onChange={(e) => setBackdatedDate(e.target.value)}
-                  className="bg-transparent border-none text-[11px] font-black text-carbon-900 focus:ring-0 cursor-pointer p-0 w-28 uppercase"
-                />
+              <div className="flex items-center gap-3 mr-4">
+                <label className="flex items-center gap-2 cursor-pointer group">
+                  <div className="relative">
+                    <input
+                      type="checkbox"
+                      checked={isHistoricalMode}
+                      onChange={(e) => {
+                        const val = e.target.checked;
+                        setIsHistoricalMode(val);
+                        if (!val) setBackdatedDate(null);
+                      }}
+                      className="sr-only peer"
+                    />
+                    <div className="w-10 h-6 bg-carbon-200 rounded-full peer peer-checked:bg-warning-500 transition-colors" />
+                    <div className="absolute left-1 top-1 w-4 h-4 bg-white rounded-full transition-transform peer-checked:translate-x-4" />
+                  </div>
+                  <span className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest group-hover:text-carbon-600 transition-colors">
+                    Modo Histórico
+                  </span>
+                </label>
+
+                {isHistoricalMode && (
+                  <motion.div 
+                    initial={{ opacity: 0, x: 10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    className="hidden sm:flex items-center gap-2 px-3 py-2 bg-white border-2 border-warning-200 rounded-xl shadow-soft-sm"
+                  >
+                    <Calendar className="w-4 h-4 text-warning-500" />
+                    <input
+                      type="date"
+                      value={backdatedDate || getLocalDateString(new Date())}
+                      onChange={(e) => setBackdatedDate(e.target.value)}
+                      className="bg-transparent border-none text-[11px] font-black text-carbon-900 focus:ring-0 cursor-pointer p-0 w-28 uppercase"
+                    />
+                  </motion.div>
+                )}
               </div>
             )}
             <Button
@@ -482,7 +512,7 @@ export function OrderCreatePage() {
         orderType={selectedOrderType}
         tableId={selectedTable}
         isPending={isPending}
-        isHistorical={!!backdatedDate}
+        isHistorical={isHistoricalMode}
         customerName={orderBuilder.customerName}
         customerPhone={orderBuilder.customerPhone}
         deliveryAddress={orderBuilder.deliveryAddress}

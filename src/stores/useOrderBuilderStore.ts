@@ -16,6 +16,7 @@ interface OrderBuilderState {
   tableOrders: TableOrder[];
   currentOrderIndex: number | null;
   backdatedDate: string | null;
+  isHistoricalMode: boolean;
   
   // Current draft selections
   selectedProtein: ProteinOption | null;
@@ -35,6 +36,7 @@ interface OrderBuilderState {
   setTableOrders: (orders: TableOrder[] | ((prev: TableOrder[]) => TableOrder[])) => void;
   setCurrentOrderIndex: (index: number | null) => void;
   setBackdatedDate: (date: string | null) => void;
+  setIsHistoricalMode: (isHistorical: boolean) => void;
   setSelectedProtein: (protein: ProteinOption | null) => void;
   setSelectedSoup: (soup: MenuOption | null) => void;
   setSelectedPrinciple: (principle: MenuOption | null) => void;
@@ -58,6 +60,7 @@ export const useOrderBuilderStore = create<OrderBuilderState>()(
       tableOrders: [],
       currentOrderIndex: null,
       backdatedDate: null,
+      isHistoricalMode: false,
       
       selectedProtein: null,
       selectedSoup: null,
@@ -78,6 +81,7 @@ export const useOrderBuilderStore = create<OrderBuilderState>()(
       })),
       setCurrentOrderIndex: (currentOrderIndex) => set({ currentOrderIndex }),
       setBackdatedDate: (backdatedDate) => set({ backdatedDate }),
+      setIsHistoricalMode: (isHistoricalMode) => set({ isHistoricalMode }),
       
       setSelectedProtein: (selectedProtein) => set({ selectedProtein }),
       setSelectedSoup: (selectedSoup) => set({ selectedSoup }),
