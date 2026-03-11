@@ -35,13 +35,14 @@ import { variants, transitions } from "@/utils/motion";
 
 import { getLocalDateString } from "@/utils/dateUtils";
 
-import { useSidebar } from "@/contexts/SidebarContext";
+import { useUIStore } from "@/stores/useUIStore";
 
 export function OrderCreatePage() {
   const { user } = useAuth();
 // ... (omitting some lines for context matching if needed, but I'll use a better block)
 
-  const { isCollapsed, isMobile } = useSidebar();
+  const isCollapsed = useUIStore((state) => state.isCollapsed);
+  const isMobile = useUIStore((state) => state.isMobile);
   const isAdmin = user?.roles?.some(r => 
     (typeof r === 'object' && 'name' in r ? r.name : r) === RoleName.ADMIN
   );

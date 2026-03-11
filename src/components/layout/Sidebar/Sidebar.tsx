@@ -8,7 +8,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { ROUTES } from "@/app/routes";
-import { useSidebar } from "@/contexts/SidebarContext";
+import { useUIStore } from "@/stores/useUIStore";
 import { usePermissions } from "@/hooks";
 import { getNavigationItems } from "./navigationConfig";
 import { SidebarItem } from "./components/SidebarItem";
@@ -24,14 +24,12 @@ import { SidebarGroup } from "./components/SidebarGroup";
  * - Mobile-first responsive design
  */
 export function Sidebar() {
-  const {
-    isCollapsed,
-    isMobileOpen,
-    isMobile,
-    toggleCollapsed,
-    closeMobile,
-    toggleMobile,
-  } = useSidebar();
+  const isCollapsed = useUIStore((state) => state.isCollapsed);
+  const isMobileOpen = useUIStore((state) => state.isMobileOpen);
+  const isMobile = useUIStore((state) => state.isMobile);
+  const toggleCollapsed = useUIStore((state) => state.toggleCollapsed);
+  const closeMobile = useUIStore((state) => state.closeMobile);
+  const toggleMobile = useUIStore((state) => state.toggleMobile);
 
   const location = useLocation();
   const { isSuperAdmin, user, permissions } = usePermissions();

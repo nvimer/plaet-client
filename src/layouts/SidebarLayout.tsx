@@ -1,6 +1,6 @@
 import { Sidebar } from "@/components/layout/Sidebar/Sidebar";
 import { TopBar } from "@/components/layout/TopBar";
-import { useSidebar } from "@/contexts/SidebarContext";
+import { useUIStore } from "@/stores/useUIStore";
 import { cn } from "@/utils/cn";
 
 export interface SidebarLayoutProps {
@@ -40,7 +40,8 @@ export function SidebarLayout({
   hideHeader = false,
   hideTitle = false,
 }: SidebarLayoutProps) {
-  const { isCollapsed, isMobile } = useSidebar();
+  const isCollapsed = useUIStore((state) => state.isCollapsed);
+  const isMobile = useUIStore((state) => state.isMobile);
 
   return (
     <div className="min-h-screen bg-sage-50 overflow-x-hidden">
