@@ -2,6 +2,7 @@
  * useOrderBuilder Hook
  * Manages order creation state and logic.
  * Refactored into smaller sub-hooks and pure logic functions for better maintainability.
+ * Integrated with useOrderBuilderStore for total persistence and resilience.
  */
 
 import { useState, useMemo, useEffect, useCallback } from "react";
@@ -12,8 +13,7 @@ import { useCreateOrder, useBatchCreateOrders } from "./useCreateOrder";
 import { useTables } from "@/features/tables";
 import { useItems } from "@/features/menu";
 import { useDailyMenuByDate } from "@/features/daily-menu/hooks";
-import { PaymentMethod, OrderItemStatus, OrderType } from "@/types";
-import { paymentApi, orderApi } from "@/services";
+import { OrderItemStatus, OrderType } from "@/types";
 import { logger } from "@/utils";
 import type { Order } from "@/types";
 import type { DailyMenuResponse } from "@/services/dailyMenuApi";
@@ -28,11 +28,12 @@ import type {
 } from "../types/orderBuilder";
 import type { Replacement } from "../components";
 
-// Logic and Sub-hooks
+// Logic, Sub-hooks and Stores
 import { useCustomerLookup } from "./useCustomerLookup";
 import { useOrderPricing } from "./useOrderPricing";
 import { buildOrderNotesString, extractManualNotes } from "../logic/noteLogic";
 import { validateOrderDraft } from "../logic/validationLogic";
+import { useOrderBuilderStore } from "@/stores/useOrderBuilderStore";
 
 export interface UseOrderBuilderReturn {
   // Loading states
@@ -154,16 +155,36 @@ export interface UseOrderBuilderReturn {
 }
 
 export function useOrderBuilder(): UseOrderBuilderReturn {
-  // 1. Core State
-  const [selectedOrderType, setSelectedOrderType] = useState<OrderType | null>(null);
-  const [selectedTable, setSelectedTable] = useState<number | null>(null);
-  const [tableOrders, setTableOrders] = useState<TableOrder[]>([]);
-  const [currentOrderIndex, setCurrentOrderIndex] = useState<number | null>(null);
-  const [backdatedDate, setBackdatedDate] = useState<string | null>(getLocalDateString(new Date()));
+  // 1. Core State from Zustand Store (Persistent)
+  const {
+    selectedOrderType, setSelectedOrderType,
+    selectedTable, setSelectedTable,
+    tableOrders, setTableOrders,
+    currentOrderIndex, setCurrentOrderIndex,
+    backdatedDate, setBackdatedDate,
+    selectedProtein, setSelectedProtein,
+    selectedSoup, setSelectedSoup,
+    selectedPrinciple, setSelectedPrinciple,
+    selectedSalad, setSelectedSalad,
+    selectedDrink, setSelectedDrink,
+    selectedExtra, setSelectedExtra,
+    selectedRice, setSelectedRice,
+    replacements, setReplacements,
+    looseItems, setLooseItems,
+    orderNotes, setOrderNotes,
+    resetDraft, clearAll
+  } = useOrderBuilderStore();
+
+  // 2. Transiente UI State (Not persistent)
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showDailyMenu, setShowDailyMenu] = useState(false);
+  const [showSummaryModal, setShowSummaryModal] = useState(false);
+  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
+  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [packagingFee, setPackagingFee] = useState(1000);
   const [packagingQuantity, setPackagingQuantity] = useState(0);
 
-  // 2. Sub-hooks for specialized state
+  // 3. Sub-hooks for specialized state
   const customerLookup = useCustomerLookup();
   const { 
     customerName, customerPhone, customerPhone2, deliveryAddress, address2,
@@ -171,7 +192,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setDeliveryAddress, setAddress2, resetCustomer
   } = customerLookup;
 
-  // 3. Data Hooks
+  // 4. Data Hooks
   const { data: tablesData, isLoading: tablesLoading } = useTables();
   const { data: menuItems, isLoading: itemsLoading } = useItems();
   const dailyMenu = useDailyMenuByDate(backdatedDate || getLocalDateString(new Date()));
@@ -186,26 +207,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const tables = tablesData?.tables || [];
   const availableTables = tables.filter((t) => t.status === "AVAILABLE");
 
-  // 4. Draft Order State
-  const [selectedProtein, setSelectedProtein] = useState<ProteinOption | null>(null);
-  const [looseItems, setLooseItems] = useState<LooseItem[]>([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [showDailyMenu, setShowDailyMenu] = useState(false);
-  const [orderNotes, setOrderNotes] = useState("");
-
-  const [selectedSoup, setSelectedSoup] = useState<MenuOption | null>(null);
-  const [selectedPrinciple, setSelectedPrinciple] = useState<MenuOption | null>(null);
-  const [selectedSalad, setSelectedSalad] = useState<MenuOption | null>(null);
-  const [selectedDrink, setSelectedDrink] = useState<MenuOption | null>(null);
-  const [selectedExtra, setSelectedExtra] = useState<MenuOption | null>(null);
-  const [selectedRice, setSelectedRice] = useState<MenuOption | null>(null);
-  const [replacements, setReplacements] = useState<Replacement[]>([]);
-
-  // UI State
-  const [showSummaryModal, setShowSummaryModal] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
-  const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
-
   // 5. Pricing Logic (Encapsulated)
   const { lunchPrice, currentOrderTotal, tableTotal } = useOrderPricing(
     Number(dailyMenuData?.basePrice || 0),
@@ -218,12 +219,13 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
   // 6. Effects
   useEffect(() => {
-    if (selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) {
-      setPackagingQuantity(1);
-    } else {
-      setPackagingQuantity(0);
+    // Only set default if it's currently 0 (to avoid overwriting persisted quantity)
+    if (packagingQuantity === 0) {
+      if (selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) {
+        setPackagingQuantity(1);
+      }
     }
-  }, [selectedOrderType]);
+  }, [selectedOrderType, packagingQuantity]);
 
   useEffect(() => {
     if (dailyMenuData?.packagingFee) {
@@ -303,7 +305,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       if (drinkOptions.length === 1 && !selectedDrink) setSelectedDrink(drinkOptions[0]);
       if (extraOptions.length === 1 && !selectedExtra) setSelectedExtra(extraOptions[0]);
     }
-  }, [dailyMenuDisplay, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra]);
+  }, [dailyMenuDisplay, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, setSelectedSoup, setSelectedPrinciple, setSelectedSalad, setSelectedDrink, setSelectedExtra]);
 
   // 8. Callbacks and Handlers (Delegating to Logic)
   const validateOrder = useCallback(() => {
@@ -339,29 +341,19 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       }
       return [...prev, { ...item, quantity: 1 }];
     });
-  }, []);
+  }, [setLooseItems]);
 
   const handleUpdateLooseItemQuantity = useCallback((id: number, quantity: number) => {
     setLooseItems((prev) => 
       quantity <= 0 ? prev.filter((i) => i.id !== id) : prev.map((i) => (i.id === id ? { ...i, quantity } : i))
     );
-  }, []);
+  }, [setLooseItems]);
 
   const clearCurrentOrder = useCallback(() => {
-    setSelectedProtein(null);
-    setSelectedSoup(null);
-    setSelectedPrinciple(null);
-    setSelectedSalad(null);
-    setSelectedDrink(null);
-    setSelectedExtra(null);
-    setSelectedRice(null);
-    setReplacements([]);
-    setLooseItems([]);
-    setOrderNotes("");
-    setCurrentOrderIndex(null);
+    resetDraft();
     setSearchTerm("");
     setPackagingQuantity(selectedOrderType === OrderType.DINE_IN ? 0 : 1);
-  }, [selectedOrderType]);
+  }, [resetDraft, selectedOrderType]);
 
   const handleAddOrderToTable = useCallback(() => {
     setTouchedFields(new Set(["protein", "soup", "principle", "salad", "drink", "extra"]));
@@ -405,7 +397,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     clearCurrentOrder();
     setValidationErrors([]);
     setTouchedFields(new Set());
-  }, [selectedProtein, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedRice, dailyMenuDisplay.riceOption, replacements, looseItems, currentOrderTotal, buildOrderNotes, currentOrderIndex, tableOrders.length, validateOrder, clearCurrentOrder, packagingFee, packagingQuantity]);
+  }, [selectedProtein, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedRice, dailyMenuDisplay.riceOption, replacements, looseItems, currentOrderTotal, buildOrderNotes, currentOrderIndex, tableOrders.length, validateOrder, clearCurrentOrder, packagingFee, packagingQuantity, setTableOrders]);
 
   const handleEditOrder = useCallback((index: number) => {
     const order = tableOrders[index];
@@ -434,18 +426,18 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
     setOrderNotes(extractManualNotes(order.notes || ""));
     window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [tableOrders, selectedOrderType]);
+  }, [tableOrders, selectedOrderType, setCurrentOrderIndex, setSelectedProtein, setSelectedSoup, setSelectedPrinciple, setSelectedSalad, setSelectedDrink, setSelectedExtra, setSelectedRice, setReplacements, setLooseItems, setOrderNotes]);
 
   const handleRemoveOrder = useCallback((index: number) => {
     setTableOrders((prev) => prev.filter((_, i) => i !== index));
     if (currentOrderIndex === index) clearCurrentOrder();
     toast.success("Pedido eliminado");
-  }, [currentOrderIndex, clearCurrentOrder]);
+  }, [currentOrderIndex, clearCurrentOrder, setTableOrders]);
 
   const handleDuplicateOrder = useCallback((index: number) => {
     setTableOrders((prev) => [...prev, { ...prev[index], id: Date.now().toString(), createdAt: Date.now() }]);
     toast.success("Pedido duplicado");
-  }, []);
+  }, [setTableOrders]);
 
   const handleShowSummary = useCallback(() => {
     if (tableOrders.length === 0) {
@@ -534,6 +526,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       if (isFastHistoricalEntry && createdOrdersList && createdOrdersList.length > 0) {
         await Promise.all(createdOrdersList.map(async (createdOrder) => {
           try {
+            const { paymentApi, orderApi } = await import("@/services");
             await paymentApi.createPayment(createdOrder.id, {
               method: PaymentMethod.CASH,
               amount: Number(createdOrder.totalAmount)
@@ -551,12 +544,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
         toast.success("Registro histórico guardado y liquidado", { icon: "📜" });
       }
       
-      setTableOrders([]);
-      setSelectedTable(null);
+      clearAll();
       resetCustomer();
       setPackagingFee(Number(dailyMenuData?.packagingFee || 1000));
-      clearCurrentOrder();
-      setSelectedOrderType(null); 
 
     } catch (error: unknown) {
       logger.error("Order Creation Error", error instanceof Error ? error : new Error(String(error)));
@@ -565,18 +555,15 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       else if (error instanceof Error) description = error.message;
       toast.error("Error al crear los pedidos", { description });
     }
-  }, [selectedTable, selectedOrderType, tableOrders, createOrder, backdatedDate, clearCurrentOrder, createBatchOrders, customerName, customerPhone, deliveryAddress, address2, customerPhone2, dailyMenuData, resetCustomer]);
+  }, [selectedTable, selectedOrderType, tableOrders, createOrder, backdatedDate, clearAll, createBatchOrders, customerName, customerPhone, deliveryAddress, address2, customerPhone2, dailyMenuData, resetCustomer]);
 
-  const handleSelectOrderType = useCallback((type: OrderType) => setSelectedOrderType(type), []);
+  const handleSelectOrderType = useCallback((type: OrderType) => setSelectedOrderType(type), [setSelectedOrderType]);
 
   const handleBackToOrderType = useCallback(() => {
-    setSelectedOrderType(null);
-    setSelectedTable(null);
-    setTableOrders([]);
+    clearAll();
     resetCustomer();
     setPackagingFee(Number(dailyMenuData?.packagingFee || 1000));
-    clearCurrentOrder();
-  }, [clearCurrentOrder, dailyMenuData, resetCustomer]);
+  }, [clearAll, dailyMenuData, resetCustomer]);
 
   return {
     isLoading: tablesLoading || itemsLoading,

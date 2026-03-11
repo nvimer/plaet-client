@@ -5,8 +5,7 @@ import type {
   ProteinOption, 
   LooseItem, 
   TableOrder, 
-  MenuOption, 
-  LunchSelection 
+  MenuOption 
 } from "../features/orders/types/orderBuilder";
 import type { Replacement } from "../features/orders/components";
 
