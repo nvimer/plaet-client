@@ -1,7 +1,7 @@
+import { BrandName, Button } from "@/components";
 import { useEffect, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { Link } from "react-router-dom";
-import { Button, BrandName } from "@/components";
 import { Menu, X } from "lucide-react";
 
 /**

@@ -1,7 +1,7 @@
+import { Card } from "@/components";
 import { useState } from "react";
 import { useRolesWithPermissions, useAllPermissions, useAssignPermissions } from "../hooks/usePermissionsEditor";
 import { RolePermissionMatrix } from "../components/RolePermissionMatrix";
-import { Card } from "@/components/ui/Card/Card";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import type { RoleWithPermissions } from "@/types";
 import { ShieldCheck, Info, ShieldAlert } from "lucide-react";

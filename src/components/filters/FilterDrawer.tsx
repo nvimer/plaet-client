@@ -1,5 +1,4 @@
-import { Button } from "@/components/ui/Button/Button";
-import { Drawer } from "@/components/ui/Drawer/Drawer";
+import { Button, Drawer } from "@/components";
 import { Filter, RotateCcw } from "lucide-react";
 
 interface FilterDrawerProps {

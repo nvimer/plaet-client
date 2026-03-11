@@ -1,6 +1,6 @@
+import { Skeleton } from "@/components";
 import { useState, useMemo } from "react";
 import { useSalesPrediction } from "../hooks/useAnalytics";
-import { Skeleton } from "@/components";
 import { AlertCircle, Calendar, TrendingUp } from "lucide-react";
 import { formatCurrency } from "@/utils/formatUtils";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";

@@ -1,4 +1,4 @@
-import { SearchInput } from "@/components/ui/SearchInput";
+import { SearchInput } from "@/components";
 import { cn } from "@/utils/cn";
 
 interface FilterSearchProps {

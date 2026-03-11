@@ -1,5 +1,5 @@
-import type { ReactNode } from "react";
 import { Button } from "@/components";
+import type { ReactNode } from "react";
 
 export interface MenuSectionToolbarProps {
   /** e.g. "5 productos" or "3 categorías" */

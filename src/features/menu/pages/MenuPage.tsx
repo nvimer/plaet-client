@@ -1,3 +1,4 @@
+import { EmptyState, Pagination, Skeleton } from "@/components";
 import { useMemo, useState, useEffect } from "react";
 import { useNavigate, useSearchParams, useLocation } from "react-router-dom";
 import { toast } from "sonner";
@@ -10,8 +11,6 @@ import {
   FilterDrawer,
   FilterSelect,
 } from "@/components";
-import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
-import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 import {
   Grid3x3,
   Plus,
@@ -29,7 +28,6 @@ import {
   useItemsPagination,
 } from "../items";
 import { useLowStockItems, useOutOfStockItems } from "@/features/inventory/hooks";
-import { Pagination } from "@/components/ui/Pagination";
 import {
   ROUTES,
   getMenuItemEditRoute,

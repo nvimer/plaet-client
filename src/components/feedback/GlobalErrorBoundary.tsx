@@ -11,11 +11,11 @@
  * - Allows retry via error reset signal
  */
 
+import { Button } from "@/components";
 import { Component, type ReactNode } from "react";
 import type { ErrorInfo } from "react";
 import { motion } from "framer-motion";
 import { ChefHat, RefreshCw, Home, AlertTriangle, Bug } from "lucide-react";
-import { Button } from "@/components";
 import { logger } from "@/utils";
 
 interface Props {

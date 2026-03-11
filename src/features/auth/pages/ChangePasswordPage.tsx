@@ -5,6 +5,7 @@
  * Requires current password verification
  */
 
+import { Button } from "@/components";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -18,7 +19,6 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
-import { Button } from "@/components";
 import { authApi } from "@/services";
 import { toast } from "sonner";
 import axios from "axios";

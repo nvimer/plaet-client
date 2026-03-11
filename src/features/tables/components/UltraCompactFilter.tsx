@@ -1,6 +1,6 @@
+import { Badge } from "@/components";
 import { useState } from 'react';
 import { Search, Filter, X } from 'lucide-react';
-import { Badge } from '@/components';
 import { TableStatus } from '@/types';
 import type { TableFilters } from '@/types';
 

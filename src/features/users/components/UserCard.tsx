@@ -1,4 +1,4 @@
-import { Card, Button, Badge } from "@/components";
+import { Badge, Button, Card, ConfirmDialog } from "@/components";
 import {
   type User,
   RoleName,
@@ -7,7 +7,6 @@ import {
 } from "@/types";
 import { Edit2, Trash2, Mail, Phone } from "lucide-react";
 import { useState } from "react";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog/ConfirmDialog";
 
 interface UserCardProps {
   user: User;

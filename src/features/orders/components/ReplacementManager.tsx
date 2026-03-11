@@ -1,5 +1,5 @@
+import { Button, Card } from "@/components";
 import React from "react";
-import { Card, Button } from "@/components";
 import { ArrowRight, Trash2 } from "lucide-react";
 import type { Replacement } from "./ReplacementManager";
 import { useReplacementWizard } from "../utils/useReplacementWizard";

@@ -5,9 +5,9 @@
  * Can be used as a route for explicit error navigation.
  */
 
+import { Button } from "@/components";
 import { motion } from "framer-motion";
 import { ChefHat, RefreshCw, Home, AlertTriangle } from "lucide-react";
-import { Button } from "@/components";
 import { ROUTES } from "@/app/routes";
 
 function ErrorPage(): React.ReactNode {

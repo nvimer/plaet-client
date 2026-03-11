@@ -1,5 +1,5 @@
+import { BaseModal, Button, Card, Input } from "@/components";
 import { useEffect, useState, useCallback } from "react";
-import { Card, Button, Input } from "@/components";
 import { FilterSelect } from "@/components/filters/FilterSelect";
 import { Save, UtensilsCrossed, Check, Settings2, Lock, ListChecks, Box } from "lucide-react";
 import {
@@ -12,7 +12,6 @@ import {
   type UpdateDailyMenuData,
 } from "@/services/dailyMenuApi";
 import { useCategories } from "@/features/menu/categories/hooks";
-import { BaseModal } from "@/components/ui/BaseModal/BaseModal";
 import { toast } from "sonner";
 import { cn } from "@/utils/cn";
 import { logger } from "@/utils";

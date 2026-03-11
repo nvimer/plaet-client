@@ -1,7 +1,6 @@
+import { Badge, Button, Card } from "@/components";
 import { motion } from "framer-motion";
 import { Check, Sparkles } from "lucide-react";
-import { Button, Card } from "@/components";
-import { Badge } from "@/components/ui/Badge/Badge";
 
 export function PricingSection() {
   const plans = [

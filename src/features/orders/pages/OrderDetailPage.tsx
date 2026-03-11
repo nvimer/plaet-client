@@ -1,3 +1,4 @@
+import { OrderStatusBadge } from "@/components";
 import { useParams, useNavigate } from "react-router-dom";
 import { OrderStatus } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
@@ -18,7 +19,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
-import { OrderStatusBadge } from "../components/OrderStatusBadge";
 import { PaymentModal, type PaymentEntry } from "../components/PaymentModal";
 import {
   Button,

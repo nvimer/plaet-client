@@ -1,7 +1,7 @@
+import { Button, ConfirmDialog } from "@/components";
 import { useState } from "react";
 import { Edit2, ImageIcon, Trash2, Package, Star, Plus } from "lucide-react";
 import type { MenuItem } from "@/types";
-import { Button, ConfirmDialog } from "@/components";
 import { cn } from "@/utils/cn";
 import { formatCurrency } from "@/utils/formatUtils";
 import { QuickStockModal } from "@/features/inventory/components/QuickStockModal";

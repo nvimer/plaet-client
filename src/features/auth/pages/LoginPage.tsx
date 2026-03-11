@@ -5,6 +5,7 @@
  * Includes password visibility toggle and "Forgot Password" link
  */
 
+import { BrandName, Button, Input, Seo } from "@/components";
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -17,7 +18,6 @@ import {
   EyeOff,
   ShieldCheck,
 } from "lucide-react";
-import { Button, Input, BrandName, Seo } from "@/components";
 import { useAuth } from "@/hooks";
 import { toast } from "sonner";
 

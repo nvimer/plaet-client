@@ -1,6 +1,5 @@
-import { SearchInput } from '@/components/ui/SearchInput';
+import { Badge, SearchInput } from "@/components";
 import { Filter } from 'lucide-react';
-import { Badge } from '@/components';
 import { TableStatus } from '@/types';
 import type { TableFilters } from '@/types';
 

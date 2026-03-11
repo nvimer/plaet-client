@@ -1,8 +1,7 @@
+import { Badge, Button } from "@/components";
 import { Link } from "react-router-dom";
 import { motion, useScroll, useTransform, useSpring, useMotionValue } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
-import { Button } from "@/components";
-import { Badge } from "@/components/ui/Badge/Badge";
 import { useEffect } from "react";
 
 /**

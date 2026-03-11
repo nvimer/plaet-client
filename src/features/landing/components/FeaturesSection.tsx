@@ -1,7 +1,6 @@
+import { Badge, Button, Card } from "@/components";
 import { motion } from "framer-motion";
 import { LayoutGrid, Shield, Zap, Utensils, ClipboardList, Package } from "lucide-react";
-import { Badge } from "@/components/ui/Badge/Badge";
-import { Button, Card } from "@/components";
 
 /**
  * FeaturesSection Component

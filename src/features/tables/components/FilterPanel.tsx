@@ -1,5 +1,4 @@
-import { SearchInput } from "@/components/ui/SearchInput";
-import { RadioGroup } from "@/components/ui/RadioGroup";
+import { RadioGroup, SearchInput } from "@/components";
 import { FilterSection } from "./FilterSection";
 import { TableStatus } from "@/types";
 import type { TableFilters } from "@/types";

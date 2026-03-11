@@ -1,5 +1,5 @@
-import { useAnalytics } from "../hooks/useAnalytics";
 import { Skeleton } from "@/components";
+import { useAnalytics } from "../hooks/useAnalytics";
 import { AlertCircle, TrendingUp, DollarSign, ShoppingBag } from "lucide-react";
 import { formatCurrency } from "@/utils/formatUtils";
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recharts";

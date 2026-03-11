@@ -1,6 +1,6 @@
+import { Card } from "@/components";
 import React from "react";
 import { useCashClosure } from "@/features/cash-closure/hooks/useCashClosure";
-import { Card } from "@/components/ui/Card/Card";
 import { ArrowRight, Lock, Unlock } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { ROUTES } from "@/app/routes";

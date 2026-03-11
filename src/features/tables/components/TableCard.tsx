@@ -1,12 +1,11 @@
+import { Button, ConfirmDialog } from "@/components";
 import { TableStatus, type Table } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
 import { useUpdateTableStatus } from "../hooks";
 import { useDeleteTable } from "../hooks/useDeleteTable";
-import { Button } from "@/components";
 import { Edit2, Trash2, CircleCheck, CircleDot, Clock, Users, Timer } from "lucide-react";
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { ConfirmDialog } from "@/components/ui/ConfirmDialog/ConfirmDialog";
 import { cn } from "@/utils/cn";
 import { motion } from "framer-motion";
 

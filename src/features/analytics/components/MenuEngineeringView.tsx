@@ -1,6 +1,6 @@
+import { Skeleton } from "@/components";
 import { useState, useMemo } from "react";
 import { useMenuEngineering } from "../hooks/useAnalytics";
-import { Skeleton } from "@/components";
 import { AlertCircle, Star, TrendingDown, Target, HelpCircle } from "lucide-react";
 import { formatCurrency } from "@/utils/formatUtils";
 import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ZAxis } from "recharts";

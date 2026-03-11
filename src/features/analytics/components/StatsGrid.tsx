@@ -1,5 +1,5 @@
+import { StatCard } from "@/components";
 import React from "react";
-import { StatCard } from "@/components/ui/StatCard/StatCard";
 import { TrendingUp, ShoppingBag, Wallet, DollarSign } from "lucide-react";
 import type { DailySummaryResponse } from "@/services/analyticsApi";
 

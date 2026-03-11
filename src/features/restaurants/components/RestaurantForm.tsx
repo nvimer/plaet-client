@@ -1,8 +1,7 @@
+import { Button, Input } from "@/components";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { restaurantFormSchema, type RestaurantFormValues } from "../schemas/restaurant.schema";
-import { Button } from "@/components/ui/Button/Button";
-import { Input } from "@/components/ui/Input/Input";
 import { Save, User, Building2 } from "lucide-react";
 
 interface RestaurantFormProps {

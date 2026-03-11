@@ -1,9 +1,9 @@
+import { Button, Input, Skeleton } from "@/components";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { OrderType, TableStatus } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
-import { Button, Input, Skeleton } from "@/components";
 import { useTables } from "@/features/tables";
 import { useOrder, useUpdateOrder } from "../hooks";
 import { ROUTES, getOrderDetailRoute } from "@/app/routes";

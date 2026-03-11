@@ -1,6 +1,6 @@
+import { Badge, Button, Card, Input } from "@/components";
 import { useState } from "react";
 import { Package, Plus, Minus, History, AlertTriangle } from "lucide-react";
-import { Button, Card, Input, Badge } from "@/components";
 import { useAddStock, useRemoveStock, useStockHistory } from "../hooks";
 import { toast } from "sonner";
 import type { MenuItem } from "@/types";

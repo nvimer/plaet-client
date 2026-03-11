@@ -1,7 +1,7 @@
+import { Badge, Button, Card, Input, Skeleton } from "@/components";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
-import { Button, Input, Skeleton, Card, Badge } from "@/components";
 import { useAuth } from "@/hooks";
 import { profileApi } from "@/services";
 import { updateProfileSchema, type UpdateProfileInput } from "../schemas/userSchemas";

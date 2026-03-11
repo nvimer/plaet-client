@@ -1,7 +1,7 @@
+import { BrandName } from "@/components";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-import { BrandName } from "@/components";
 import { Footer } from "../components/Footer";
 
 export function PrivacyPage() {

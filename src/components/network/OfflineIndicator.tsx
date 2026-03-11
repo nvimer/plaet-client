@@ -5,10 +5,10 @@
  * Automatically dismisses when connection is restored.
  */
 
+import { Button } from "@/components";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { WifiOff, RefreshCw, CheckCircle } from "lucide-react";
-import { Button } from "@/components";
 import { useOnlineStatus } from "@/hooks/useOnlineStatus";
 
 interface OfflineIndicatorProps {

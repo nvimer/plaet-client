@@ -1,4 +1,4 @@
-import { Badge } from "@/components/ui/Badge/Badge";
+import { Badge } from "@/components";
 import { RestaurantStatus } from "@/types";
 
 interface RestaurantStatusBadgeProps {

@@ -5,6 +5,7 @@
  * Dynamically changes actions and styles based on the operational stage.
  */
 
+import { Button, Card, OrderStatusBadge, OrderTypeBadge } from "@/components";
 import {
   Clock,
   ChevronDown,
@@ -16,9 +17,6 @@ import {
   CheckCircle,
 } from "lucide-react";
 import { useState } from "react";
-import { Button, Card } from "@/components";
-import { OrderStatusBadge } from "./OrderStatusBadge";
-import { OrderTypeBadge } from "./OrderTypeBadge";
 import { cn } from "@/utils/cn";
 import type { GroupedOrder } from "../pages/OrdersPage";
 import { useUpdateOrderItemStatus } from "../hooks";

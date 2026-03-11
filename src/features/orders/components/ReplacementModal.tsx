@@ -1,6 +1,6 @@
+import { Button } from "@/components";
 import React from "react";
 import { X, ArrowRight, ArrowLeft, Check, ArrowRightLeft } from "lucide-react";
-import { Button } from "@/components";
 import { cn } from "@/utils/cn";
 import type { CategoryInfo, ReplacementCategory } from "./replacementConstants";
 

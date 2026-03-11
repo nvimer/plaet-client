@@ -1,6 +1,5 @@
+import { BaseModal, Button } from "@/components";
 import React, { useState } from "react";
-import { BaseModal } from "@/components/ui/BaseModal/BaseModal";
-import { Button } from "@/components/ui/Button/Button";
 import { useCashClosure } from "../hooks/useCashClosure";
 import type { CashClosure } from "@/types";
 import { ArrowDownCircle, ArrowUpCircle, Calculator, AlertCircle, CheckCircle2 } from "lucide-react";

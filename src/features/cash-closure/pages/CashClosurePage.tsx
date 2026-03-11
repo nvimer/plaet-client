@@ -1,10 +1,10 @@
+import { Skeleton } from "@/components";
 import React, { useState, useMemo } from "react";
 import { useCashClosure } from "../hooks/useCashClosure";
 import { useOrders } from "@/features/orders/hooks";
 import { OrderStatus } from "@/types";
 import { OpenShiftModal } from "../components/OpenShiftModal";
 import { CloseShiftModal } from "../components/CloseShiftModal";
-import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { LogIn, LogOut, AlertCircle, CheckCircle2, ShoppingBag } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { ROUTES } from "@/app/routes";

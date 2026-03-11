@@ -1,6 +1,5 @@
+import { BaseModal, Button } from "@/components";
 import React, { useState } from "react";
-import { BaseModal } from "@/components/ui/BaseModal/BaseModal";
-import { Button } from "@/components/ui/Button/Button";
 import { useExpenses } from "../hooks/useExpenses";
 import { ShoppingCart, Zap, Users, Wrench, Package, Check, X, Calculator } from "lucide-react";
 import { cn } from "@/utils/cn";

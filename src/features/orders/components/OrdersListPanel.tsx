@@ -3,7 +3,7 @@
  * Right column showing list of orders for the table
  */
 
-import { Card, Button } from "@/components";
+import { Button, Card } from "@/components";
 import { cn } from "@/utils/cn";
 import { ReceiptText, ShoppingBag, Edit2, Trash2, PackagePlus, Info, Check } from "lucide-react";
 import type { TableOrder } from "../types/orderBuilder";

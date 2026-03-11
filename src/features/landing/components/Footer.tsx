@@ -1,4 +1,4 @@
-import { Button, Input, BrandName } from "@/components";
+import { BrandName, Button, Input } from "@/components";
 import { Facebook, Instagram, Linkedin, Mail, Twitter } from "lucide-react";
 import { Link } from "react-router-dom";
 

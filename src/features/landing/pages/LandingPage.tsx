@@ -1,3 +1,4 @@
+import { Seo } from "@/components";
 import {
   FeaturesSection,
   HeroSection,
@@ -9,7 +10,6 @@ import {
   PricingSection,
   TestimonialsSection,
 } from "../components";
-import { Seo } from "@/components";
 
 /**
  * LandingPage Component

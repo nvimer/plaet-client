@@ -1,9 +1,9 @@
+import { Button, Card, EmptyState, Input, Skeleton } from "@/components";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
-import { Button, Input, Card, Skeleton, EmptyState } from "@/components";
 import { useRole, useUpdateRole } from "../hooks";
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";

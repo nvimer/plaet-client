@@ -5,6 +5,7 @@
  * Handles verification success, error, and resend scenarios
  */
 
+import { Button } from "@/components";
 import { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -17,7 +18,6 @@ import {
   AlertCircle,
   RefreshCw,
 } from "lucide-react";
-import { Button } from "@/components";
 import { authApi } from "@/services";
 import { toast } from "sonner";
 import axios from "axios";

@@ -1,6 +1,5 @@
+import { BaseModal, Button } from "@/components";
 import { useState, useEffect, useMemo } from "react";
-import { BaseModal } from "@/components/ui/BaseModal/BaseModal";
-import { Button } from "@/components/ui/Button/Button";
 import { 
   DollarSign, 
   Smartphone, 

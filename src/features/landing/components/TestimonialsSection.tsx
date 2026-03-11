@@ -1,6 +1,6 @@
+import { Card } from "@/components";
 import { motion } from "framer-motion";
 import { Star } from "lucide-react";
-import { Card } from "@/components";
 
 export function TestimonialsSection() {
   const testimonials = [

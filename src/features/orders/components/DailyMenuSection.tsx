@@ -1,3 +1,4 @@
+import { Card } from "@/components";
 import {
   Soup,
   GlassWater,
@@ -6,7 +7,6 @@ import {
   Sparkles,
   ChefHat,
 } from "lucide-react";
-import { Card } from "@/components";
 import { cn } from "@/utils/cn";
 
 interface MenuOption {

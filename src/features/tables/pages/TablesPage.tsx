@@ -1,13 +1,11 @@
+import { ActiveFilterChips, Button, Card, EmptyState, FilterBar, FilterDrawer, FilterPills, FilterSearch, FilterSelect, Skeleton } from "@/components";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTables } from "../hooks";
 import { useTableFilters } from "../hooks/useTableFilters";
-import { Button, Card, FilterBar, FilterSearch, FilterPills, ActiveFilterChips, FilterDrawer, FilterSelect } from "@/components";
 import { TableCard } from "../components";
 import { Plus, Table as TableIcon, SlidersHorizontal } from "lucide-react";
 import { ROUTES, getTableManageRoute } from "@/app/routes";
-import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
-import { EmptyState } from "@/components/ui/EmptyState/EmptyState";
 import { TableStatus } from "@/types";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 

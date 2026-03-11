@@ -4,6 +4,7 @@
  * Password reset with token from email
  */
 
+import { Button, Input } from "@/components";
 import { useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -15,7 +16,6 @@ import {
   ShieldCheck,
   AlertCircle,
 } from "lucide-react";
-import { Button, Input } from "@/components";
 import { authApi } from "@/services";
 import { toast } from "sonner";
 

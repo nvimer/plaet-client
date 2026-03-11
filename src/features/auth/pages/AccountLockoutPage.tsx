@@ -5,11 +5,11 @@
  * failed login attempts (HTTP 423 Locked)
  */
 
+import { Button } from "@/components";
 import { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft, ChefHat, Lock, ShieldCheck, Clock } from "lucide-react";
-import { Button } from "@/components";
 
 interface LockoutInfo {
   lockedAt: Date;

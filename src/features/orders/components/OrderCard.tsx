@@ -12,6 +12,7 @@
  * - Enhanced status workflow
  */
 
+import { Button, OrderStatusBadge, OrderTypeBadge } from "@/components";
 import { OrderStatus, PaymentMethod, type Order } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
 import type { LucideIcon } from "lucide-react";
@@ -26,9 +27,6 @@ import {
   DollarSign,
 } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "@/components";
-import { OrderStatusBadge } from "./OrderStatusBadge";
-import { OrderTypeBadge } from "./OrderTypeBadge";
 import { PaymentModal } from "./PaymentModal";
 import { cn } from "@/utils/cn";
 import { useState } from "react";

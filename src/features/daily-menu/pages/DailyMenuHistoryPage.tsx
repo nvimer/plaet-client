@@ -1,7 +1,7 @@
+import { Button, Card, Skeleton } from "@/components";
 import { useState, useMemo } from "react";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { useDailyMenuHistory } from "../hooks/useDailyMenu";
-import { Card, Button } from "@/components";
 import { ROUTES } from "@/app/routes";
 import { 
   Calendar as CalendarIcon, 
@@ -15,7 +15,6 @@ import {
   Sparkles,
   CupSoda
 } from "lucide-react";
-import { Skeleton } from "@/components/ui/Skeleton/Skeleton";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/utils/cn";

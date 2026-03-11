@@ -1,6 +1,5 @@
-import { BaseModal } from "@/components/ui/BaseModal/BaseModal";
+import { BaseModal, Skeleton } from "@/components";
 import { useStockHistory } from "../hooks";
-import { Skeleton } from "@/components";
 import { History, Package } from "lucide-react";
 import type { StockHistoryEntry } from "@/types";
 

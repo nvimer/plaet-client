@@ -1,10 +1,10 @@
+import { Button, Input } from "@/components";
 import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TableStatus } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
-import { Button, Input } from "@/components";
 import { useCreateTable } from "../hooks";
 import {
   createTableSchema,

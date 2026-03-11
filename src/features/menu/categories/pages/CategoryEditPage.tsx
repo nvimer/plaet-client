@@ -1,8 +1,8 @@
+import { Button, ConfirmDialog, EmptyState, Input, Skeleton } from "@/components";
 import { useParams, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
-import { Button, Input, Skeleton, EmptyState, ConfirmDialog } from "@/components";
 import { useCategory, useUpdateCategory, useDeleteCategory } from "../hooks";
 import {
   updateCategorySchema,

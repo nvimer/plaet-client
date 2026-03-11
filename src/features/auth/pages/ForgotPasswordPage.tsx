@@ -5,6 +5,7 @@
  * Sends reset email to user
  */
 
+import { Button, Input } from "@/components";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -15,7 +16,6 @@ import {
   ShieldCheck,
   CheckCircle,
 } from "lucide-react";
-import { Button, Input } from "@/components";
 import { authApi } from "@/services";
 import { toast } from "sonner";
 

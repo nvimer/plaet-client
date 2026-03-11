@@ -1,6 +1,5 @@
+import { BaseModal, Button } from "@/components";
 import { useState, useMemo } from "react";
-import { BaseModal } from "@/components/ui/BaseModal/BaseModal";
-import { Button } from "@/components";
 import { useResetStock, useResetStockByCategory } from "../hooks";
 import { toast } from "sonner";
 import type { MenuItem, MenuCategory } from "@/types";
