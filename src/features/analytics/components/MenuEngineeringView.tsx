@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useMenuEngineering } from "../hooks/useAnalytics";
 import { Skeleton } from "@/components";
 import { AlertCircle, Star, TrendingDown, Target, HelpCircle } from "lucide-react";
@@ -16,6 +16,27 @@ export const MenuEngineeringView = () => {
 
   const { data, isLoading, isError } = useMenuEngineering(startDate, endDate);
 
+  // Pre-process for chart in a single pass O(N)
+  const { stars, plowhorses, puzzles, dogs } = useMemo(() => {
+    const groups = { 
+      stars: [] as MenuEngineeringItem[], 
+      plowhorses: [] as MenuEngineeringItem[], 
+      puzzles: [] as MenuEngineeringItem[], 
+      dogs: [] as MenuEngineeringItem[] 
+    };
+    
+    if (!data) return groups;
+    
+    data.forEach((d: MenuEngineeringItem) => {
+      if (d.category === "Star") groups.stars.push(d);
+      else if (d.category === "Plowhorse") groups.plowhorses.push(d);
+      else if (d.category === "Puzzle") groups.puzzles.push(d);
+      else if (d.category === "Dog") groups.dogs.push(d);
+    });
+    
+    return groups;
+  }, [data]);
+
   if (isLoading) return <Skeleton className="h-[400px] w-full rounded-3xl" />;
   if (isError || !data) {
     return (
@@ -25,12 +46,6 @@ export const MenuEngineeringView = () => {
       </div>
     );
   }
-
-  // Pre-process for chart
-  const stars = data.filter((d: MenuEngineeringItem) => d.category === "Star");
-  const plowhorses = data.filter((d: MenuEngineeringItem) => d.category === "Plowhorse");
-  const puzzles = data.filter((d: MenuEngineeringItem) => d.category === "Puzzle");
-  const dogs = data.filter((d: MenuEngineeringItem) => d.category === "Dog");
 
   return (
     <div className="space-y-6">

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   AreaChart,
   Area,
@@ -19,21 +19,27 @@ interface TodaySalesChartProps {
  * Smooth AreaChart showing sales trend throughout the day.
  */
 export const TodaySalesChart: React.FC<TodaySalesChartProps> = ({ orders = [] }) => {
-  // Aggregate sales by hour
-  const hourlyData = Array.from({ length: 14 }, (_, i) => {
-    const hour = i + 8; // From 8 AM to 9 PM
-    const total = orders
-      .filter(o => {
-        const orderHour = new Date(o.createdAt).getHours();
-        return orderHour === hour && o.status === "PAID";
-      })
-      .reduce((sum, o) => sum + (o.totalAmount || 0), 0);
+  // Aggregate sales by hour O(N)
+  const hourlyData = useMemo(() => {
+    // Initialize buckets for hours 8 to 21
+    const buckets: Record<number, number> = {};
+    for (let h = 8; h <= 21; h++) buckets[h] = 0;
 
-    return {
+    // Single pass over orders
+    orders.forEach(o => {
+      if (o.status !== "PAID") return;
+      const hour = new Date(o.createdAt).getHours();
+      if (hour >= 8 && hour <= 21) {
+        buckets[hour] += Number(o.totalAmount || 0);
+      }
+    });
+
+    // Map to recharts format
+    return Object.entries(buckets).map(([hour, total]) => ({
       hour: `${hour}:00`,
       total,
-    };
-  });
+    }));
+  }, [orders]);
 
   return (
     <div className="h-[280px] w-full pt-4">

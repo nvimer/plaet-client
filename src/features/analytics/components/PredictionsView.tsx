@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useSalesPrediction } from "../hooks/useAnalytics";
 import { Skeleton } from "@/components";
 import { AlertCircle, Calendar, TrendingUp } from "lucide-react";
@@ -21,6 +21,13 @@ export const PredictionsView = () => {
 
   const { data, isLoading, isError } = useSalesPrediction(targetDate);
 
+  const chartData = useMemo(() => 
+    [...(data?.historicalData || [])].reverse().map((d: PredictionDataPoint) => ({
+      name: formatShortDate(d.date),
+      ventas: d.sales,
+    })),
+  [data?.historicalData]);
+
   if (isLoading) return <Skeleton className="h-[400px] w-full rounded-3xl" />;
   if (isError || !data) {
     return (
@@ -30,11 +37,6 @@ export const PredictionsView = () => {
       </div>
     );
   }
-
-  const chartData = [...(data.historicalData || [])].reverse().map((d: PredictionDataPoint) => ({
-    name: formatShortDate(d.date),
-    ventas: d.sales,
-  }));
 
   return (
     <div className="space-y-6">
