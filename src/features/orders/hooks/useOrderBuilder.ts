@@ -1,6 +1,7 @@
 /**
  * useOrderBuilder Hook
- * Manages order creation state and logic
+ * Manages order creation state and logic.
+ * Refactored into smaller sub-hooks and pure logic functions for better maintainability.
  */
 
 import { useState, useMemo, useEffect, useCallback } from "react";
@@ -12,7 +13,7 @@ import { useTables } from "@/features/tables";
 import { useItems } from "@/features/menu";
 import { useDailyMenuByDate } from "@/features/daily-menu/hooks";
 import { PaymentMethod, OrderItemStatus, OrderType } from "@/types";
-import { paymentApi, orderApi, customerApi } from "@/services";
+import { paymentApi, orderApi } from "@/services";
 import { logger } from "@/utils";
 import type { Order } from "@/types";
 import type { DailyMenuResponse } from "@/services/dailyMenuApi";
@@ -26,6 +27,12 @@ import type {
   OrderItemInput,
 } from "../types/orderBuilder";
 import type { Replacement } from "../components";
+
+// Logic and Sub-hooks
+import { useCustomerLookup } from "./useCustomerLookup";
+import { useOrderPricing } from "./useOrderPricing";
+import { buildOrderNotesString, extractManualNotes } from "../logic/noteLogic";
+import { validateOrderDraft } from "../logic/validationLogic";
 
 export interface UseOrderBuilderReturn {
   // Loading states
@@ -46,7 +53,7 @@ export interface UseOrderBuilderReturn {
   currentOrderIndex: number | null;
   backdatedDate: string | null;
   
-  // Customer info for non-table orders
+  // Customer info
   customerName: string;
   customerPhone: string;
   customerPhone2: string;
@@ -147,95 +154,39 @@ export interface UseOrderBuilderReturn {
 }
 
 export function useOrderBuilder(): UseOrderBuilderReturn {
-  // Order type and table state
+  // 1. Core State
   const [selectedOrderType, setSelectedOrderType] = useState<OrderType | null>(null);
   const [selectedTable, setSelectedTable] = useState<number | null>(null);
   const [tableOrders, setTableOrders] = useState<TableOrder[]>([]);
   const [currentOrderIndex, setCurrentOrderIndex] = useState<number | null>(null);
   const [backdatedDate, setBackdatedDate] = useState<string | null>(getLocalDateString(new Date()));
-
-  // Customer info state
-  const [customerName, setCustomerName] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
-  const [customerPhone2, setCustomerPhone2] = useState("");
-  const [deliveryAddress, setDeliveryAddress] = useState(""); // This is address1
-  const [address2, setAddress2] = useState("");
-
-  // Handler for customer name with validation (only letters and spaces)
-  const handleSetCustomerName = useCallback((name: string) => {
-    // Regex allows letters (including accented ones and ñ) and spaces
-    const onlyLetters = name.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
-    setCustomerName(onlyLetters);
-  }, []);
-
-  // Handler for customer phone with auto-lookup
-  const handleSetCustomerPhone = useCallback(async (phone: string) => {
-    const cleanPhone = phone.replace(/\D/g, "");
-    setCustomerPhone(cleanPhone);
-
-    // If phone has 10 digits, attempt to lookup customer
-    if (cleanPhone.length === 10) {
-      try {
-        const response = await customerApi.getCustomerByPhone(cleanPhone);
-        if (response.success && response.data) {
-          setCustomerName(`${response.data.firstName} ${response.data.lastName}`.trim());
-          setCustomerPhone2(response.data.phone2 || "");
-          setDeliveryAddress(response.data.address1 || "");
-          setAddress2(response.data.address2 || "");
-          
-          toast.success("Cliente encontrado", {
-            description: `Bienvenido de nuevo, ${response.data.firstName}`,
-            icon: "👤",
-          });
-        }
-      } catch (_error) {
-        // Silent error if customer not found
-        logger.debug("Customer not found for phone:", cleanPhone);
-      }
-    }
-  }, []);
-
-  const handleSetCustomerPhone2 = useCallback((phone: string) => {
-    setCustomerPhone2(phone.replace(/\D/g, ""));
-  }, []);
   const [packagingFee, setPackagingFee] = useState(1000);
   const [packagingQuantity, setPackagingQuantity] = useState(0);
 
-  // Data hooks
+  // 2. Sub-hooks for specialized state
+  const customerLookup = useCustomerLookup();
+  const { 
+    customerName, customerPhone, customerPhone2, deliveryAddress, address2,
+    handleSetCustomerName, handleSetCustomerPhone, handleSetCustomerPhone2,
+    setDeliveryAddress, setAddress2, resetCustomer
+  } = customerLookup;
+
+  // 3. Data Hooks
   const { data: tablesData, isLoading: tablesLoading } = useTables();
   const { data: menuItems, isLoading: itemsLoading } = useItems();
-  
-  // Daily Menu Data fetching logic
   const dailyMenu = useDailyMenuByDate(backdatedDate || getLocalDateString(new Date()));
   
   const dailyMenuData = dailyMenu.data;
   const menuLoading = dailyMenu.isLoading;
 
-  // Set default quantity when order type changes
-  useEffect(() => {
-    if (selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) {
-      setPackagingQuantity(1);
-    } else {
-      setPackagingQuantity(0);
-    }
-  }, [selectedOrderType]);
-
-  // Update packagingFee when dailyMenuData changes
-  useEffect(() => {
-    if (dailyMenuData?.packagingFee) {
-      setPackagingFee(Number(dailyMenuData.packagingFee));
-    }
-  }, [dailyMenuData]);
-  
   const { mutateAsync: createOrder, isPending: isCreating } = useCreateOrder();
   const { mutateAsync: createBatchOrders, isPending: isBatchCreating } = useBatchCreateOrders();
-  
   const isPending = isCreating || isBatchCreating;
 
   const tables = tablesData?.tables || [];
   const availableTables = tables.filter((t) => t.status === "AVAILABLE");
 
-  // Lunch selection state
+  // 4. Draft Order State
   const [selectedProtein, setSelectedProtein] = useState<ProteinOption | null>(null);
   const [looseItems, setLooseItems] = useState<LooseItem[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -255,6 +206,32 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
 
+  // 5. Pricing Logic (Encapsulated)
+  const { lunchPrice, currentOrderTotal, tableTotal } = useOrderPricing(
+    Number(dailyMenuData?.basePrice || 0),
+    selectedProtein,
+    looseItems,
+    packagingFee,
+    packagingQuantity,
+    tableOrders
+  );
+
+  // 6. Effects
+  useEffect(() => {
+    if (selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) {
+      setPackagingQuantity(1);
+    } else {
+      setPackagingQuantity(0);
+    }
+  }, [selectedOrderType]);
+
+  useEffect(() => {
+    if (dailyMenuData?.packagingFee) {
+      setPackagingFee(Number(dailyMenuData.packagingFee));
+    }
+  }, [dailyMenuData]);
+
+  // 7. Computed Values (Memoized)
   const popularProducts = useMemo(() => {
     if (!menuItems || !Array.isArray(menuItems)) return [];
     
@@ -269,10 +246,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     ].filter(Boolean);
 
     return menuItems
-      .filter(item => 
-        item.isAvailable && 
-        !lunchCategoryIds.includes(item.categoryId)
-      )
+      .filter(item => item.isAvailable && !lunchCategoryIds.includes(item.categoryId))
       .slice(0, 8)
       .map(item => ({
         id: item.id,
@@ -281,20 +255,10 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       }));
   }, [menuItems, dailyMenuData]);
 
-  const dailyMenuPrices = useMemo(() => ({
-    basePrice: dailyMenuData?.basePrice || 0,
-    isConfigured: !!dailyMenuData,
-  }), [dailyMenuData]);
-
   const proteins = useMemo(() => {
-    if (!dailyMenuData?.proteinOptions || dailyMenuData.proteinOptions.length === 0) {
-      return [];
-    }
-    
+    if (!dailyMenuData?.proteinOptions) return [];
     return dailyMenuData.proteinOptions.map((item: ProteinOption) => ({
-      id: item.id,
-      name: item.name,
-      price: item.price,
+      ...item,
       isAvailable: true,
       categoryName: dailyMenuData.proteinCategory?.name,
     }));
@@ -305,29 +269,16 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     return menuItems.filter(
       (item) =>
         item.isAvailable &&
-        (searchTerm === "" ||
-          item.name.toLowerCase().includes(searchTerm.toLowerCase()))
+        (searchTerm === "" || item.name.toLowerCase().includes(searchTerm.toLowerCase()))
     );
   }, [menuItems, searchTerm]);
 
   const dailyMenuDisplay = useMemo(() => {
-    if (!dailyMenuData) {
-      return {
-        soupOptions: [] as MenuOption[],
-        principleOptions: [] as MenuOption[],
-        saladOptions: [] as MenuOption[],
-        extraOptions: [] as MenuOption[],
-        drinkOptions: [] as MenuOption[],
-        dessertOptions: [] as MenuOption[],
-        riceOption: null as MenuOption | null,
-        basePrice: dailyMenuPrices.basePrice,
-        isConfigured: false,
-      };
-    }
-    
-    const riceOption = dailyMenuData.riceOptions && dailyMenuData.riceOptions.length > 0
-      ? dailyMenuData.riceOptions[0]
-      : null;
+    if (!dailyMenuData) return {
+      soupOptions: [], principleOptions: [], saladOptions: [], extraOptions: [],
+      drinkOptions: [], dessertOptions: [], riceOption: null,
+      basePrice: 0, isConfigured: false,
+    };
     
     return {
       soupOptions: dailyMenuData.soupOptions || [],
@@ -336,152 +287,64 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       extraOptions: dailyMenuData.extraOptions || [],
       drinkOptions: dailyMenuData.drinkOptions || [],
       dessertOptions: dailyMenuData.dessertOptions || [],
-      riceOption,
-      basePrice: dailyMenuData.basePrice || dailyMenuPrices.basePrice,
+      riceOption: dailyMenuData.riceOptions?.[0] || null,
+      basePrice: Number(dailyMenuData.basePrice || 0),
       isConfigured: true,
     };
-  }, [dailyMenuData, dailyMenuPrices]);
+  }, [dailyMenuData]);
 
-  const lunchPrice = useMemo(() => {
-    if (!selectedProtein) return 0;
-    return Number(dailyMenuPrices.basePrice) + Number(selectedProtein.price);
-  }, [selectedProtein, dailyMenuPrices]);
-
-  const currentOrderTotal = useMemo(() => {
-    let total = 0;
-    total += lunchPrice;
-    looseItems.forEach((item) => {
-      total += item.price * item.quantity;
-    });
-    
-    // Add packaging fee based on manual quantity
-    if (packagingQuantity > 0 && packagingFee > 0) {
-      total += packagingFee * packagingQuantity;
-    }
-    
-    return total;
-  }, [lunchPrice, looseItems, packagingFee, packagingQuantity]);
-
-  const tableTotal = useMemo(() => {
-    return tableOrders.reduce((sum, order) => sum + order.total, 0);
-  }, [tableOrders]);
-
+  // Auto-select single options
   useEffect(() => {
     if (dailyMenuDisplay.isConfigured) {
-      if (dailyMenuDisplay.soupOptions.length === 1 && !selectedSoup) {
-        setSelectedSoup(dailyMenuDisplay.soupOptions[0]);
-      }
-      if (dailyMenuDisplay.principleOptions.length === 1 && !selectedPrinciple) {
-        setSelectedPrinciple(dailyMenuDisplay.principleOptions[0]);
-      }
-      if (dailyMenuDisplay.saladOptions.length === 1 && !selectedSalad) {
-        setSelectedSalad(dailyMenuDisplay.saladOptions[0]);
-      }
-      if (dailyMenuDisplay.drinkOptions.length === 1 && !selectedDrink) {
-        setSelectedDrink(dailyMenuDisplay.drinkOptions[0]);
-      }
-      if (dailyMenuDisplay.extraOptions.length === 1 && !selectedExtra) {
-        setSelectedExtra(dailyMenuDisplay.extraOptions[0]);
-      }
+      const { soupOptions, principleOptions, saladOptions, drinkOptions, extraOptions } = dailyMenuDisplay;
+      if (soupOptions.length === 1 && !selectedSoup) setSelectedSoup(soupOptions[0]);
+      if (principleOptions.length === 1 && !selectedPrinciple) setSelectedPrinciple(principleOptions[0]);
+      if (saladOptions.length === 1 && !selectedSalad) setSelectedSalad(saladOptions[0]);
+      if (drinkOptions.length === 1 && !selectedDrink) setSelectedDrink(drinkOptions[0]);
+      if (extraOptions.length === 1 && !selectedExtra) setSelectedExtra(extraOptions[0]);
     }
   }, [dailyMenuDisplay, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra]);
 
-  const validateOrder = useCallback((): ValidationError[] => {
-    const errors: ValidationError[] = [];
-    
-    if (!selectedProtein && looseItems.length === 0) {
-      errors.push({ field: "protein", message: "Selecciona una proteína o agrega productos" });
-    }
-    
-    if (selectedProtein) {
-      if (dailyMenuDisplay.soupOptions.length > 0 && !selectedSoup) {
-        errors.push({ field: "soup", message: "Selecciona una sopa" });
-      }
-      if (dailyMenuDisplay.principleOptions.length > 0 && !selectedPrinciple) {
-        errors.push({ field: "principle", message: "Selecciona un principio" });
-      }
-      if (dailyMenuDisplay.saladOptions.length > 0 && !selectedSalad) {
-        errors.push({ field: "salad", message: "Selecciona una ensalada" });
-      }
-      if (dailyMenuDisplay.drinkOptions.length > 0 && !selectedDrink) {
-        errors.push({ field: "drink", message: "Selecciona un jugo" });
-      }
-      if (dailyMenuDisplay.extraOptions.length > 0 && !selectedExtra) {
-        errors.push({ field: "extra", message: "Selecciona un extra" });
-      }
-    }
-    
-    if (selectedOrderType === OrderType.DINE_IN && !selectedTable) {
-      errors.push({ field: "table", message: "Selecciona una mesa" });
-    }
-
-    if (selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) {
-      if (!customerName.trim()) errors.push({ field: "customerName", message: "Nombre del cliente requerido" });
-      if (!customerPhone.trim()) errors.push({ field: "customerPhone", message: "Teléfono requerido" });
-    }
-
-    if (selectedOrderType === OrderType.DELIVERY) {
-      if (!deliveryAddress.trim()) errors.push({ field: "deliveryAddress", message: "Dirección de entrega requerida" });
-    }
-    
-    return errors;
+  // 8. Callbacks and Handlers (Delegating to Logic)
+  const validateOrder = useCallback(() => {
+    return validateOrderDraft({
+      selectedProtein, looseItems,
+      soupOptions: dailyMenuDisplay.soupOptions,
+      principleOptions: dailyMenuDisplay.principleOptions,
+      saladOptions: dailyMenuDisplay.saladOptions,
+      drinkOptions: dailyMenuDisplay.drinkOptions,
+      extraOptions: dailyMenuDisplay.extraOptions,
+      selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra,
+      selectedOrderType, selectedTable, customerName, customerPhone, deliveryAddress
+    });
   }, [selectedProtein, looseItems, dailyMenuDisplay, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedOrderType, selectedTable, customerName, customerPhone, deliveryAddress]);
 
   const hasError = useCallback((field: string) => {
     return validationErrors.some(e => e.field === field) && touchedFields.has(field);
   }, [validationErrors, touchedFields]);
 
-  const buildOrderNotes = useCallback((): string => {
-    const sections: string[] = [];
-
-    // 1. Customer Info Section
-    if (selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) {
-      let customerInfo = `👤 CLIENTE: ${customerName} | 📞 TEL: ${customerPhone}`;
-      if (selectedOrderType === OrderType.DELIVERY && deliveryAddress) {
-        customerInfo += ` | 📍 DIR: ${deliveryAddress}`;
-      }
-      sections.push(customerInfo);
-    }
-    
-    // 2. Replacements Section (Dynamic)
-    if (selectedProtein && replacements.length > 0) {
-      const replText = replacements
-        .map(r => `[-] Sin ${r.fromName} [+] Extra ${r.itemName}`)
-        .join(" | ");
-      sections.push(`🔄 CAMBIOS: ${replText}`);
-    }
-    
-    // 3. Manual User Notes
-    if (orderNotes.trim()) {
-      // If we are editing, we might have previous auto-notes in the string. 
-      // We should ideally only have the manual part here.
-      sections.push(`📝 NOTAS: ${orderNotes.trim()}`);
-    }
-    
-    return sections.join("\n-------------------\n");
-  }, [selectedProtein, replacements, orderNotes, selectedOrderType, customerName, customerPhone, deliveryAddress]);
+  const buildOrderNotes = useCallback(() => {
+    return buildOrderNotesString({
+      selectedOrderType, customerName, customerPhone, deliveryAddress,
+      selectedProtein, replacements, manualNotes: orderNotes
+    });
+  }, [selectedOrderType, customerName, customerPhone, deliveryAddress, selectedProtein, replacements, orderNotes]);
 
   const handleAddLooseItem = useCallback((item: { id: number; name: string; price: number }) => {
-    const existing = looseItems.find((i) => i.id === item.id);
-    if (existing) {
-      if (existing.quantity <= 1) {
-        setLooseItems((prev) => prev.filter((i) => i.id !== item.id));
-      } else {
-        setLooseItems((prev) =>
-          prev.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity - 1 } : i))
-        );
+    setLooseItems((prev) => {
+      const existing = prev.find((i) => i.id === item.id);
+      if (existing) {
+        if (existing.quantity <= 1) return prev.filter((i) => i.id !== item.id);
+        return prev.map((i) => (i.id === item.id ? { ...i, quantity: i.quantity - 1 } : i));
       }
-    } else {
-      setLooseItems((prev) => [...prev, { ...item, quantity: 1 }]);
-    }
-  }, [looseItems]);
+      return [...prev, { ...item, quantity: 1 }];
+    });
+  }, []);
 
   const handleUpdateLooseItemQuantity = useCallback((id: number, quantity: number) => {
-    if (quantity <= 0) {
-      setLooseItems((prev) => prev.filter((i) => i.id !== id));
-    } else {
-      setLooseItems((prev) => prev.map((i) => (i.id === id ? { ...i, quantity } : i)));
-    }
+    setLooseItems((prev) => 
+      quantity <= 0 ? prev.filter((i) => i.id !== id) : prev.map((i) => (i.id === id ? { ...i, quantity } : i))
+    );
   }, []);
 
   const clearCurrentOrder = useCallback(() => {
@@ -511,24 +374,13 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     }
 
     const currentLooseItems = [...looseItems];
-    
-    // Add Packaging Fee with manual quantity if specified
     if (packagingQuantity > 0 && packagingFee > 0) {
-      currentLooseItems.push({
-        id: -1,
-        name: "Portacomida",
-        price: packagingFee,
-        quantity: packagingQuantity
-      });
+      currentLooseItems.push({ id: -1, name: "Portacomida", price: packagingFee, quantity: packagingQuantity });
     }
 
     const lunchSelection: LunchSelection | null = selectedProtein ? {
-      soup: selectedSoup,
-      principle: selectedPrinciple,
-      salad: selectedSalad,
-      drink: selectedDrink,
-      extra: selectedExtra,
-      protein: selectedProtein,
+      soup: selectedSoup, principle: selectedPrinciple, salad: selectedSalad,
+      drink: selectedDrink, extra: selectedExtra, protein: selectedProtein,
       rice: selectedRice || dailyMenuDisplay.riceOption || null,
       replacements: [...replacements],
     } : null;
@@ -543,16 +395,13 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       createdAt: Date.now(),
     };
 
-    if (currentOrderIndex !== null) {
-      setTableOrders((prev) =>
-        prev.map((order, idx) => (idx === currentOrderIndex ? newOrder : order))
-      );
-      toast.success("Pedido actualizado");
-    } else {
-      setTableOrders((prev) => [...prev, newOrder]);
-      toast.success(`Pedido #${tableOrders.length + 1} agregado`);
-    }
+    setTableOrders((prev) => 
+      currentOrderIndex !== null 
+        ? prev.map((order, idx) => (idx === currentOrderIndex ? newOrder : order))
+        : [...prev, newOrder]
+    );
 
+    toast.success(currentOrderIndex !== null ? "Pedido actualizado" : `Pedido #${tableOrders.length + 1} agregado`);
     clearCurrentOrder();
     setValidationErrors([]);
     setTouchedFields(new Set());
@@ -564,16 +413,16 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setSelectedProtein(order.protein);
     
     if (order.lunch) {
-      setSelectedSoup(order.lunch.soup);
-      setSelectedPrinciple(order.lunch.principle);
-      setSelectedSalad(order.lunch.salad);
-      setSelectedDrink(order.lunch.drink);
-      setSelectedExtra(order.lunch.extra);
-      setSelectedRice(order.lunch.rice);
-      setReplacements([...order.lunch.replacements]);
+      const { soup, principle, salad, drink, extra, rice, replacements } = order.lunch;
+      setSelectedSoup(soup);
+      setSelectedPrinciple(principle);
+      setSelectedSalad(salad);
+      setSelectedDrink(drink);
+      setSelectedExtra(extra);
+      setSelectedRice(rice);
+      setReplacements([...replacements]);
     }
     
-    // Extract packaging quantity if it exists in looseItems
     const packagingItem = order.looseItems.find(i => i.name === "Portacomida");
     if (packagingItem) {
       setPackagingQuantity(packagingItem.quantity);
@@ -583,47 +432,20 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       setLooseItems([...order.looseItems]);
     }
 
-    // Extract manual notes by stripping automated sections
-    const manualNotes = order.notes || "";
-    
-    // Split by the divider we use
-    const sections = manualNotes.split("\n-------------------\n");
-    
-    // Filter out sections that start with our automated prefixes
-    const manualParts = sections.filter(s => 
-      !s.includes("👤 CLIENTE:") && 
-      !s.includes("🔄 CAMBIOS:") &&
-      !s.startsWith("📝 NOTAS:")
-    );
-
-    // Also look for the "📝 NOTAS:" prefix within a section and strip it
-    const cleanManualNotes = sections
-      .find(s => s.includes("📝 NOTAS:"))
-      ?.replace("📝 NOTAS:", "")
-      .trim() || manualParts.join("\n").trim();
-
-    setOrderNotes(cleanManualNotes);
+    setOrderNotes(extractManualNotes(order.notes || ""));
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [tableOrders, selectedOrderType]);
 
   const handleRemoveOrder = useCallback((index: number) => {
     setTableOrders((prev) => prev.filter((_, i) => i !== index));
-    if (currentOrderIndex === index) {
-      clearCurrentOrder();
-    }
+    if (currentOrderIndex === index) clearCurrentOrder();
     toast.success("Pedido eliminado");
   }, [currentOrderIndex, clearCurrentOrder]);
 
   const handleDuplicateOrder = useCallback((index: number) => {
-    const order = tableOrders[index];
-    const duplicatedOrder: TableOrder = {
-      ...order,
-      id: Date.now().toString(),
-      createdAt: Date.now(),
-    };
-    setTableOrders((prev) => [...prev, duplicatedOrder]);
+    setTableOrders((prev) => [...prev, { ...prev[index], id: Date.now().toString(), createdAt: Date.now() }]);
     toast.success("Pedido duplicado");
-  }, [tableOrders]);
+  }, []);
 
   const handleShowSummary = useCallback(() => {
     if (tableOrders.length === 0) {
@@ -640,7 +462,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     }
 
     setShowSummaryModal(false);
-
     const todayStr = getLocalDateString(new Date());
 
     const ordersPayload = tableOrders.map((order) => {
@@ -732,9 +553,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       
       setTableOrders([]);
       setSelectedTable(null);
-      setCustomerName("");
-      setCustomerPhone("");
-      setDeliveryAddress("");
+      resetCustomer();
       setPackagingFee(Number(dailyMenuData?.packagingFee || 1000));
       clearCurrentOrder();
       setSelectedOrderType(null); 
@@ -742,33 +561,22 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     } catch (error: unknown) {
       logger.error("Order Creation Error", error instanceof Error ? error : new Error(String(error)));
       let description = "Intenta nuevamente";
-      
-      if (axios.isAxiosError(error)) {
-        description = error.response?.data?.message || error.message;
-      } else if (error instanceof Error) {
-        description = error.message;
-      }
-      
+      if (axios.isAxiosError(error)) description = error.response?.data?.message || error.message;
+      else if (error instanceof Error) description = error.message;
       toast.error("Error al crear los pedidos", { description });
     }
-  }, [selectedTable, selectedOrderType, tableOrders, createOrder, backdatedDate, clearCurrentOrder, createBatchOrders, customerName, customerPhone, deliveryAddress, address2, customerPhone2, dailyMenuData]);
+  }, [selectedTable, selectedOrderType, tableOrders, createOrder, backdatedDate, clearCurrentOrder, createBatchOrders, customerName, customerPhone, deliveryAddress, address2, customerPhone2, dailyMenuData, resetCustomer]);
 
-  const handleSelectOrderType = useCallback((type: OrderType) => {
-    setSelectedOrderType(type);
-  }, []);
+  const handleSelectOrderType = useCallback((type: OrderType) => setSelectedOrderType(type), []);
 
   const handleBackToOrderType = useCallback(() => {
     setSelectedOrderType(null);
     setSelectedTable(null);
     setTableOrders([]);
-    setCustomerName("");
-    setCustomerPhone("");
-    setCustomerPhone2("");
-    setDeliveryAddress("");
-    setAddress2("");
+    resetCustomer();
     setPackagingFee(Number(dailyMenuData?.packagingFee || 1000));
     clearCurrentOrder();
-  }, [clearCurrentOrder, dailyMenuData]);
+  }, [clearCurrentOrder, dailyMenuData, resetCustomer]);
 
   return {
     isLoading: tablesLoading || itemsLoading,
