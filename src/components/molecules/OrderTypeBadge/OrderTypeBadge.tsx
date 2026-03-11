@@ -1,4 +1,4 @@
-import { Badge } from "@/components";
+import { Badge } from "../../ui";
 import { OrderType } from "@/types";
 import {
   Bike,

@@ -5,7 +5,7 @@
  * Automatically extends session if user clicks "Stay logged in".
  */
 
-import { Button } from "@/components";
+import { Button } from "../ui";
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Clock, RefreshCw, LogOut, AlertTriangle } from "lucide-react";

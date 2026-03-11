@@ -1,6 +1,12 @@
 import { OrderStatus, OrderType, PaymentMethod, OrderItemStatus, type GroupedOrder } from "@/types";
 import type { DateFilterType, DateRange } from "@/components";
 import { 
+  DollarSign,
+  ChefHat,
+  CheckCircle,
+  History as HistoryIcon
+} from "lucide-react";
+import { 
   isToday, 
   isYesterday, 
   isWithinLastWeek, 
@@ -14,14 +20,14 @@ export type OrderTab = "BILLING" | "PREPARATION" | "READY" | "HISTORY";
 export interface TabConfig {
   id: OrderTab;
   label: string;
-  icon: typeof import("lucide-react").DollarSign;
+  icon: typeof DollarSign;
 }
 
 export const ORDER_TABS: TabConfig[] = [
-  { id: "BILLING", label: "Por Cobrar", icon: import("lucide-react").DollarSign as never },
-  { id: "PREPARATION", label: "En Cocina", icon: import("lucide-react").ChefHat as never },
-  { id: "READY", label: "Listos", icon: import("lucide-react").CheckCircle as never },
-  { id: "HISTORY", label: "Historial", icon: import("lucide-react").History as never },
+  { id: "BILLING", label: "Por Cobrar", icon: DollarSign },
+  { id: "PREPARATION", label: "En Cocina", icon: ChefHat },
+  { id: "READY", label: "Listos", icon: CheckCircle },
+  { id: "HISTORY", label: "Historial", icon: HistoryIcon },
 ];
 
 export interface OrderCounts {

@@ -11,7 +11,7 @@
  * - Allows retry via error reset signal
  */
 
-import { Button } from "@/components";
+import { Button } from "../ui";
 import { Component, type ReactNode } from "react";
 import type { ErrorInfo } from "react";
 import { motion } from "framer-motion";

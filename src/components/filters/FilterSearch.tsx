@@ -1,4 +1,4 @@
-import { SearchInput } from "@/components";
+import { SearchInput } from "../molecules";
 import { cn } from "@/utils/cn";
 
 interface FilterSearchProps {

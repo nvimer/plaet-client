@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Button } from "@/components";
+import { Button } from "../../ui";
 import { cn } from "@/utils";
 
 // ============ TYPES ===========

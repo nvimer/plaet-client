@@ -5,7 +5,7 @@
  * Automatically dismisses when connection is restored.
  */
 
-import { Button } from "@/components";
+import { Button } from "../ui";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { WifiOff, RefreshCw, CheckCircle } from "lucide-react";
