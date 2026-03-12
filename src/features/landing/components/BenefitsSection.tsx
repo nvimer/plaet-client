@@ -84,7 +84,7 @@ export function BenefitsSection() {
               >
                 {/* Step Number */}
                 <div className="inline-flex items-center gap-6 mb-10 group">
-                  <span className="text-8xl md:text-9xl font-black text-primary-50/60 leading-none group-hover:text-primary-100 transition-colors duration-500">
+                  <span className="text-8xl md:text-9xl font-black text-primary-300/30 leading-none group-hover:text-primary-300/50 transition-colors duration-500">
                     {step.number}
                   </span>
                   <div className="w-24 h-2 bg-gradient-to-r from-primary-300 to-primary-500 rounded-full group-hover:w-32 transition-all duration-700"></div>

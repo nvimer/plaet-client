@@ -91,7 +91,7 @@ export function PricingSection() {
             >
               {plan.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-20 w-full flex justify-center">
-                  <Badge variant="success" size="lg" className="bg-primary-600 text-white border-none shadow-lg px-6 py-1 whitespace-nowrap">
+                  <Badge variant="success" size="lg" className="bg-primary-600 !text-white border-none shadow-lg px-6 py-1 whitespace-nowrap font-black">
                     <Sparkles className="w-4 h-4 mr-2" />
                     Recomendado
                   </Badge>

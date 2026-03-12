@@ -114,7 +114,7 @@ export function StatsSection() {
       suffix: "+",
       label: "Restaurante Activos",
       description: "Confían en Plaet",
-      color: "from-sage-200 to-sage-300",
+      color: "from-primary-500 to-primary-600",
     },
     {
       icon: Users,
@@ -122,7 +122,7 @@ export function StatsSection() {
       suffix: "+",
       label: "Usuarios Diarios",
       description: "Gestionando pedidos",
-      color: "from-primary-300 to-primary-400",
+      color: "from-primary-500 to-primary-600",
     },
     {
       icon: TrendingUp,
@@ -130,7 +130,7 @@ export function StatsSection() {
       suffix: "%",
       label: "Satisfacción",
       description: "Rating promedio",
-      color: "from-sage-200 to-sage-300",
+      color: "from-primary-500 to-primary-600",
     },
     {
       icon: Star,
@@ -138,7 +138,7 @@ export function StatsSection() {
       suffix: "%",
       label: "Más Eficiencia",
       description: "En promedio",
-      color: "from-sage-200 to-sage-300",
+      color: "from-primary-500 to-primary-600",
     },
   ];
 

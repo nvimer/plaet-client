@@ -15,7 +15,7 @@ export function FeaturesSection() {
       title: "Gestión del Menú del Día",
       description:
         "Configuración especializada para el menú diario. Maneja proteínas, categorías fijas y precios dinámicos fácilmente.",
-      color: "from-sage-200 to-sage-300",
+      color: "from-primary-500 to-primary-600",
       delay: 0.1,
     },
     {
@@ -23,7 +23,7 @@ export function FeaturesSection() {
       title: "Punto de Venta Táctil",
       description:
         "Interfaz optimizada para tablets y kioscos con botones grandes. Rápida y sin complicaciones para cajeros y meseros.",
-      color: "from-primary-300 to-primary-400",
+      color: "from-primary-500 to-primary-600",
       delay: 0.2,
     },
     {
@@ -31,7 +31,7 @@ export function FeaturesSection() {
       title: "Gestión de Mesas Visual",
       description:
         "Mapa interactivo en tiempo real. Visualiza el estado de cada mesa, asigna pedidos y controla la ocupación al instante.",
-      color: "from-sage-200 to-primary-400",
+      color: "from-primary-500 to-primary-600",
       delay: 0.3,
     },
     {
@@ -39,7 +39,7 @@ export function FeaturesSection() {
       title: "Kanban de Cocina",
       description:
         "Tablero interactivo para la cocina. Recibe pedidos en tiempo real y gestiona su estado con un simple arrastrar y soltar.",
-      color: "from-primary-300 to-sage-500",
+      color: "from-primary-500 to-primary-600",
       delay: 0.4,
     },
     {
@@ -47,7 +47,7 @@ export function FeaturesSection() {
       title: "Control de Stock Diario",
       description:
         "Reseteo y manejo de inventario limitado para el día. Control exacto para que nunca vendas platos que ya se han agotado.",
-      color: "from-sage-200 to-sage-300",
+      color: "from-primary-500 to-primary-600",
       delay: 0.5,
     },
     {
@@ -55,7 +55,7 @@ export function FeaturesSection() {
       title: "Roles y Permisos",
       description:
         "Seguridad basada en roles (RBAC). Accesos personalizados y seguros para administradores, meseros y personal de cocina.",
-      color: "from-primary-300 to-primary-400",
+      color: "from-primary-500 to-primary-600",
       delay: 0.6,
     },
   ];
@@ -159,7 +159,7 @@ export function FeaturesSection() {
           <Button
             variant="primary"
             size="lg"
-            className="glass-sage-light hover:-translate-y-1"
+            className="shadow-xl shadow-primary-100 hover:-translate-y-1"
           >
             Solicitar Demo Personalizada
           </Button>
