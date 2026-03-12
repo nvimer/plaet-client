@@ -4,4 +4,5 @@ export * from "./Button/Button";
 export * from "./Card/Card";
 export * from "./Input";
 export * from "./RadioGroup/RadioGroup";
+export * from "./Select/Select";
 export * from "./Skeleton/Skeleton";

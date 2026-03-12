@@ -9,31 +9,56 @@ import { SidebarLayout } from "@/layouts/SidebarLayout";
 /**
  * SuperAdmin page to manage all restaurant tenants.
  */
-import { RestaurantStatus } from "@/types";
+import { RestaurantStatus, type Restaurant } from "@/types";
 import { Plus, Building2, CheckCircle2, Clock, AlertCircle } from "lucide-react";
 
 export function RestaurantsPage() {
   const [page, setPage] = useState(1);
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingRestaurant, setEditingRestaurant] = useState<Restaurant | null>(null);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   
   const { data: response, isLoading } = useRestaurants({ page, limit: 10 });
   const createMutation = useCreateRestaurant();
+  const updateMutation = useUpdateRestaurant();
   const deleteMutation = useDeleteRestaurant();
 
-  const handleCreate = async (values: RestaurantFormValues) => {
-    await createMutation.mutateAsync({
-      name: values.name,
-      address: values.address,
-      phone: values.phone,
-      nit: values.nit,
-      adminUser: {
-        firstName: values.adminFirstName,
-        lastName: values.adminLastName,
-        email: values.adminEmail,
-      },
-    });
+  const handleOpenCreateModal = () => {
+    setEditingRestaurant(null);
+    setIsModalOpen(true);
+  };
+
+  const handleOpenEditModal = (restaurant: Restaurant) => {
+    setEditingRestaurant(restaurant);
+    setIsModalOpen(true);
+  };
+
+  const handleFormSubmit = async (values: RestaurantFormValues) => {
+    if (editingRestaurant) {
+      await updateMutation.mutateAsync({
+        id: editingRestaurant.id,
+        data: {
+          name: values.name,
+          address: values.address,
+          phone: values.phone,
+          nit: values.nit,
+          status: values.status,
+        },
+      });
+    } else {
+      await createMutation.mutateAsync({
+        name: values.name,
+        address: values.address,
+        phone: values.phone,
+        nit: values.nit,
+        adminUser: {
+          firstName: values.adminFirstName,
+          lastName: values.adminLastName,
+          email: values.adminEmail,
+        },
+      });
+    }
     setIsModalOpen(false);
   };
 
@@ -50,7 +75,7 @@ export function RestaurantsPage() {
   // Stats calculation (real stats would come from a specific endpoint, but let's derive from current page for demo or use mock)
   const stats = [
     { label: "Total Restaurantes", value: meta?.total || 0, icon: Building2, color: "text-carbon-600" },
-    { label: "Activos", value: restaurants.filter(r => r.status === RestaurantStatus.ACTIVE).length, icon: CheckCircle2, color: "text-sage-600" },
+    { label: "Activos", value: restaurants.filter(r => r.status === RestaurantStatus.ACTIVE).length, icon: CheckCircle2, color: "text-primary-600" },
     { label: "En Prueba", value: restaurants.filter(r => r.status === RestaurantStatus.TRIAL).length, icon: Clock, color: "text-warning-600" },
     { label: "Suspendidos", value: restaurants.filter(r => r.status === RestaurantStatus.SUSPENDED).length, icon: AlertCircle, color: "text-error-600" },
   ];
@@ -61,7 +86,7 @@ export function RestaurantsPage() {
       {/* ============ PAGE HEADER =============== */}
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
         <div className="space-y-1.5">
-          <div className="flex items-center gap-2 text-sage-600">
+          <div className="flex items-center gap-2 text-primary-600">
             <Building2 className="w-5 h-5" />
             <span className="text-[10px] font-semibold tracking-[0.2em]">Administración SaaS</span>
           </div>
@@ -72,7 +97,7 @@ export function RestaurantsPage() {
         <Button 
           size="lg" 
           variant="primary" 
-          onClick={() => setIsModalOpen(true)} 
+          onClick={handleOpenCreateModal} 
           className="rounded-2xl h-14 px-8 shadow-soft-lg transition-all active:scale-95 font-bold"
         >
           <Plus className="w-5 h-5 mr-2 stroke-[3px]" />
@@ -99,7 +124,7 @@ export function RestaurantsPage() {
           <>
             <RestaurantList
               restaurants={restaurants}
-              onEdit={(_r) => {}}
+              onEdit={handleOpenEditModal}
               onDelete={setDeleteId}
             />
             {meta && meta.totalPages > 1 && (
@@ -118,7 +143,7 @@ export function RestaurantsPage() {
             description="Comienza registrando tu primer cliente en la plataforma."
             icon={<Building2 className="w-12 h-12 text-carbon-200" />}
             action={
-              <Button onClick={() => setIsModalOpen(true)}>
+              <Button onClick={handleOpenCreateModal}>
                 Registrar Primer Restaurante
               </Button>
             }
@@ -126,15 +151,19 @@ export function RestaurantsPage() {
         )}
       </Card>
 
-      {/* Modal de Creación */}
+      {/* Modal de Creación / Edición */}
       <BaseModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title="Registrar Nuevo Restaurante"
+        title={editingRestaurant ? "Editar Restaurante" : "Registrar Nuevo Restaurante"}
         size="lg"
       >
         <div className="p-6">
-          <RestaurantForm onSubmit={handleCreate} isLoading={createMutation.isPending} />
+          <RestaurantForm 
+            onSubmit={handleFormSubmit} 
+            isLoading={createMutation.isPending || updateMutation.isPending} 
+            initialData={editingRestaurant || undefined}
+          />
         </div>
       </BaseModal>
 

@@ -21,6 +21,7 @@ export const restaurantFormSchema = z.object({
     .string()
     .min(2, "El apellido debe tener al menos 2 caracteres"),
   adminEmail: z.string().email("Correo electrónico inválido"),
+  status: z.nativeEnum(RestaurantStatus).optional(),
 });
 
 export type RestaurantFormValues = z.infer<typeof restaurantFormSchema>;
