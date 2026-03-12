@@ -55,7 +55,7 @@ export function Navbar() {
             {/* Logo Icon  */}
             <div className={cn(
               "w-11 h-11 flex items-center justify-center transition-all duration-700",
-              "bg-gradient-to-tr from-white to-sage-50 rounded-2xl shadow-soft-md group-hover:shadow-soft-lg group-hover:scale-105"
+              "bg-white/90 backdrop-blur-xl border border-sage-200/50 rounded-2xl shadow-soft-md group-hover:shadow-soft-lg group-hover:scale-105"
             )}>
               <img src="/plaet.png" alt="Plaet Logo" className="w-8 h-8 object-contain mix-blend-multiply" />
             </div>

@@ -17,9 +17,11 @@ import {
   Eye,
   EyeOff,
   ShieldCheck,
+  ArrowLeft,
 } from "lucide-react";
 import { useAuth } from "@/hooks";
 import { toast } from "sonner";
+import { cn } from "@/utils/cn";
 
 /**
  * Login Component
@@ -73,11 +75,34 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-sage-50 flex items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-sage-50 flex flex-col relative overflow-hidden">
       <Seo title="Iniciar Sesión" description="Ingresa a tu cuenta de Plaet para gestionar tu restaurante." />
       
-      {/* Background decorations */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {/* Top Navigation Bar */}
+      <header className="fixed top-0 left-0 right-0 z-50 h-20 bg-white/80 backdrop-blur-xl border-b border-sage-200/50 px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto h-full flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3 group">
+            <div className={cn(
+              "w-10 h-10 flex items-center justify-center transition-all duration-700",
+              "bg-white/90 backdrop-blur-xl border border-sage-200/50 rounded-xl shadow-soft-md group-hover:scale-105"
+            )}>
+              <img src="/plaet.png" alt="Plaet Logo" className="w-7 h-7 object-contain mix-blend-multiply" />
+            </div>
+            <BrandName className="text-xl font-black tracking-tighter text-carbon-900" />
+          </Link>
+
+          <Link to="/">
+            <Button variant="ghost" size="sm" className="text-carbon-500 font-bold hover:text-carbon-900">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Volver al inicio
+            </Button>
+          </Link>
+        </div>
+      </header>
+
+      <div className="flex-1 flex items-center justify-center p-6 pt-24">
+        {/* Background decorations */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
           animate={{
             scale: [1, 1.2, 1],
@@ -121,8 +146,8 @@ export default function LoginPage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="inline-flex items-center justify-center mb-6"
             >
-              <div className="w-20 h-20 flex items-center justify-center">
-                <img src="/plaet.png" alt="Plaet Logo" className="w-full h-full object-contain mix-blend-multiply drop-shadow-sm" />
+              <div className="w-20 h-20 flex items-center justify-center bg-white/90 backdrop-blur-xl border border-sage-200/50 rounded-2xl shadow-soft-md">
+                <img src="/plaet.png" alt="Plaet Logo" className="w-12 h-12 object-contain mix-blend-multiply" />
               </div>
             </motion.div>
 
@@ -287,6 +312,7 @@ export default function LoginPage() {
           </div>
         </motion.div>
       </motion.div>
+    </div>
     </div>
   );
 }
