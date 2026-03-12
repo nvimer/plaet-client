@@ -91,14 +91,18 @@ export function RestaurantForm({ onSubmit, isLoading, initialData }: RestaurantF
             error={errors.adminEmail?.message}
             required
           />
-          <Input
-            label="Contraseña"
-            type="password"
-            placeholder="••••••••"
-            {...register("adminPassword")}
-            error={errors.adminPassword?.message}
-            required
-          />
+          <div className="space-y-1">
+            <Input
+              label="Contraseña"
+              type="password"
+              placeholder="••••••••"
+              {...register("adminPassword")}
+              error={errors.adminPassword?.message}
+            />
+            <p className="text-[10px] text-carbon-400 font-medium px-1">
+              * Dejar en blanco para generar automáticamente y enviar por email.
+            </p>
+          </div>
         </div>
       </div>
 

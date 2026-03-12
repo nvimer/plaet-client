@@ -25,7 +25,9 @@ export const restaurantFormSchema = z.object({
   adminEmail: z.string().email("Correo electrónico inválido"),
   adminPassword: z
     .string()
-    .min(8, "La contraseña debe tener al menos 8 caracteres"),
+    .min(8, "La contraseña debe tener al menos 8 caracteres")
+    .optional()
+    .or(z.literal("")),
 });
 
 export type RestaurantFormValues = z.infer<typeof restaurantFormSchema>;

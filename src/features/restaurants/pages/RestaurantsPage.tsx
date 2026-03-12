@@ -34,7 +34,7 @@ export function RestaurantsPage() {
         firstName: values.adminFirstName,
         lastName: values.adminLastName,
         email: values.adminEmail,
-        password: values.adminPassword,
+        password: values.adminPassword || undefined,
       },
     });
     setIsModalOpen(false);
