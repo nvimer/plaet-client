@@ -64,6 +64,7 @@ export function Navbar() {
             <BrandName
               className="text-2xl font-black tracking-tighter text-carbon-900 leading-none"
               accentClassName="bg-primary-500"
+              showManagement
             />
           </Link>
 

@@ -95,13 +95,11 @@ export function Sidebar() {
               <img src="/plaet.png" alt="Plaet Logo" className="w-8 h-8 object-contain mix-blend-multiply" />
             </div>
             {(!isCollapsed || isMobile) && (
-              <div className="flex flex-col">
-                <BrandName 
-                  className="text-2xl font-black tracking-tighter text-carbon-900 leading-none"
-                  accentClassName="bg-sage-500"
-                />
-                <span className="text-[10px] font-bold text-carbon-400 uppercase tracking-[0.3em] mt-1 leading-none">Management</span>
-              </div>
+              <BrandName 
+                className="text-2xl font-black tracking-tighter text-carbon-900 leading-none"
+                accentClassName="bg-sage-500"
+                showManagement
+              />
             )}
           </Link>
 
