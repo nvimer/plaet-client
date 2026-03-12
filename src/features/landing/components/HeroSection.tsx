@@ -179,7 +179,6 @@ export function HeroSection() {
 
           {/* Right Column: Layered Mockup */}
           <motion.div 
-            style={{ y: y2 }}
             className="relative lg:h-[600px] flex items-center justify-center"
           >
             {/* Floating Glow Background */}
