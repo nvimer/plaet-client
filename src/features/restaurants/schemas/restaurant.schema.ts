@@ -13,8 +13,6 @@ export const restaurantFormSchema = z.object({
   address: z.string().max(255).optional(),
   phone: z.string().max(20).optional(),
   nit: z.string().max(20).optional(),
-  currency: z.string().default("COP"),
-  timezone: z.string().default("America/Bogota"),
   // Admin User Data
   adminFirstName: z
     .string()
@@ -23,11 +21,6 @@ export const restaurantFormSchema = z.object({
     .string()
     .min(2, "El apellido debe tener al menos 2 caracteres"),
   adminEmail: z.string().email("Correo electrónico inválido"),
-  adminPassword: z
-    .string()
-    .min(8, "La contraseña debe tener al menos 8 caracteres")
-    .optional()
-    .or(z.literal("")),
 });
 
 export type RestaurantFormValues = z.infer<typeof restaurantFormSchema>;

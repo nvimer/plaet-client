@@ -2,7 +2,7 @@ import { Button, Input } from "@/components";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { restaurantFormSchema, type RestaurantFormValues } from "../schemas/restaurant.schema";
-import { Save, User, Building2 } from "lucide-react";
+import { Save, User, Building2, MailCheck } from "lucide-react";
 
 interface RestaurantFormProps {
   onSubmit: (data: RestaurantFormValues) => void;
@@ -17,10 +17,7 @@ export function RestaurantForm({ onSubmit, isLoading, initialData }: RestaurantF
     formState: { errors },
   } = useForm<RestaurantFormValues>({
     resolver: zodResolver(restaurantFormSchema),
-    defaultValues: initialData || {
-      currency: "COP",
-      timezone: "America/Bogota",
-    },
+    defaultValues: initialData || {},
   });
 
   return (
@@ -91,16 +88,17 @@ export function RestaurantForm({ onSubmit, isLoading, initialData }: RestaurantF
             error={errors.adminEmail?.message}
             required
           />
+        </div>
+
+        {/* Notificación de Credenciales */}
+        <div className="bg-primary-50 border border-primary-100 rounded-2xl p-4 flex items-start gap-3 mt-4 animate-fade-in">
+          <div className="bg-white p-2 rounded-xl shadow-soft-sm">
+            <MailCheck className="w-5 h-5 text-primary-600" />
+          </div>
           <div className="space-y-1">
-            <Input
-              label="Contraseña"
-              type="password"
-              placeholder="••••••••"
-              {...register("adminPassword")}
-              error={errors.adminPassword?.message}
-            />
-            <p className="text-[10px] text-carbon-400 font-medium px-1">
-              * Dejar en blanco para generar automáticamente y enviar por email.
+            <p className="text-sm font-bold text-primary-900">Entrega Automática de Credenciales</p>
+            <p className="text-xs text-primary-700 leading-relaxed">
+              Al registrar el restaurante, el sistema generará una contraseña segura automáticamente y la enviará junto con las instrucciones de acceso al correo electrónico proporcionado arriba.
             </p>
           </div>
         </div>

@@ -28,13 +28,10 @@ export function RestaurantsPage() {
       address: values.address,
       phone: values.phone,
       nit: values.nit,
-      currency: values.currency,
-      timezone: values.timezone,
       adminUser: {
         firstName: values.adminFirstName,
         lastName: values.adminLastName,
         email: values.adminEmail,
-        password: values.adminPassword || undefined,
       },
     });
     setIsModalOpen(false);
