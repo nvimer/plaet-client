@@ -97,7 +97,7 @@ export function Sidebar() {
             {(!isCollapsed || isMobile) && (
               <BrandName 
                 className="text-2xl font-black tracking-tighter text-carbon-900 leading-none"
-                accentClassName="bg-sage-500"
+                
                 showManagement
               />
             )}

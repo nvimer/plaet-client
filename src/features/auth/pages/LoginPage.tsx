@@ -127,7 +127,7 @@ export default function LoginPage() {
             </motion.div>
 
             <h1 className="text-3xl font-bold text-carbon-900 mb-2 tracking-tight">
-              <BrandName accentClassName="text-sage-600" />
+              <BrandName  />
             </h1>
             <p className="text-carbon-600 font-light">
               Sistema de Gestión de Restaurantes

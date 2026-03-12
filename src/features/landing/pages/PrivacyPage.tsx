@@ -14,7 +14,7 @@ export function PrivacyPage() {
             <ArrowLeft className="w-5 h-5" />
             <span className="font-medium">Volver al inicio</span>
           </Link>
-          <BrandName className="text-xl font-bold text-carbon-900" accentClassName="text-sage-600" />
+          <BrandName className="text-xl font-bold text-carbon-900"  />
         </div>
       </header>
 
