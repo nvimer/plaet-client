@@ -58,20 +58,6 @@ export function RestaurantForm({ onSubmit, isLoading, initialData }: RestaurantF
             error={errors.phone?.message}
           />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <Input
-            label="Moneda"
-            placeholder="COP"
-            {...register("currency")}
-            error={errors.currency?.message}
-          />
-          <Input
-            label="Zona Horaria"
-            placeholder="America/Bogota"
-            {...register("timezone")}
-            error={errors.timezone?.message}
-          />
-        </div>
       </div>
 
       <hr className="border-carbon-100" />
