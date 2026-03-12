@@ -1,6 +1,6 @@
 import { BaseModal, Button, Card, ConfirmDialog, EmptyState, Pagination, StatCard } from "@/components";
 import { useState } from "react";
-import { useRestaurants, useCreateRestaurant, useDeleteRestaurant } from "../hooks/useRestaurants";
+import { useRestaurants, useCreateRestaurant, useUpdateRestaurant, useDeleteRestaurant } from "../hooks/useRestaurants";
 import { RestaurantList } from "../components/RestaurantList";
 import { RestaurantForm } from "../components/RestaurantForm";
 import type { RestaurantFormValues } from "../schemas/restaurant.schema";
