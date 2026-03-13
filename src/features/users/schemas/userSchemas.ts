@@ -18,7 +18,9 @@ export const createUserSchema = z.object({
   password: z
     .string()
     .min(8, "La contraseña debe tener al menos 8 caracteres")
-    .max(100, "La contraseña no puede exceder 100 caracteres"),
+    .max(100, "La contraseña no puede exceder 100 caracteres")
+    .optional()
+    .or(z.literal("")),
   phone: z.string().regex(/^\d{10}$/, "Debe contener exactamente 10 dígitos (ej. 3001234567)").optional().or(z.literal("")),
   roleIds: z.array(z.number()).optional(),
 });

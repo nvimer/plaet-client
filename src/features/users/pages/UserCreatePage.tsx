@@ -159,12 +159,15 @@ export function UserCreatePage() {
               </h2>
 
               <PasswordInput
-                label="Contraseña"
-                placeholder="Mínimo 8 caracteres"
+                label="Contraseña (opcional)"
+                placeholder="Se generará automáticamente si se deja vacío"
                 {...register("password")}
                 error={errors.password?.message}
                 fullWidth
               />
+              <p className="text-sm text-carbon-500 mt-2">
+                Si no proporcionas una contraseña, se generará una automáticamente y se enviará al usuario por correo electrónico.
+              </p>
             </div>
 
             {/* Divider */}
