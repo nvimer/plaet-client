@@ -52,9 +52,14 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      await login({ email, password });
+      const mustChangePassword = await login({ email, password });
       toast.success("¡Bienvenido de nuevo!");
-      navigate("/dashboard", { replace: true });
+      
+      if (mustChangePassword) {
+        navigate("/profile/change-password", { replace: true });
+      } else {
+        navigate("/dashboard", { replace: true });
+      }
     } catch (error) {
       const errorMessage =
         error instanceof Error && "response" in error

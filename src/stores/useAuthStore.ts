@@ -132,16 +132,18 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     }
   },
 
-  login: async (credentials: LoginInput): Promise<void> => {
+  login: async (credentials: LoginInput): Promise<boolean> => {
     set({ isLoading: true, error: null });
 
     try {
-      await authApi.login(credentials);
+      const response = await authApi.login(credentials);
+      const mustChangePassword = response.data.user.mustChangePassword;
+      
       const userWithRoles = await get().fetchUserWithRoles();
 
       if (userWithRoles) {
         set({
-          user: userWithRoles,
+          user: { ...userWithRoles, mustChangePassword },
           isAuthenticated: true,
           isLoading: false,
           error: null,
@@ -149,6 +151,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         });
         // @ts-expect-error - access internal function
         get().setupTokenRefresh();
+        return mustChangePassword ?? false;
       } else {
         throw new Error("Failed to fetch user profile after login");
       }

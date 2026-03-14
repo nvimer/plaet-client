@@ -89,6 +89,7 @@ export interface User {
   email: string;
   phone?: string;
   profile?: Profile;
+  mustChangePassword?: boolean;
   // Roles can be either UserRole[] (from backend with relation) or Role[] (direct)
   // The UserRole variant may include nested permissions
   roles?: (Role | (UserRole & { 
@@ -159,15 +160,22 @@ export interface AuthResponse {
 }
 
 /**
- * Datos para actualizar usuario
- * Usado en PATCH /users/:id
+ * Lo que devuelve POST /auth/login (estructura real de tu API)
+ * Nota: Los tokens se envían en cookies httpOnly, no en el body
  */
-export interface UpdateUserInput {
-  firstName?: string;
-  lastName?: string;
-  email?: string;
-  phone?: string;
-  roleIds?: number[];
+export interface AuthResponse {
+  success: boolean;
+  message: string;
+  data: {
+    user: {
+      id: string;
+      restaurantId?: string | null;
+      email: string;
+      firstName: string;
+      lastName: string;
+      mustChangePassword?: boolean;
+    };
+  };
 }
 
 /**

@@ -22,6 +22,7 @@ import {
 import { authApi } from "@/services";
 import { toast } from "sonner";
 import axios from "axios";
+import { useAuthStore } from "@/stores/useAuthStore";
 
 interface FormErrors {
   currentPassword?: string;
@@ -31,6 +32,8 @@ interface FormErrors {
 
 export default function ChangePasswordPage() {
   const navigate = useNavigate();
+  const { user } = useAuthStore();
+  const mustChangePassword = user?.mustChangePassword;
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -187,9 +190,22 @@ export default function ChangePasswordPage() {
             <h1 className="text-3xl font-bold text-carbon-900 mb-2 tracking-tight">
               Cambiar Contraseña
             </h1>
-            <p className="text-carbon-600 font-light">
-              Ingresa tu contraseña actual y la nueva
-            </p>
+            {mustChangePassword && (
+              <div className="mt-3 p-3 bg-warning-50 border border-warning-200 rounded-xl">
+                <p className="text-sm text-warning-800 flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 flex-shrink-0" />
+                  <span>
+                    Por seguridad, debes cambiar tu contraseña antes de continuar.
+                    Esta es la primera vez que ingreas con una contraseña temporal.
+                  </span>
+                </p>
+              </div>
+            )}
+            {!mustChangePassword && (
+              <p className="text-carbon-600 font-light">
+                Ingresa tu contraseña actual y la nueva
+              </p>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
