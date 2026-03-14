@@ -146,6 +146,15 @@ export function UserCreatePage() {
                   fullWidth
                 />
               </div>
+
+              {/* Info about password */}
+              <div className="mt-4 p-4 bg-sage-50 border border-sage-200 rounded-xl">
+                <p className="text-sm text-sage-800">
+                  <strong>📧 La contraseña se enviará por correo electrónico.</strong>
+                  <br />
+                  No es necesario establecer una contraseña ahora. El nuevo usuario recibirá sus credenciales de acceso por email.
+                </p>
+              </div>
             </div>
 
             {/* Divider */}
