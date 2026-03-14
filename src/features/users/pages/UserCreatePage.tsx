@@ -1,4 +1,4 @@
-import { Button, Card, Input, PasswordInput } from "@/components";
+import { Button, Card, Input } from "@/components";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -50,7 +50,6 @@ export function UserCreatePage() {
       firstName: "",
       lastName: "",
       email: "",
-      password: "",
       phone: "",
       roleIds: [],
     },
@@ -147,27 +146,6 @@ export function UserCreatePage() {
                   fullWidth
                 />
               </div>
-            </div>
-
-            {/* Divider */}
-            <div className="border-t border-sage-200" />
-
-            {/* Security Section */}
-            <div>
-              <h2 className="text-lg font-semibold text-carbon-900 mb-4">
-                Contraseña
-              </h2>
-
-              <PasswordInput
-                label="Contraseña (opcional)"
-                placeholder="Se generará automáticamente si se deja vacío"
-                {...register("password")}
-                error={errors.password?.message}
-                fullWidth
-              />
-              <p className="text-sm text-carbon-500 mt-2">
-                Si no proporcionas una contraseña, se generará una automáticamente y se enviará al usuario por correo electrónico.
-              </p>
             </div>
 
             {/* Divider */}
