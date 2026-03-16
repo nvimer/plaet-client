@@ -2,10 +2,11 @@
  * RESET PASSWORD PAGE COMPONENT
  *
  * Password reset with token from email
+ * Includes password strength indicator and refined validation
  */
 
 import { Button, Input } from "@/components";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
@@ -15,9 +16,11 @@ import {
   EyeOff,
   ShieldCheck,
   AlertCircle,
+  Check,
 } from "lucide-react";
 import { authApi } from "@/services";
 import { toast } from "sonner";
+import { cn } from "@/utils/cn";
 
 export default function ResetPasswordPage() {
   const navigate = useNavigate();
@@ -30,6 +33,35 @@ export default function ResetPasswordPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Password requirements state
+  const requirements = useMemo(() => [
+    { label: "Mínimo 8 caracteres", met: password.length >= 8 },
+    { label: "Una letra mayúscula", met: /[A-Z]/.test(password) },
+    { label: "Una letra minúscula", met: /[a-z]/.test(password) },
+    { label: "Un número", met: /[0-9]/.test(password) },
+    { label: "Un carácter especial", met: /[^A-Za-z0-9]/.test(password) },
+  ], [password]);
+
+  const strength = useMemo(() => {
+    if (!password) return 0;
+    return requirements.filter(req => req.met).length;
+  }, [password, requirements]);
+
+  const strengthColor = useMemo(() => {
+    if (strength <= 1) return "bg-error-500";
+    if (strength <= 3) return "bg-warning-500";
+    if (strength <= 4) return "bg-info-500";
+    return "bg-success-500";
+  }, [strength]);
+
+  const strengthText = useMemo(() => {
+    if (!password) return "";
+    if (strength <= 1) return "Muy débil";
+    if (strength <= 3) return "Débil";
+    if (strength <= 4) return "Media";
+    return "Fuerte";
+  }, [password, strength]);
 
   if (!token) {
     return (
@@ -70,8 +102,8 @@ export default function ResetPasswordPage() {
       return;
     }
 
-    if (password.length < 12) {
-      setError("La contraseña debe tener al menos 12 caracteres.");
+    if (strength < 5) {
+      setError("La contraseña no cumple con todos los requisitos de seguridad.");
       return;
     }
 
@@ -170,7 +202,7 @@ export default function ResetPasswordPage() {
                   type={showPassword ? "text" : "password"}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Mínimo 12 caracteres"
+                  placeholder="Mínimo 8 caracteres"
                   disabled={isLoading}
                   fullWidth
                   className="pl-12 pr-12"
@@ -190,6 +222,34 @@ export default function ResetPasswordPage() {
                   )}
                 </button>
               </div>
+
+              {/* Strength Meter */}
+              {password && (
+                <div className="mt-3 space-y-2">
+                  <div className="flex justify-between items-center text-xs font-bold uppercase tracking-wider">
+                    <span className="text-carbon-400">Seguridad:</span>
+                    <span className={cn(
+                      strength <= 1 ? "text-error-600" :
+                      strength <= 3 ? "text-warning-600" :
+                      strength <= 4 ? "text-info-600" :
+                      "text-success-600"
+                    )}>
+                      {strengthText}
+                    </span>
+                  </div>
+                  <div className="h-1.5 w-full bg-carbon-100 rounded-full overflow-hidden flex gap-1">
+                    {[1, 2, 3, 4, 5].map((step) => (
+                      <div
+                        key={step}
+                        className={cn(
+                          "h-full flex-1 transition-all duration-500",
+                          strength >= step ? strengthColor : "bg-carbon-100"
+                        )}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Confirm Password */}
@@ -229,18 +289,24 @@ export default function ResetPasswordPage() {
               </div>
             </div>
 
-            {/* Password requirements */}
-            <div className="bg-sage-50 rounded-lg p-4 text-sm text-carbon-600">
-              <p className="font-semibold mb-2">Requisitos de contraseña:</p>
-              <ul className="space-y-1 ml-2">
-                <li className={password.length >= 12 ? "text-success-600" : ""}>
-                  ✓ Mínimo 12 caracteres
-                </li>
-                <li className="text-carbon-500">• Una letra mayúscula</li>
-                <li className="text-carbon-500">• Una letra minúscula</li>
-                <li className="text-carbon-500">• Un número</li>
-                <li className="text-carbon-500">• Un carácter especial</li>
-              </ul>
+            {/* Password requirements list */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 p-4 bg-white/50 border border-carbon-100 rounded-2xl">
+              {requirements.map((req, idx) => (
+                <div key={idx} className="flex items-center gap-2">
+                  <div className={cn(
+                    "w-4 h-4 rounded-full flex items-center justify-center transition-colors",
+                    req.met ? "bg-success-100 text-success-600" : "bg-carbon-100 text-carbon-300"
+                  )}>
+                    <Check className="w-2.5 h-2.5 stroke-[3px]" />
+                  </div>
+                  <span className={cn(
+                    "text-[11px] font-medium transition-colors",
+                    req.met ? "text-carbon-900" : "text-carbon-400"
+                  )}>
+                    {req.label}
+                  </span>
+                </div>
+              ))}
             </div>
 
             {/* Error message */}
