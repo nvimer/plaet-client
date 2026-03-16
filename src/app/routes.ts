@@ -73,6 +73,8 @@ export const ROUTES = {
   CHANGE_PASSWORD: "/profile/change-password",
 
   // Auth
+  FORGOT_PASSWORD: "/forgot-password",
+  RESET_PASSWORD: "/reset-password",
   VERIFY_EMAIL: "/verify-email",
   LOCKOUT: "/lockout",
   ERROR: "/error",

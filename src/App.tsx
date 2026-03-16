@@ -77,17 +77,17 @@ const App = () => {
             {/* =============== PUBLIC ROUTES =============== */}
             {/* Landing Page */}
             <Route
-              path="/"
+              path={ROUTES.HOME}
               element={
-                isAuthenticated ? <Navigate to="/dashboard" /> : <LandingPage />
+                isAuthenticated ? <Navigate to={ROUTES.DASHBOARD} /> : <LandingPage />
               }
             />
             {/* Public Route: Login */}
             <Route
-              path="/login"
+              path={ROUTES.LOGIN}
               element={
                 isAuthenticated ? (
-                  <Navigate to="/dashboard" replace />
+                  <Navigate to={ROUTES.DASHBOARD} replace />
                 ) : (
                   <LoginPage />
                 )
@@ -105,31 +105,14 @@ const App = () => {
               }
             />
             {/* Public Route: Forgot Password */}
-            <Route
-              path="/forgot-password"
-              element={
-                isAuthenticated ? (
-                  <Navigate to="/dashboard" replace />
-                ) : (
-                  <ForgotPasswordPage />
-                )
-              }
-            />
+            <Route path={ROUTES.FORGOT_PASSWORD} element={<ForgotPasswordPage />} />
+            
             {/* Public Route: Reset Password */}
-            <Route
-              path="/reset-password"
-              element={
-                isAuthenticated ? (
-                  <Navigate to="/dashboard" replace />
-                ) : (
-                  <ResetPasswordPage />
-                )
-              }
-            />
+            <Route path={ROUTES.RESET_PASSWORD} element={<ResetPasswordPage />} />
             {/* Public Route: Verify Email */}
-            <Route path="/verify-email" element={<VerifyEmailPage />} />
+            <Route path={ROUTES.VERIFY_EMAIL} element={<VerifyEmailPage />} />
             {/* Public Route: Account Lockout */}
-            <Route path="/lockout" element={<AccountLockoutPage />} />
+            <Route path={ROUTES.LOCKOUT} element={<AccountLockoutPage />} />
             
             {/* Public Route: Privacy Policy */}
             <Route path="/privacy" element={<PrivacyPage />} />
@@ -563,7 +546,7 @@ const App = () => {
             <Route
               path="*"
               element={
-                <Navigate to={isAuthenticated ? "/" : "/login"} replace />
+                <Navigate to={isAuthenticated ? ROUTES.HOME : ROUTES.LOGIN} replace />
               }
             />
             {/* Error Page */}
