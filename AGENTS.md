@@ -59,6 +59,10 @@ Always run commands from their respective directories (`/client` or `/server`), 
 *   **Zustand FIRST:** Use Zustand for all global or persistent state. **React Context is deprecated** for state sharing due to performance issues.
 *   **Persistence:** Use Zustand `persist` middleware for operational state (drafts, UI preferences).
 
+### Forms & Validation (Client)
+*   **Zod Schema Policy:** Always use `.optional().nullable()` for fields that can be `null` in the database to prevent `zodResolver` from failing when processing initial values from the API.
+*   **Dynamic Forms:** Ensure schemas are flexible enough for both Creation and Editing (making fields optional if they are not rendered in all states).
+
 ### Efficiency & Algorithms
 *   **O(N) Priority:** Avoid nested loops (O(N^2)) when processing lists (grouping, filtering). Use `Map` or `Set` for single-pass processing.
 *   **Memoization:** Use `useMemo` and `useCallback` for expensive transformations or stable references.

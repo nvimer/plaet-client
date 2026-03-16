@@ -10,17 +10,25 @@ export const restaurantFormSchema = z.object({
     .string()
     .min(2, "El nombre del restaurante debe tener al menos 2 caracteres")
     .max(100, "El nombre no puede exceder los 100 caracteres"),
-  address: z.string().max(255).optional(),
-  phone: z.string().max(20).optional(),
-  nit: z.string().max(20).optional(),
-  // Admin User Data
+  address: z.string().max(255).optional().nullable(),
+  phone: z.string().max(20).optional().nullable(),
+  nit: z.string().max(20).optional().nullable(),
+  // Admin User Data (Only required for creation, but optional in schema to allow editing)
   adminFirstName: z
     .string()
-    .min(2, "El nombre debe tener al menos 2 caracteres"),
+    .min(2, "El nombre debe tener al menos 2 caracteres")
+    .optional()
+    .or(z.literal("")),
   adminLastName: z
     .string()
-    .min(2, "El apellido debe tener al menos 2 caracteres"),
-  adminEmail: z.string().email("Correo electrónico inválido"),
+    .min(2, "El apellido debe tener al menos 2 caracteres")
+    .optional()
+    .or(z.literal("")),
+  adminEmail: z
+    .string()
+    .email("Correo electrónico inválido")
+    .optional()
+    .or(z.literal("")),
   status: z.nativeEnum(RestaurantStatus).optional(),
 });
 
