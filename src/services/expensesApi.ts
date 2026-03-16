@@ -7,17 +7,17 @@ import type { Expense, CreateExpenseDTO, ApiResponse } from "../types";
  */
 
 export const createExpense = async (dto: CreateExpenseDTO): Promise<Expense> => {
-  const { data } = await axiosClient.post<ApiResponse<Expense>>("/expenses", dto);
+  const { data } = await axiosClient.post<ApiResponse<Expense>>("expenses", dto);
   return data.data;
 };
 
 export const getExpenses = async (startDate?: string, endDate?: string): Promise<Expense[]> => {
-  const { data } = await axiosClient.get<ApiResponse<Expense[]>>("/expenses", {
+  const { data } = await axiosClient.get<ApiResponse<Expense[]>>("expenses", {
     params: { startDate, endDate },
   });
   return data.data || [];
 };
 
 export const deleteExpense = async (id: string): Promise<void> => {
-  await axiosClient.delete(`/expenses/${id}`);
+  await axiosClient.delete(`expenses/${id}`);
 };

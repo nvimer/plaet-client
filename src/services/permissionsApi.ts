@@ -36,7 +36,7 @@ export interface UpdatePermissionInput {
  */
 export const getPermissions = async (params?: PaginationParams) => {
   const { data } = await axiosClient.get<PaginatedResponse<Permission>>(
-    "/permissions",
+    "permissions",
     { params }
   );
   return data;
@@ -49,7 +49,7 @@ export const getPermissions = async (params?: PaginationParams) => {
  */
 export const getPermissionById = async (id: number) => {
   const { data } = await axiosClient.get<ApiResponse<Permission>>(
-    `/permissions/${id}`
+    `permissions/${id}`
   );
   return data;
 };
@@ -61,7 +61,7 @@ export const getPermissionById = async (id: number) => {
  */
 export const createPermission = async (permissionData: CreatePermissionInput) => {
   const { data } = await axiosClient.post<ApiResponse<Permission>>(
-    "/permissions",
+    "permissions",
     permissionData
   );
   return data;
@@ -77,7 +77,7 @@ export const updatePermission = async (
   permissionData: UpdatePermissionInput
 ) => {
   const { data } = await axiosClient.patch<ApiResponse<Permission>>(
-    `/permissions/${id}`,
+    `permissions/${id}`,
     permissionData
   );
   return data;
@@ -90,7 +90,7 @@ export const updatePermission = async (
  */
 export const deletePermission = async (id: number) => {
   const { data } = await axiosClient.delete<ApiResponse<null>>(
-    `/permissions/${id}`
+    `permissions/${id}`
   );
   return data;
 };

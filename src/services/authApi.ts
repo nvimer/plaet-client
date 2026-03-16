@@ -75,7 +75,7 @@ export const refreshToken = async () => {
  */
 export const forgotPassword = async (email: string) => {
   const { data } = await axiosClient.post<ApiResponse<{ message: string }>>(
-    "/auth/forgot-password",
+    "auth/forgot-password",
     { email },
   );
   return data;
@@ -91,8 +91,8 @@ export const forgotPassword = async (email: string) => {
  */
 export const resetPassword = async (token: string, newPassword: string) => {
   const { data } = await axiosClient.post<ApiResponse<{ message: string }>>(
-    "/auth/reset-password",
-    { token, password: newPassword },
+    "auth/reset-password",
+    { token, newPassword, confirmPassword: newPassword },
   );
   return data;
 };
@@ -106,7 +106,7 @@ export const resetPassword = async (token: string, newPassword: string) => {
  */
 export const verifyEmail = async (token: string) => {
   const { data } = await axiosClient.post<ApiResponse<{ message: string }>>(
-    "/auth/verify-email",
+    "auth/verify-email",
     { token },
   );
   return data;
@@ -121,7 +121,7 @@ export const verifyEmail = async (token: string) => {
  */
 export const resendVerification = async (email: string) => {
   const { data } = await axiosClient.post<ApiResponse<{ message: string }>>(
-    "/auth/resend-verification",
+    "auth/resend-verification",
     { email },
   );
   return data;
@@ -140,7 +140,7 @@ export const changePassword = async (
   newPassword: string,
 ) => {
   const { data } = await axiosClient.post<ApiResponse<{ message: string }>>(
-    "/auth/change-password",
+    "auth/change-password",
     { currentPassword, newPassword },
   );
   return data;

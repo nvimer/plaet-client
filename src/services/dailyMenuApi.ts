@@ -113,7 +113,7 @@ export interface PaginatedDailyMenuResponse {
   };
 }
 
-const DAILY_MENU_BASE_URL = "/daily-menu";
+const DAILY_MENU_BASE_URL = "daily-menu";
 
 /**
  * Get history of daily menus
@@ -165,6 +165,6 @@ export async function getItemsByCategory(categoryId: number) {
     success: boolean;
     message: string;
     data: MenuItemOption[];
-  }>(`/menu/items/by-category/${categoryId}`);
+  }>(`menu/items/by-category/${categoryId}`);
   return response.data;
 }

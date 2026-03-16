@@ -39,7 +39,7 @@ export interface DailySummaryResponse {
 }
 
 export const getDailySummary = async (date: string): Promise<DailySummaryResponse> => {
-  const { data } = await axiosClient.get<ApiResponse<DailySummaryResponse>>("/analytics/daily-summary", {
+  const { data } = await axiosClient.get<ApiResponse<DailySummaryResponse>>("analytics/daily-summary", {
     params: { date }
   });
   return data.data;
@@ -47,7 +47,7 @@ export const getDailySummary = async (date: string): Promise<DailySummaryRespons
 
 
 export const getTopProducts = async (limit: number = 5, date?: string): Promise<TopProduct[]> => {
-  const { data } = await axiosClient.get<ApiResponse<TopProduct[]>>("/analytics/top-products", {
+  const { data } = await axiosClient.get<ApiResponse<TopProduct[]>>("analytics/top-products", {
     params: { limit, date }
   });
   return data.data;
@@ -55,21 +55,21 @@ export const getTopProducts = async (limit: number = 5, date?: string): Promise<
 
 
 export const getMenuEngineering = async (startDate: string, endDate: string) => {
-  const { data } = await axiosClient.get("/analytics/menu-engineering", {
+  const { data } = await axiosClient.get("analytics/menu-engineering", {
     params: { startDate, endDate },
   });
   return data.data;
 };
 
 export const getSalesPrediction = async (targetDate: string) => {
-  const { data } = await axiosClient.get("/analytics/predictions", {
+  const { data } = await axiosClient.get("analytics/predictions", {
     params: { targetDate },
   });
   return data.data;
 };
 
 export const getHeatmap = async (startDate: string, endDate: string) => {
-  const { data } = await axiosClient.get("/analytics/heatmap", {
+  const { data } = await axiosClient.get("analytics/heatmap", {
     params: { startDate, endDate },
   });
   return data.data;

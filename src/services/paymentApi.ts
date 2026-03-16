@@ -12,13 +12,13 @@ export interface CreatePaymentData {
  * Register a payment for an order
  */
 export const createPayment = async (orderId: string, data: CreatePaymentData) => {
-  return await axiosClient.post(`/payments/${orderId}`, data);
+  return await axiosClient.post(`payments/${orderId}`, data);
 };
 
 /**
  * Search customer and their tickets by phone
  */
 export const getCustomerTickets = async (phone: string) => {
-  const response = await axiosClient.get(`/customers/phone/${phone}/tickets`);
+  const response = await axiosClient.get(`customers/phone/${phone}/tickets`);
   return response.data;
 };

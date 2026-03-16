@@ -31,7 +31,7 @@ import type {
  */
 export const getCategories = async (params?: PaginationParams) => {
   const { data } = await axiosClient.get<PaginatedResponse<MenuCategory>>(
-    "/menu/categories",
+    "menu/categories",
     { params },
   );
   return data;
@@ -48,7 +48,7 @@ export const getCategories = async (params?: PaginationParams) => {
 export const searchCategories = async (params: PaginationParams) => {
   const { data } = await axiosClient.get<
     ApiResponse<PaginatedResponse<MenuCategory>>
-  >("/menu/categories/search", { params });
+  >("menu/categories/search", { params });
   return data;
 };
 
@@ -62,7 +62,7 @@ export const searchCategories = async (params: PaginationParams) => {
  */
 export const getCategoryById = async (id: number) => {
   const { data } = await axiosClient.get<ApiResponse<MenuCategory>>(
-    `/menu/categories/${id}`,
+    `menu/categories/${id}`,
   );
   return data;
 };
@@ -77,7 +77,7 @@ export const getCategoryById = async (id: number) => {
  */
 export const createCategory = async (categoryData: CreateMenuCategoryInput) => {
   const { data } = await axiosClient.post<ApiResponse<MenuCategory>>(
-    "/menu/categories",
+    "menu/categories",
     categoryData,
   );
   return data;
@@ -97,7 +97,7 @@ export const updateCategory = async (
   categoryData: UpdateMenuCategoryInput,
 ) => {
   const { data } = await axiosClient.patch<ApiResponse<MenuCategory>>(
-    `/menu/categories/${id}`,
+    `menu/categories/${id}`,
     categoryData,
   );
   return data;
@@ -112,7 +112,7 @@ export const updateCategory = async (
  */
 export const deleteCategory = async (id: number) => {
   const { data } = await axiosClient.delete<ApiResponse<null>>(
-    `/menu/categories/${id}`,
+    `menu/categories/${id}`,
   );
   return data;
 };
@@ -127,7 +127,7 @@ export const deleteCategory = async (id: number) => {
 export const bulkDeleteCategories = async (ids: number[]) => {
   const { data } = await axiosClient.delete<
     ApiResponse<{ deletedCount: number }>
-  >("/menu/categories/bulk", { data: { ids } });
+  >("menu/categories/bulk", { data: { ids } });
   return data;
 };
 
@@ -143,7 +143,7 @@ export const bulkDeleteCategories = async (ids: number[]) => {
  */
 export const getMenuItems = async (params?: PaginationParams) => {
   const { data } = await axiosClient.get<PaginatedResponse<MenuItem>>(
-    "/menu/items",
+    "menu/items",
     { params },
   );
   return data;
@@ -159,7 +159,7 @@ export const getMenuItems = async (params?: PaginationParams) => {
  */
 export const getMenuItemById = async (id: number) => {
   const { data } = await axiosClient.get<ApiResponse<MenuItem>>(
-    `/menu/items/${id}`,
+    `menu/items/${id}`,
   );
   return data;
 };
@@ -174,7 +174,7 @@ export const getMenuItemById = async (id: number) => {
  */
 export const createMenuItem = async (itemData: CreateMenuItemInput) => {
   const { data } = await axiosClient.post<ApiResponse<MenuItem>>(
-    "/menu/items",
+    "menu/items",
     itemData,
   );
   return data;
@@ -194,7 +194,7 @@ export const updateMenuItem = async (
   itemData: UpdateMenuItemInput,
 ) => {
   const { data } = await axiosClient.patch<ApiResponse<MenuItem>>(
-    `/menu/items/${id}`,
+    `menu/items/${id}`,
     itemData,
   );
   return data;
@@ -209,7 +209,7 @@ export const updateMenuItem = async (
  */
 export const deleteMenuItem = async (id: number) => {
   const { data } = await axiosClient.delete<ApiResponse<null>>(
-    `/menu/items/${id}`,
+    `menu/items/${id}`,
   );
   return data;
 };
@@ -225,7 +225,7 @@ export const deleteMenuItem = async (id: number) => {
  */
 export const getLowStockItems = async () => {
   const { data } = await axiosClient.get<ApiResponse<MenuItem[]>>(
-    "/menu/items/low-stock",
+    "menu/items/low-stock",
   );
   return data;
 };
@@ -239,7 +239,7 @@ export const getLowStockItems = async () => {
  */
 export const getOutOfStockItems = async () => {
   const { data } = await axiosClient.get<ApiResponse<MenuItem[]>>(
-    "/menu/items/out-of-stock",
+    "menu/items/out-of-stock",
   );
   return data;
 };
@@ -258,7 +258,7 @@ export const addStock = async (
   stockData: { quantity: number; reason?: string },
 ) => {
   const { data } = await axiosClient.post<ApiResponse<MenuItem>>(
-    `/menu/items/${id}/stock/add`,
+    `menu/items/${id}/stock/add`,
     stockData,
   );
   return data;
@@ -278,7 +278,7 @@ export const removeStock = async (
   stockData: { quantity: number; reason?: string },
 ) => {
   const { data } = await axiosClient.post<ApiResponse<MenuItem>>(
-    `/menu/items/${id}/stock/remove`,
+    `menu/items/${id}/stock/remove`,
     stockData,
   );
   return data;
@@ -298,7 +298,7 @@ export const getStockHistory = async (
   params?: PaginationParams,
 ) => {
   const { data } = await axiosClient.get<PaginatedResponse<StockHistoryEntry>>(
-    `/menu/items/${id}/stock/history`,
+    `menu/items/${id}/stock/history`,
     { params },
   );
   return data;
@@ -316,7 +316,7 @@ export const dailyStockReset = async (resetData: {
   items: Array<{ itemId: number; quantity: number }>;
 }) => {
   const { data } = await axiosClient.post<ApiResponse<{ resetCount?: number }>>(
-    "/menu/items/stock/daily-reset",
+    "menu/items/stock/daily-reset",
     resetData,
   );
   return data;
@@ -327,7 +327,7 @@ export const dailyStockResetByCategory = async (resetData: {
   items: Array<{ itemId: number; quantity: number }>;
 }) => {
   const { data } = await axiosClient.post<ApiResponse<{ resetCount?: number }>>(
-    "/menu/items/stock/daily-reset/by-category",
+    "menu/items/stock/daily-reset/by-category",
     resetData,
   );
   return data;
@@ -343,7 +343,7 @@ export const dailyStockResetByCategory = async (resetData: {
  */
 export const getAllStockHistory = async (params?: PaginationParams) => {
   const { data } = await axiosClient.get<PaginatedResponse<StockHistoryEntry>>(
-    "/menu/items/stock/history",
+    "menu/items/stock/history",
     { params },
   );
   return data;
@@ -365,7 +365,7 @@ export const setInventoryType = async (
   lowStockAlert?: number,
 ) => {
   const { data } = await axiosClient.patch<ApiResponse<MenuItem>>(
-    `/menu/items/${id}/inventory-type`,
+    `menu/items/${id}/inventory-type`,
     { inventoryType, lowStockAlert },
   );
   return data;

@@ -32,7 +32,7 @@ export const getMyProfile = async () => {
  * Get paginated list of profiles
  */
 export const getProfiles = async (params?: PaginationParams) => {
-  const { data } = await axiosClient.get<PaginatedResponse<User>>("/profile", {
+  const { data } = await axiosClient.get<PaginatedResponse<User>>("profile", {
     params,
   });
   return data;
@@ -44,7 +44,7 @@ export const getProfiles = async (params?: PaginationParams) => {
  * Get profile by user ID
  */
 export const getProfileById = async (id: string) => {
-  const { data } = await axiosClient.get<ApiResponse<User>>(`/profile/${id}`);
+  const { data } = await axiosClient.get<ApiResponse<User>>(`profile/${id}`);
   return data;
 };
 
@@ -58,7 +58,7 @@ export const updateProfile = async (
   profileData: UpdateProfileInput
 ) => {
   const { data } = await axiosClient.patch<ApiResponse<User>>(
-    `/profile/${id}`,
+    `profile/${id}`,
     profileData
   );
   return data;

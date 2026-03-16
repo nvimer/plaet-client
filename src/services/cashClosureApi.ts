@@ -7,17 +7,17 @@ import type { CashClosure, CreateCashClosureDTO, CloseCashClosureDTO, ApiRespons
  */
 
 export const openShift = async (dto: CreateCashClosureDTO): Promise<CashClosure> => {
-  const { data } = await axiosClient.post<ApiResponse<CashClosure>>("/cash-closures", dto);
+  const { data } = await axiosClient.post<ApiResponse<CashClosure>>("cash-closures", dto);
   return data.data;
 };
 
 export const closeShift = async (id: string, dto: CloseCashClosureDTO): Promise<CashClosure> => {
-  const { data } = await axiosClient.patch<ApiResponse<CashClosure>>(`/cash-closures/${id}/close`, dto);
+  const { data } = await axiosClient.patch<ApiResponse<CashClosure>>(`cash-closures/${id}/close`, dto);
   return data.data;
 };
 
 export const getCurrentShift = async (): Promise<CashClosure | null> => {
-  const { data } = await axiosClient.get<ApiResponse<CashClosure | null>>("/cash-closures/current");
+  const { data } = await axiosClient.get<ApiResponse<CashClosure | null>>("cash-closures/current");
   return data.data;
 };
 
@@ -30,12 +30,12 @@ export interface CashShiftSummary {
 }
 
 export const getShiftSummary = async (id: string): Promise<CashShiftSummary> => {
-  const { data } = await axiosClient.get<ApiResponse<CashShiftSummary>>(`/cash-closures/${id}/summary`);
+  const { data } = await axiosClient.get<ApiResponse<CashShiftSummary>>(`cash-closures/${id}/summary`);
   return data.data;
 };
 
 export const getShiftHistory = async (page: number = 1, limit: number = 10): Promise<CashClosure[]> => {
-  const { data } = await axiosClient.get<ApiResponse<CashClosure[]>>(`/cash-closures`, {
+  const { data } = await axiosClient.get<ApiResponse<CashClosure[]>>(`cash-closures`, {
     params: { page, limit }
   });
   return data.data;

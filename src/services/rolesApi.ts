@@ -54,7 +54,7 @@ export const getRoles = async (params?: PaginationParams) => {
     limit: String(limit),
   };
 
-  const { data } = await axiosClient.get<PaginatedResponse<Role>>("/roles", {
+  const { data } = await axiosClient.get<PaginatedResponse<Role>>("roles", {
     params: queryParams,
   });
 
@@ -67,7 +67,7 @@ export const getRoles = async (params?: PaginationParams) => {
  * Get single role by ID
  */
 export const getRoleById = async (id: number) => {
-  const { data } = await axiosClient.get<ApiResponse<Role>>(`/roles/${id}`);
+  const { data } = await axiosClient.get<ApiResponse<Role>>(`roles/${id}`);
   return data;
 };
 
@@ -78,7 +78,7 @@ export const getRoleById = async (id: number) => {
  */
 export const getRoleWithPermissions = async (id: number) => {
   const { data } = await axiosClient.get<ApiResponse<Role>>(
-    `/roles/permissions/${id}`
+    `roles/permissions/${id}`
   );
   return data;
 };
@@ -90,7 +90,7 @@ export const getRoleWithPermissions = async (id: number) => {
  */
 export const createRole = async (roleData: CreateRoleInput) => {
   const { data } = await axiosClient.post<ApiResponse<Role>>(
-    "/roles",
+    "roles",
     roleData
   );
   return data;
@@ -103,7 +103,7 @@ export const createRole = async (roleData: CreateRoleInput) => {
  */
 export const updateRole = async (id: number, roleData: UpdateRoleInput) => {
   const { data } = await axiosClient.patch<ApiResponse<Role>>(
-    `/roles/${id}`,
+    `roles/${id}`,
     roleData
   );
   return data;
@@ -115,7 +115,7 @@ export const updateRole = async (id: number, roleData: UpdateRoleInput) => {
  * Delete a role (soft delete)
  */
 export const deleteRole = async (id: number) => {
-  const { data } = await axiosClient.delete<ApiResponse<null>>(`/roles/${id}`);
+  const { data } = await axiosClient.delete<ApiResponse<null>>(`roles/${id}`);
   return data;
 };
 
@@ -129,7 +129,7 @@ export const assignPermissionsToRole = async (
   permissionIds: number[]
 ) => {
   const { data } = await axiosClient.post<ApiResponse<Role>>(
-    `/roles/permissions/${roleId}/assign`,
+    `roles/permissions/${roleId}/assign`,
     { permissionIds }
   );
   return data;
@@ -145,7 +145,7 @@ export const removePermissionsFromRole = async (
   permissionIds: number[]
 ) => {
   const { data } = await axiosClient.delete<ApiResponse<Role>>(
-    `/roles/permissions/${roleId}/remove`,
+    `roles/permissions/${roleId}/remove`,
     { data: { permissionIds } }
   );
   return data;

@@ -78,7 +78,7 @@ axiosClient.interceptors.response.use(
       switch (status) {
         case 401: {
           const isRefreshEndpoint = originalRequest.url?.includes(
-            "/auth/refresh-token",
+            "auth/refresh-token",
           );
 
           if (isRefreshEndpoint) {

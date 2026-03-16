@@ -38,7 +38,7 @@ export interface OrdersFilterParams extends PaginationParams {
 }
 
 export const getOrders = async (params?: OrdersFilterParams) => {
-  const { data } = await axiosClient.get<PaginatedResponse<Order>>("/orders", {
+  const { data } = await axiosClient.get<PaginatedResponse<Order>>("orders", {
     params,
   });
   return data;
@@ -53,7 +53,7 @@ export const getOrders = async (params?: OrdersFilterParams) => {
  * @return Order with full details
  */
 export const getOrderById = async (id: string) => {
-  const { data } = await axiosClient.get<ApiResponse<Order>>(`/orders/${id}`);
+  const { data } = await axiosClient.get<ApiResponse<Order>>(`orders/${id}`);
   return data;
 };
 
@@ -67,7 +67,7 @@ export const getOrderById = async (id: string) => {
  */
 export const createOrder = async (orderData: CreateOrderInput) => {
   const { data } = await axiosClient.post<ApiResponse<Order>>(
-    "/orders",
+    "orders",
     orderData,
   );
   return data;
@@ -83,7 +83,7 @@ export const createOrder = async (orderData: CreateOrderInput) => {
  */
 export const createBatchOrders = async (batchData: BatchCreateOrderInput) => {
   const { data } = await axiosClient.post<ApiResponse<{ orders: Order[]; tableTotal: number }>>(
-    "/orders/batch",
+    "orders/batch",
     batchData,
   );
   return data;
@@ -100,7 +100,7 @@ export const createBatchOrders = async (batchData: BatchCreateOrderInput) => {
  */
 export const updateOrder = async (id: string, orderData: UpdateOrderInput) => {
   const { data } = await axiosClient.patch<ApiResponse<Order>>(
-    `/orders/${id}`,
+    `orders/${id}`,
     orderData,
   );
   return data;
@@ -120,7 +120,7 @@ export const updateOrderStatus = async (
   statusData: UpdateOrderStatusInput,
 ) => {
   const { data } = await axiosClient.patch<ApiResponse<Order>>(
-    `/orders/${id}/status`,
+    `orders/${id}/status`,
     statusData,
   );
   return data;
@@ -134,7 +134,7 @@ export const updateOrderStatus = async (
  * @param id - Order ID
  */
 export const deleteOrder = async (id: string) => {
-  const { data } = await axiosClient.delete<ApiResponse<null>>(`/orders/${id}`);
+  const { data } = await axiosClient.delete<ApiResponse<null>>(`orders/${id}`);
   return data;
 };
 
@@ -154,7 +154,7 @@ export const addOrderItem = async (
   itemData: CreateOrderItemInput,
 ) => {
   const { data } = await axiosClient.post<ApiResponse<Order>>(
-    `/orders/${orderId}/items`,
+    `orders/${orderId}/items`,
     itemData,
   );
   return data;
@@ -171,7 +171,7 @@ export const addOrderItem = async (
  */
 export const removeOrderItem = async (orderId: string, itemId: number) => {
   const { data } = await axiosClient.delete<ApiResponse<Order>>(
-    `/orders/${orderId}/items/${itemId}`,
+    `orders/${orderId}/items/${itemId}`,
   );
   return data;
 };
@@ -200,7 +200,7 @@ export const updateOrderItem = async (
   updateData: UpdateOrderItemInput,
 ) => {
   const { data } = await axiosClient.patch<ApiResponse<Order>>(
-    `/orders/${orderId}/items/${itemId}`,
+    `orders/${orderId}/items/${itemId}`,
     updateData,
   );
   return data;
@@ -222,7 +222,7 @@ export const updateOrderItemStatus = async (
   status: OrderItemStatus,
 ) => {
   const { data } = await axiosClient.patch<ApiResponse<OrderItem>>(
-    `/orders/${orderId}/items/${itemId}/status`,
+    `orders/${orderId}/items/${itemId}/status`,
     { status },
   );
   return data;
@@ -243,7 +243,7 @@ export interface BatchStatusUpdateInput {
 
 export const updateBatchOrderStatus = async (batchData: BatchStatusUpdateInput) => {
   const { data } = await axiosClient.patch<ApiResponse<Order[]>>(
-    "/orders/batch-status",
+    "orders/batch-status",
     batchData,
   );
   return data;
@@ -261,7 +261,7 @@ export const updateBatchOrderStatus = async (batchData: BatchStatusUpdateInput) 
 export const getKitchenOrders = async (_status?: string) => {
   // In this workflow, Kitchen ONLY sees orders that have been PAID
   // We fetch a larger limit to ensure we get all active operational orders
-  const { data: response } = await axiosClient.get<PaginatedResponse<Order>>("/orders", {
+  const { data: response } = await axiosClient.get<PaginatedResponse<Order>>("orders", {
     params: { status: OrderStatus.PAID, limit: 100 },
   });
 
@@ -295,7 +295,7 @@ export interface DailySalesResponse {
 
 export const getDailySales = async (date: string) => {
   const { data } = await axiosClient.get<ApiResponse<DailySalesResponse>>(
-    "/orders/daily-sales",
+    "orders/daily-sales",
     { params: { date } }
   );
   return data;
@@ -320,7 +320,7 @@ export interface OrderSearchParams {
 
 export const searchOrders = async (params: OrderSearchParams) => {
   const { data } = await axiosClient.get<PaginatedResponse<Order>>(
-    "/orders/search",
+    "orders/search",
     { params }
   );
   return data;
@@ -345,7 +345,7 @@ export const duplicateOrder = async (
   options?: DuplicateOrderOptions,
 ) => {
   const { data } = await axiosClient.post<ApiResponse<Order>>(
-    `/orders/${orderId}/duplicate`,
+    `orders/${orderId}/duplicate`,
     options || {}
   );
   return data;
@@ -368,7 +368,7 @@ export interface OrderValidationResult {
 
 export const validateOrder = async (orderData: CreateOrderInput) => {
   const { data } = await axiosClient.post<ApiResponse<OrderValidationResult>>(
-    "/orders/validate",
+    "orders/validate",
     orderData
   );
   return data;
@@ -395,7 +395,7 @@ export const getTableAvailability = async (
   datetime?: string
 ) => {
   const { data } = await axiosClient.get<ApiResponse<TableAvailabilityResponse>>(
-    `/orders/table-availability/${tableId}`,
+    `orders/table-availability/${tableId}`,
     { params: { datetime } }
   );
   return data;
@@ -420,7 +420,7 @@ export const cancelOrder = async (
   cancelData: CancelOrderInput
 ) => {
   const { data } = await axiosClient.patch<ApiResponse<Order>>(
-    `/orders/${orderId}/cancel`,
+    `orders/${orderId}/cancel`,
     cancelData
   );
   return data;
@@ -442,7 +442,7 @@ export const addPayment = async (
   paymentData: Omit<CreatePaymentInput, "orderId">,
 ) => {
   const { data } = await axiosClient.post<ApiResponse<Payment>>(
-    `/orders/${orderId}/payments`,
+    `orders/${orderId}/payments`,
     paymentData,
   );
   return data;
@@ -458,7 +458,7 @@ export const addPayment = async (
  */
 export const getOrderPayments = async (orderId: string) => {
   const { data } = await axiosClient.get<ApiResponse<Payment[]>>(
-    `/orders/${orderId}/payments`
+    `orders/${orderId}/payments`
   );
   return data;
 };

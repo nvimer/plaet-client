@@ -25,7 +25,7 @@ import type {
  * @returns Paginated list of tables
  */
 export const getTables = async (params?: PaginationParams) => {
-  const { data } = await axiosClient.get<PaginatedResponse<Table>>("/tables", {
+  const { data } = await axiosClient.get<PaginatedResponse<Table>>("tables", {
     params,
   });
   return data;
@@ -40,7 +40,7 @@ export const getTables = async (params?: PaginationParams) => {
  * @returns Data of Table
  */
 export const getTableById = async (id: number) => {
-  const { data } = await axiosClient.get<ApiResponse<Table>>(`/tables/${id}`);
+  const { data } = await axiosClient.get<ApiResponse<Table>>(`tables/${id}`);
   return data;
 };
 
@@ -54,7 +54,7 @@ export const getTableById = async (id: number) => {
  */
 export const createTable = async (tableData: CreateTableInput) => {
   const { data } = await axiosClient.post<ApiResponse<Table>>(
-    "/tables",
+    "tables",
     tableData,
   );
   return data;
@@ -71,7 +71,7 @@ export const createTable = async (tableData: CreateTableInput) => {
  */
 export const updateTable = async (id: number, tableData: UpdateTableInput) => {
   const { data } = await axiosClient.patch<ApiResponse<Table>>(
-    `/tables/${id}`,
+    `tables/${id}`,
     tableData,
   );
   return data;
@@ -85,7 +85,7 @@ export const updateTable = async (id: number, tableData: UpdateTableInput) => {
  * @param id - Table ID
  */
 export const deleteTable = async (id: number) => {
-  const { data } = await axiosClient.delete<ApiResponse<null>>(`/tables/${id}`);
+  const { data } = await axiosClient.delete<ApiResponse<null>>(`tables/${id}`);
   return data;
 };
 
@@ -103,7 +103,7 @@ export const updateTableStatus = async (
   statusData: UpdateTableStatusInput,
 ) => {
   const { data } = await axiosClient.patch<ApiResponse<Table>>(
-    `/tables/${id}/status`,
+    `tables/${id}/status`,
     statusData,
   );
   return data;
