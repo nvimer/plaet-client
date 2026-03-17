@@ -170,7 +170,6 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean, userPerm
       allowedRoles: [RoleName.ADMIN, RoleName.KITCHEN_MANAGER],
       children: [
         { type: "link", path: ROUTES.MENU_LIST, name: "Lista de Productos", icon: Grid3x3 },
-        { type: "link", path: ROUTES.MENU_CATEGORY_CREATE, name: "Nueva Categoría", icon: Plus, allowedRoles: [RoleName.ADMIN] },
         { type: "link", path: ROUTES.MENU_ITEM_CREATE, name: "Nuevo Producto", icon: Plus, allowedRoles: [RoleName.ADMIN] },
       ],
     },

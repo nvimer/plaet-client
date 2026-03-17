@@ -31,14 +31,6 @@ export function MenuHubPage() {
       color: "text-blue-600",
       bgColor: "bg-blue-50",
     },
-    {
-      title: "Nueva Categoría",
-      description: "Organiza tu menú creando rubros y secciones.",
-      icon: FolderPlus,
-      path: ROUTES.MENU_CATEGORY_CREATE,
-      color: "text-info-600",
-      bgColor: "bg-info-50",
-    },
   ];
 
   return (
