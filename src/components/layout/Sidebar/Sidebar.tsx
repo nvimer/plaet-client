@@ -34,26 +34,15 @@ export function Sidebar() {
   const toggleMobile = useUIStore((state) => state.toggleMobile);
 
   const location = useLocation();
-  const { isSuperAdmin, user, permissions } = usePermissions();
+  const { isSuperAdmin, user, permissions, getUserRoleNames } = usePermissions();
 
   // Load navigation items based on current context
   const navigationItems = useMemo(() => {
-    const roleEntry = user?.roles?.[0];
-    let roleString = 'USER';
+    const roles = getUserRoleNames;
+    const primaryRole = roles[0] || 'USER';
     
-    if (roleEntry) {
-      if (typeof roleEntry === 'object') {
-        // Handle UserRole variant (has .role property) or direct Role variant (has .name property)
-        roleString = 'role' in roleEntry 
-          ? (roleEntry as UserRole).role.name 
-          : (roleEntry as Role).name;
-      } else {
-        roleString = roleEntry;
-      }
-    }
-
-    return getNavigationItems(roleString, isSuperAdmin(), permissions);
-  }, [isSuperAdmin, user, permissions]);
+    return getNavigationItems(primaryRole, isSuperAdmin(), permissions);
+  }, [isSuperAdmin, permissions, getUserRoleNames]);
 
   const handleNavClick = () => {
     if (isMobile) {

@@ -5,6 +5,7 @@ import { ROUTES } from "@/app/routes";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { motion } from "framer-motion";
 import { cn } from "@/utils/cn";
+import { usePermissions } from "@/hooks";
 
 /**
  * UsersHubPage Component
@@ -13,6 +14,9 @@ import { cn } from "@/utils/cn";
  */
 export function UsersHubPage() {
   const navigate = useNavigate();
+  const { isSuperAdmin, hasPermission } = usePermissions();
+
+  const canManageRoles = isSuperAdmin() || hasPermission("roles:manage");
 
   const options = [
     {
@@ -22,6 +26,7 @@ export function UsersHubPage() {
       path: ROUTES.USERS_LIST,
       color: "text-sage-600",
       bgColor: "bg-sage-50",
+      show: true,
     },
     {
       title: "Nuevo Usuario",
@@ -30,6 +35,7 @@ export function UsersHubPage() {
       path: ROUTES.USER_CREATE,
       color: "text-blue-600",
       bgColor: "bg-blue-50",
+      show: true,
     },
     {
       title: "Roles y Permisos",
@@ -38,8 +44,9 @@ export function UsersHubPage() {
       path: ROUTES.PERMISSIONS,
       color: "text-info-600",
       bgColor: "bg-info-50",
+      show: canManageRoles,
     },
-  ];
+  ].filter(opt => opt.show);
 
   return (
     <SidebarLayout hideTitle fullWidth>

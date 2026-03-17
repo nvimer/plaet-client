@@ -34,13 +34,21 @@ export function usePermissions() {
     if (!user || !user.roles) return [];
 
     return user.roles.map((userRoleOrRole) => {
-      if ("role" in userRoleOrRole) {
+      // 1. Handle string variant
+      if (typeof userRoleOrRole === "string") {
+        return userRoleOrRole as RoleName;
+      }
+      
+      // 2. Handle UserRole relation variant (has .role property)
+      if (userRoleOrRole && typeof userRoleOrRole === "object" && "role" in userRoleOrRole) {
         const userRole = userRoleOrRole as UserRole;
         return userRole.role.name;
       }
+      
+      // 3. Handle direct Role object variant (has .name property)
       const role = userRoleOrRole as Role;
       return role.name;
-    });
+    }).filter(Boolean) as RoleName[];
   }, [user]);
 
   /**
@@ -53,7 +61,7 @@ export function usePermissions() {
 
     user.roles.forEach((userRoleOrRole) => {
       // We need the variant that has the role property and permissions inside
-      if ("role" in userRoleOrRole) {
+      if (userRoleOrRole && typeof userRoleOrRole === "object" && "role" in userRoleOrRole) {
         const userRole = userRoleOrRole as unknown as NestedUserRole;
         const rolePermissions = userRole.role.permissions;
         
@@ -64,6 +72,14 @@ export function usePermissions() {
             }
           });
         }
+      } else if (userRoleOrRole && typeof userRoleOrRole === "object" && "permissions" in userRoleOrRole) {
+        // Direct Role with permissions
+        const role = userRoleOrRole as unknown as { permissions?: Array<{ permission?: { name: string } }> };
+        role.permissions?.forEach((rp) => {
+          if (rp.permission?.name) {
+            permSet.add(rp.permission.name);
+          }
+        });
       }
     });
 
@@ -115,5 +131,6 @@ export function usePermissions() {
     isAdmin,
     permissions,
     user,
+    getUserRoleNames,
   };
 }
