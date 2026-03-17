@@ -55,8 +55,8 @@ export default function ChangePasswordPage() {
 
     if (!newPassword) {
       newErrors.newPassword = "Ingresa tu nueva contraseña";
-    } else if (newPassword.length < 12) {
-      newErrors.newPassword = "Mínimo 12 caracteres";
+    } else if (newPassword.length < 8) {
+      newErrors.newPassword = "Mínimo 8 caracteres";
     } else if (!/[A-Z]/.test(newPassword)) {
       newErrors.newPassword = "Al menos una mayúscula";
     } else if (!/[a-z]/.test(newPassword)) {
@@ -91,7 +91,7 @@ export default function ChangePasswordPage() {
 
   const getPasswordStrength = (password: string): number => {
     let strength = 0;
-    if (password.length >= 12) strength += 1;
+    if (password.length >= 8) strength += 1;
     if (/[A-Z]/.test(password)) strength += 1;
     if (/[a-z]/.test(password)) strength += 1;
     if (/[0-9]/.test(password)) strength += 1;
@@ -389,12 +389,12 @@ export default function ChangePasswordPage() {
                 <li className="flex items-center gap-1">
                   <CheckCircle
                     className={`w-3 h-3 ${
-                      newPassword.length >= 12
+                      newPassword.length >= 8
                         ? "text-success-500"
                         : "text-carbon-300"
                     }`}
                   />
-                  Mínimo 12 caracteres
+                  Mínimo 8 caracteres
                 </li>
                 <li className="flex items-center gap-1">
                   <CheckCircle
