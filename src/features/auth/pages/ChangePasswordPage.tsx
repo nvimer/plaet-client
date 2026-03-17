@@ -22,7 +22,7 @@ import {
 import { authApi } from "@/services";
 import { toast } from "sonner";
 import axios from "axios";
-import { useAuthStore } from "@/stores/useAuthStore";
+import { useAuth } from "@/hooks";
 
 interface FormErrors {
   currentPassword?: string;
@@ -32,7 +32,7 @@ interface FormErrors {
 
 export default function ChangePasswordPage() {
   const navigate = useNavigate();
-  const { user } = useAuthStore();
+  const { user } = useAuth();
   const mustChangePassword = user?.mustChangePassword;
 
   const [currentPassword, setCurrentPassword] = useState("");

@@ -9,7 +9,7 @@
 import { useState, useEffect } from "react";
 import { Navigate, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { useAuth, useUser } from "@/hooks/useEnhancedAuth";
+import { useAuth, useUser } from "@/hooks";
 import { ShieldX, WifiOff, RefreshCw, LogOut } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -193,10 +193,10 @@ export default function ProtectedRoute({
   const navigate = useNavigate();
   
   // Selectors for optimized performance
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const isLoading = useAuthStore((state) => state.isLoading);
-  const error = useAuthStore((state) => state.error);
-  const retryAuth = useAuthStore((state) => state.retryAuth);
+  const isAuthenticated = useAuth((state) => state.isAuthenticated);
+  const isLoading = useAuth((state) => state.isLoading);
+  const error = useAuth((state) => state.error);
+  const retryAuth = useAuth((state) => state.retryAuth);
   
   const { hasRole, hasPermission } = useUser();
   const [showTimeout, setShowTimeout] = useState(false);

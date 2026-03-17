@@ -14,10 +14,12 @@ import { useAuthStore } from '@/stores/useAuthStore'
 /**
  * Hook useAuth
  * 
- * Facilita el acceso al store de autenticación.
+ * Facilita el acceso al store de autenticación con soporte para selectores.
  * 
+ * @param selector - Función para seleccionar parte del estado
  * @returns Datos y funciones de autenticación
  */
-export function useAuth() {
-  return useAuthStore()
+export function useAuth<T>(selector?: (state: any) => T): T {
+  // @ts-ignore - support selector-less call
+  return useAuthStore(selector);
 }
