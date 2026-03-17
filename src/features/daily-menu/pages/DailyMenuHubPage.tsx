@@ -5,6 +5,8 @@ import { ROUTES } from "@/app/routes";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { motion } from "framer-motion";
 import { cn } from "@/utils/cn";
+import { usePermissions } from "@/hooks";
+import { RoleName } from "@/types";
 
 /**
  * DailyMenuHubPage Component
@@ -13,6 +15,9 @@ import { cn } from "@/utils/cn";
  */
 export function DailyMenuHubPage() {
   const navigate = useNavigate();
+  const { hasRole, isSuperAdmin } = usePermissions();
+
+  const isAdmin = isSuperAdmin() || hasRole(RoleName.ADMIN);
 
   const options = [
     {
@@ -22,6 +27,7 @@ export function DailyMenuHubPage() {
       path: ROUTES.DAILY_MENU_SETUP,
       color: "text-sage-600",
       bgColor: "bg-sage-50",
+      show: isAdmin, // Only admins can configure the menu
     },
     {
       title: "Historial de Menús",
@@ -30,6 +36,7 @@ export function DailyMenuHubPage() {
       path: ROUTES.DAILY_MENU_HISTORY,
       color: "text-blue-600",
       bgColor: "bg-blue-50",
+      show: true, // Kitchen managers can view history
     },
     {
       title: "Precios y Márgenes",
@@ -39,8 +46,9 @@ export function DailyMenuHubPage() {
       state: { openPriceModal: true },
       color: "text-warning-600",
       bgColor: "bg-warning-50",
+      show: isAdmin, // Only admins can change prices
     },
-  ];
+  ].filter(opt => opt.show);
 
   return (
     <SidebarLayout hideTitle fullWidth>

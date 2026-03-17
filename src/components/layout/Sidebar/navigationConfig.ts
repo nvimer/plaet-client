@@ -145,8 +145,8 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean, userPerm
       description: "Configuración diaria",
       allowedRoles: [RoleName.ADMIN, RoleName.KITCHEN_MANAGER],
       children: [
-        { type: "link", path: ROUTES.DAILY_MENU_SETUP, name: "Configurar Hoy", icon: ChefHat },
-        { type: "link", path: ROUTES.DAILY_MENU_HISTORY, name: "Historial", icon: Calendar },
+        { type: "link", path: ROUTES.DAILY_MENU_SETUP, name: "Configurar Hoy", icon: ChefHat, allowedRoles: [RoleName.ADMIN] },
+        { type: "link", path: ROUTES.DAILY_MENU_HISTORY, name: "Historial", icon: Calendar, allowedRoles: [RoleName.ADMIN, RoleName.KITCHEN_MANAGER] },
       ]
     },
     {

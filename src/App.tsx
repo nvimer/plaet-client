@@ -498,7 +498,7 @@ const App = () => {
               path={ROUTES.DAILY_MENU_SETUP}
               element={
                 <ProtectedRoute>
-                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.KITCHEN_MANAGER]}>
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
                     <DailyMenuPage />
                   </RoleProtectedRoute>
                 </ProtectedRoute>
