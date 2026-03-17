@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { Check, UserCheck, ArrowLeft, Shield, ShieldCheck, Cog, UserCircle } from "lucide-react";
 import { useState } from "react";
 import type { AxiosErrorWithResponse } from "@/types/common";
-import { useAuth } from "@/hooks";
+import { usePermissions } from "@/hooks";
 
 const ROLE_NAME_MAP: Record<string, string> = {
   SUPERADMIN: "Superadministrador",
@@ -28,9 +28,8 @@ const ROLE_NAME_MAP: Record<string, string> = {
  */
 export function UserCreatePage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { isSuperAdmin } = usePermissions();
   const { mutate: createUser, isPending } = useCreateUser();
-  const isSuperadmin = user?.roles?.some((r) => r.name === "SUPERADMIN") ?? false;
   const {
     data: roles,
     isLoading: isLoadingRoles,
@@ -187,7 +186,7 @@ export function UserCreatePage() {
               {roles && roles.length > 0 && (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                   {roles
-                    .filter((role) => role.name !== "SUPERADMIN" || isSuperadmin)
+                    .filter((role) => role.name !== "SUPERADMIN" || isSuperAdmin())
                     .map((role) => {
                     const isSelected = selectedRoleIds.includes(role.id);
                     const roleNameEs = ROLE_NAME_MAP[role.name] || role.name;

@@ -12,7 +12,7 @@ import { useState, useEffect } from "react";
 import type { UserRole, Role } from "@/types";
 import { RoleName } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
-import { useAuth } from "@/hooks";
+import { usePermissions } from "@/hooks";
 
 const ROLE_NAME_MAP: Record<string, string> = {
   SUPERADMIN: "Superadministrador",
@@ -31,11 +31,10 @@ const ROLE_NAME_MAP: Record<string, string> = {
 export function UserEditPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { user: currentUser } = useAuth();
+  const { isSuperAdmin } = usePermissions();
   const { data: user, isLoading, error } = useUser(id!);
   const { mutate: updateUser, isPending } = useUpdateUser();
   const { data: roles } = useRoles();
-  const isSuperadmin = currentUser?.roles?.some((r) => r.name === "SUPERADMIN") ?? false;
   const [selectedRoleIds, setSelectedRoleIds] = useState<number[]>([]);
 
   const {
@@ -231,7 +230,7 @@ export function UserEditPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
                   {roles
-                    .filter((role) => role.name !== "SUPERADMIN" || isSuperadmin)
+                    .filter((role) => role.name !== "SUPERADMIN" || isSuperAdmin())
                     .map((role) => {
                     const isSelected = selectedRoleIds.includes(role.id);
                     const roleNameEs = ROLE_NAME_MAP[role.name] || role.name;
