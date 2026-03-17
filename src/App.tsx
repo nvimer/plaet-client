@@ -1,6 +1,6 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./hooks";
-import { useInitializeAuth } from "./stores/useAuthStore";
+import { useAuthStore, useInitializeAuth } from "./stores/useAuthStore";
 import {
   LoginPage,
   RegisterForm,
