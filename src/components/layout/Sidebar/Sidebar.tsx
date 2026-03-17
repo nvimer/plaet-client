@@ -14,6 +14,7 @@ import { getNavigationItems } from "./navigationConfig";
 import { SidebarItem } from "./components/SidebarItem";
 import { SidebarGroup } from "./components/SidebarGroup";
 import { BrandName } from "@/components";
+import type { Role, UserRole } from "@/types";
 
 /**
  * Sidebar Component - Premium Version 2.0
@@ -37,8 +38,20 @@ export function Sidebar() {
 
   // Load navigation items based on current context
   const navigationItems = useMemo(() => {
-    const roleName = user?.roles?.[0] || 'USER';
-    const roleString = typeof roleName === 'object' ? roleName.name : roleName;
+    const roleEntry = user?.roles?.[0];
+    let roleString = 'USER';
+    
+    if (roleEntry) {
+      if (typeof roleEntry === 'object') {
+        // Handle UserRole variant (has .role property) or direct Role variant (has .name property)
+        roleString = 'role' in roleEntry 
+          ? (roleEntry as UserRole).role.name 
+          : (roleEntry as Role).name;
+      } else {
+        roleString = roleEntry;
+      }
+    }
+
     return getNavigationItems(roleString, isSuperAdmin(), permissions);
   }, [isSuperAdmin, user, permissions]);
 
