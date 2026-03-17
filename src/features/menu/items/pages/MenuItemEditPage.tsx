@@ -228,7 +228,7 @@ export function MenuItemEditPage() {
   };
 
   const onFormError = (_formErrors: FieldErrors<UpdateItemInput>) => {
-    // Errores de validación manejados por react-hook-form
+    // Validation errors handled by react-hook-form
   };
 
   return (

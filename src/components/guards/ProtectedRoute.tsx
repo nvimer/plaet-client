@@ -226,7 +226,7 @@ export default function ProtectedRoute({
     await retryAuth();
   };
 
-  // Detectar sesión expirada, limpiar storage y mostrar pantalla específica
+  // Detect expired session, clear storage and show specific screen
   if (error?.type === "AUTH") {
     localStorage.removeItem("user");
     localStorage.removeItem("token");

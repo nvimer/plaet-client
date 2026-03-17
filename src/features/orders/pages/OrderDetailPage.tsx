@@ -169,7 +169,7 @@ export function OrderDetailPage() {
       
       setIsPaymentModalOpen(false);
       toast.success("Pago registrado correctamente");
-      // Redirigir a la lista de pedidos después de pagar
+      // Redirect to orders list after payment
       navigate(ROUTES.ORDERS);
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } }; message?: string };
