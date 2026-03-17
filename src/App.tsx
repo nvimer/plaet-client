@@ -1,5 +1,5 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
-import { useAuth } from "@/hooks";
+import { useAuth, useMobileDetection } from "@/hooks";
 import { useInitializeAuth } from "@/stores/useAuthStore";
 import {
   LoginPage,
@@ -67,6 +67,7 @@ import { ROUTES } from "./app/routes";
 
 const App = () => {
   useInitializeAuth();
+  useMobileDetection();
   const isAuthenticated = useAuth((state) => state.isAuthenticated);
 
   return (
