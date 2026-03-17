@@ -52,16 +52,20 @@ export function SidebarGroup({
   const handleMouseEnter = () => {
     if (isMobile) return;
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setIsOpen(true);
+    // Add a tiny delay before opening to prevent accidental triggers when passing quickly
+    timeoutRef.current = setTimeout(() => {
+      setIsOpen(true);
+    }, 150);
   };
 
   const handleMouseLeave = () => {
     if (isMobile || hasActiveChild || isParentActive) return;
     
-    // Small delay before closing to allow moving mouse to children
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    // Longer delay before closing for a smoother UX
     timeoutRef.current = setTimeout(() => {
       setIsOpen(false);
-    }, 150);
+    }, 350);
   };
 
   const handleHeaderClick = (e: React.MouseEvent) => {
@@ -174,7 +178,7 @@ export function SidebarGroup({
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="overflow-hidden"
           >
             <div className="ml-9 pl-4 border-l-2 border-sage-100 mt-1 space-y-1 pr-3">
