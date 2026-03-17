@@ -62,7 +62,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   // Simple Actions
   setLoading: (isLoading: boolean) => set({ isLoading }),
-  setError: (error: AuthError | null) => set({ error, lastActivity: new Date() }),
+  setError: (error: AuthError | null) => set({ error }),
   clearError: () => set({ error: null }),
 
   updateUser: (userData: Partial<User>) => {
@@ -207,30 +207,34 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   checkAuth: async (): Promise<boolean> => {
     try {
-      const result = await Promise.race([
-        get().fetchUserWithRoles(),
-        createTimeoutPromise(AUTH_CHECK_TIMEOUT),
-      ]);
+      const userWithRoles = await get().fetchUserWithRoles();
 
-      if (result) {
-        set({
-          user: result,
-          isAuthenticated: true,
-          isLoading: false,
-          error: null,
-          lastActivity: new Date(),
-        });
+      if (userWithRoles) {
+        const currentUser = get().user;
+        
+        // Only update state if user data actually changed or we weren't authenticated
+        if (!get().isAuthenticated || JSON.stringify(currentUser) !== JSON.stringify(userWithRoles)) {
+          set({
+            user: userWithRoles,
+            isAuthenticated: true,
+            isLoading: false,
+            error: null,
+          });
+        } else {
+          set({ isLoading: false });
+        }
+        
         // @ts-expect-error - access internal function
         get().setupTokenRefresh();
         return true;
       }
 
+      // No user found (401 handled by fetchUserWithRoles throwing)
       set({
         user: null,
         isAuthenticated: false,
         isLoading: false,
         error: null,
-        lastActivity: new Date(),
       });
       return false;
     } catch (error) {
@@ -249,7 +253,6 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
               : "No se pudo conectar con el servidor. Verifica tu conexión.",
           code: "AUTH_CHECK_FAILED",
         },
-        lastActivity: new Date(),
       });
       removeUserFromStorage();
       clearTokenRefresh();
@@ -291,11 +294,13 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 export const useInitializeAuth = () => {
   const checkAuth = useAuthStore((state) => state.checkAuth);
   const setLoading = useAuthStore((state) => state.setLoading);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   
   const initialized = useRef(false);
 
   useEffect(() => {
-    if (initialized.current) return;
+    // If already initialized or authenticated, don't run again
+    if (initialized.current || isAuthenticated) return;
     initialized.current = true;
 
     const init = async () => {
@@ -308,5 +313,5 @@ export const useInitializeAuth = () => {
     };
 
     init();
-  }, [checkAuth, setLoading]);
+  }, [checkAuth, setLoading, isAuthenticated]);
 };

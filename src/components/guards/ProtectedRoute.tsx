@@ -191,7 +191,13 @@ export default function ProtectedRoute({
 }: ProtectedRouteProps) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, isLoading, error, retryAuth } = useAuth();
+  
+  // Selectors for optimized performance
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const isLoading = useAuthStore((state) => state.isLoading);
+  const error = useAuthStore((state) => state.error);
+  const retryAuth = useAuthStore((state) => state.retryAuth);
+  
   const { hasRole, hasPermission } = useUser();
   const [showTimeout, setShowTimeout] = useState(false);
 

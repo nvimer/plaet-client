@@ -14,27 +14,26 @@ import { getNavigationItems } from "./navigationConfig";
 import { SidebarItem } from "./components/SidebarItem";
 import { SidebarGroup } from "./components/SidebarGroup";
 import { BrandName } from "@/components";
-import type { Role, UserRole } from "@/types";
 
 /**
  * Sidebar Component - Premium Version 2.0
  * 
  * Professional restaurant management sidebar with:
- * - Smart accordions with Framer Motion animations
- * - Role-based navigation config
+ * - Click-to-expand accordion navigation
+ * - Smart role-based menu filtering
+ * - Collapsible state for maximum workspace
  * - Premium active indicators and hover effects
  * - Mobile-first responsive design
  */
 export function Sidebar() {
   const isCollapsed = useUIStore((state) => state.isCollapsed);
-  const isMobileOpen = useUIStore((state) => state.isMobileOpen);
   const isMobile = useUIStore((state) => state.isMobile);
   const toggleCollapsed = useUIStore((state) => state.toggleCollapsed);
   const closeMobile = useUIStore((state) => state.closeMobile);
   const toggleMobile = useUIStore((state) => state.toggleMobile);
 
   const location = useLocation();
-  const { isSuperAdmin, user, permissions, getUserRoleNames } = usePermissions();
+  const { isSuperAdmin, permissions, getUserRoleNames } = usePermissions();
 
   // Load navigation items based on current context
   const navigationItems = useMemo(() => {
@@ -58,129 +57,94 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile Overlay */}
-      {isMobile && isMobileOpen && (
-        <div
-          className="fixed inset-0 bg-carbon-900/40 backdrop-blur-sm z-40 lg:hidden transition-all duration-500"
-          onClick={closeMobile}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* Sidebar Container */}
+      {/* Desktop Sidebar */}
       <aside
-        data-sidebar
         className={cn(
-          "fixed left-0 top-0 z-50 h-screen",
-          "bg-white border-r border-sage-200/60 shadow-smooth-xl",
-          "transition-all duration-700 ease-[0.4,0,0.2,1]",
-          isCollapsed && !isMobile ? "w-20" : "w-72",
-          isMobile && "-translate-x-full shadow-2xl",
-          isMobile && isMobileOpen && "translate-x-0",
+          "fixed top-0 left-0 z-40 h-screen transition-all duration-300 ease-in-out border-r border-sage-100 bg-white shadow-soft-xl overflow-y-auto overflow-x-hidden",
+          isCollapsed ? "w-16" : "w-72",
+          isMobile ? (isCollapsed ? "-translate-x-full" : "w-72 translate-x-0") : "translate-x-0"
         )}
       >
-        {/* Header - Brand & Logo */}
-        <div className={cn(
-          "h-24 flex items-center border-b border-sage-100/50 px-6",
-          isCollapsed && !isMobile ? "justify-center px-2" : "justify-between"
-        )}>
-          <Link
-            to={ROUTES.DASHBOARD}
-            className="flex items-center gap-3.5 overflow-hidden group"
-            onClick={handleNavClick}
-          >
-            <div className={cn(
-              "flex items-center justify-center flex-shrink-0 transition-all duration-700",
-              "bg-white/90 backdrop-blur-xl border border-sage-200/50 rounded-2xl shadow-soft-md group-hover:shadow-soft-lg group-hover:scale-105",
-              isCollapsed && !isMobile ? "w-12 h-12" : "w-11 h-11"
-            )}>
-              <img src="/plaet.png" alt="Plaet Logo" className="w-8 h-8 object-contain mix-blend-multiply" />
-            </div>
-            {(!isCollapsed || isMobile) && (
-              <BrandName 
-                className="text-2xl font-black tracking-tighter text-carbon-900 leading-none"
-                
-                showManagement
-              />
-            )}
-          </Link>
-
-          {(!isCollapsed || isMobile) && (
-            <button
-              onClick={isMobile ? closeMobile : toggleCollapsed}
-              className="p-2 rounded-xl text-carbon-300 hover:text-carbon-900 hover:bg-sage-50 transition-all duration-300 active:scale-90"
-            >
-              {isMobile ? <X className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5 stroke-[1.5px]" />}
-            </button>
-          )}
-        </div>
-
-        {/* Navigation Area */}
-        <div className="flex flex-col h-[calc(100vh-96px)]">
-          <nav className={cn(
-            "flex-1 py-6 custom-scrollbar",
-            isCollapsed && !isMobile ? "overflow-y-visible" : "overflow-y-auto"
-          )}>
-            {/* Section Label (Optional - only when expanded) */}
-            {(!isCollapsed || isMobile) && (
-              <div className="px-8 mb-4">
-                <span className="text-[10px] font-black text-carbon-300 uppercase tracking-[0.2em]">Navegación Principal</span>
-              </div>
-            )}
-
-            <div className="space-y-1">
-              {navigationItems.map((item) => (
-                item.children && item.children.length > 0 ? (
-                  <SidebarGroup
-                    key={item.id}
-                    item={item}
-                    isCollapsed={isCollapsed}
-                    isMobile={isMobile}
-                    onChildClick={handleNavClick}
-                  />
-                ) : (
-                  <div key={item.id} className={cn(!isCollapsed || isMobile ? "px-3" : "")}>
-                    <SidebarItem
-                      icon={item.icon}
-                      name={item.name}
-                      path={item.path}
-                      isActive={isActive(item.path)}
-                      isCollapsed={isCollapsed}
-                      isMobile={isMobile}
-                      badge={item.badge}
-                      description={item.description}
-                      onClick={handleNavClick}
-                    />
-                  </div>
-                )
-              ))}
-            </div>
-          </nav>
-
-          {/* Footer - Collapse Toggle */}
+        <div className="flex flex-col h-full">
+          {/* 1. Brand Section */}
           <div className={cn(
-            "p-4 border-t border-sage-100 bg-sage-50/10",
-            isCollapsed && !isMobile ? "flex flex-col items-center gap-4" : "flex items-center justify-between"
+            "flex items-center h-20 px-4 mb-4 shrink-0 transition-all duration-300",
+            isCollapsed ? "justify-center" : "justify-between"
           )}>
-            <button
-              onClick={toggleCollapsed}
-              className={cn(
-                "flex items-center justify-center rounded-2xl bg-white shadow-soft-md text-sage-600 hover:bg-sage-600 hover:text-white transition-all",
-                isCollapsed && !isMobile ? "w-12 h-12" : "w-10 h-10"
-              )}
-            >
-              {isCollapsed ? <PanelLeft className="w-6 h-6" /> : <PanelLeftClose className="w-5 h-5" />}
-            </button>
+            {!isCollapsed && (
+              <Link to={ROUTES.DASHBOARD} className="flex items-center gap-3 active:scale-95 transition-transform">
+                <div className="w-10 h-10 rounded-xl bg-gradient-sage flex items-center justify-center shadow-soft-md">
+                  <span className="text-white font-black text-xl">P</span>
+                </div>
+                <BrandName size="lg" className="tracking-tight" />
+              </Link>
+            )}
             
-            {(!isCollapsed || isMobile) && (
-              <span className="text-[10px] font-black text-carbon-300 tracking-wide">v2.1.0</span>
+            {/* Desktop Toggle Button */}
+            {!isMobile && (
+              <button
+                onClick={toggleCollapsed}
+                className={cn(
+                  "p-2 rounded-xl text-carbon-400 hover:bg-sage-50 hover:text-sage-600 transition-all",
+                  isCollapsed && "mx-auto"
+                )}
+              >
+                {isCollapsed ? <PanelLeft className="w-5 h-5" /> : <PanelLeftClose className="w-5 h-5" />}
+              </button>
+            )}
+
+            {/* Mobile Close Button */}
+            {isMobile && !isCollapsed && (
+              <button onClick={closeMobile} className="p-2 text-carbon-400">
+                <X className="w-6 h-6" />
+              </button>
             )}
           </div>
+
+          {/* 2. Navigation Area */}
+          <nav className="flex-1 space-y-1.5 px-2 py-4">
+            {navigationItems.map((item) => (
+              item.children && item.children.length > 0 ? (
+                <SidebarGroup 
+                  key={item.id} 
+                  item={item} 
+                  isCollapsed={isCollapsed} 
+                  isMobile={isMobile}
+                  onChildClick={handleNavClick}
+                />
+              ) : (
+                <SidebarItem
+                  key={item.id}
+                  icon={item.icon}
+                  name={item.name}
+                  path={item.path}
+                  active={isActive(item.path)}
+                  isCollapsed={isCollapsed}
+                  onClick={handleNavClick}
+                />
+              )
+            ))}
+          </nav>
+
+          {/* 3. Footer / Help Section */}
+          {!isCollapsed && (
+            <div className="p-4 mt-auto">
+              <div className="bg-sage-50/50 rounded-2xl p-4 border border-sage-100">
+                <p className="text-[10px] font-black text-sage-600 uppercase tracking-widest mb-1">
+                  Plan Activo
+                </p>
+                <p className="text-sm font-bold text-carbon-900 mb-3">Plaet Enterprise</p>
+                <div className="w-full h-1.5 bg-sage-100 rounded-full overflow-hidden">
+                  <div className="w-3/4 h-full bg-sage-500 rounded-full" />
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </aside>
 
-      {/* Mobile Floating Menu Button - visible only when sidebar is closed on mobile */}
-      {isMobile && !isMobileOpen && (
+      {/* Mobile Floating Action Button (FAB) */}
+      {isMobile && (
         <button
           onClick={toggleMobile}
           className="fixed bottom-6 right-6 z-50 w-16 h-16 bg-carbon-900 text-white rounded-full shadow-2xl flex items-center justify-center transition-all hover:scale-110 active:scale-90"

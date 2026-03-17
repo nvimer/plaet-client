@@ -118,6 +118,7 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean, userPerm
       name: "Mesas",
       icon: LayoutGrid,
       description: "Gestión de sala",
+      allowedRoles: [RoleName.ADMIN, RoleName.WAITER],
       children: [
         { type: "link", path: ROUTES.TABLES_MAP, name: "Mapa de Sala", icon: LayoutGrid },
         { type: "link", path: ROUTES.TABLE_CREATE, name: "Nueva Mesa", icon: Plus, allowedRoles: [RoleName.ADMIN] },
@@ -129,10 +130,11 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean, userPerm
       name: "Ventas",
       icon: ShoppingCart,
       description: "Pedidos y facturación",
+      allowedRoles: [RoleName.ADMIN, RoleName.WAITER, RoleName.CASHIER, RoleName.KITCHEN_MANAGER],
       children: [
-        { type: "link", path: ROUTES.ORDERS_LIST, name: "Historial de Pedidos", icon: History },
+        { type: "link", path: ROUTES.ORDERS_LIST, name: "Historial de Pedidos", icon: History, allowedRoles: [RoleName.ADMIN, RoleName.WAITER, RoleName.CASHIER] },
         { type: "link", path: ROUTES.KITCHEN, name: "Monitor de Cocina", icon: ChefHat, allowedRoles: [RoleName.ADMIN, RoleName.KITCHEN_MANAGER, RoleName.WAITER] },
-        { type: "link", path: ROUTES.ORDER_CREATE, name: "Nuevo Pedido", icon: Plus },
+        { type: "link", path: ROUTES.ORDER_CREATE, name: "Nuevo Pedido", icon: Plus, allowedRoles: [RoleName.ADMIN, RoleName.WAITER, RoleName.CASHIER] },
       ],
     },
     {
@@ -141,8 +143,9 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean, userPerm
       name: "Menú del Día",
       icon: UtensilsCrossed,
       description: "Configuración diaria",
+      allowedRoles: [RoleName.ADMIN, RoleName.KITCHEN_MANAGER],
       children: [
-        { type: "link", path: ROUTES.DAILY_MENU_SETUP, name: "Configurar Hoy", icon: ChefHat, allowedRoles: [RoleName.ADMIN, RoleName.KITCHEN_MANAGER] },
+        { type: "link", path: ROUTES.DAILY_MENU_SETUP, name: "Configurar Hoy", icon: ChefHat },
         { type: "link", path: ROUTES.DAILY_MENU_HISTORY, name: "Historial", icon: Calendar },
       ]
     },
@@ -167,8 +170,8 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean, userPerm
       allowedRoles: [RoleName.ADMIN, RoleName.KITCHEN_MANAGER],
       children: [
         { type: "link", path: ROUTES.MENU_LIST, name: "Lista de Productos", icon: Grid3x3 },
-        { type: "link", path: ROUTES.MENU_CATEGORY_CREATE, name: "Nueva Categoría", icon: Plus },
-        { type: "link", path: ROUTES.MENU_ITEM_CREATE, name: "Nuevo Producto", icon: Plus },
+        { type: "link", path: ROUTES.MENU_CATEGORY_CREATE, name: "Nueva Categoría", icon: Plus, allowedRoles: [RoleName.ADMIN] },
+        { type: "link", path: ROUTES.MENU_ITEM_CREATE, name: "Nuevo Producto", icon: Plus, allowedRoles: [RoleName.ADMIN] },
       ],
     },
     {

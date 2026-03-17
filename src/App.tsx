@@ -67,7 +67,7 @@ import { ROUTES } from "./app/routes";
 
 const App = () => {
   useInitializeAuth();
-  const { isAuthenticated } = useAuth();
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
   return (
     <BrowserRouter>
@@ -137,7 +137,7 @@ const App = () => {
               path={ROUTES.ADMIN}
               element={
                 <ProtectedRoute>
-                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN]}>
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN, RoleName.CASHIER]}>
                     <AdminHubPage />
                   </RoleProtectedRoute>
                 </ProtectedRoute>
@@ -247,7 +247,9 @@ const App = () => {
               path={ROUTES.TABLES}
               element={
                 <ProtectedRoute>
-                  <TablesHubPage />
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.WAITER]}>
+                    <TablesHubPage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />
@@ -266,7 +268,9 @@ const App = () => {
               path={ROUTES.MENU}
               element={
                 <ProtectedRoute>
-                  <MenuHubPage />
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.KITCHEN_MANAGER]}>
+                    <MenuHubPage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />
@@ -275,7 +279,9 @@ const App = () => {
               path={ROUTES.MENU_LIST}
               element={
                 <ProtectedRoute>
-                  <MenuPage />
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.KITCHEN_MANAGER]}>
+                    <MenuPage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />
@@ -285,7 +291,9 @@ const App = () => {
               path={ROUTES.ORDERS}
               element={
                 <ProtectedRoute>
-                  <OrdersHubPage />
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.WAITER, RoleName.CASHIER]}>
+                    <OrdersHubPage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />
@@ -294,7 +302,9 @@ const App = () => {
               path={ROUTES.ORDERS_LIST}
               element={
                 <ProtectedRoute>
-                  <OrdersPage />
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.WAITER, RoleName.CASHIER]}>
+                    <OrdersPage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />
@@ -304,7 +314,9 @@ const App = () => {
               path={ROUTES.ORDER_CREATE}
               element={
                 <ProtectedRoute>
-                  <OrderCreatePage />
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.WAITER, RoleName.CASHIER]}>
+                    <OrderCreatePage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />
@@ -324,7 +336,9 @@ const App = () => {
               path={ROUTES.ORDER_EDIT}
               element={
                 <ProtectedRoute>
-                  <OrderEditPage />
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.WAITER]}>
+                    <OrderEditPage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />
@@ -335,7 +349,7 @@ const App = () => {
               element={
                 <ProtectedRoute>
                   <RoleProtectedRoute
-                    allowedRoles={[RoleName.KITCHEN_MANAGER, RoleName.ADMIN]}
+                    allowedRoles={[RoleName.KITCHEN_MANAGER, RoleName.ADMIN, RoleName.WAITER]}
                   >
                     <FullScreenLayout>
                       <KitchenOrdersPage />
@@ -350,7 +364,9 @@ const App = () => {
               path={ROUTES.TABLE_CREATE}
               element={
                 <ProtectedRoute>
-                  <TableCreatePage />
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
+                    <TableCreatePage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />
@@ -360,7 +376,9 @@ const App = () => {
               path={ROUTES.TABLE_MANAGE}
               element={
                 <ProtectedRoute>
-                  <TableManagePage />
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
+                    <TableManagePage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />
@@ -370,7 +388,9 @@ const App = () => {
               path={ROUTES.MENU_CATEGORY_CREATE}
               element={
                 <ProtectedRoute>
-                  <CategoryCreatePage />
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
+                    <CategoryCreatePage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />
@@ -380,7 +400,9 @@ const App = () => {
               path={ROUTES.MENU_CATEGORY_EDIT}
               element={
                 <ProtectedRoute>
-                  <CategoryEditPage />
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN]}>
+                    <CategoryEditPage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />
@@ -390,7 +412,9 @@ const App = () => {
               path={ROUTES.MENU_ITEM_CREATE}
               element={
                 <ProtectedRoute>
-                  <MenuItemCreatePage />
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.KITCHEN_MANAGER]}>
+                    <MenuItemCreatePage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />
@@ -400,7 +424,9 @@ const App = () => {
               path={ROUTES.MENU_ITEM_EDIT}
               element={
                 <ProtectedRoute>
-                  <MenuItemEditPage />
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.KITCHEN_MANAGER]}>
+                    <MenuItemEditPage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />
@@ -450,7 +476,9 @@ const App = () => {
               path={ROUTES.DAILY_MENU}
               element={
                 <ProtectedRoute>
-                  <DailyMenuHubPage />
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.KITCHEN_MANAGER]}>
+                    <DailyMenuHubPage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />
@@ -459,7 +487,9 @@ const App = () => {
               path={ROUTES.DAILY_MENU_HISTORY}
               element={
                 <ProtectedRoute>
-                  <DailyMenuHistoryPage />
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.KITCHEN_MANAGER]}>
+                    <DailyMenuHistoryPage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />
@@ -468,7 +498,9 @@ const App = () => {
               path={ROUTES.DAILY_MENU_SETUP}
               element={
                 <ProtectedRoute>
-                  <DailyMenuPage />
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.KITCHEN_MANAGER]}>
+                    <DailyMenuPage />
+                  </RoleProtectedRoute>
                 </ProtectedRoute>
               }
             />
