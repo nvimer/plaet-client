@@ -12,6 +12,15 @@ interface SidebarGroupProps {
   onChildClick?: () => void;
 }
 
+/**
+ * SidebarGroup Component
+ * 
+ * Handles expandable menu sections in the sidebar.
+ * Features: 
+ * - Hover-to-expand logic for desktop
+ * - Click-to-navigate for main module hubs
+ * - Smart active state detection
+ */
 export function SidebarGroup({
   item,
   isCollapsed,
@@ -21,6 +30,7 @@ export function SidebarGroup({
   const location = useLocation();
   const navigate = useNavigate();
   const showFull = !isCollapsed || isMobile;
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   // Check if any child is active
   const hasActiveChild = item.children?.some(
@@ -32,29 +42,46 @@ export function SidebarGroup({
 
   const [isOpen, setIsOpen] = useState(hasActiveChild || false);
 
-  // Sync open state with active child or current path initially
+  // Sync open state with active child or current path
   useEffect(() => {
     if (hasActiveChild || isParentActive) {
       setIsOpen(true);
     }
-  }, [hasActiveChild, isParentActive]);
+  }, [hasActiveChild, isParentActive, location.pathname]);
+
+  const handleMouseEnter = () => {
+    if (isMobile) return;
+    if (timeoutRef.current) clearTimeout(timeoutRef.current);
+    setIsOpen(true);
+  };
+
+  const handleMouseLeave = () => {
+    if (isMobile || hasActiveChild || isParentActive) return;
+    
+    // Small delay before closing to allow moving mouse to children
+    timeoutRef.current = setTimeout(() => {
+      setIsOpen(false);
+    }, 150);
+  };
 
   const handleHeaderClick = (e: React.MouseEvent) => {
     e.preventDefault();
-    if (showFull) {
-      setIsOpen(!isOpen);
-    } else {
-      // In collapsed mode, click takes you to the main hub page
-      navigate(item.path);
-      if (isMobile && onChildClick) onChildClick();
-    }
+    navigate(item.path);
+    if (isMobile && onChildClick) onChildClick();
   };
 
   const Icon = item.icon;
 
   if (!showFull) {
     return (
-      <div className="relative group/group mx-2 mb-1">
+      <div 
+        className="relative group/group mx-2 mb-1"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
+        {/* Invisible Bridge */}
+        <div className="absolute left-full top-0 w-4 h-full z-10 pointer-events-auto" />
+
         <div 
           onClick={handleHeaderClick}
           className={cn(
@@ -70,20 +97,54 @@ export function SidebarGroup({
           )}
         </div>
 
-        {/* Floating Tooltip/Hint for Collapsed state - Now only shows name on hover */}
+        {/* Floating Panel for Collapsed state */}
         <div className={cn(
-          "absolute left-full top-1/2 -translate-y-1/2 ml-4 px-2 py-1 bg-carbon-900 text-white text-[10px] font-bold rounded",
-          "opacity-0 invisible group-hover/group:opacity-100 group-hover/group:visible transition-all duration-200 z-50 whitespace-nowrap"
+          "absolute left-full top-[-8px] ml-2 w-60 py-3 bg-white rounded-3xl shadow-2xl border border-sage-100/50",
+          "opacity-0 invisible group-hover/group:opacity-100 group-hover/group:visible group-hover/group:translate-x-0",
+          "transition-all duration-300 ease-[0.23,1,0.32,1] z-[100] overflow-hidden translate-x-[-10px]"
         )}>
-          {item.name}
-          <div className="absolute left-0 top-1/2 -translate-x-full -translate-y-1/2 border-4 border-transparent border-r-carbon-900" />
+          <div className="px-5 py-3 border-b border-sage-50 mb-2 bg-sage-50/20">
+            <div className="flex items-center gap-2">
+              <div className="w-1 h-4 bg-sage-500 rounded-full" />
+              <span className="text-[11px] font-black text-carbon-900 uppercase tracking-[0.2em]">{item.name}</span>
+            </div>
+          </div>
+          <div className="max-h-[60vh] overflow-y-auto custom-scrollbar px-2 space-y-0.5">
+            {item.children?.map((child, idx) => {
+              if (child.type === 'divider') return <div key={idx} className="h-px bg-sage-100 my-2 mx-3" />;
+              
+              const ChildIcon = child.icon;
+              const isChildActive = location.pathname.startsWith(child.path);
+
+              return (
+                <Link
+                  key={idx}
+                  to={child.path}
+                  onClick={onChildClick}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-2.5 text-sm rounded-xl transition-all duration-200",
+                    isChildActive 
+                      ? "bg-sage-50 text-sage-700 font-bold border border-sage-100 shadow-soft-xs" 
+                      : "text-carbon-500 hover:bg-sage-50/80 hover:text-carbon-900"
+                  )}
+                >
+                  <ChildIcon className={cn("w-4 h-4", isChildActive ? "text-sage-600" : "text-carbon-400")} />
+                  <span className="truncate">{child.name}</span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="mb-1">
+    <div 
+      className="mb-1"
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
+    >
       <div className="px-3">
         <button
           onClick={handleHeaderClick}
@@ -117,21 +178,6 @@ export function SidebarGroup({
             className="overflow-hidden"
           >
             <div className="ml-9 pl-4 border-l-2 border-sage-100 mt-1 space-y-1 pr-3">
-              {/* Added: Hub/Main page link as the first item in the sub-menu */}
-              <Link
-                to={item.path}
-                onClick={onChildClick}
-                className={cn(
-                  "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-all duration-200 group/item",
-                  isParentActive 
-                    ? "text-sage-700 font-bold bg-white shadow-soft-sm" 
-                    : "text-carbon-500 hover:text-carbon-800 hover:bg-white/50"
-                )}
-              >
-                <div className={cn("w-1.5 h-1.5 rounded-full", isParentActive ? "bg-sage-600" : "bg-carbon-200")} />
-                <span className="truncate">Panel Principal</span>
-              </Link>
-
               {item.children?.map((child, idx) => {
                 if (child.type === 'divider') return <div key={idx} className="h-px bg-sage-100/50 my-2" />;
                 

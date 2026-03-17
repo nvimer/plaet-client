@@ -7,7 +7,7 @@ interface SidebarItemProps {
   icon: LucideIcon;
   name: string;
   path: string;
-  isActive: boolean;
+  active: boolean; // Changed back to 'active' to match how it's called in Sidebar.tsx
   isCollapsed: boolean;
   isMobile: boolean;
   badge?: string;
@@ -19,7 +19,7 @@ export function SidebarItem({
   icon: Icon,
   name,
   path,
-  isActive,
+  active: isActive,
   isCollapsed,
   isMobile,
   badge,
