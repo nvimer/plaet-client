@@ -32,6 +32,7 @@ export function ProfilePage() {
     handleSubmit,
     formState: { errors },
     reset,
+    setError,
   } = useForm<UpdateProfileInput>({
     resolver: zodResolver(updateProfileSchema),
     values: user
@@ -87,10 +88,29 @@ export function ProfilePage() {
       setIsUpdating(false);
     },
     onError: (error: AxiosErrorWithResponse) => {
-      let message = error.response?.data?.message || error.message;
+      const serverError = error.response?.data;
+      let message = serverError?.message || error.message;
       
-      // Map common errors to Spanish
-      if (message.includes("already exists")) {
+      // Handle Prisma unique constraint errors (P2002)
+      if (serverError?.errorCode === "DUPLICATE_ENTRY" && serverError.meta?.target) {
+        const target = serverError.meta.target;
+        if (Array.isArray(target)) {
+          if (target.includes("email")) {
+            setError("email", { 
+              type: "manual", 
+              message: "Este correo electrónico ya está registrado por otro usuario." 
+            });
+            message = "El correo electrónico ya está en uso.";
+          } else if (target.includes("phone")) {
+            setError("phone", { 
+              type: "manual", 
+              message: "Este número de teléfono ya está registrado por otro usuario." 
+            });
+            message = "El número de teléfono ya está en uso.";
+          }
+        }
+      } else if (message.includes("already exists")) {
+        // Fallback for string-based detection
         message = "Ya existe un usuario con ese correo electrónico o teléfono.";
       }
 

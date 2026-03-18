@@ -145,10 +145,31 @@ export function UserEditPage() {
           navigate(ROUTES.USERS_LIST);
         },
         onError: (error: AxiosErrorWithResponse) => {
-          const message = error.response?.data?.message || error.message;
+          const serverError = error.response?.data;
+          let message = serverError?.message || error.message;
           
-          // Map backend "Email already taken" to form field
-          if (message.includes("taken") || message.includes("already") || error.response?.data?.code === "EMAIL_CONFLICT") {
+          // Handle Prisma unique constraint errors (P2002)
+          if (serverError?.errorCode === "DUPLICATE_ENTRY" && serverError.meta?.target) {
+            const target = serverError.meta.target;
+            if (Array.isArray(target)) {
+              if (target.includes("email")) {
+                setError("email", { 
+                  type: "manual", 
+                  message: "Este correo electrónico ya está registrado por otro usuario." 
+                });
+                return;
+              } else if (target.includes("phone")) {
+                setError("phone", { 
+                  type: "manual", 
+                  message: "Este número de teléfono ya está registrado por otro usuario." 
+                });
+                return;
+              }
+            }
+          }
+
+          // Fallback for string-based detection
+          if (message.includes("taken") || message.includes("already") || serverError?.code === "EMAIL_CONFLICT") {
             setError("email", { type: "server", message: "Este correo ya está en uso" });
           } else {
             toast.error("Error al actualizar usuario", {
@@ -156,6 +177,7 @@ export function UserEditPage() {
               icon: "❌",
             });
           }
+          setIsSaving(false);
         },
       }
     );
