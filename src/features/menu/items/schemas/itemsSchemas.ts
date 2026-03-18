@@ -20,6 +20,8 @@ export const createItemSchema = z.object({
 
   imageUrl: z.string().url("Debe ser una URL válida").optional().or(z.literal("")),
 
+  image: z.any().optional(),
+
   inventoryType: z.nativeEnum(InventoryType),
 
   stockQuantity: z.number({ invalid_type_error: "Ingresa una cantidad válida" }).int("Debe ser un número entero").min(0, "El stock no puede ser negativo").optional(),
@@ -55,6 +57,8 @@ export const updateItemSchema = z.object({
   isAvailable: z.boolean().optional(),
 
   imageUrl: z.string().url("Debe ser una URL válida").optional().or(z.literal("")),
+
+  image: z.any().optional(),
 
   inventoryType: z.nativeEnum(InventoryType).optional(),
 

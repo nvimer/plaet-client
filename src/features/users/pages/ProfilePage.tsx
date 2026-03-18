@@ -1,4 +1,4 @@
-import { Badge, Button, Card, Input, Skeleton } from "@/components";
+import { Badge, Button, Card, Input, Skeleton, ImageUpload } from "@/components";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
@@ -7,7 +7,7 @@ import { profileApi } from "@/services";
 import { updateProfileSchema, type UpdateProfileInput } from "../schemas/userSchemas";
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
-import { Check, ArrowLeft, User, Shield } from "lucide-react";
+import { Check, ArrowLeft, User, Shield, Camera } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import type { UserRole, Role } from "@/types";
@@ -21,9 +21,10 @@ import type { AxiosErrorWithResponse } from "@/types/common";
  * Users can edit their own information but NOT roles.
  */
 export function ProfilePage() {
-  const { user } = useAuth();
+  const { user, updateUser: updateAuthUser } = useAuth();
   const queryClient = useQueryClient();
   const [isUpdating, setIsUpdating] = useState(false);
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
 
   const {
     register,
@@ -41,6 +42,33 @@ export function ProfilePage() {
         }
       : undefined,
   });
+
+  const uploadPhotoMutation = useMutation({
+    mutationFn: (file: File) => profileApi.uploadPhoto(file),
+    onSuccess: (response) => {
+      const updatedUser = response.data;
+      // Update auth context user
+      updateAuthUser(updatedUser);
+      // Invalidate queries
+      queryClient.invalidateQueries({ queryKey: ["profile", "me"] });
+      toast.success("Foto actualizada", {
+        description: "Tu foto de perfil ha sido cambiada correctamente",
+      });
+    },
+    onError: (error: AxiosErrorWithResponse) => {
+      toast.error("Error al subir foto", {
+        description: error.response?.data?.message || error.message,
+      });
+    },
+    onSettled: () => setIsUploadingPhoto(false),
+  });
+
+  const handlePhotoChange = (file: File | null) => {
+    if (file) {
+      setIsUploadingPhoto(true);
+      uploadPhotoMutation.mutate(file);
+    }
+  };
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: UpdateProfileInput) => {
@@ -147,10 +175,36 @@ export function ProfilePage() {
             {/* Left: Brief Info */}
             <div className="space-y-6">
               <Card variant="elevated" padding="lg" className="rounded-3xl border-none shadow-smooth-lg overflow-hidden relative">
-                <div className="relative z-10 flex flex-col items-center text-center space-y-4">
-                  <div className="w-24 h-24 rounded-3xl bg-sage-100 text-sage-700 flex items-center justify-center text-4xl font-black shadow-inner">
-                    {getInitials()}
+                <div className="relative z-10 flex flex-col items-center text-center space-y-6">
+                  <div className="relative group">
+                    <div className="w-32 h-32 rounded-3xl bg-sage-100 text-sage-700 flex items-center justify-center text-5xl font-black shadow-inner overflow-hidden border-4 border-white">
+                      {user.profile?.photoUrl ? (
+                        <img 
+                          src={user.profile.photoUrl} 
+                          alt="Profile" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        getInitials()
+                      )}
+                    </div>
+                    
+                    <label className="absolute -bottom-2 -right-2 w-10 h-10 bg-carbon-900 text-white rounded-xl flex items-center justify-center cursor-pointer hover:bg-carbon-800 transition-colors shadow-lg border-2 border-white group-hover:scale-110 transition-transform">
+                      {isUploadingPhoto ? (
+                        <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      ) : (
+                        <Camera className="w-5 h-5" />
+                      )}
+                      <input 
+                        type="file" 
+                        className="hidden" 
+                        accept="image/*"
+                        onChange={(e) => handlePhotoChange(e.target.files?.[0] || null)}
+                        disabled={isUploadingPhoto}
+                      />
+                    </label>
                   </div>
+
                   <div>
                     <h2 className="text-xl font-bold text-carbon-900 tracking-tight">
                       {user.firstName} {user.lastName}

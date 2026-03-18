@@ -49,6 +49,27 @@ export const getProfileById = async (id: string) => {
 };
 
 /**
+ * PATCH /profile/me/photo
+ * 
+ * Update profile photo
+ */
+export const uploadPhoto = async (photo: File) => {
+  const formData = new FormData();
+  formData.append("photo", photo);
+
+  const { data } = await axiosClient.patch<ApiResponse<User>>(
+    "profile/me/photo",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+  return data;
+};
+
+/**
  * PATCH /profile/:id
  * 
  * Update profile

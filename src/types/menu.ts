@@ -47,6 +47,7 @@ export interface CreateMenuItemInput {
   price: string | number;
   isAvailable?: boolean;
   imageUrl?: string;
+  image?: File;
   inventoryType?: string;
   stockQuantity?: number;
   lowStockAlert?: number;
@@ -60,6 +61,7 @@ export interface UpdateMenuItemInput {
   price?: string;
   isAvailable?: boolean;
   imageUrl?: string;
+  image?: File;
   inventoryType?: string;
   stockQuantity?: number;
   lowStockAlert?: number;

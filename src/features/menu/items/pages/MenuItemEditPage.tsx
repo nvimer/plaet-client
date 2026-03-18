@@ -8,6 +8,7 @@ import {
   Skeleton,
   EmptyState,
   ConfirmDialog,
+  ImageUpload,
 } from "@/components";
 import {
   useMenuItem,
@@ -24,7 +25,7 @@ import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
 import { Check, Trash2, XCircle, Package } from "lucide-react";
 import { useState, useEffect } from "react";
-import { InventoryType } from "@/types";
+import { useForm, Controller, type FieldErrors } from "react-hook-form";
 import { cn } from "@/utils/cn";
 import { logger } from "@/utils";
 
@@ -52,9 +53,10 @@ export function MenuItemEditPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty },
+    formState: { errors, isDirty: isFormDirty },
     watch,
     setValue,
+    control,
   } = useForm<UpdateItemInput>({
     resolver: zodResolver(updateItemSchema),
     values: item
@@ -65,6 +67,7 @@ export function MenuItemEditPage() {
           price: item.price,
           isAvailable: item.isAvailable,
           imageUrl: item.imageUrl || "",
+          image: null,
           inventoryType:
             (item.inventoryType as InventoryType) || InventoryType.UNLIMITED,
           stockQuantity: item.stockQuantity ?? undefined,
@@ -74,6 +77,9 @@ export function MenuItemEditPage() {
       : undefined,
     mode: "onTouched",
   });
+
+  const image = watch("image");
+  const isDirty = isFormDirty || !!image;
 
   const watchedValues = watch();
   const originalValues = item
@@ -147,26 +153,10 @@ export function MenuItemEditPage() {
   const onSubmit = async (data: UpdateItemInput) => {
     setIsSaving(true);
     try {
-      // 1. Basic product update
-      const payload: Record<string, unknown> = {};
-      const basicFields = [
-        "name",
-        "description",
-        "categoryId",
-        "price",
-        "isAvailable",
-        "imageUrl",
-        "autoMarkUnavailable",
-      ];
-
-      basicFields.forEach((field) => {
-        if (data[field as keyof UpdateItemInput] !== undefined) {
-          payload[field] = data[field as keyof UpdateItemInput];
-        }
-      });
-
-      await updateItem({ id: item.id, ...payload } as UpdateItemInput & {
-        id: number;
+      // 1. Update product (Service now handles FormData internally if needed)
+      await updateItem({ 
+        id: item.id, 
+        ...data 
       });
 
       // 2. Inventory type change logic
@@ -325,15 +315,18 @@ export function MenuItemEditPage() {
                       fullWidth
                       originalValue={String(originalValues?.price)}
                     />
-                    <Input
-                      label="URL de imagen"
-                      optional
-                      type="url"
-                      placeholder="https://..."
-                      {...register("imageUrl")}
-                      error={errors.imageUrl?.message}
-                      fullWidth
-                      originalValue={originalValues?.imageUrl}
+                    
+                    <Controller
+                      name="image"
+                      control={control}
+                      render={({ field }) => (
+                        <ImageUpload
+                          label="Imagen del producto"
+                          value={field.value || item.imageUrl}
+                          onChange={field.onChange}
+                          error={errors.image?.message as string}
+                        />
+                      )}
                     />
                   </div>
                 </section>

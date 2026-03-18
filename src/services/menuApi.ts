@@ -168,14 +168,32 @@ export const getMenuItemById = async (id: number) => {
  * POST /menu/items
  *
  * Create a new menu item
+ * Supports multipart/form-data for image upload
  *
  * @param itemData - New Menu Item Data
  * @returns create Menu Item
  */
 export const createMenuItem = async (itemData: CreateMenuItemInput) => {
+  const formData = new FormData();
+  
+  Object.entries(itemData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      if (key === 'image' && value instanceof File) {
+        formData.append('image', value);
+      } else {
+        formData.append(key, String(value));
+      }
+    }
+  });
+
   const { data } = await axiosClient.post<ApiResponse<MenuItem>>(
     "menu/items",
-    itemData,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
   );
   return data;
 };
@@ -184,6 +202,7 @@ export const createMenuItem = async (itemData: CreateMenuItemInput) => {
  * PATCH /menu/items/:id
  *
  * Update a exiting Menu Item
+ * Supports multipart/form-data for image upload
  *
  * @param id - Menu Item ID
  * @param itemData - Data to update
@@ -193,9 +212,26 @@ export const updateMenuItem = async (
   id: number,
   itemData: UpdateMenuItemInput,
 ) => {
+  const formData = new FormData();
+  
+  Object.entries(itemData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      if (key === 'image' && value instanceof File) {
+        formData.append('image', value);
+      } else {
+        formData.append(key, String(value));
+      }
+    }
+  });
+
   const { data } = await axiosClient.patch<ApiResponse<MenuItem>>(
     `menu/items/${id}`,
-    itemData,
+    formData,
+    {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    }
   );
   return data;
 };

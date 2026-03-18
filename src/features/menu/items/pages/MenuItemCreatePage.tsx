@@ -1,7 +1,7 @@
-import { Button, Input } from "@/components";
+import { Button, Input, ImageUpload } from "@/components";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { useCreateItem } from "../hooks";
@@ -28,6 +28,7 @@ export function MenuItemCreatePage() {
     formState: { errors, isValid },
     watch,
     setValue,
+    control,
   } = useForm<CreateItemInput>({
     resolver: zodResolver(createItemSchema),
     defaultValues: {
@@ -37,6 +38,7 @@ export function MenuItemCreatePage() {
       price: "",
       isAvailable: true,
       imageUrl: "",
+      image: null,
       inventoryType: InventoryType.UNLIMITED,
       stockQuantity: undefined,
       lowStockAlert: undefined,
@@ -158,14 +160,18 @@ export function MenuItemCreatePage() {
                     error={errors.price?.message}
                     fullWidth
                   />
-                  <Input
-                    label="URL de imagen"
-                    optional
-                    type="url"
-                    placeholder="https://..."
-                    {...register("imageUrl")}
-                    error={errors.imageUrl?.message}
-                    fullWidth
+                  
+                  <Controller
+                    name="image"
+                    control={control}
+                    render={({ field }) => (
+                      <ImageUpload
+                        label="Imagen del producto"
+                        value={field.value}
+                        onChange={field.onChange}
+                        error={errors.image?.message as string}
+                      />
+                    )}
                   />
                 </div>
               </section>
