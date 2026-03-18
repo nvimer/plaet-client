@@ -125,7 +125,9 @@ export function MenuPage() {
 
   const categoryOptions = useMemo(() => [
     { value: "", label: "Todos" },
-    ...(categories ?? []).map(c => ({ value: String(c.id), label: c.name }))
+    ...(categories ?? [])
+      .sort((a, b) => (a.order || 0) - (b.order || 0))
+      .map(c => ({ value: String(c.id), label: c.name }))
   ], [categories]);
 
   if (loadingItems && !paginationData) {
