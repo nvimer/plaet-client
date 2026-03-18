@@ -22,6 +22,7 @@ import {
   type UpdateItemInput,
 } from "../schemas/itemsSchemas";
 import { ROUTES } from "@/app/routes";
+import { InventoryType } from "@/types";
 import { toast } from "sonner";
 import { Check, Trash2, XCircle, Package } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
