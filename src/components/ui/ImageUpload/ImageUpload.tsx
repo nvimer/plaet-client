@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Camera, X, Upload, ImageIcon, ImagePlus, RefreshCw } from "lucide-react";
+import { Camera, X, Upload, ImageIcon, ImagePlus, RefreshCw, Plus } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { Button } from "../Button/Button";
 
