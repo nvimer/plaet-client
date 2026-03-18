@@ -10,6 +10,7 @@ import {
   ImageUpload,
   PriceInput,
   Select,
+  TextArea,
 } from "@/components";
 import {
   useMenuItem,
@@ -271,15 +272,15 @@ export function MenuItemEditPage() {
                       originalValue={originalValues?.name}
                     />
                     
-                    <Input
+                    <TextArea
                       label="Descripción"
                       optional
-                      type="text"
                       placeholder="Describe el producto..."
                       {...register("description")}
                       error={errors.description?.message}
                       fullWidth
                       originalValue={originalValues?.description}
+                      rows={3}
                     />
 
                     <Select

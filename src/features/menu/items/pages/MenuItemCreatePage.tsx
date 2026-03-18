@@ -1,4 +1,4 @@
-import { Button, Input, ImageUpload, PriceInput, Select } from "@/components";
+import { Button, Input, ImageUpload, PriceInput, Select, TextArea } from "@/components";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
@@ -104,14 +104,14 @@ export function MenuItemCreatePage() {
                     className="text-lg"
                   />
                   
-                  <Input
+                  <TextArea
                     label="Descripción"
                     optional
-                    type="text"
                     placeholder="Describe el producto para los clientes..."
                     {...register("description")}
                     error={errors.description?.message}
                     fullWidth
+                    rows={3}
                   />
 
                   <Select
