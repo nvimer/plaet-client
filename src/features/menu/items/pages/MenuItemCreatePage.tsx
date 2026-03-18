@@ -1,4 +1,4 @@
-import { Button, Input, ImageUpload } from "@/components";
+import { Button, Input, ImageUpload, PriceInput } from "@/components";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
@@ -44,7 +44,7 @@ export function MenuItemCreatePage() {
       lowStockAlert: undefined,
       autoMarkUnavailable: true,
     },
-    mode: "onTouched",
+    mode: "onChange",
   });
 
   const inventoryType = watch("inventoryType");
@@ -151,10 +151,9 @@ export function MenuItemCreatePage() {
                   Precio e imagen
                 </h3>
                 <div className="space-y-6">
-                  <Input
-                    label="Precio"
+                  <PriceInput
+                    label="Precio de venta"
                     required
-                    type="text"
                     placeholder="Ej: 15000"
                     {...register("price")}
                     error={errors.price?.message}

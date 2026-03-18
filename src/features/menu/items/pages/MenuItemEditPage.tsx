@@ -1,5 +1,4 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useForm, type FieldErrors } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import {
@@ -9,6 +8,7 @@ import {
   EmptyState,
   ConfirmDialog,
   ImageUpload,
+  PriceInput,
 } from "@/components";
 import {
   useMenuItem,
@@ -24,7 +24,7 @@ import {
 import { ROUTES } from "@/app/routes";
 import { toast } from "sonner";
 import { Check, Trash2, XCircle, Package } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm, Controller, type FieldErrors } from "react-hook-form";
 import { cn } from "@/utils/cn";
 import { logger } from "@/utils";
@@ -53,7 +53,7 @@ export function MenuItemEditPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isDirty: isFormDirty },
+    formState: { errors, isDirty: isRHFDirty },
     watch,
     setValue,
     control,
@@ -64,7 +64,7 @@ export function MenuItemEditPage() {
           name: item.name,
           description: item.description || "",
           categoryId: item.categoryId,
-          price: item.price,
+          price: String(item.price),
           isAvailable: item.isAvailable,
           imageUrl: item.imageUrl || "",
           image: null,
@@ -75,13 +75,30 @@ export function MenuItemEditPage() {
           autoMarkUnavailable: item.autoMarkUnavailable,
         }
       : undefined,
-    mode: "onTouched",
+    mode: "onChange",
   });
 
-  const image = watch("image");
-  const isDirty = isFormDirty || !!image;
-
   const watchedValues = watch();
+  const image = watchedValues.image;
+
+  // Manual dirty check for better reliability with async data
+  const isDirty = useMemo(() => {
+    if (!item) return false;
+    if (!!image) return true;
+    if (isRHFDirty) return true;
+
+    // Check if any specific field changed compared to the loaded item
+    return (
+      watchedValues.name !== item.name ||
+      (watchedValues.description || "") !== (item.description || "") ||
+      watchedValues.categoryId !== item.categoryId ||
+      String(watchedValues.price) !== String(item.price) ||
+      watchedValues.isAvailable !== item.isAvailable ||
+      watchedValues.inventoryType !== item.inventoryType ||
+      watchedValues.lowStockAlert !== item.lowStockAlert ||
+      watchedValues.autoMarkUnavailable !== item.autoMarkUnavailable
+    );
+  }, [watchedValues, item, isRHFDirty, image]);
   const originalValues = item
     ? {
         name: item.name,
@@ -305,15 +322,13 @@ export function MenuItemEditPage() {
                     Precio e imagen
                   </h3>
                   <div className="space-y-6">
-                    <Input
-                      label="Precio"
+                    <PriceInput
+                      label="Precio de venta"
                       required
-                      type="text"
                       placeholder="Ej: 15000"
                       {...register("price")}
                       error={errors.price?.message}
                       fullWidth
-                      originalValue={String(originalValues?.price)}
                     />
                     
                     <Controller
