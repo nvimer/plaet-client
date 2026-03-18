@@ -36,6 +36,7 @@ export function UserEditPage() {
   const { mutate: updateUser, isPending } = useUpdateUser();
   const { data: roles } = useRoles();
   const [selectedRoleIds, setSelectedRoleIds] = useState<number[]>([]);
+  const [initialRoleIds, setInitialRoleIds] = useState<number[]>([]);
 
   const {
     register,
@@ -76,8 +77,17 @@ export function UserEditPage() {
         return role.id;
       });
       setSelectedRoleIds(roleIds);
+      setInitialRoleIds(roleIds);
     }
   }, [user]);
+
+  // Check if roles have changed
+  const rolesChanged = useMemo(() => {
+    if (initialRoleIds.length !== selectedRoleIds.length) return true;
+    const sortedInitial = [...initialRoleIds].sort();
+    const sortedSelected = [...selectedRoleIds].sort();
+    return sortedInitial.some((id, index) => id !== sortedSelected[index]);
+  }, [initialRoleIds, selectedRoleIds]);
 
   // Loading state
   if (isLoading) {
@@ -330,7 +340,7 @@ export function UserEditPage() {
                 variant="primary"
                 size="lg"
                 isLoading={isPending}
-                disabled={isPending || !isDirty}
+                disabled={isPending || (!isDirty && !rolesChanged)}
                 className="order-1 sm:order-2 flex-1"
               >
                 {!isPending && <Check className="w-5 h-5 mr-2" />}
