@@ -68,9 +68,8 @@ export const PriceInput = forwardRef<HTMLInputElement, PriceInputProps>(
         )}
         
         <div className="relative group">
-          <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none z-10 text-carbon-400 group-focus-within:text-sage-600">
-            <DollarSign className="w-4 h-4" />
-            <span className="text-[10px] font-bold tracking-wider border-r border-carbon-200 pr-2 mr-0.5">{currency}</span>
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none z-10 text-carbon-400 group-focus-within:text-sage-600 transition-colors">
+            <DollarSign className="w-5 h-5" />
           </div>
           
           <input
@@ -81,7 +80,7 @@ export const PriceInput = forwardRef<HTMLInputElement, PriceInputProps>(
             value={displayValue}
             onChange={handleInputChange}
             className={cn(
-              "w-full pl-20 pr-10 py-3 text-base font-medium",
+              "w-full pl-12 pr-10 py-3 text-base font-medium",
               "bg-sage-50/30 border-2 border-sage-200 rounded-xl transition-all duration-200",
               "placeholder:text-carbon-300 text-carbon-900",
               "focus:outline-none focus:bg-white focus:border-sage-500 focus:ring-4 focus:ring-sage-500/10",
