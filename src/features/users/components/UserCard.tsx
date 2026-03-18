@@ -8,6 +8,14 @@ import {
 import { Edit2, Trash2, Mail, Phone } from "lucide-react";
 import { useState } from "react";
 
+const ROLE_NAME_MAP: Record<string, string> = {
+  SUPERADMIN: "Superadministrador",
+  ADMIN: "Administrador",
+  KITCHEN_MANAGER: "Jefe de Cocina",
+  CASHIER: "Cajero",
+  WAITER: "Mesero",
+};
+
 interface UserCardProps {
   user: User;
   onEdit: (userId: string) => void;
@@ -32,9 +40,9 @@ export function UserCard({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Get user's primary role (first role or "Sin rol")
-  const getPrimaryRole = (): { name: string; isMultiRole: boolean } => {
+  const getPrimaryRole = (): { name: string; rawName: string; isMultiRole: boolean } => {
     if (!user.roles || user.roles.length === 0) {
-      return { name: "Sin rol", isMultiRole: false };
+      return { name: "Sin rol", rawName: "NONE", isMultiRole: false };
     }
 
     const firstRole = user.roles[0];
@@ -51,12 +59,13 @@ export function UserCard({
     }
 
     return {
-      name: roleName,
+      name: ROLE_NAME_MAP[roleName] || roleName,
+      rawName: roleName,
       isMultiRole: user.roles.length > 1,
     };
   };
 
-  const { name: primaryRole, isMultiRole } = getPrimaryRole();
+  const { name: primaryRoleLabel, rawName: primaryRoleRaw, isMultiRole } = getPrimaryRole();
 
   // Get initials for avatar
   const getInitials = () => {
@@ -71,6 +80,7 @@ export function UserCard({
   ): { variant: "neutral" | "success" | "warning" | "info"; bgColor: string; textColor: string } => {
     switch (role) {
       case RoleName.ADMIN:
+      case RoleName.SUPERADMIN:
         return { variant: "info", bgColor: "bg-blue-100", textColor: "text-blue-700" };
       case RoleName.WAITER:
         return { variant: "success", bgColor: "bg-success-100", textColor: "text-success-700" };
@@ -83,7 +93,7 @@ export function UserCard({
     }
   };
 
-  const roleStyles = getRoleStyles(primaryRole);
+  const roleStyles = getRoleStyles(primaryRoleRaw);
 
   return (
     <>
@@ -111,7 +121,7 @@ export function UserCard({
             {/* Role Badge with Multi-role indicator */}
             <div className="flex items-center gap-2 flex-wrap">
               <Badge variant={roleStyles.variant} size="sm">
-                {primaryRole}
+                {primaryRoleLabel}
               </Badge>
               {isMultiRole && (
                 <span className="text-xs text-carbon-500">

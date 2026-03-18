@@ -94,7 +94,7 @@ export function UserEditPage() {
     return (
       <SidebarLayout
         title="Cargando..."
-        backRoute={ROUTES.USERS}
+        backRoute={ROUTES.USERS_LIST}
         fullWidth
         contentClassName="p-4 sm:p-6 lg:p-10"
       >
@@ -110,7 +110,7 @@ export function UserEditPage() {
     return (
       <SidebarLayout
         title="Error"
-        backRoute={ROUTES.USERS}
+        backRoute={ROUTES.USERS_LIST}
         fullWidth
         contentClassName="p-4 sm:p-6 lg:p-10"
       >
@@ -120,7 +120,7 @@ export function UserEditPage() {
             title="Usuario no encontrado"
             description="El usuario que buscas no existe o fue eliminado"
             actionLabel="Volver a Usuarios"
-            onAction={() => navigate(ROUTES.USERS)}
+            onAction={() => navigate(ROUTES.USERS_LIST)}
           />
         </div>
       </SidebarLayout>
@@ -142,7 +142,7 @@ export function UserEditPage() {
             description: `${data.firstName || user.firstName} ${data.lastName || user.lastName} ha sido actualizado`,
             icon: "✅",
           });
-          navigate(ROUTES.USERS);
+          navigate(ROUTES.USERS_LIST);
         },
         onError: (error: AxiosErrorWithResponse) => {
           const message = error.response?.data?.message || error.message;
@@ -165,7 +165,7 @@ export function UserEditPage() {
     <SidebarLayout
       title="Editar Usuario"
       subtitle={`${user.firstName} ${user.lastName}`}
-      backRoute={ROUTES.USERS}
+      backRoute={ROUTES.USERS_LIST}
     >
       <div className="max-w-2xl mx-auto py-12 px-4 sm:px-6">
         <Card variant="elevated" padding="lg" className="rounded-3xl border-none shadow-smooth-lg">
@@ -328,7 +328,7 @@ export function UserEditPage() {
                 type="button"
                 variant="ghost"
                 size="lg"
-                onClick={() => navigate(ROUTES.USERS)}
+                onClick={() => navigate(ROUTES.USERS_LIST)}
                 disabled={isPending}
                 className="order-2 sm:order-1"
               >

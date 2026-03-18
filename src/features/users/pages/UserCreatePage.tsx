@@ -66,7 +66,7 @@ export function UserCreatePage() {
             description: `${data.firstName} ${data.lastName} ha sido creado exitosamente`,
             icon: "🎉",
           });
-          navigate(ROUTES.USERS);
+          navigate(ROUTES.USERS_LIST);
         },
         onError: (error: AxiosErrorWithResponse) => {
           const message = error.response?.data?.message || error.message;
@@ -88,7 +88,7 @@ export function UserCreatePage() {
   return (
     <SidebarLayout
       title="Nuevo Usuario"
-      backRoute={ROUTES.USERS}
+      backRoute={ROUTES.USERS_LIST}
     >
       <div className="max-w-2xl mx-auto py-12 px-4 sm:px-6">
         <Card variant="elevated" padding="lg" className="rounded-3xl border-none shadow-smooth-lg">
@@ -274,7 +274,7 @@ export function UserCreatePage() {
                 type="button"
                 variant="ghost"
                 size="lg"
-                onClick={() => navigate(ROUTES.USERS)}
+                onClick={() => navigate(ROUTES.USERS_LIST)}
                 disabled={isPending}
                 className="order-2 sm:order-1"
               >
