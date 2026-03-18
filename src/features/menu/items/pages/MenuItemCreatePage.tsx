@@ -1,4 +1,4 @@
-import { Button, Input, ImageUpload, PriceInput } from "@/components";
+import { Button, Input, ImageUpload, PriceInput, Select } from "@/components";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
@@ -103,46 +103,25 @@ export function MenuItemCreatePage() {
                     autoFocus
                     className="text-lg"
                   />
-                  <div>
-                    <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                      Descripción
-                      <span className="text-carbon-400 font-normal ml-2 text-xs">(opcional)</span>
-                    </label>
-                    <textarea
-                      {...register("description")}
-                      placeholder="Describe el producto para los clientes..."
-                      rows={3}
-                      className={inputClass}
-                    />
-                    {errors.description && (
-                      <p className="text-sm text-error-600 mt-1">
-                        {errors.description.message}
-                      </p>
-                    )}
-                  </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                      Categoría
-                      <span className="text-carbon-400 font-normal ml-1">*</span>
-                    </label>
-                    <select
-                      {...register("categoryId", { valueAsNumber: true })}
-                      className={inputClass}
-                      disabled={loadingCategories}
-                    >
-                      <option value="">Selecciona una categoría</option>
-                      {categories?.map((category) => (
-                        <option key={category.id} value={category.id}>
-                          {category.name}
-                        </option>
-                      ))}
-                    </select>
-                    {errors.categoryId && (
-                      <p className="text-sm text-error-600 mt-1">
-                        {errors.categoryId.message}
-                      </p>
-                    )}
-                  </div>
+                  
+                  <Input
+                    label="Descripción"
+                    optional
+                    type="text"
+                    placeholder="Describe el producto para los clientes..."
+                    {...register("description")}
+                    error={errors.description?.message}
+                    fullWidth
+                  />
+
+                  <Select
+                    label="Categoría"
+                    required
+                    options={categories?.map(c => ({ label: c.name, value: c.id })) || []}
+                    {...register("categoryId", { valueAsNumber: true })}
+                    error={errors.categoryId?.message}
+                    disabled={loadingCategories}
+                  />
                 </div>
               </section>
 
@@ -186,85 +165,67 @@ export function MenuItemCreatePage() {
                 <h3 className="text-lg font-semibold text-carbon-800 mb-4">
                   Inventario
                 </h3>
-                <div>
-                  <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                    Tipo de inventario
-                    <span className="text-carbon-400 font-normal ml-1">*</span>
-                  </label>
-                  <select {...register("inventoryType")} className={inputClass}>
-                    <option value={InventoryType.UNLIMITED}>
-                      Ilimitado (sin control)
-                    </option>
-                    <option value={InventoryType.TRACKED}>
-                      Rastreado (con control de stock)
-                    </option>
-                  </select>
-                  {errors.inventoryType && (
-                    <p className="text-sm text-error-600 mt-1">
-                      {errors.inventoryType.message}
-                    </p>
-                  )}
-                  <p className="mt-2 text-sm text-carbon-400">
-                    Rastreado = control de stock; Ilimitado = sin control
-                  </p>
-                </div>
+                <div className="space-y-6">
+                  <Select
+                    label="Tipo de inventario"
+                    required
+                    options={[
+                      { label: "Ilimitado (sin control)", value: InventoryType.UNLIMITED },
+                      { label: "Rastreado (con control de stock)", value: InventoryType.TRACKED },
+                    ]}
+                    {...register("inventoryType")}
+                    error={errors.inventoryType?.message}
+                    helperText="Rastreado = control de stock; Ilimitado = sin control"
+                  />
 
-                {isTracked && (
-                  <div className="mt-6 p-5 bg-sage-50/80 border-2 border-sage-200 rounded-xl space-y-6">
-                    <div className="flex items-center gap-2">
-                      <Package className="w-5 h-5 text-sage-600" />
-                      <h4 className="font-semibold text-carbon-900">
-                        Configuración de stock
-                      </h4>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                        Stock Inicial
-                        <span className="text-carbon-400 font-normal ml-1">*</span>
-                      </label>
+                  {isTracked && (
+                    <div className="p-5 bg-sage-50/80 border-2 border-sage-200 rounded-xl space-y-6">
+                      <div className="flex items-center gap-2">
+                        <Package className="w-5 h-5 text-sage-600" />
+                        <h4 className="font-semibold text-carbon-900">
+                          Configuración de stock
+                        </h4>
+                      </div>
+                      
                       <Input
+                        label="Stock Inicial"
+                        required
                         type="number"
                         placeholder="Ej: 100"
                         {...register("stockQuantity", { valueAsNumber: true })}
                         error={errors.stockQuantity?.message}
                         min={0}
                         fullWidth
+                        helperText="Cantidad con la que iniciará el inventario"
                       />
-                      <p className="mt-2 text-sm text-carbon-400">
-                        Cantidad con la que iniciará el inventario
-                      </p>
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                        Alerta de stock bajo
-                        <span className="text-carbon-400 font-normal ml-2 text-xs">(opcional)</span>
-                      </label>
+
                       <Input
+                        label="Alerta de stock bajo"
+                        optional
                         type="number"
                         placeholder="Ej: 10"
                         {...register("lowStockAlert", { valueAsNumber: true })}
                         error={errors.lowStockAlert?.message}
                         min={0}
                         fullWidth
+                        helperText="Se mostrará alerta cuando el stock llegue a este nivel"
                       />
-                      <p className="mt-2 text-sm text-carbon-400">
-                        Se mostrará alerta cuando el stock llegue a este nivel
-                      </p>
+
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <input
+                          type="checkbox"
+                          {...register("autoMarkUnavailable")}
+                          className="w-5 h-5 rounded border-sage-300 text-sage-600 focus:ring-sage-400"
+                        />
+                        <div>
+                          <span className="text-carbon-800 font-medium">
+                            Marcar no disponible al llegar a 0
+                          </span>
+                        </div>
+                      </label>
                     </div>
-                    <label className="flex items-center gap-3 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        {...register("autoMarkUnavailable")}
-                        className="w-5 h-5 rounded border-sage-300 text-sage-600 focus:ring-sage-400"
-                      />
-                      <div>
-                        <span className="text-carbon-800 font-medium">
-                          Marcar no disponible al llegar a 0
-                        </span>
-                      </div>
-                    </label>
-                  </div>
-                )}
+                  )}
+                </div>
               </section>
 
               <section className="pt-6 border-t border-sage-200">

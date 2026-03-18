@@ -203,6 +203,7 @@ export function UserEditPage() {
                 {/* First Name */}
                 <Input
                   label="Nombre"
+                  required
                   type="text"
                   placeholder="Ej: Juan"
                   {...register("firstName")}
@@ -214,6 +215,7 @@ export function UserEditPage() {
                 {/* Last Name */}
                 <Input
                   label="Apellido"
+                  required
                   type="text"
                   placeholder="Ej: Pérez"
                   {...register("lastName")}
@@ -227,6 +229,7 @@ export function UserEditPage() {
               <div className="mt-4">
                 <Input
                   label="Email"
+                  required
                   type="email"
                   placeholder="Ej: juan@example.com"
                   {...register("email")}
@@ -239,7 +242,8 @@ export function UserEditPage() {
               {/* Phone */}
               <div className="mt-4">
                 <Input
-                  label="Teléfono (opcional)"
+                  label="Teléfono"
+                  optional
                   type="tel"
                   placeholder="Ej: 3001234567"
                   {...register("phone")}

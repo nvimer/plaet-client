@@ -9,6 +9,7 @@ import {
   ConfirmDialog,
   ImageUpload,
   PriceInput,
+  Select,
 } from "@/components";
 import {
   useMenuItem,
@@ -269,54 +270,26 @@ export function MenuItemEditPage() {
                       className="text-lg"
                       originalValue={originalValues?.name}
                     />
-                    <div>
-                      <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                        Descripción
-                        <span className="text-carbon-400 font-normal ml-2 text-xs">(opcional)</span>
-                      </label>
-                      <textarea
-                        {...register("description")}
-                        placeholder="Describe el producto..."
-                        rows={3}
-                        className={cn(
-                          inputClass,
-                          watchedValues.description !== originalValues?.description &&
-                            "border-sage-500 bg-sage-100/50"
-                        )}
-                      />
-                      {errors.description && (
-                        <p className="text-sm text-error-600 mt-1">
-                          {errors.description.message}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                        Categoría
-                        <span className="text-carbon-400 font-normal ml-1">*</span>
-                      </label>
-                      <select
-                        {...register("categoryId", { valueAsNumber: true })}
-                        className={cn(
-                          inputClass,
-                          watchedValues.categoryId !== originalValues?.categoryId &&
-                            "border-sage-500 bg-sage-100/50"
-                        )}
-                        disabled={loadingCategories}
-                      >
-                        <option value="">Selecciona una categoría</option>
-                        {categories?.map((category) => (
-                          <option key={category.id} value={category.id}>
-                            {category.name}
-                          </option>
-                        ))}
-                      </select>
-                      {errors.categoryId && (
-                        <p className="text-sm text-error-600 mt-1">
-                          {errors.categoryId.message}
-                        </p>
-                      )}
-                    </div>
+                    
+                    <Input
+                      label="Descripción"
+                      optional
+                      type="text"
+                      placeholder="Describe el producto..."
+                      {...register("description")}
+                      error={errors.description?.message}
+                      fullWidth
+                      originalValue={originalValues?.description}
+                    />
+
+                    <Select
+                      label="Categoría"
+                      required
+                      options={categories?.map(c => ({ label: c.name, value: c.id })) || []}
+                      {...register("categoryId", { valueAsNumber: true })}
+                      error={errors.categoryId?.message}
+                      disabled={loadingCategories}
+                    />
                   </div>
                 </section>
 
@@ -360,100 +333,72 @@ export function MenuItemEditPage() {
                   <h3 className="text-lg font-semibold text-carbon-800 mb-4">
                     Inventario
                   </h3>
-                  <div>
-                    <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                      Tipo de inventario
-                      <span className="text-carbon-400 font-normal ml-1">*</span>
-                    </label>
-                    <select
+                  <div className="space-y-6">
+                    <Select
+                      label="Tipo de inventario"
+                      required
+                      options={[
+                        { label: "Ilimitado (sin control)", value: InventoryType.UNLIMITED },
+                        { label: "Rastreado (con control de stock)", value: InventoryType.TRACKED },
+                      ]}
                       {...register("inventoryType")}
-                      className={cn(
-                        inputClass,
-                        watchedValues.inventoryType !== originalValues?.inventoryType &&
-                          "border-sage-500 bg-sage-100/50"
-                      )}
-                    >
-                      <option value={InventoryType.UNLIMITED}>
-                        Ilimitado (sin control)
-                      </option>
-                      <option value={InventoryType.TRACKED}>
-                        Rastreado (con control de stock)
-                      </option>
-                    </select>
-                    {errors.inventoryType && (
-                      <p className="text-sm text-error-600 mt-1">
-                        {errors.inventoryType.message}
-                      </p>
-                    )}
-                  </div>
+                      error={errors.inventoryType?.message}
+                    />
 
-                  {isTracked && (
-                    <div className="mt-6 p-5 bg-sage-50/80 border-2 border-sage-200 rounded-xl space-y-6">
-                      <div className="flex items-center gap-2">
-                        <Package className="w-5 h-5 text-sage-600" />
-                        <h4 className="font-semibold text-carbon-900">
-                          Configuración de stock
-                        </h4>
-                      </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                          {wasTracked ? "Stock actual" : "Stock Inicial"}
-                          {!wasTracked && <span className="text-carbon-400 font-normal ml-1">*</span>}
-                        </label>
+                    {isTracked && (
+                      <div className="p-5 bg-sage-50/80 border-2 border-sage-200 rounded-xl space-y-6">
+                        <div className="flex items-center gap-2">
+                          <Package className="w-5 h-5 text-sage-600" />
+                          <h4 className="font-semibold text-carbon-900">
+                            Configuración de stock
+                          </h4>
+                        </div>
+                        
                         <Input
+                          label={wasTracked ? "Stock actual" : "Stock Inicial"}
+                          required={!wasTracked}
                           type="number"
                           placeholder={wasTracked ? "Ver stock" : "Ej: 100"}
-                          {...register("stockQuantity", {
-                            valueAsNumber: true,
-                          })}
+                          {...register("stockQuantity", { valueAsNumber: true })}
                           error={errors.stockQuantity?.message}
                           min={0}
                           fullWidth
                           disabled={wasTracked}
                           originalValue={String(originalValues?.stockQuantity ?? "")}
+                          helperText={wasTracked ? "Para modificar el stock actual, usa la sección de 'Gestión de Stock' al final de la página." : undefined}
                         />
-                        {wasTracked && (
-                          <p className="text-xs text-carbon-500 mt-2">
-                            Para modificar el stock actual, usa la sección de
-                            &quot;Gestión de Stock&quot; al final de la página.
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                          Alerta de stock bajo
-                          <span className="text-carbon-400 font-normal ml-2 text-xs">(opcional)</span>
-                        </label>
+
                         <Input
+                          label="Alerta de stock bajo"
+                          optional
                           type="number"
                           placeholder="Ej: 10"
-                          {...register("lowStockAlert", {
-                            valueAsNumber: true,
-                          })}
+                          {...register("lowStockAlert", { valueAsNumber: true })}
                           error={errors.lowStockAlert?.message}
                           min={0}
                           fullWidth
                           originalValue={String(originalValues?.lowStockAlert ?? "")}
                         />
+
+                        <label className="flex items-center gap-3 cursor-pointer">
+                          <input
+                            type="checkbox"
+                            {...register("autoMarkUnavailable")}
+                            className={cn(
+                              "w-5 h-5 rounded border-sage-300 text-sage-600 focus:ring-sage-400",
+                              watchedValues.autoMarkUnavailable !== originalValues?.autoMarkUnavailable &&
+                                "ring-2 ring-sage-500 ring-offset-1"
+                            )}
+                          />
+                          <div>
+                            <span className="text-carbon-800 font-medium">
+                              Marcar no disponible al llegar a 0
+                            </span>
+                          </div>
+                        </label>
                       </div>
-                      <label className="flex items-center gap-3 cursor-pointer">
-                        <input
-                          type="checkbox"
-                          {...register("autoMarkUnavailable")}
-                          className={cn(
-                            "w-5 h-5 rounded border-sage-300 text-sage-600 focus:ring-sage-400",
-                            watchedValues.autoMarkUnavailable !== originalValues?.autoMarkUnavailable &&
-                              "ring-2 ring-sage-500 ring-offset-1"
-                          )}
-                        />
-                        <div>
-                          <span className="text-carbon-800 font-medium">
-                            Marcar no disponible al llegar a 0
-                          </span>
-                        </div>
-                      </label>
-                    </div>
-                  )}
+                    )}
+                  </div>
                 </section>
 
                               <section className="pt-6 border-t border-sage-200">

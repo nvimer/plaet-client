@@ -106,48 +106,36 @@ export function TableCreatePage() {
             {/* Form Fields */}
             <div className="p-6 lg:p-8 space-y-8">
               {/* Table Number */}
-              <div>
-                <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                  Número o Nombre de la Mesa
-                </label>
-                <Input
-                  type="text"
-                  placeholder="Ej: 1, 2, A1, VIP-1, Terraza-3..."
-                  {...register("number")}
-                  error={errors.number?.message}
-                  fullWidth
-                  autoFocus
-                  className="text-lg"
-                />
-                <p className="mt-2 text-sm text-carbon-400">
-                  Identificador único para esta mesa
-                </p>
-              </div>
+              <Input
+                label="Número o Nombre de la Mesa"
+                required
+                type="text"
+                placeholder="Ej: 1, 2, A1, VIP-1, Terraza-3..."
+                {...register("number")}
+                error={errors.number?.message}
+                helperText="Identificador único para esta mesa"
+                fullWidth
+                autoFocus
+                className="text-lg"
+              />
 
               {/* Location */}
-              <div>
-                <label className="block text-sm font-semibold text-carbon-800 mb-3">
-                  Ubicación
-                  <span className="font-normal text-carbon-400 ml-2">
-                    (opcional)
-                  </span>
-                </label>
-                <Input
-                  type="text"
-                  placeholder="Ej: Terraza, Salón principal, Junto a la ventana..."
-                  {...register("location")}
-                  error={errors.location?.message}
-                  fullWidth
-                />
-                <p className="mt-2 text-sm text-carbon-400">
-                  Ayuda al personal a ubicar la mesa rápidamente
-                </p>
-              </div>
+              <Input
+                label="Ubicación"
+                optional
+                type="text"
+                placeholder="Ej: Terraza, Salón principal, Junto a la ventana..."
+                {...register("location")}
+                error={errors.location?.message}
+                helperText="Ayuda al personal a ubicar la mesa rápidamente"
+                fullWidth
+              />
 
               {/* Status Selection */}
               <div>
-                <label className="block text-sm font-semibold text-carbon-800 mb-3">
+                <label className="block text-sm font-semibold text-carbon-800 mb-3 ml-1">
                   Estado Inicial
+                  <span className="text-error-500 ml-1">*</span>
                 </label>
 
                 <Controller

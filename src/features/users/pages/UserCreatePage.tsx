@@ -125,6 +125,7 @@ export function UserCreatePage() {
                 {/* First Name */}
                 <Input
                   label="Nombre"
+                  required
                   type="text"
                   placeholder="Ej: Juan"
                   {...register("firstName")}
@@ -135,6 +136,7 @@ export function UserCreatePage() {
                 {/* Last Name */}
                 <Input
                   label="Apellido"
+                  required
                   type="text"
                   placeholder="Ej: Pérez"
                   {...register("lastName")}
@@ -147,6 +149,7 @@ export function UserCreatePage() {
               <div className="mt-4">
                 <Input
                   label="Email"
+                  required
                   type="email"
                   placeholder="Ej: juan@example.com"
                   {...register("email")}
