@@ -14,6 +14,7 @@ interface FilterPillsProps {
   onChange: (value: string) => void;
   "aria-label"?: string;
   className?: string;
+  wrap?: boolean;
 }
 
 /**
@@ -27,6 +28,7 @@ export function FilterPills({
   onChange,
   "aria-label": ariaLabel,
   className,
+  wrap = true,
 }: FilterPillsProps) {
   return (
     <div className={cn("flex flex-col gap-2.5", className)} role="group" aria-label={ariaLabel ?? label ?? "Opciones de filtrado"}>
@@ -35,7 +37,10 @@ export function FilterPills({
           {label}
         </span>
       )}
-      <div className="flex flex-wrap items-center gap-2 min-w-0">
+      <div className={cn(
+        "flex items-center gap-2 min-w-0",
+        wrap ? "flex-wrap" : "flex-nowrap"
+      )}>
         {options.map((opt) => {
           const isSelected = value === opt.value;
           return (

@@ -224,11 +224,12 @@ export function MenuPage() {
                 />
               </div>
               
-              <div className="flex-1 min-w-0 overflow-x-auto custom-scrollbar-hide">
+              <div className="flex-1 min-w-0 overflow-x-auto custom-scrollbar-hide pb-1">
                 <FilterPills
                   options={categoryOptions} // Show all categories for quick access
                   value={filterCategory}
                   onChange={handleCategoryChange}
+                  wrap={false}
                 />
               </div>
             </div>
