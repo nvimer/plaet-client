@@ -306,20 +306,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       basePrice: 0, isConfigured: false,
     };
     
-    // Find all items in the "Arroces" category to allow them in replacements
-    const riceCategory = categories?.find(c => 
-      c.name.toLowerCase().includes("arroz") || c.name.toLowerCase().includes("arroces")
-    );
-    
-    const riceOptions = riceCategory && menuItems 
-      ? menuItems
-          .filter(item => item.categoryId === riceCategory.id && item.isAvailable)
-          .map(item => ({
-            id: item.id,
-            name: item.name,
-            imageUrl: (item as any).imageUrl
-          }))
-      : (dailyMenuData.riceOptions || []);
+    const riceOptions = dailyMenuData.riceOptions || [];
 
     return {
       soupOptions: dailyMenuData.soupOptions || [],
@@ -329,11 +316,11 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       drinkOptions: dailyMenuData.drinkOptions || [],
       dessertOptions: dailyMenuData.dessertOptions || [],
       riceOptions: riceOptions,
-      riceOption: riceOptions[0] || dailyMenuData.riceOptions?.[0] || null,
+      riceOption: riceOptions[0] || null,
       basePrice: Number(dailyMenuData.basePrice) || 3000,
       isConfigured: true,
     };
-  }, [dailyMenuData, categories, menuItems]);
+  }, [dailyMenuData]);
 
   const dailyMenuPrices = useMemo(() => ({
     basePrice: dailyMenuData ? (Number(dailyMenuData.basePrice) || 3000) : 0,
