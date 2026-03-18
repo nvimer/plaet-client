@@ -410,6 +410,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       id: Date.now().toString(),
       protein: selectedProtein,
       lunch: lunchSelection,
+      lunchPrice: lunchPrice,
       looseItems: currentLooseItems,
       total: currentOrderTotal,
       notes: buildOrderNotes(),
@@ -492,7 +493,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
         items.push({
           menuItemId: order.protein.id,
           quantity: 1,
-          priceAtOrder: order.protein.price,
+          priceAtOrder: order.lunchPrice,
           notes: `Almuerzo: ${order.protein.name}${order.notes ? ` - ${order.notes}` : ""}`,
         });
       }

@@ -59,6 +59,7 @@ export interface TableOrder {
   id: string;
   protein: ProteinOption | null;
   lunch: LunchSelection | null;
+  lunchPrice: number;
   looseItems: LooseItem[];
   total: number;
   notes?: string;
