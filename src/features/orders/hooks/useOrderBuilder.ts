@@ -11,7 +11,7 @@ import axios from "axios";
 import { getLocalDateString } from "@/utils/dateUtils";
 import { useCreateOrder, useBatchCreateOrders } from "./useCreateOrder";
 import { useTables } from "@/features/tables";
-import { useItems } from "@/features/menu";
+import { useItems, useCategories } from "@/features/menu";
 import { useDailyMenuByDate } from "@/features/daily-menu/hooks";
 import { OrderItemStatus, OrderType, OrderStatus } from "@/types";
 import { logger } from "@/utils";
@@ -197,6 +197,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   // 4. Data Hooks
   const { data: tablesData, isLoading: tablesLoading } = useTables();
   const { data: menuItems, isLoading: itemsLoading } = useItems();
+  const { data: categories } = useCategories();
   const dailyMenu = useDailyMenuByDate(backdatedDate || getLocalDateString(new Date()));
   
   const dailyMenuData = dailyMenu.data;
@@ -250,7 +251,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     ].filter(Boolean);
 
     // Categories to prioritize
-    const priorityKeywords = ["huevo", "gaseosa", "jugo", "agua", "pony"];
+    const priorityKeywords = ["huevo", "gaseosa", "jugo", "agua", "pony", "arroz"];
 
     const availableItems = menuItems.filter(item => 
       item.isAvailable && !lunchCategoryIds.includes(item.categoryId)
@@ -301,10 +302,25 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const dailyMenuDisplay = useMemo(() => {
     if (!dailyMenuData) return {
       soupOptions: [], principleOptions: [], saladOptions: [], extraOptions: [],
-      drinkOptions: [], dessertOptions: [], riceOption: null,
+      drinkOptions: [], dessertOptions: [], riceOptions: [], riceOption: null,
       basePrice: 0, isConfigured: false,
     };
     
+    // Find all items in the "Arroces" category to allow them in replacements
+    const riceCategory = categories?.find(c => 
+      c.name.toLowerCase().includes("arroz") || c.name.toLowerCase().includes("arroces")
+    );
+    
+    const riceOptions = riceCategory && menuItems 
+      ? menuItems
+          .filter(item => item.categoryId === riceCategory.id && item.isAvailable)
+          .map(item => ({
+            id: item.id,
+            name: item.name,
+            imageUrl: (item as any).imageUrl
+          }))
+      : (dailyMenuData.riceOptions || []);
+
     return {
       soupOptions: dailyMenuData.soupOptions || [],
       principleOptions: dailyMenuData.principleOptions || [],
@@ -312,12 +328,12 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       extraOptions: dailyMenuData.extraOptions || [],
       drinkOptions: dailyMenuData.drinkOptions || [],
       dessertOptions: dailyMenuData.dessertOptions || [],
-      riceOptions: dailyMenuData.riceOptions || [],
-      riceOption: dailyMenuData.riceOptions?.[0] || null,
+      riceOptions: riceOptions,
+      riceOption: riceOptions[0] || dailyMenuData.riceOptions?.[0] || null,
       basePrice: Number(dailyMenuData.basePrice) || 3000,
       isConfigured: true,
     };
-  }, [dailyMenuData]);
+  }, [dailyMenuData, categories, menuItems]);
 
   const dailyMenuPrices = useMemo(() => ({
     basePrice: dailyMenuData ? (Number(dailyMenuData.basePrice) || 3000) : 0,
