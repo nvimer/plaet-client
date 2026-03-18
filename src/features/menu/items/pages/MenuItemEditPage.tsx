@@ -325,13 +325,20 @@ export function MenuItemEditPage() {
                     Precio e imagen
                   </h3>
                   <div className="space-y-6">
-                    <PriceInput
-                      label="Precio de venta"
-                      required
-                      placeholder="Ej: 15000"
-                      {...register("price")}
-                      error={errors.price?.message}
-                      fullWidth
+                    <Controller
+                      name="price"
+                      control={control}
+                      render={({ field }) => (
+                        <PriceInput
+                          label="Precio de venta"
+                          required
+                          placeholder="Ej: 15000"
+                          value={field.value}
+                          onChange={field.onChange}
+                          error={errors.price?.message}
+                          fullWidth
+                        />
+                      )}
                     />
                     
                     <Controller
