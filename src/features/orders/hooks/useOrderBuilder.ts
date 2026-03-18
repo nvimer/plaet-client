@@ -13,7 +13,7 @@ import { useCreateOrder, useBatchCreateOrders } from "./useCreateOrder";
 import { useTables } from "@/features/tables";
 import { useItems } from "@/features/menu";
 import { useDailyMenuByDate } from "@/features/daily-menu/hooks";
-import { OrderItemStatus, OrderType } from "@/types";
+import { OrderItemStatus, OrderType, OrderStatus } from "@/types";
 import { logger } from "@/utils";
 import type { DailyMenuResponse } from "@/services/dailyMenuApi";
 import type {

@@ -500,6 +500,7 @@ export function OrderCreatePage() {
             ordersCount={tableOrders.length}
             onAddManualItem={formProps.handleAddLooseItem}
             packagingFee={orderBuilder.packagingFee}
+            isHistorical={isHistoricalMode}
           />
         </div>
       </SidebarLayout>
