@@ -87,12 +87,14 @@ export function MenuItemEditPage() {
     if (!!image) return true;
     if (isRHFDirty) return true;
 
+    const normalizePrice = (val: any) => String(val || "").split('.')[0].replace(/\D/g, "");
+
     // Check if any specific field changed compared to the loaded item
     return (
       watchedValues.name !== item.name ||
       (watchedValues.description || "") !== (item.description || "") ||
       watchedValues.categoryId !== item.categoryId ||
-      String(watchedValues.price) !== String(item.price) ||
+      normalizePrice(watchedValues.price) !== normalizePrice(item.price) ||
       watchedValues.isAvailable !== item.isAvailable ||
       watchedValues.inventoryType !== item.inventoryType ||
       watchedValues.lowStockAlert !== item.lowStockAlert ||
