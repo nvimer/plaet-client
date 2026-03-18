@@ -44,21 +44,21 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {label && (
           <label
             htmlFor={id}
-            className="block text-sm font-semibold text-carbon-800 mb-2"
+            className="block text-sm font-semibold text-carbon-800 mb-2 ml-1"
           >
             {label}
             {required && (
-              <span className="text-carbon-400 font-normal ml-1">*</span>
+              <span className="text-error-500 ml-1">*</span>
             )}
             {optional && (
-              <span className="text-carbon-400 font-normal ml-2 text-xs">
+              <span className="text-carbon-400 font-normal ml-2 text-[10px] uppercase tracking-wider">
                 (opcional)
               </span>
             )}
           </label>
         )}
 
-        {/* Input field - More visible */}
+        {/* Input field - Normalized */}
         <input
           ref={ref}
           id={id}
@@ -66,13 +66,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
           defaultValue={defaultValue}
           className={cn(
             // Base
-            "w-full px-4 py-3 text-base",
+            "w-full px-4 py-3 text-base font-medium",
             // Visible background and border
-            "bg-sage-50/80 border-2 border-sage-300",
+            "bg-sage-50/30 border-2 border-sage-200",
             // Rounded
             "rounded-xl",
             // Placeholder
-            "placeholder:text-carbon-400",
+            "placeholder:text-carbon-300",
             // Focus state - very visible
             "focus:outline-none focus:bg-white focus:border-sage-500 focus:ring-4 focus:ring-sage-500/10",
             // Transition
@@ -80,7 +80,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             // Disabled
             "disabled:bg-sage-100 disabled:text-carbon-400 disabled:cursor-not-allowed",
             // Error state
-            error && "border-error-400 bg-error-50/50 focus:border-error-500 focus:ring-error-500/10",
+            error && "border-error-300 bg-error-50/30 focus:border-error-500 focus:ring-error-500/10",
             // Modified state (dirty tracking)
             isModified && "border-sage-500 bg-sage-100/50",
             className

@@ -67,9 +67,9 @@ export function ImageUpload({
   };
 
   return (
-    <div className={cn("space-y-3", className)}>
+    <div className={cn("space-y-2", className)}>
       {label && (
-        <label className="block text-sm font-bold text-carbon-800 ml-1">
+        <label className="block text-sm font-semibold text-carbon-800 mb-2 ml-1">
           {label}
         </label>
       )}

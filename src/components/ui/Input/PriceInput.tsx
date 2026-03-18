@@ -8,6 +8,7 @@ interface PriceInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElemen
   helperText?: string;
   fullWidth?: boolean;
   required?: boolean;
+  optional?: boolean;
   currency?: string;
   value?: string | number;
   onChange?: (value: string) => void;
@@ -24,7 +25,7 @@ interface PriceInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElemen
  * - Compact and professional design
  */
 export const PriceInput = forwardRef<HTMLInputElement, PriceInputProps>(
-  ({ label, error, helperText, fullWidth, required, currency = "COP", className, id, value, onChange, onValueChange, ...props }, ref) => {
+  ({ label, error, helperText, fullWidth, required, optional, currency = "COP", className, id, value, onChange, onValueChange, ...props }, ref) => {
     const [displayValue, setDisplayValue] = useState("");
 
     // Sync internal display value with external value
@@ -76,9 +77,14 @@ export const PriceInput = forwardRef<HTMLInputElement, PriceInputProps>(
     return (
       <div className={cn("space-y-2", fullWidth ? "w-full" : "")}>
         {label && (
-          <label htmlFor={id} className="block text-sm font-semibold text-carbon-800">
+          <label htmlFor={id} className="block text-sm font-semibold text-carbon-800 ml-1">
             {label}
             {required && <span className="text-error-500 ml-1">*</span>}
+            {optional && (
+              <span className="text-carbon-400 font-normal ml-2 text-[10px] uppercase tracking-wider">
+                (opcional)
+              </span>
+            )}
           </label>
         )}
         
@@ -100,7 +106,7 @@ export const PriceInput = forwardRef<HTMLInputElement, PriceInputProps>(
               "w-full pl-20 pr-10 py-3 text-lg font-semibold tracking-tight",
               "bg-sage-50/30 border-2 border-sage-200 rounded-xl transition-all duration-200",
               "placeholder:text-carbon-300 text-carbon-900",
-              "focus:outline-none focus:bg-white focus:border-sage-500 focus:ring-4 focus:ring-sage-500/5",
+              "focus:outline-none focus:bg-white focus:border-sage-500 focus:ring-4 focus:ring-sage-500/10",
               error ? "border-error-300 bg-error-50/10" : "hover:border-sage-300",
               className
             )}
