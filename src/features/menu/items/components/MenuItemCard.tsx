@@ -48,7 +48,7 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete, highlighted
           highlighted && "ring-4 ring-sage-400 ring-offset-2 border-sage-400 animate-pulse"
         )}
       >
-        {/* ÁREA DE IMAGEN - Estilo Limpio/Kiosko */}
+        {/* IMAGE AREA - Clean / Kiosk Style */}
         <div className="relative w-full pt-5 px-5 overflow-hidden">
           <div className="relative aspect-square w-full rounded-2xl bg-sage-50/50 overflow-hidden group-hover:bg-sage-50 transition-colors duration-300">
             {item.imageUrl ? (
@@ -63,106 +63,111 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete, highlighted
               </div>
             )}
 
+            {/* Status Indicators */}
             <div className="absolute top-3 left-3 flex gap-2 items-center">
               <div
+                title={item.isAvailable ? "Disponible" : "No disponible"}
                 className={cn(
-                  "w-3.5 h-3.5 rounded-full shadow-sm border-2 border-white",
+                  "w-3 h-3 rounded-full shadow-sm border-2 border-white",
                   statusVariant === "emerald" && "bg-success-500",
                   statusVariant === "amber" && "bg-warning-500",
                   statusVariant === "rose" && "bg-error-500"
                 )}
               />
               {item.isExtra && (
-                <div className="p-1 rounded-full bg-warning-400 text-white shadow-sm">
-                  <Star className="w-2.5 h-2.5 fill-current" />
+                <div className="p-1 rounded-full bg-warning-400 text-white shadow-sm" title="Extra">
+                  <Star className="w-2 h-2 fill-current" />
                 </div>
               )}
             </div>
+
+            {/* Compact Stock Badge */}
+            {item.inventoryType === "TRACKED" && (
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setIsStockModalOpen(true);
+                }}
+                className={cn(
+                  "absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-lg border shadow-soft-sm transition-all hover:scale-105 active:scale-95",
+                  isOutOfStock ? "bg-error-50 border-error-200 text-error-700" :
+                  isLowStock ? "bg-warning-50 border-warning-200 text-warning-700" :
+                  "bg-white/90 backdrop-blur-md border-sage-200 text-sage-700"
+                )}
+              >
+                <Package className="w-3 h-3 opacity-70" />
+                <span className="text-[10px] font-black tracking-tight">
+                  {item.stockQuantity} <span className="font-medium">ud</span>
+                </span>
+              </button>
+            )}
           </div>
         </div>
 
-        {/* CONTENIDO - Enfoque en Nombre y Precio */}
+        {/* CONTENT - Focus on Name and Price */}
         <div className="flex flex-col flex-1 p-4 sm:p-5 pt-2">
-          <div className="text-center mb-3">
+          <div className="text-center mb-4">
             {categoryName && (
               <span className="text-[8px] sm:text-[9px] font-black text-carbon-300 uppercase tracking-[0.2em] block mb-1">
                 {categoryName}
               </span>
             )}
             
-            <div className="flex flex-col gap-1 min-h-[4rem] justify-center">
+            <div className="flex flex-col gap-1 min-h-[3.5rem] justify-center">
               <h3 className="text-sm sm:text-base font-bold text-carbon-900 leading-tight line-clamp-2">
                 {item.name}
               </h3>
               {item.description && (
-                <p className="text-[10px] sm:text-xs text-carbon-400 italic line-clamp-2 leading-tight">
+                <p className="text-[10px] sm:text-xs text-carbon-400 italic line-clamp-2 leading-tight px-2">
                   "{item.description}"
                 </p>
               )}
             </div>
 
-            <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-carbon-900 text-white shadow-sm mt-2">
+            <div className="inline-flex items-center justify-center px-3 py-1 rounded-full bg-carbon-900 text-white shadow-sm mt-3">
               <span className="text-xs sm:text-sm font-black tracking-tight leading-none">
                 {formatCurrency(item.price)}
               </span>
             </div>
           </div>
 
-          {/* STOCK & ACCIONES - Compactos pero Táctiles */}
-          <div className="mt-auto space-y-3">
+          {/* ACTIONS */}
+          <div className="mt-auto flex items-center gap-2 pt-2 border-t border-sage-50">
             {item.inventoryType === "TRACKED" && (
-              <button 
+              <Button
+                variant="primary"
                 onClick={() => setIsStockModalOpen(true)}
-                className={cn(
-                  "w-full flex items-center justify-between px-4 py-2 rounded-xl border-2 transition-all active:scale-95",
-                  isOutOfStock ? "bg-error-50 border-error-100 text-error-700" :
-                  isLowStock ? "bg-warning-50 border-warning-100 text-warning-700" :
-                  "bg-sage-50 border-sage-100 text-sage-700 shadow-sm"
-                )}
+                className="flex-1 rounded-xl bg-sage-600 h-10 sm:h-11 px-0 shadow-sm transition-all hover:bg-sage-700"
+                title="Ajustar Stock"
               >
-                <div className="flex items-center gap-2">
-                  <Package className="w-4 h-4 text-sage-500" />
-                  <span className="text-[10px] sm:text-xs font-medium tracking-wide">Existencias</span>
-                </div>
-                <span className="text-xs sm:text-base font-black">{item.stockQuantity} ud.</span>
-              </button>
+                <Plus className="w-5 h-5" />
+              </Button>
             )}
-
-            <div className="flex items-center gap-2">
-              {item.inventoryType === "TRACKED" && (
-                <Button
-                  variant="primary"
-                  onClick={() => setIsStockModalOpen(true)}
-                  className="flex-1 rounded-xl bg-sage-600 h-11 sm:h-12 px-0 shadow-sm"
-                >
-                  <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
-                </Button>
+            
+            <Button
+              variant="ghost"
+              onClick={() => onEdit(item.id)}
+              className={cn(
+                "rounded-xl bg-carbon-50 h-10 sm:h-11 text-carbon-600 border border-carbon-100 transition-all hover:bg-white hover:border-sage-300 hover:text-sage-600 shrink-0",
+                item.inventoryType === "TRACKED" ? "w-10 sm:w-11" : "flex-1"
               )}
-              
-              <Button
-                variant="ghost"
-                onClick={() => onEdit(item.id)}
-                className={cn(
-                  "rounded-xl bg-carbon-50 h-11 sm:h-12 text-carbon-600 border border-carbon-100 transition-all hover:bg-sage-100 shrink-0",
-                  item.inventoryType === "TRACKED" ? "w-11 sm:w-12" : "flex-1"
-                )}
-                title="Editar"
-              >
-                <Edit2 className="w-5 h-5 sm:w-6 sm:h-6" />
-              </Button>
+              title="Editar"
+            >
+              <Edit2 className="w-4 h-4" />
+            </Button>
 
-              <Button
-                variant="ghost"
-                onClick={() => setIsDeleteDialogOpen(true)}
-                className={cn(
-                  "rounded-xl bg-error-50 h-11 sm:h-12 text-error-600 border border-error-100 transition-all hover:bg-error-100 shrink-0",
-                  item.inventoryType === "TRACKED" ? "w-11 sm:w-12" : "flex-1"
-                )}
-                title="Eliminar"
-              >
-                <Trash2 className="w-5 h-5 sm:w-6 sm:h-6" />
-              </Button>
-            </div>
+            <Button
+              variant="ghost"
+              onClick={() => setIsDeleteDialogOpen(true)}
+              className={cn(
+                "rounded-xl bg-error-50 h-10 sm:h-11 text-error-600 border border-error-100 transition-all hover:bg-error-600 hover:text-white shrink-0",
+                item.inventoryType === "TRACKED" ? "w-10 sm:w-11" : "flex-1"
+              )}
+              title="Eliminar"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
           </div>
         </div>
       </article>
