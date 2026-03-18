@@ -19,6 +19,16 @@ import {
   Search,
   User,
   X,
+  Phone,
+  MapPin,
+  Box,
+  Soup,
+  Utensils,
+  Salad,
+  CupSoda,
+  IceCream,
+  CircleCheck,
+  PackageCheck,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { OrderType } from "@/types";
@@ -62,6 +72,7 @@ interface OrderFormProps {
     extraOptions: MenuOption[];
     drinkOptions: MenuOption[];
     dessertOptions?: MenuOption[];
+    riceOptions: MenuOption[];
     riceOption: MenuOption | null;
     basePrice: number;
     isConfigured: boolean;
@@ -422,7 +433,7 @@ export function OrderForm({
                   ? validationErrors.find((e) => e.field === "soup")?.message
                   : undefined
               }
-              icon="🍲"
+              icon={<Soup className="w-5 h-5" />}
               color="amber"
             />
           )}
@@ -441,7 +452,7 @@ export function OrderForm({
                       ?.message
                   : undefined
               }
-              icon="🥔"
+              icon={<Utensils className="w-5 h-5" />}
               color="emerald"
             />
           )}
@@ -459,7 +470,7 @@ export function OrderForm({
                   ? validationErrors.find((e) => e.field === "salad")?.message
                   : undefined
               }
-              icon="🥗"
+              icon={<Salad className="w-5 h-5" />}
               color="sage"
             />
           )}
@@ -477,7 +488,7 @@ export function OrderForm({
                   ? validationErrors.find((e) => e.field === "drink")?.message
                   : undefined
               }
-              icon="🥤"
+              icon={<CupSoda className="w-5 h-5" />}
               color="blue"
             />
           )}
@@ -495,7 +506,7 @@ export function OrderForm({
                   ? validationErrors.find((e) => e.field === "extra")?.message
                   : undefined
               }
-              icon="🍌"
+              icon={<IceCream className="w-5 h-5" />}
               color="purple"
               showRiceInfo={true}
               riceName={dailyMenuDisplay.riceOption?.name}
@@ -511,7 +522,7 @@ export function OrderForm({
               <div className="bg-gradient-to-br from-sage-50 via-white to-warning-50 rounded-2xl border border-sage-200 overflow-hidden">
                 <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-4 py-3">
                   <h4 className="text-white font-semibold text-sm flex items-center gap-2">
-                    <span className="text-lg">🍽️</span>
+                    <UtensilsCrossed className="w-4 h-4" />
                     Menú del Día
                   </h4>
                 </div>
@@ -519,8 +530,8 @@ export function OrderForm({
                   {/* Soup */}
                   {dailyMenuDisplay.soupOptions.length === 1 && (
                     <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-warning-100 shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-warning-100 flex items-center justify-center text-xl">
-                        🍲
+                      <div className="w-10 h-10 rounded-xl bg-warning-100 flex items-center justify-center text-warning-600">
+                        <Soup className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
                         <p className="text-xs text-warning-600 font-medium tracking-wide">
@@ -531,19 +542,7 @@ export function OrderForm({
                         </p>
                       </div>
                       <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
-                        <svg
-                          className="w-4 h-4 text-success-600"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
+                        <CircleCheck className="w-4 h-4 text-success-600" />
                       </div>
                     </div>
                   )}
@@ -551,8 +550,8 @@ export function OrderForm({
                   {/* Principle */}
                   {dailyMenuDisplay.principleOptions.length === 1 && (
                     <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-success-100 shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-success-100 flex items-center justify-center text-xl">
-                        🥔
+                      <div className="w-10 h-10 rounded-xl bg-success-100 flex items-center justify-center text-success-600">
+                        <Utensils className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
                         <p className="text-xs text-success-600 font-medium tracking-wide">
@@ -563,19 +562,7 @@ export function OrderForm({
                         </p>
                       </div>
                       <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
-                        <svg
-                          className="w-4 h-4 text-success-600"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
+                        <CircleCheck className="w-4 h-4 text-success-600" />
                       </div>
                     </div>
                   )}
@@ -583,8 +570,8 @@ export function OrderForm({
                   {/* Salad */}
                   {dailyMenuDisplay.saladOptions.length === 1 && (
                     <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-sage-100 shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-sage-100 flex items-center justify-center text-xl">
-                        🥗
+                      <div className="w-10 h-10 rounded-xl bg-sage-100 flex items-center justify-center text-sage-600">
+                        <Salad className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
                         <p className="text-xs text-sage-600 font-medium tracking-wide">
@@ -595,19 +582,7 @@ export function OrderForm({
                         </p>
                       </div>
                       <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
-                        <svg
-                          className="w-4 h-4 text-success-600"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
+                        <CircleCheck className="w-4 h-4 text-success-600" />
                       </div>
                     </div>
                   )}
@@ -615,8 +590,8 @@ export function OrderForm({
                   {/* Drink */}
                   {dailyMenuDisplay.drinkOptions.length === 1 && (
                     <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-blue-100 shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-xl">
-                        🥤
+                      <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
+                        <CupSoda className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
                         <p className="text-xs text-blue-600 font-medium tracking-wide">
@@ -627,19 +602,7 @@ export function OrderForm({
                         </p>
                       </div>
                       <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
-                        <svg
-                          className="w-4 h-4 text-success-600"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
+                        <CircleCheck className="w-4 h-4 text-success-600" />
                       </div>
                     </div>
                   )}
@@ -647,8 +610,8 @@ export function OrderForm({
                   {/* Extra */}
                   {dailyMenuDisplay.extraOptions.length === 1 && (
                     <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-info-100 shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-info-100 flex items-center justify-center text-xl">
-                        🍌
+                      <div className="w-10 h-10 rounded-xl bg-info-100 flex items-center justify-center text-info-600">
+                        <IceCream className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
                         <p className="text-xs text-info-600 font-medium tracking-wide">
@@ -659,19 +622,7 @@ export function OrderForm({
                         </p>
                       </div>
                       <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
-                        <svg
-                          className="w-4 h-4 text-success-600"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
+                        <CircleCheck className="w-4 h-4 text-success-600" />
                       </div>
                     </div>
                   )}
@@ -679,8 +630,8 @@ export function OrderForm({
                   {/* Rice */}
                   {dailyMenuDisplay.riceOption && (
                     <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-warning-100 shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-warning-100 flex items-center justify-center text-xl">
-                        🍚
+                      <div className="w-10 h-10 rounded-xl bg-warning-100 flex items-center justify-center text-warning-600">
+                        <PackageCheck className="w-5 h-5" />
                       </div>
                       <div className="flex-1">
                         <p className="text-xs text-warning-600 font-medium tracking-wide">
@@ -691,19 +642,7 @@ export function OrderForm({
                         </p>
                       </div>
                       <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
-                        <svg
-                          className="w-4 h-4 text-success-600"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
+                        <CircleCheck className="w-4 h-4 text-success-600" />
                       </div>
                     </div>
                   )}
@@ -787,7 +726,9 @@ export function OrderForm({
                     salad: dailyMenuDisplay.saladOptions,
                     drink: dailyMenuDisplay.drinkOptions,
                     extra: dailyMenuDisplay.extraOptions,
-                    rice: dailyMenuDisplay.riceOption ? [dailyMenuDisplay.riceOption] : [],
+                    rice: dailyMenuDisplay.riceOptions && dailyMenuDisplay.riceOptions.length > 0 
+                      ? dailyMenuDisplay.riceOptions 
+                      : (dailyMenuDisplay.riceOption ? [dailyMenuDisplay.riceOption] : []),
                   }}
                   replacements={replacements}
       

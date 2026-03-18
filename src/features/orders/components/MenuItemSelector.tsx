@@ -1,6 +1,6 @@
 import { Card } from "@/components";
 import { cn } from "@/utils/cn";
-import { AlertCircle, Check, ImageIcon } from "lucide-react";
+import { AlertCircle, Check, ImageIcon, PackageCheck } from "lucide-react";
 import type { MenuOption } from "../types/orderBuilder";
 import { motion } from "framer-motion";
 
@@ -147,7 +147,7 @@ export function MenuItemSelector({
 
       {showRiceInfo && riceName && (
         <div className="p-3 bg-warning-50/50 rounded-xl border border-warning-100 flex items-center gap-2">
-          <span className="text-lg">🍚</span>
+          <PackageCheck className="w-4 h-4 text-warning-600" />
           <p className="text-[10px] font-bold text-warning-800 tracking-wide">
             Incluye: <span className="text-carbon-900">{riceName}</span>
           </p>

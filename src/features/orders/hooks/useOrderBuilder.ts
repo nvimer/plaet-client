@@ -245,14 +245,34 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       dailyMenuData?.principleCategory?.id,
       dailyMenuData?.proteinCategory?.id,
       dailyMenuData?.saladCategory?.id,
-      dailyMenuData?.drinkCategory?.id,
-      dailyMenuData?.extraCategory?.id,
+      // We explicitly allow Drink and Extra categories in rapid additions
       dailyMenuData?.dessertCategory?.id,
     ].filter(Boolean);
 
-    return menuItems
-      .filter(item => item.isAvailable && !lunchCategoryIds.includes(item.categoryId))
-      .slice(0, 8)
+    // Categories to prioritize
+    const priorityKeywords = ["huevo", "gaseosa", "jugo", "agua", "pony"];
+
+    const availableItems = menuItems.filter(item => 
+      item.isAvailable && !lunchCategoryIds.includes(item.categoryId)
+    );
+
+    // Sort: Priority items first, then by category importance
+    return availableItems
+      .sort((a, b) => {
+        // 1. Keywords priority (case insensitive)
+        const aName = a.name.toLowerCase();
+        const bName = b.name.toLowerCase();
+        
+        const aHasPriority = priorityKeywords.some(key => aName.includes(key));
+        const bHasPriority = priorityKeywords.some(key => bName.includes(key));
+        
+        if (aHasPriority && !bHasPriority) return -1;
+        if (!aHasPriority && bHasPriority) return 1;
+
+        // 2. Fallback to name sorting
+        return a.name.localeCompare(b.name);
+      })
+      .slice(0, 15) // Show more items for POS efficiency
       .map(item => ({
         id: item.id,
         name: item.name,
@@ -292,6 +312,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       extraOptions: dailyMenuData.extraOptions || [],
       drinkOptions: dailyMenuData.drinkOptions || [],
       dessertOptions: dailyMenuData.dessertOptions || [],
+      riceOptions: dailyMenuData.riceOptions || [],
       riceOption: dailyMenuData.riceOptions?.[0] || null,
       basePrice: Number(dailyMenuData.basePrice) || 3000,
       isConfigured: true,
