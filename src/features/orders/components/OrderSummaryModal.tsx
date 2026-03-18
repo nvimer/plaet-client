@@ -229,33 +229,33 @@ export function OrderSummaryModal({
               Cancelar
             </Button>
             
-            {isHistorical && (
+            {isHistorical ? (
               <Button
-                variant="secondary"
+                variant="primary"
                 size="lg"
                 fullWidth
                 onClick={() => onConfirm(true)}
                 disabled={isPending}
                 isLoading={isPending}
-                className="rounded-2xl h-14 sm:h-16 font-black tracking-widest uppercase text-[10px] shadow-soft-md bg-sage-100 hover:bg-sage-200 text-sage-800"
+                className="rounded-2xl h-14 sm:h-16 bg-warning-500 hover:bg-warning-600 text-carbon-900 font-bold shadow-xl shadow-warning-200"
               >
-                <FastForward className="w-4 h-4 mr-2" />
+                <FastForward className="w-5 h-5 mr-2" />
                 Ingreso Rápido
               </Button>
+            ) : (
+              <Button
+                variant="primary"
+                size="lg"
+                fullWidth
+                onClick={() => onConfirm(false)}
+                disabled={isPending}
+                isLoading={isPending}
+                className="rounded-2xl h-14 sm:h-16 bg-carbon-900 hover:bg-carbon-800 text-white font-semibold shadow-xl shadow-carbon-200"
+              >
+                <Check className="w-5 h-5 mr-2 stroke-[3px]" />
+                Confirmar Orden
+              </Button>
             )}
-
-            <Button
-              variant="primary"
-              size="lg"
-              fullWidth
-              onClick={() => onConfirm(false)}
-              disabled={isPending}
-              isLoading={isPending}
-              className="rounded-2xl h-14 sm:h-16 bg-carbon-900 hover:bg-carbon-800 text-white font-semibold shadow-xl shadow-carbon-200"
-            >
-              <Check className="w-5 h-5 mr-2 stroke-[3px]" />
-              Confirmar Orden
-            </Button>
           </div>
         </div>
                 </motion.div>
