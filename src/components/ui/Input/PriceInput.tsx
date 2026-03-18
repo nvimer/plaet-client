@@ -15,14 +15,13 @@ interface PriceInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElemen
 }
 
 /**
- * PriceInput Component - Premium Tactile Version
+ * PriceInput Component - Refined Version
  * 
- * High-end specialized input for monetary values.
+ * Elegant specialized input for monetary values.
  * Features:
  * - Real-time thousands formatting (e.g. 15.000)
- * - Quick action buttons for common increments
- * - Tactile design for POS/Kiosk environments
- * - Clear numeric focus
+ * - Subtle quick action buttons
+ * - Compact and professional design
  */
 export const PriceInput = forwardRef<HTMLInputElement, PriceInputProps>(
   ({ label, error, helperText, fullWidth, required, currency = "COP", className, id, value, onChange, onValueChange, ...props }, ref) => {
@@ -44,11 +43,13 @@ export const PriceInput = forwardRef<HTMLInputElement, PriceInputProps>(
       const rawValue = e.target.value.replace(/\D/g, "");
       setDisplayValue(formatNumber(rawValue));
       if (onChange) {
-        // Create a synthetic event or just call with the string if using custom controller
-        // For react-hook-form, we usually need the event
+        // Create a synthetic event for RHF compatibility
+        const originalValue = e.target.value;
         e.target.value = rawValue;
         // @ts-ignore
         onChange(e);
+        // Restore for local display if needed (though we use state)
+        e.target.value = originalValue;
       }
       if (onValueChange) onValueChange(rawValue);
     };
@@ -60,7 +61,6 @@ export const PriceInput = forwardRef<HTMLInputElement, PriceInputProps>(
       
       if (onValueChange) onValueChange(strVal);
       
-      // For RHF compatibility
       if (onChange) {
         const event = {
           target: { value: strVal, name: props.name },
@@ -74,19 +74,19 @@ export const PriceInput = forwardRef<HTMLInputElement, PriceInputProps>(
     const presets = [1000, 5000, 10000];
 
     return (
-      <div className={cn("space-y-3", fullWidth ? "w-full" : "")}>
+      <div className={cn("space-y-2", fullWidth ? "w-full" : "")}>
         {label && (
-          <label htmlFor={id} className="block text-sm font-bold text-carbon-800 ml-1">
+          <label htmlFor={id} className="block text-sm font-semibold text-carbon-800">
             {label}
             {required && <span className="text-error-500 ml-1">*</span>}
           </label>
         )}
         
         <div className="relative group">
-          {/* Prefix */}
-          <div className="absolute left-5 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none z-10 transition-colors group-focus-within:text-sage-600 text-carbon-400">
-            <DollarSign className="w-5 h-5 stroke-[2.5px]" />
-            <span className="text-xs font-black tracking-widest border-r border-carbon-200 pr-3 mr-1">{currency}</span>
+          {/* Prefix - More compact */}
+          <div className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center gap-1.5 pointer-events-none z-10 transition-colors group-focus-within:text-sage-600 text-carbon-400">
+            <DollarSign className="w-4 h-4" />
+            <span className="text-[10px] font-bold tracking-wider border-r border-carbon-200 pr-2 mr-0.5">{currency}</span>
           </div>
           
           <input
@@ -97,11 +97,11 @@ export const PriceInput = forwardRef<HTMLInputElement, PriceInputProps>(
             value={displayValue}
             onChange={handleInputChange}
             className={cn(
-              "w-full pl-24 pr-12 py-5 text-2xl font-black tracking-tight",
-              "bg-white border-3 border-sage-100 rounded-3xl transition-all duration-300 shadow-soft-sm",
-              "placeholder:text-carbon-200 text-carbon-900",
-              "focus:outline-none focus:border-sage-500 focus:ring-8 focus:ring-sage-500/5 focus:shadow-soft-lg",
-              error ? "border-error-300 bg-error-50/10" : "hover:border-sage-300 hover:shadow-soft-md",
+              "w-full pl-20 pr-10 py-3 text-lg font-semibold tracking-tight",
+              "bg-sage-50/30 border-2 border-sage-200 rounded-xl transition-all duration-200",
+              "placeholder:text-carbon-300 text-carbon-900",
+              "focus:outline-none focus:bg-white focus:border-sage-500 focus:ring-4 focus:ring-sage-500/5",
+              error ? "border-error-300 bg-error-50/10" : "hover:border-sage-300",
               className
             )}
             {...props}
@@ -112,45 +112,45 @@ export const PriceInput = forwardRef<HTMLInputElement, PriceInputProps>(
             <button
               type="button"
               onClick={() => adjustPrice(-Infinity)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 p-2 rounded-xl text-carbon-300 hover:text-error-500 hover:bg-error-50 transition-all"
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-1.5 rounded-lg text-carbon-300 hover:text-error-500 hover:bg-error-50 transition-all"
+              title="Limpiar"
             >
-              <RotateCcw className="w-5 h-5" />
+              <RotateCcw className="w-4 h-4" />
             </button>
           )}
         </div>
 
-        {/* Quick Presets - Tactile UI */}
-        <div className="flex flex-wrap gap-2 pt-1">
+        {/* Quick Presets - More refined and compact */}
+        <div className="flex items-center gap-1.5">
           {presets.map((amount) => (
             <button
               key={amount}
               type="button"
               onClick={() => adjustPrice(amount)}
-              className="flex-1 min-w-[80px] flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-2xl bg-sage-50 border border-sage-200 text-sage-700 text-xs font-black hover:bg-sage-600 hover:text-white hover:border-sage-600 hover:shadow-soft-md active:scale-95 transition-all"
+              className="px-2.5 py-1.5 rounded-lg bg-white border border-sage-200 text-sage-700 text-[10px] font-bold hover:bg-sage-600 hover:text-white hover:border-sage-600 transition-all active:scale-95"
             >
-              <Plus className="w-3 h-3" />
-              {amount.toLocaleString()}
+              +{amount.toLocaleString()}
             </button>
           ))}
+          <div className="w-px h-4 bg-carbon-200 mx-0.5" />
           <button
             type="button"
             onClick={() => adjustPrice(-1000)}
-            className="px-4 flex items-center justify-center rounded-2xl bg-carbon-50 border border-carbon-200 text-carbon-600 hover:bg-carbon-900 hover:text-white transition-all active:scale-95"
+            className="p-1.5 rounded-lg bg-white border border-carbon-200 text-carbon-500 hover:bg-carbon-900 hover:text-white transition-all active:scale-95"
+            title="Restar 1.000"
           >
-            <Minus className="w-4 h-4" />
+            <Minus className="w-3 h-3" />
           </button>
         </div>
 
         {error && (
-          <p className="text-xs font-bold text-error-600 px-2 animate-fade-in flex items-center gap-1.5">
-            <span className="w-1 h-1 rounded-full bg-error-600" />
+          <p className="text-xs font-semibold text-error-600 px-1 animate-fade-in">
             {error}
           </p>
         )}
 
         {helperText && !error && (
-          <p className="text-xs text-carbon-400 px-2 flex items-center gap-1.5">
-            <span className="w-1 h-1 rounded-full bg-carbon-300" />
+          <p className="text-[11px] text-carbon-400 px-1 italic">
             {helperText}
           </p>
         )}
