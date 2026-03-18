@@ -22,6 +22,7 @@ import type { AxiosErrorWithResponse } from "@/types/common";
  */
 export function ProfilePage() {
   const { user, updateUser: updateAuthUser } = useAuth();
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isUpdating, setIsUpdating] = useState(false);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
@@ -72,7 +73,7 @@ export function ProfilePage() {
 
   const updateProfileMutation = useMutation({
     mutationFn: async (data: UpdateProfileInput) => {
-      if (!user) throw new Error("Usuario no autenticado");
+      if (!user) throw new Error("User not authenticated");
       const response = await profileApi.updateProfile(user.id, data);
       return response.data;
     },
@@ -86,8 +87,15 @@ export function ProfilePage() {
       setIsUpdating(false);
     },
     onError: (error: AxiosErrorWithResponse) => {
+      let message = error.response?.data?.message || error.message;
+      
+      // Map common errors to Spanish
+      if (message.includes("already exists")) {
+        message = "Ya existe un usuario con ese correo electrónico o teléfono.";
+      }
+
       toast.error("Error al actualizar perfil", {
-        description: error.response?.data?.message || error.message,
+        description: message,
         icon: "❌",
       });
       setIsUpdating(false);
