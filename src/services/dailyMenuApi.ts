@@ -40,6 +40,7 @@ export interface DailyMenu {
   drinkCategory: MenuCategory | null;
   extraCategory: MenuCategory | null;
   saladCategory: MenuCategory | null;
+  riceCategory: MenuCategory | null;
   dessertCategory?: MenuCategory | null;
 
   // Item options for each category
@@ -49,7 +50,7 @@ export interface DailyMenu {
   extraOptions: MenuItemOption[];
   saladOptions: MenuItemOption[];
   dessertOptions?: MenuItemOption[];
-  riceOptions?: MenuItemOption[]; // NEW: Rice options
+  riceOptions: MenuItemOption[]; // Changed from optional to mandatory to match response
 
   // All proteins available (not limited options)
   proteinOptions: MenuItemOption[];
@@ -79,6 +80,7 @@ export interface UpdateDailyMenuData {
   drinkCategoryId?: number | null;
   extraCategoryId?: number | null;
   saladCategoryId?: number | null;
+  riceCategoryId?: number | null;
   dessertCategoryId?: number | null;
 
   // Item options for each category
@@ -87,6 +89,7 @@ export interface UpdateDailyMenuData {
   drinkOptions?: ItemOptionInput;
   extraOptions?: ItemOptionInput;
   saladOptions?: ItemOptionInput;
+  riceOptions?: ItemOptionInput;
   dessertOptions?: ItemOptionInput;
 
   // All protein IDs available (array of all protein item IDs)

@@ -25,6 +25,36 @@ interface DailyMenuConfigFormProps {
   defaultOpenPriceModal?: boolean;
 }
 
+interface FormState {
+  basePrice: number;
+  packagingFee: number;
+  soupCategoryId: number | null;
+  principleCategoryId: number | null;
+  proteinCategoryId: number | null;
+  drinkCategoryId: number | null;
+  extraCategoryId: number | null;
+  saladCategoryId: number | null;
+  riceCategoryId: number | null;
+  dessertCategoryId: number | null;
+  includeDessert: boolean;
+  soupOption1Id: number | null;
+  soupOption2Id: number | null;
+  principleOption1Id: number | null;
+  principleOption2Id: number | null;
+  drinkOption1Id: number | null;
+  drinkOption2Id: number | null;
+  extraOption1Id: number | null;
+  extraOption2Id: number | null;
+  saladOption1Id: number | null;
+  saladOption2Id: number | null;
+  riceOption1Id: number | null;
+  riceOption2Id: number | null;
+  dessertOption1Id: number | null;
+  dessertOption2Id: number | null;
+  selectedProteinIds: number[];
+  createdAt: string | null;
+}
+
 const defaultPrices = {
   basePrice: 3000,
 };
@@ -36,6 +66,7 @@ const DEFAULT_CATEGORY_NAMES = {
   drink: "Bebidas",
   extra: "Extras",
   salad: "Ensaladas",
+  rice: "Arroces",
   dessert: "Postres",
 };
 
@@ -103,6 +134,7 @@ export function DailyMenuConfigForm({
     drinkCategoryId: initialData?.drinkCategory?.id || null,
     extraCategoryId: initialData?.extraCategory?.id || null,
     saladCategoryId: initialData?.saladCategory?.id || null,
+    riceCategoryId: initialData?.riceCategory?.id || null,
     dessertCategoryId: initialData?.dessertCategory?.id || null,
     includeDessert: !!initialData?.dessertCategory,
     soupOption1Id: initialData?.soupOptions?.[0]?.id || null,
@@ -115,6 +147,8 @@ export function DailyMenuConfigForm({
     extraOption2Id: initialData?.extraOptions?.[1]?.id || null,
     saladOption1Id: initialData?.saladOptions?.[0]?.id || null,
     saladOption2Id: initialData?.saladOptions?.[1]?.id || null,
+    riceOption1Id: initialData?.riceOptions?.[0]?.id || null,
+    riceOption2Id: initialData?.riceOptions?.[1]?.id || null,
     dessertOption1Id: initialData?.dessertOptions?.[0]?.id || null,
     dessertOption2Id: initialData?.dessertOptions?.[1]?.id || null,
     selectedProteinIds: initialData?.proteinOptions?.map((p) => p.id) || [],
@@ -145,6 +179,9 @@ export function DailyMenuConfigForm({
         saladCategoryId:
           prev.saladCategoryId ||
           findCategoryIdByName(DEFAULT_CATEGORY_NAMES.salad),
+        riceCategoryId:
+          prev.riceCategoryId ||
+          findCategoryIdByName(DEFAULT_CATEGORY_NAMES.rice),
         createdAt: prev.createdAt || (selectedDate ? new Date(selectedDate).toISOString() : null),
       }));
     }
@@ -156,6 +193,7 @@ export function DailyMenuConfigForm({
   const drinkItems = useItemsByCategory(formState.drinkCategoryId || 0);
   const extraItems = useItemsByCategory(formState.extraCategoryId || 0);
   const saladItems = useItemsByCategory(formState.saladCategoryId || 0);
+  const riceItems = useItemsByCategory(formState.riceCategoryId || 0);
   const dessertItems = useItemsByCategory(formState.dessertCategoryId || 0);
 
   useEffect(() => {
@@ -174,6 +212,11 @@ export function DailyMenuConfigForm({
           (categories
             ? findCategoryIdByName(DEFAULT_CATEGORY_NAMES.salad)
             : null),
+        riceCategoryId:
+          initialData.riceCategory?.id ||
+          (categories
+            ? findCategoryIdByName(DEFAULT_CATEGORY_NAMES.rice)
+            : null),
         dessertCategoryId:
           initialData.dessertCategory?.id ||
           (categories
@@ -190,6 +233,8 @@ export function DailyMenuConfigForm({
         extraOption2Id: initialData.extraOptions?.[1]?.id || null,
         saladOption1Id: initialData.saladOptions?.[0]?.id || null,
         saladOption2Id: initialData.saladOptions?.[1]?.id || null,
+        riceOption1Id: initialData.riceOptions?.[0]?.id || null,
+        riceOption2Id: initialData.riceOptions?.[1]?.id || null,
         dessertOption1Id: initialData.dessertOptions?.[0]?.id || null,
         dessertOption2Id: initialData.dessertOptions?.[1]?.id || null,
         selectedProteinIds: initialData.proteinOptions?.map((p) => p.id) || [],
@@ -205,6 +250,7 @@ export function DailyMenuConfigForm({
       if (!formState.soupOption1Id && !formState.soupOption2Id) missingCategories.push("Sopas");
       if (!formState.principleOption1Id && !formState.principleOption2Id) missingCategories.push("Principios");
       if (!formState.saladOption1Id && !formState.saladOption2Id) missingCategories.push("Ensaladas");
+      if (!formState.riceOption1Id && !formState.riceOption2Id) missingCategories.push("Arroces");
       if (!formState.extraOption1Id && !formState.extraOption2Id) missingCategories.push("Extras");
       if (!formState.drinkOption1Id && !formState.drinkOption2Id) missingCategories.push("Bebidas");
       if (formState.selectedProteinIds.length === 0) missingCategories.push("Proteínas");
@@ -235,6 +281,7 @@ export function DailyMenuConfigForm({
         drinkCategoryId: formState.drinkCategoryId,
         extraCategoryId: formState.extraCategoryId,
         saladCategoryId: formState.saladCategoryId,
+        riceCategoryId: formState.riceCategoryId,
         dessertCategoryId: formState.includeDessert
           ? formState.dessertCategoryId
           : null,
@@ -257,6 +304,10 @@ export function DailyMenuConfigForm({
         saladOptions: {
           option1Id: formState.saladOption1Id,
           option2Id: formState.saladOption2Id,
+        },
+        riceOptions: {
+          option1Id: formState.riceOption1Id,
+          option2Id: formState.riceOption2Id,
         },
         dessertOptions: formState.includeDessert
           ? {
@@ -511,6 +562,58 @@ export function DailyMenuConfigForm({
                     setFormState({
                       ...formState,
                       saladCategoryId: value ? Number(value) : null,
+                    })
+                  }
+                  options={categories?.map(c => ({ value: c.id.toString(), label: c.name })) || []}
+                  placeholder="Vincular categoría..."
+                />
+              </div>
+            )}
+          </div>
+
+          {/* Rice Section */}
+          <div className="space-y-4">
+            <label className="flex items-center gap-2 text-sm font-semibold text-carbon-800 tracking-wide">
+              <span className="w-1.5 h-4 bg-sage-500 rounded-full" />
+              Arroces
+            </label>
+
+            {formState.riceCategoryId ? (
+              <div className="grid grid-cols-1 gap-3">
+                <FilterSelect
+                  value={formState.riceOption1Id?.toString() || ""}
+                  onChange={(value: string) =>
+                    setFormState({
+                      ...formState,
+                      riceOption1Id: value ? Number(value) : null,
+                    })
+                  }
+                  options={getItemOptions(riceItems.data || [])}
+                  placeholder="Opción 1"
+                />
+                <FilterSelect
+                  value={formState.riceOption2Id?.toString() || ""}
+                  onChange={(value: string) =>
+                    setFormState({
+                      ...formState,
+                      riceOption2Id: value ? Number(value) : null,
+                    })
+                  }
+                  options={getItemOptions(riceItems.data || [])}
+                  placeholder="Opción 2"
+                />
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <p className="text-xs text-warning-600 bg-warning-50 p-3 rounded-xl border border-warning-100 font-medium">
+                  Categoría no detectada. Por favor asígnala manualmente:
+                </p>
+                <FilterSelect
+                  value=""
+                  onChange={(value: string) =>
+                    setFormState({
+                      ...formState,
+                      riceCategoryId: value ? Number(value) : null,
                     })
                   }
                   options={categories?.map(c => ({ value: c.id.toString(), label: c.name })) || []}

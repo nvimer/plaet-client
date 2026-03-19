@@ -276,6 +276,12 @@ export function DailyMenuPage() {
                   colorClass="bg-blue-100 text-blue-600" 
                 />
                 <MenuCategoryGroup 
+                  title="Arroces" 
+                  icon={PackageCheck} 
+                  items={dailyMenu.riceOptions} 
+                  colorClass="bg-warning-100 text-warning-600" 
+                />
+                <MenuCategoryGroup 
                   title="Extras" 
                   icon={PlusCircle} 
                   items={dailyMenu.extraOptions} 
