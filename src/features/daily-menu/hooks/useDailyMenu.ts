@@ -133,6 +133,8 @@ export function useDailyMenuItems(menu: DailyMenu | null | undefined) {
   const proteinItems = useItemsByCategory(menu?.proteinCategory?.id || 0);
   const drinkItems = useItemsByCategory(menu?.drinkCategory?.id || 0);
   const extraItems = useItemsByCategory(menu?.extraCategory?.id || 0);
+  const saladItems = useItemsByCategory(menu?.saladCategory?.id || 0);
+  const dessertItems = useItemsByCategory(menu?.dessertCategory?.id || 0);
 
   return {
     soupItems: soupItems.data || [],
@@ -140,7 +142,23 @@ export function useDailyMenuItems(menu: DailyMenu | null | undefined) {
     proteinItems: proteinItems.data || [],
     drinkItems: drinkItems.data || [],
     extraItems: extraItems.data || [],
-    isLoading: soupItems.isLoading || principleItems.isLoading || proteinItems.isLoading || drinkItems.isLoading || extraItems.isLoading,
-    error: soupItems.error || principleItems.error || proteinItems.error || drinkItems.error || extraItems.error,
+    saladItems: saladItems.data || [],
+    dessertItems: dessertItems.data || [],
+    isLoading:
+      soupItems.isLoading ||
+      principleItems.isLoading ||
+      proteinItems.isLoading ||
+      drinkItems.isLoading ||
+      extraItems.isLoading ||
+      saladItems.isLoading ||
+      dessertItems.isLoading,
+    error:
+      soupItems.error ||
+      principleItems.error ||
+      proteinItems.error ||
+      drinkItems.error ||
+      extraItems.error ||
+      saladItems.error ||
+      dessertItems.error,
   };
 }

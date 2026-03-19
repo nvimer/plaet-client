@@ -68,9 +68,22 @@ export function DailyMenuConfigForm({
         str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().trim();
 
       const searchName = normalize(name);
-      const category = categories.find(
+      
+      // 1. Try exact match
+      let category = categories.find(
         (c) => normalize(c.name) === searchName
       );
+
+      // 2. Try partial match if no exact match (useful for singular/plural differences)
+      if (!category) {
+        category = categories.find(
+          (c) => {
+            const normalizedCategory = normalize(c.name);
+            return normalizedCategory.includes(searchName) || searchName.includes(normalizedCategory);
+          }
+        );
+      }
+
       return category?.id || null;
     },
     [categories],
