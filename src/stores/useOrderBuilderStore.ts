@@ -18,6 +18,13 @@ interface OrderBuilderState {
   backdatedDate: string | null;
   isHistoricalMode: boolean;
   
+  // Customer info
+  customerName: string;
+  customerPhone: string;
+  customerPhone2: string;
+  deliveryAddress: string;
+  address2: string;
+  
   // Current draft selections
   selectedProtein: ProteinOption | null;
   selectedSoup: MenuOption | null;
@@ -37,6 +44,13 @@ interface OrderBuilderState {
   setCurrentOrderIndex: (index: number | null) => void;
   setBackdatedDate: (date: string | null) => void;
   setIsHistoricalMode: (isHistorical: boolean) => void;
+  
+  setCustomerName: (name: string) => void;
+  setCustomerPhone: (phone: string) => void;
+  setCustomerPhone2: (phone: string) => void;
+  setDeliveryAddress: (address: string) => void;
+  setAddress2: (address: string) => void;
+  
   setSelectedProtein: (protein: ProteinOption | null) => void;
   setSelectedSoup: (soup: MenuOption | null) => void;
   setSelectedPrinciple: (principle: MenuOption | null) => void;
@@ -62,6 +76,12 @@ export const useOrderBuilderStore = create<OrderBuilderState>()(
       backdatedDate: null,
       isHistoricalMode: false,
       
+      customerName: "",
+      customerPhone: "",
+      customerPhone2: "",
+      deliveryAddress: "",
+      address2: "",
+      
       selectedProtein: null,
       selectedSoup: null,
       selectedPrinciple: null,
@@ -82,6 +102,12 @@ export const useOrderBuilderStore = create<OrderBuilderState>()(
       setCurrentOrderIndex: (currentOrderIndex) => set({ currentOrderIndex }),
       setBackdatedDate: (backdatedDate) => set({ backdatedDate }),
       setIsHistoricalMode: (isHistoricalMode) => set({ isHistoricalMode }),
+      
+      setCustomerName: (customerName) => set({ customerName }),
+      setCustomerPhone: (customerPhone) => set({ customerPhone }),
+      setCustomerPhone2: (customerPhone2) => set({ customerPhone2 }),
+      setDeliveryAddress: (deliveryAddress) => set({ deliveryAddress }),
+      setAddress2: (address2) => set({ address2 }),
       
       setSelectedProtein: (selectedProtein) => set({ selectedProtein }),
       setSelectedSoup: (selectedSoup) => set({ selectedSoup }),
@@ -115,6 +141,11 @@ export const useOrderBuilderStore = create<OrderBuilderState>()(
         selectedTable: null,
         tableOrders: [],
         currentOrderIndex: null,
+        customerName: "",
+        customerPhone: "",
+        customerPhone2: "",
+        deliveryAddress: "",
+        address2: "",
         selectedProtein: null,
         selectedSoup: null,
         selectedPrinciple: null,

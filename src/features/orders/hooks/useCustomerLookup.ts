@@ -1,23 +1,32 @@
-import { useState, useCallback } from "react";
+import { useCallback } from "react";
 import { toast } from "sonner";
 import { customerApi } from "@/services";
 import { logger } from "@/utils";
+import { useOrderBuilderStore } from "@/stores/useOrderBuilderStore";
 
 /**
  * useCustomerLookup Hook
  * Manages customer information and automatic lookup by phone number.
+ * Now integrated with useOrderBuilderStore for persistent state.
  */
 export function useCustomerLookup() {
-  const [customerName, setCustomerName] = useState("");
-  const [customerPhone, setCustomerPhone] = useState("");
-  const [customerPhone2, setCustomerPhone2] = useState("");
-  const [deliveryAddress, setDeliveryAddress] = useState("");
-  const [address2, setAddress2] = useState("");
+  const {
+    customerName,
+    customerPhone,
+    customerPhone2,
+    deliveryAddress,
+    address2,
+    setCustomerName,
+    setCustomerPhone,
+    setCustomerPhone2,
+    setDeliveryAddress,
+    setAddress2,
+  } = useOrderBuilderStore();
 
   const handleSetCustomerName = useCallback((name: string) => {
     const onlyLetters = name.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, "");
     setCustomerName(onlyLetters);
-  }, []);
+  }, [setCustomerName]);
 
   const handleSetCustomerPhone = useCallback(async (phone: string) => {
     const cleanPhone = phone.replace(/\D/g, "");
@@ -41,11 +50,11 @@ export function useCustomerLookup() {
         logger.debug("Customer not found for phone:", cleanPhone);
       }
     }
-  }, []);
+  }, [setCustomerPhone, setCustomerName, setCustomerPhone2, setDeliveryAddress, setAddress2]);
 
   const handleSetCustomerPhone2 = useCallback((phone: string) => {
     setCustomerPhone2(phone.replace(/\D/g, ""));
-  }, []);
+  }, [setCustomerPhone2]);
 
   const resetCustomer = useCallback(() => {
     setCustomerName("");
@@ -53,7 +62,7 @@ export function useCustomerLookup() {
     setCustomerPhone2("");
     setDeliveryAddress("");
     setAddress2("");
-  }, []);
+  }, [setCustomerName, setCustomerPhone, setCustomerPhone2, setDeliveryAddress, setAddress2]);
 
   return {
     customerName,
