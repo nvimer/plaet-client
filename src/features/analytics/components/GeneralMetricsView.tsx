@@ -26,7 +26,7 @@ export const GeneralMetricsView = () => {
   return (
     <div className="space-y-6">
       {/* Metric Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-sage-200/50">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-success-50 text-success-600 rounded-2xl">
@@ -50,6 +50,20 @@ export const GeneralMetricsView = () => {
               <p className="text-sm font-medium text-carbon-500">Órdenes Hoy</p>
               <h3 className="text-2xl font-bold text-carbon-900">
                 {dailySummary.salesSummary.orderCount}
+              </h3>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-sage-200/50">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-warning-50 text-warning-600 rounded-2xl">
+              <Activity className="w-6 h-6" />
+            </div>
+            <div>
+              <p className="text-sm font-medium text-carbon-500">Portacomidas</p>
+              <h3 className="text-2xl font-bold text-carbon-900">
+                {dailySummary.salesSummary.packagingCount || 0}
               </h3>
             </div>
           </div>
