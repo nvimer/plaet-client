@@ -69,22 +69,27 @@ export function DailyMenuConfigForm({
 
       const searchName = normalize(name);
       
-      // 1. Try exact match
-      let category = categories.find(
-        (c) => normalize(c.name) === searchName
-      );
-
-      // 2. Try partial match if no exact match (useful for singular/plural differences)
-      if (!category) {
-        category = categories.find(
-          (c) => {
-            const normalizedCategory = normalize(c.name);
-            return normalizedCategory.includes(searchName) || searchName.includes(normalizedCategory);
-          }
-        );
+      // 1. Try exact match, prioritizing non-null restaurantId
+      const matches = categories.filter((c) => normalize(c.name) === searchName);
+      
+      if (matches.length > 0) {
+        // Return the one with a restaurantId if it exists, otherwise the first one
+        const tenantCategory = matches.find(c => c.restaurantId !== null);
+        return tenantCategory?.id || matches[0].id;
       }
 
-      return category?.id || null;
+      // 2. Try partial match if no exact match (useful for singular/plural differences)
+      const partialMatches = categories.filter((c) => {
+        const normalizedCategory = normalize(c.name);
+        return normalizedCategory.includes(searchName) || searchName.includes(normalizedCategory);
+      });
+
+      if (partialMatches.length > 0) {
+        const tenantCategory = partialMatches.find(c => c.restaurantId !== null);
+        return tenantCategory?.id || partialMatches[0].id;
+      }
+
+      return null;
     },
     [categories],
   );
