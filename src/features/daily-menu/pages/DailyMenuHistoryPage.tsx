@@ -18,6 +18,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/utils/cn";
+import { getLocalDateString, parseLocalDate } from "@/utils/dateUtils";
 
 /**
  * DailyMenuHistoryPage Component
@@ -157,10 +158,10 @@ export function DailyMenuHistoryPage() {
               {daysInMonth.map((day, idx) => {
                 if (!day) return <div key={`empty-${idx}`} className="aspect-square" />;
                 
-                const dateKey = `${day.getFullYear()}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
+                const dateKey = getLocalDateString(day);
                 const menu = menuMap.get(dateKey);
                 const isSelected = selectedMenuId === menu?.id;
-                const isToday = day.toDateString() === new Date().toDateString();
+                const isToday = dateKey === getLocalDateString(new Date());
 
                 return (
                   <motion.button
@@ -220,7 +221,7 @@ export function DailyMenuHistoryPage() {
 
                     <div className="relative z-10">
                       <h3 className="text-3xl font-black text-carbon-900 capitalize tracking-tighter leading-tight mb-3">
-                        {new Date(selectedMenu.createdAt).toLocaleDateString("es-ES", { weekday: 'long', day: 'numeric', month: 'long' })}
+                        {parseLocalDate(selectedMenu.createdAt.split('T')[0]).toLocaleDateString("es-ES", { weekday: 'long', day: 'numeric', month: 'long' })}
                       </h3>
                       <div className="h-1.5 w-16 bg-sage-500 rounded-full" />
                     </div>
