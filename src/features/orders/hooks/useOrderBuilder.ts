@@ -330,14 +330,15 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   // Auto-select single options
   useEffect(() => {
     if (dailyMenuDisplay.isConfigured) {
-      const { soupOptions, principleOptions, saladOptions, drinkOptions, extraOptions } = dailyMenuDisplay;
+      const { soupOptions, principleOptions, saladOptions, drinkOptions, extraOptions, riceOptions } = dailyMenuDisplay;
       if (soupOptions.length === 1 && !selectedSoup) setSelectedSoup(soupOptions[0]);
       if (principleOptions.length === 1 && !selectedPrinciple) setSelectedPrinciple(principleOptions[0]);
       if (saladOptions.length === 1 && !selectedSalad) setSelectedSalad(saladOptions[0]);
       if (drinkOptions.length === 1 && !selectedDrink) setSelectedDrink(drinkOptions[0]);
       if (extraOptions.length === 1 && !selectedExtra) setSelectedExtra(extraOptions[0]);
+      if (riceOptions.length === 1 && !selectedRice) setSelectedRice(riceOptions[0]);
     }
-  }, [dailyMenuDisplay, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, setSelectedSoup, setSelectedPrinciple, setSelectedSalad, setSelectedDrink, setSelectedExtra]);
+  }, [dailyMenuDisplay, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedRice, setSelectedSoup, setSelectedPrinciple, setSelectedSalad, setSelectedDrink, setSelectedExtra, setSelectedRice]);
 
   // 8. Callbacks and Handlers (Delegating to Logic)
   const validateOrder = useCallback(() => {
@@ -348,10 +349,11 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       saladOptions: dailyMenuDisplay.saladOptions,
       drinkOptions: dailyMenuDisplay.drinkOptions,
       extraOptions: dailyMenuDisplay.extraOptions,
-      selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra,
+      riceOptions: dailyMenuDisplay.riceOptions,
+      selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedRice,
       selectedOrderType, selectedTable, customerName, customerPhone, deliveryAddress
     });
-  }, [selectedProtein, looseItems, dailyMenuDisplay, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedOrderType, selectedTable, customerName, customerPhone, deliveryAddress]);
+  }, [selectedProtein, looseItems, dailyMenuDisplay, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedRice, selectedOrderType, selectedTable, customerName, customerPhone, deliveryAddress]);
 
   const hasError = useCallback((field: string) => {
     return validationErrors.some(e => e.field === field) && touchedFields.has(field);

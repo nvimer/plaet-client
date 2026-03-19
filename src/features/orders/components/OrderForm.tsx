@@ -94,6 +94,7 @@ interface OrderFormProps {
   selectedExtra: MenuOption | null;
   setSelectedExtra: (extra: MenuOption | null) => void;
   selectedRice: MenuOption | null;
+  setSelectedRice: (rice: MenuOption | null) => void;
 
   // Protein
   proteins: ProteinOption[];
@@ -169,8 +170,8 @@ export function OrderForm({
   setSelectedDrink,
   selectedExtra,
   setSelectedExtra,
-  _selectedRice,
-  _setSelectedRice,
+  selectedRice,
+  setSelectedRice,
   proteins,
   selectedProtein,
   setSelectedProtein,
@@ -419,9 +420,9 @@ export function OrderForm({
           </div>
         </div>
 
-        <div className="space-y-4">
-          {/* Soup - Show selector only if 2+ options */}
-          {dailyMenuDisplay.soupOptions.length >= 2 && (
+        <div className="space-y-3">
+          {/* Soup */}
+          {dailyMenuDisplay.soupOptions.length >= 2 ? (
             <MenuItemSelector
               label="Sopa"
               options={dailyMenuDisplay.soupOptions}
@@ -436,10 +437,21 @@ export function OrderForm({
               icon={<Soup className="w-5 h-5" />}
               color="amber"
             />
+          ) : dailyMenuDisplay.soupOptions.length === 1 && (
+            <div className="flex items-center gap-3 p-3 bg-warning-50/30 rounded-xl border border-warning-100/50">
+              <div className="w-8 h-8 rounded-lg bg-warning-100 flex items-center justify-center text-warning-600">
+                <Soup className="w-4 h-4" />
+              </div>
+              <div className="flex-1">
+                <p className="text-[10px] text-warning-600 font-bold uppercase tracking-wider">Sopa Incluida</p>
+                <p className="text-sm font-semibold text-carbon-800">{dailyMenuDisplay.soupOptions[0].name}</p>
+              </div>
+              <CircleCheck className="w-4 h-4 text-success-500" />
+            </div>
           )}
 
-          {/* Principle - Show selector only if 2+ options */}
-          {dailyMenuDisplay.principleOptions.length >= 2 && (
+          {/* Principle */}
+          {dailyMenuDisplay.principleOptions.length >= 2 ? (
             <MenuItemSelector
               label="Principio"
               options={dailyMenuDisplay.principleOptions}
@@ -455,10 +467,21 @@ export function OrderForm({
               icon={<Utensils className="w-5 h-5" />}
               color="emerald"
             />
+          ) : dailyMenuDisplay.principleOptions.length === 1 && (
+            <div className="flex items-center gap-3 p-3 bg-success-50/30 rounded-xl border border-success-100/50">
+              <div className="w-8 h-8 rounded-lg bg-success-100 flex items-center justify-center text-success-600">
+                <Utensils className="w-4 h-4" />
+              </div>
+              <div className="flex-1">
+                <p className="text-[10px] text-success-600 font-bold uppercase tracking-wider">Principio Incluido</p>
+                <p className="text-sm font-semibold text-carbon-800">{dailyMenuDisplay.principleOptions[0].name}</p>
+              </div>
+              <CircleCheck className="w-4 h-4 text-success-500" />
+            </div>
           )}
 
-          {/* Salad - Show selector only if 2+ options */}
-          {dailyMenuDisplay.saladOptions.length >= 2 && (
+          {/* Salad */}
+          {dailyMenuDisplay.saladOptions.length >= 2 ? (
             <MenuItemSelector
               label="Ensalada"
               options={dailyMenuDisplay.saladOptions}
@@ -473,10 +496,21 @@ export function OrderForm({
               icon={<Salad className="w-5 h-5" />}
               color="sage"
             />
+          ) : dailyMenuDisplay.saladOptions.length === 1 && (
+            <div className="flex items-center gap-3 p-3 bg-sage-50/30 rounded-xl border border-sage-100/50">
+              <div className="w-8 h-8 rounded-lg bg-sage-100 flex items-center justify-center text-sage-600">
+                <Salad className="w-4 h-4" />
+              </div>
+              <div className="flex-1">
+                <p className="text-[10px] text-sage-600 font-bold uppercase tracking-wider">Ensalada Incluida</p>
+                <p className="text-sm font-semibold text-carbon-800">{dailyMenuDisplay.saladOptions[0].name}</p>
+              </div>
+              <CircleCheck className="w-4 h-4 text-success-500" />
+            </div>
           )}
 
-          {/* Drink - Show selector only if 2+ options */}
-          {dailyMenuDisplay.drinkOptions.length >= 2 && (
+          {/* Drink */}
+          {dailyMenuDisplay.drinkOptions.length >= 2 ? (
             <MenuItemSelector
               label="Jugo"
               options={dailyMenuDisplay.drinkOptions}
@@ -491,10 +525,21 @@ export function OrderForm({
               icon={<CupSoda className="w-5 h-5" />}
               color="blue"
             />
+          ) : dailyMenuDisplay.drinkOptions.length === 1 && (
+            <div className="flex items-center gap-3 p-3 bg-blue-50/30 rounded-xl border border-blue-100/50">
+              <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-600">
+                <CupSoda className="w-4 h-4" />
+              </div>
+              <div className="flex-1">
+                <p className="text-[10px] text-blue-600 font-bold uppercase tracking-wider">Jugo Incluido</p>
+                <p className="text-sm font-semibold text-carbon-800">{dailyMenuDisplay.drinkOptions[0].name}</p>
+              </div>
+              <CircleCheck className="w-4 h-4 text-success-500" />
+            </div>
           )}
 
-          {/* Extra - Show selector only if 2+ options */}
-          {dailyMenuDisplay.extraOptions.length >= 2 && (
+          {/* Extra */}
+          {dailyMenuDisplay.extraOptions.length >= 2 ? (
             <MenuItemSelector
               label="Extra"
               options={dailyMenuDisplay.extraOptions}
@@ -508,147 +553,49 @@ export function OrderForm({
               }
               icon={<IceCream className="w-5 h-5" />}
               color="purple"
-              showRiceInfo={true}
-              riceName={dailyMenuDisplay.riceOption?.name}
+              showRiceInfo={false}
             />
+          ) : dailyMenuDisplay.extraOptions.length === 1 && (
+            <div className="flex items-center gap-3 p-3 bg-purple-50/30 rounded-xl border border-purple-100/50">
+              <div className="w-8 h-8 rounded-lg bg-purple-100 flex items-center justify-center text-purple-600">
+                <IceCream className="w-4 h-4" />
+              </div>
+              <div className="flex-1">
+                <p className="text-[10px] text-purple-600 font-bold uppercase tracking-wider">Extra Incluido</p>
+                <p className="text-sm font-semibold text-carbon-800">{dailyMenuDisplay.extraOptions[0].name}</p>
+              </div>
+              <CircleCheck className="w-4 h-4 text-success-500" />
+            </div>
           )}
 
-          {/* Modern auto-configured menu display */}
-          {dailyMenuDisplay.soupOptions.length <= 1 &&
-            dailyMenuDisplay.principleOptions.length <= 1 &&
-            dailyMenuDisplay.saladOptions.length <= 1 &&
-            dailyMenuDisplay.drinkOptions.length <= 1 &&
-            dailyMenuDisplay.extraOptions.length <= 1 && (
-              <div className="bg-gradient-to-br from-sage-50 via-white to-warning-50 rounded-2xl border border-sage-200 overflow-hidden">
-                <div className="bg-gradient-to-r from-sage-600 to-sage-500 px-4 py-3">
-                  <h4 className="text-white font-semibold text-sm flex items-center gap-2">
-                    <UtensilsCrossed className="w-4 h-4" />
-                    Menú del Día
-                  </h4>
-                </div>
-                <div className="p-4 space-y-3">
-                  {/* Soup */}
-                  {dailyMenuDisplay.soupOptions.length === 1 && (
-                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-warning-100 shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-warning-100 flex items-center justify-center text-warning-600">
-                        <Soup className="w-5 h-5" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-xs text-warning-600 font-medium tracking-wide">
-                          Sopa
-                        </p>
-                        <p className="text-carbon-900 font-semibold">
-                          {dailyMenuDisplay.soupOptions[0].name}
-                        </p>
-                      </div>
-                      <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
-                        <CircleCheck className="w-4 h-4 text-success-600" />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Principle */}
-                  {dailyMenuDisplay.principleOptions.length === 1 && (
-                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-success-100 shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-success-100 flex items-center justify-center text-success-600">
-                        <Utensils className="w-5 h-5" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-xs text-success-600 font-medium tracking-wide">
-                          Principio
-                        </p>
-                        <p className="text-carbon-900 font-semibold">
-                          {dailyMenuDisplay.principleOptions[0].name}
-                        </p>
-                      </div>
-                      <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
-                        <CircleCheck className="w-4 h-4 text-success-600" />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Salad */}
-                  {dailyMenuDisplay.saladOptions.length === 1 && (
-                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-sage-100 shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-sage-100 flex items-center justify-center text-sage-600">
-                        <Salad className="w-5 h-5" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-xs text-sage-600 font-medium tracking-wide">
-                          Ensalada
-                        </p>
-                        <p className="text-carbon-900 font-semibold">
-                          {dailyMenuDisplay.saladOptions[0].name}
-                        </p>
-                      </div>
-                      <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
-                        <CircleCheck className="w-4 h-4 text-success-600" />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Drink */}
-                  {dailyMenuDisplay.drinkOptions.length === 1 && (
-                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-blue-100 shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center text-blue-600">
-                        <CupSoda className="w-5 h-5" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-xs text-blue-600 font-medium tracking-wide">
-                          Jugo
-                        </p>
-                        <p className="text-carbon-900 font-semibold">
-                          {dailyMenuDisplay.drinkOptions[0].name}
-                        </p>
-                      </div>
-                      <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
-                        <CircleCheck className="w-4 h-4 text-success-600" />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Extra */}
-                  {dailyMenuDisplay.extraOptions.length === 1 && (
-                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-info-100 shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-info-100 flex items-center justify-center text-info-600">
-                        <IceCream className="w-5 h-5" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-xs text-info-600 font-medium tracking-wide">
-                          Extra
-                        </p>
-                        <p className="text-carbon-900 font-semibold">
-                          {dailyMenuDisplay.extraOptions[0].name}
-                        </p>
-                      </div>
-                      <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
-                        <CircleCheck className="w-4 h-4 text-success-600" />
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Rice */}
-                  {dailyMenuDisplay.riceOption && (
-                    <div className="flex items-center gap-3 p-3 bg-white rounded-xl border border-warning-100 shadow-sm">
-                      <div className="w-10 h-10 rounded-xl bg-warning-100 flex items-center justify-center text-warning-600">
-                        <PackageCheck className="w-5 h-5" />
-                      </div>
-                      <div className="flex-1">
-                        <p className="text-xs text-warning-600 font-medium tracking-wide">
-                          Arroz
-                        </p>
-                        <p className="text-carbon-900 font-semibold">
-                          {dailyMenuDisplay.riceOption.name}
-                        </p>
-                      </div>
-                      <div className="w-6 h-6 rounded-full bg-success-100 flex items-center justify-center">
-                        <CircleCheck className="w-4 h-4 text-success-600" />
-                      </div>
-                    </div>
-                  )}
-                </div>
+          {/* Rice */}
+          {dailyMenuDisplay.riceOptions.length >= 2 ? (
+            <MenuItemSelector
+              label="Arroz"
+              options={dailyMenuDisplay.riceOptions}
+              selectedOption={selectedRice}
+              onSelect={setSelectedRice}
+              required={true}
+              error={
+                hasError("rice")
+                  ? validationErrors.find((e) => e.field === "rice")?.message
+                  : undefined
+              }
+              icon={<PackageCheck className="w-5 h-5" />}
+              color="warning"
+            />
+          ) : dailyMenuDisplay.riceOptions.length === 1 && (
+            <div className="flex items-center gap-3 p-3 bg-amber-50/30 rounded-xl border border-amber-100/50">
+              <div className="w-8 h-8 rounded-lg bg-amber-100 flex items-center justify-center text-amber-600">
+                <PackageCheck className="w-4 h-4" />
               </div>
-            )}
+              <div className="flex-1">
+                <p className="text-[10px] text-amber-600 font-bold uppercase tracking-wider">Arroz Incluido</p>
+                <p className="text-sm font-semibold text-carbon-800">{dailyMenuDisplay.riceOptions[0].name}</p>
+              </div>
+              <CircleCheck className="w-4 h-4 text-success-500" />
+            </div>
+          )}
         </div>
       </Card>
 

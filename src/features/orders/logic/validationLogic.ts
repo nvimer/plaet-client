@@ -14,11 +14,13 @@ interface ValidationParams {
   saladOptions: MenuOption[];
   drinkOptions: MenuOption[];
   extraOptions: MenuOption[];
+  riceOptions: MenuOption[];
   selectedSoup: MenuOption | null;
   selectedPrinciple: MenuOption | null;
   selectedSalad: MenuOption | null;
   selectedDrink: MenuOption | null;
   selectedExtra: MenuOption | null;
+  selectedRice: MenuOption | null;
   selectedOrderType: OrderType | null;
   selectedTable: number | null;
   customerName: string;
@@ -37,11 +39,13 @@ export const validateOrderDraft = ({
   saladOptions,
   drinkOptions,
   extraOptions,
+  riceOptions,
   selectedSoup,
   selectedPrinciple,
   selectedSalad,
   selectedDrink,
   selectedExtra,
+  selectedRice,
   selectedOrderType,
   selectedTable,
   customerName,
@@ -69,6 +73,9 @@ export const validateOrderDraft = ({
     }
     if (extraOptions.length > 0 && !selectedExtra) {
       errors.push({ field: "extra", message: "Selecciona un extra" });
+    }
+    if (riceOptions.length > 0 && !selectedRice) {
+      errors.push({ field: "rice", message: "Selecciona un tipo de arroz" });
     }
   }
   

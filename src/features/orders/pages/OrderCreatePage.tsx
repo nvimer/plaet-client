@@ -437,6 +437,7 @@ export function OrderCreatePage() {
                 selectedExtra={formProps.selectedExtra}
                 setSelectedExtra={formProps.setSelectedExtra}
                 selectedRice={formProps.selectedRice}
+                setSelectedRice={formProps.setSelectedRice}
                 proteins={formProps.proteins}
                 selectedProtein={formProps.selectedProtein}
                 setSelectedProtein={formProps.setSelectedProtein}
