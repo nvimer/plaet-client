@@ -43,6 +43,7 @@ import { CategoryCreatePage } from "./features/menu/categories/pages/CategoryCre
 import { CategoryEditPage } from "./features/menu/categories/pages/CategoryEditPage";
 import { MenuItemCreatePage } from "./features/menu/items/pages/MenuItemCreatePage";
 import { MenuItemEditPage } from "./features/menu/items/pages/MenuItemEditPage";
+import { CustomersPage } from "./features/customers/pages/CustomersPage";
 import {
   UsersPage,
   UsersHubPage,
@@ -524,6 +525,17 @@ const App = () => {
                 <ProtectedRoute>
                   <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN]}>
                     <UsersPage />
+                  </RoleProtectedRoute>
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path={ROUTES.CUSTOMERS}
+              element={
+                <ProtectedRoute>
+                  <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.CASHIER]}>
+                    <CustomersPage />
                   </RoleProtectedRoute>
                 </ProtectedRoute>
               }

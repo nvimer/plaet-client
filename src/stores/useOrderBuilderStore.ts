@@ -19,6 +19,7 @@ interface OrderBuilderState {
   isHistoricalMode: boolean;
   
   // Customer info
+  customerId: string | null;
   customerName: string;
   customerPhone: string;
   customerPhone2: string;
@@ -47,6 +48,7 @@ interface OrderBuilderState {
   setBackdatedDate: (date: string | null) => void;
   setIsHistoricalMode: (isHistorical: boolean) => void;
   
+  setCustomerId: (id: string | null) => void;
   setCustomerName: (name: string) => void;
   setCustomerPhone: (phone: string) => void;
   setCustomerPhone2: (phone: string) => void;
@@ -80,6 +82,7 @@ export const useOrderBuilderStore = create<OrderBuilderState>()(
       backdatedDate: null,
       isHistoricalMode: false,
       
+      customerId: null,
       customerName: "",
       customerPhone: "",
       customerPhone2: "",
@@ -109,6 +112,7 @@ export const useOrderBuilderStore = create<OrderBuilderState>()(
       setBackdatedDate: (backdatedDate) => set({ backdatedDate }),
       setIsHistoricalMode: (isHistoricalMode) => set({ isHistoricalMode }),
       
+      setCustomerId: (customerId) => set({ customerId }),
       setCustomerName: (customerName) => set({ customerName }),
       setCustomerPhone: (customerPhone) => set({ customerPhone }),
       setCustomerPhone2: (customerPhone2) => set({ customerPhone2 }),
@@ -150,6 +154,7 @@ export const useOrderBuilderStore = create<OrderBuilderState>()(
         selectedTable: null,
         tableOrders: [],
         currentOrderIndex: null,
+        customerId: null,
         customerName: "",
         customerPhone: "",
         customerPhone2: "",

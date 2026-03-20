@@ -73,3 +73,6 @@ export { CashClosureStatus } from "./cash-closure";
 
 // Expense types
 export type { Expense, CreateExpenseDTO } from "./expense";
+
+// Ticket Book types
+export * from "./ticket-book";

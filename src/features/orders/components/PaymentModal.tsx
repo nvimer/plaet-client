@@ -103,10 +103,17 @@ export function PaymentModal({
     if (isOpen) {
       setMethod(PaymentMethod.CASH);
       setReference("");
-      setCustomerPhone("");
       setPayAll(true);
       setSelectedOrderIds(orders.map(o => o.id));
       setPayments([]);
+      
+      // Pre-fill phone if available in orders
+      const firstWithPhone = orders.find(o => o.customer?.phone);
+      if (firstWithPhone?.customer?.phone) {
+        setCustomerPhone(firstWithPhone.customer.phone);
+      } else {
+        setCustomerPhone("");
+      }
       
       const initialRemaining = orders.reduce((sum, o) => {
         const paid = o.payments?.reduce((s, p) => s + Number(p.amount), 0) || 0;
@@ -114,14 +121,14 @@ export function PaymentModal({
       }, 0);
       setCurrentAmount(initialRemaining);
     }
-  }, [isOpen, ordersIdsHash]); // Removed 'orders' to avoid unnecessary resets if order identity changes slightly
+  }, [isOpen, ordersIdsHash]);
 
   // Update currentAmount when the payment method changes to the remaining balance
   useEffect(() => {
     if (isOpen && remainingToPay > 0) {
       setCurrentAmount(remainingToPay);
     }
-  }, [method, isOpen]); // Only reset when switching methods (Cash -> Nequi, etc)
+  }, [method, isOpen, remainingToPay]);
 
   // --- HANDLERS ---
   const handleToggleOrder = (orderId: string) => {

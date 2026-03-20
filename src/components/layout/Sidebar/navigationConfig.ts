@@ -189,15 +189,15 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean, userPerm
     {
       id: "users-hub",
       path: ROUTES.USERS,
-      name: "Equipo",
+      name: "Personas",
       icon: Users,
-      description: "Personal y roles",
-      allowedRoles: [RoleName.ADMIN],
+      description: "Personal y clientes",
+      allowedRoles: [RoleName.ADMIN, RoleName.CASHIER],
       children: [
-        { type: "link", path: ROUTES.USERS_LIST, name: "Lista de Equipo", icon: Users },
-        { type: "link", path: ROUTES.USER_CREATE, name: "Nuevo Usuario", icon: Plus },
-        { type: "link", path: ROUTES.ROLES, name: "Gestionar Roles", icon: ShieldCheck, requiredPermission: "roles:manage" },
-        { type: "link", path: ROUTES.PERMISSIONS, name: "Permisos", icon: ShieldCheck, requiredPermission: "permissions:view" },
+        { type: "link", path: ROUTES.USERS_LIST, name: "Lista de Equipo", icon: ShieldCheck, allowedRoles: [RoleName.ADMIN] },
+        { type: "link", path: ROUTES.CUSTOMERS, name: "Lista de Clientes", icon: Users },
+        { type: "link", path: ROUTES.USER_CREATE, name: "Nuevo Usuario", icon: Plus, allowedRoles: [RoleName.ADMIN] },
+        { type: "link", path: ROUTES.ROLES, name: "Gestionar Roles", icon: ShieldCheck, requiredPermission: "roles:manage", allowedRoles: [RoleName.ADMIN] },
       ]
     },
   ];

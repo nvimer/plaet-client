@@ -10,6 +10,8 @@ import {
   ReplacementManager,
   type Replacement,
 } from "./";
+import { CustomerTicketsInfo } from "../../customers/components/CustomerTicketsInfo";
+import { SellTicketBookModal } from "../../customers/components/SellTicketBookModal";
 import {
   Plus,
   Minus,
@@ -50,6 +52,7 @@ interface OrderFormProps {
   // Customer info (for TAKE_OUT/DELIVERY)
   customerName: string;
   setCustomerName: (name: string) => void;
+  customerId: string | null;
   customerPhone: string;
   setCustomerPhone: (phone: string) => void;
   customerPhone2: string;
@@ -145,6 +148,7 @@ export function OrderForm({
   tableOrdersLength,
   customerName,
   setCustomerName,
+  customerId,
   customerPhone,
   setCustomerPhone,
   customerPhone2,
@@ -193,6 +197,8 @@ export function OrderForm({
   onCancelEdit,
   isLoading,
 }: OrderFormProps) {
+  const [showSellModal, setShowSellModal] = useState(false);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center h-96">
@@ -343,12 +349,32 @@ export function OrderForm({
                                     </div>
                   
               </div>
+            )}
             </div>
-          </div>
-        </Card>
-      )}
 
-      {/* Professional Header Banner */}
+            {/* Ticket Book Info - NEW */}
+            {customerId && (
+            <div className="mt-6 pt-6 border-t border-primary-100/50">
+              <CustomerTicketsInfo 
+                customerId={customerId} 
+                onSellClick={() => setShowSellModal(true)} 
+              />
+            </div>
+            )}
+            </Card>
+            )}
+
+            {/* Sell Modal */}
+            {customerId && (
+            <SellTicketBookModal
+            isOpen={showSellModal}
+            onClose={() => setShowSellModal(false)}
+            customerId={customerId}
+            customerName={customerName}
+            />
+            )}
+
+            {/* Professional Header Banner */}
       <Card
         variant="elevated"
         className={cn(

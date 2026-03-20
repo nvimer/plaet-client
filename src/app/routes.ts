@@ -68,6 +68,9 @@ export const ROUTES = {
   USER_CREATE: "/users/new",
   USER_EDIT: "/users/:id/edit",
 
+  // Customers
+  CUSTOMERS: "/customers",
+
   // Profile
   PROFILE: "/profile",
   CHANGE_PASSWORD: "/profile/change-password",

@@ -11,16 +11,12 @@ import { useOrderBuilderStore } from "@/stores/useOrderBuilderStore";
  */
 export function useCustomerLookup() {
   const {
-    customerName,
-    customerPhone,
-    customerPhone2,
-    deliveryAddress,
-    address2,
-    setCustomerName,
-    setCustomerPhone,
-    setCustomerPhone2,
-    setDeliveryAddress,
-    setAddress2,
+    customerId, setCustomerId,
+    customerName, setCustomerName,
+    customerPhone, setCustomerPhone,
+    customerPhone2, setCustomerPhone2,
+    deliveryAddress, setDeliveryAddress,
+    address2, setAddress2,
   } = useOrderBuilderStore();
 
   const handleSetCustomerName = useCallback((name: string) => {
@@ -36,6 +32,7 @@ export function useCustomerLookup() {
       try {
         const response = await customerApi.getCustomerByPhone(cleanPhone);
         if (response.success && response.data) {
+          setCustomerId(response.data.id);
           setCustomerName(`${response.data.firstName} ${response.data.lastName}`.trim());
           setCustomerPhone2(response.data.phone2 || "");
           setDeliveryAddress(response.data.address1 || "");
@@ -45,26 +42,33 @@ export function useCustomerLookup() {
             description: `Bienvenido de nuevo, ${response.data.firstName}`,
             icon: "👤",
           });
+        } else {
+          setCustomerId(null);
         }
       } catch (_error) {
         logger.debug("Customer not found for phone:", cleanPhone);
+        setCustomerId(null);
       }
+    } else {
+      setCustomerId(null);
     }
-  }, [setCustomerPhone, setCustomerName, setCustomerPhone2, setDeliveryAddress, setAddress2]);
+  }, [setCustomerPhone, setCustomerId, setCustomerName, setCustomerPhone2, setDeliveryAddress, setAddress2]);
 
   const handleSetCustomerPhone2 = useCallback((phone: string) => {
     setCustomerPhone2(phone.replace(/\D/g, ""));
   }, [setCustomerPhone2]);
 
   const resetCustomer = useCallback(() => {
+    setCustomerId(null);
     setCustomerName("");
     setCustomerPhone("");
     setCustomerPhone2("");
     setDeliveryAddress("");
     setAddress2("");
-  }, [setCustomerName, setCustomerPhone, setCustomerPhone2, setDeliveryAddress, setAddress2]);
+  }, [setCustomerId, setCustomerName, setCustomerPhone, setCustomerPhone2, setDeliveryAddress, setAddress2]);
 
   return {
+    customerId,
     customerName,
     customerPhone,
     customerPhone2,
