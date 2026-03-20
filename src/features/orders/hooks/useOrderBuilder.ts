@@ -175,6 +175,8 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     replacements, setReplacements,
     looseItems, setLooseItems,
     orderNotes, setOrderNotes,
+    packagingFee, setPackagingFee,
+    packagingQuantity, setPackagingQuantity,
     resetDraft, clearAll
   } = useOrderBuilderStore();
 
@@ -184,8 +186,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const [showSummaryModal, setShowSummaryModal] = useState(false);
   const [validationErrors, setValidationErrors] = useState<ValidationError[]>([]);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
-  const [packagingFee, setPackagingFee] = useState(1000);
-  const [packagingQuantity, setPackagingQuantity] = useState(0);
 
   // 3. Sub-hooks for specialized state
   const customerLookup = useCustomerLookup();
@@ -231,14 +231,17 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       if (selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) {
         setPackagingQuantity(1);
       }
+    } else if (selectedOrderType === OrderType.DINE_IN && packagingQuantity > 0 && currentOrderIndex === null) {
+      // If we switch to DINE_IN and it's not an edit, reset packaging
+      setPackagingQuantity(0);
     }
-  }, [selectedOrderType, packagingQuantity]);
+  }, [selectedOrderType, packagingQuantity, currentOrderIndex, setPackagingQuantity]);
 
   useEffect(() => {
     if (dailyMenuData?.packagingFee) {
       setPackagingFee(Number(dailyMenuData.packagingFee));
     }
-  }, [dailyMenuData]);
+  }, [dailyMenuData, setPackagingFee]);
 
   // 7. Computed Values (Memoized)
   const popularProducts = useMemo(() => {
@@ -583,8 +586,10 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const handleBackToOrderType = useCallback(() => {
     clearAll();
     resetCustomer();
-    setPackagingFee(Number(dailyMenuData?.packagingFee || 1000));
-  }, [clearAll, dailyMenuData, resetCustomer]);
+    if (dailyMenuData?.packagingFee) {
+      setPackagingFee(Number(dailyMenuData.packagingFee));
+    }
+  }, [clearAll, dailyMenuData, resetCustomer, setPackagingFee]);
 
   return {
     isLoading: tablesLoading || itemsLoading,

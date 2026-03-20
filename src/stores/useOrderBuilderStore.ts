@@ -36,6 +36,8 @@ interface OrderBuilderState {
   replacements: Replacement[];
   looseItems: LooseItem[];
   orderNotes: string;
+  packagingFee: number;
+  packagingQuantity: number;
   
   // Actions
   setSelectedOrderType: (type: OrderType | null) => void;
@@ -61,6 +63,8 @@ interface OrderBuilderState {
   setReplacements: (replacements: Replacement[]) => void;
   setLooseItems: (items: LooseItem[] | ((prev: LooseItem[]) => LooseItem[])) => void;
   setOrderNotes: (notes: string) => void;
+  setPackagingFee: (fee: number) => void;
+  setPackagingQuantity: (qty: number) => void;
   resetDraft: () => void;
   clearAll: () => void;
 }
@@ -92,6 +96,8 @@ export const useOrderBuilderStore = create<OrderBuilderState>()(
       replacements: [],
       looseItems: [],
       orderNotes: "",
+      packagingFee: 1000,
+      packagingQuantity: 0,
 
       // Actions
       setSelectedOrderType: (selectedOrderType) => set({ selectedOrderType }),
@@ -121,6 +127,8 @@ export const useOrderBuilderStore = create<OrderBuilderState>()(
         looseItems: typeof items === 'function' ? items(state.looseItems) : items 
       })),
       setOrderNotes: (orderNotes) => set({ orderNotes }),
+      setPackagingFee: (packagingFee) => set({ packagingFee }),
+      setPackagingQuantity: (packagingQuantity) => set({ packagingQuantity }),
       
       resetDraft: () => set({
         selectedProtein: null,
@@ -134,6 +142,7 @@ export const useOrderBuilderStore = create<OrderBuilderState>()(
         looseItems: [],
         orderNotes: "",
         currentOrderIndex: null,
+        packagingQuantity: 0,
       }),
 
       clearAll: () => set({
@@ -156,6 +165,7 @@ export const useOrderBuilderStore = create<OrderBuilderState>()(
         replacements: [],
         looseItems: [],
         orderNotes: "",
+        packagingQuantity: 0,
       }),
     }),
     {
