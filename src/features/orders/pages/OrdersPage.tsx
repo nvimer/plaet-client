@@ -35,7 +35,8 @@ export function OrdersPage() {
   const [searchTerm, setSearchTerm] = useState("");
 
   const { data: orders, isLoading, error: _error, refetch: _refetch } = useOrders({ limit: 100 });
-  const { mutateAsync: addPaymentAsync, isPending: isAddingPayment } = useAddPayment();
+  const { mutateAsync: addPaymentAsync } = useAddPayment();
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   // Payment Modal State - Storing IDs for dynamic sync with React Query
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -53,6 +54,7 @@ export function OrdersPage() {
   };
 
   const handleConfirmPayment = async (payments: PaymentEntry[], orderIds: string[]) => {
+    setIsProcessingPayment(true);
     try {
       // 1. Determine orders with remaining balance
       const ordersToPay = currentOrdersToPay.filter(o => orderIds.includes(o.id));
@@ -86,28 +88,23 @@ export function OrdersPage() {
           });
 
           amountToDistribute -= amountForThisOrder;
-          orderBalance.remaining -= orderBalance.remaining > 0 ? amountForThisOrder : 0;
+          orderBalance.remaining -= amountForThisOrder;
         }
       }
 
       toast.success("Pagos registrados correctamente");
-
-      // 3. UI Updates
-      const remainingInGroup = currentOrdersToPay.filter(o => !orderIds.includes(o.id));
-      const anyBalanceLeftInGroup = remainingInGroup.some(o => {
-        const p = o.payments?.reduce((s, pay) => s + Number(pay.amount), 0) || 0;
-        return Number(o.totalAmount) - p > 0;
-      });
-
-      if (!anyBalanceLeftInGroup) {
-        setIsPaymentModalOpen(false);
-        setActiveTab("PREPARATION");
-      }
+      
+      // Close modal and switch tab immediately
+      setIsPaymentModalOpen(false);
+      setActiveTab("PREPARATION");
+      
     } catch (error: unknown) {
       const err = error as { response?: { data?: { message?: string } }; message?: string };
       toast.error("Error al registrar pagos", {
         description: err.response?.data?.message || err.message
       });
+    } finally {
+      setIsProcessingPayment(false);
     }
   };
 
@@ -291,7 +288,7 @@ export function OrdersPage() {
         onClose={() => setIsPaymentModalOpen(false)}
         orders={currentOrdersToPay}
         onConfirm={handleConfirmPayment}
-        isPending={isAddingPayment}
+        isPending={isProcessingPayment}
       />
     </SidebarLayout>
   );

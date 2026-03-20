@@ -43,7 +43,8 @@ export function OrderDetailPage() {
   const { mutate: updateStatus, isPending: isUpdatingStatus } =
     useUpdateOrderStatus();
   const { mutate: deleteOrder, isPending: isDeleting } = useDeleteOrder();
-  const { mutateAsync: addPaymentAsync, isPending: isAddingPayment } = useAddPayment();
+  const { mutateAsync: addPaymentAsync } = useAddPayment();
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -150,6 +151,7 @@ export function OrderDetailPage() {
   };
 
   const handleConfirmPayment = async (payments: PaymentEntry[], orderIds: string[]) => {
+    setIsProcessingPayment(true);
     try {
       // We process each payment in sequence for robustness
       // Although normally there's only one orderId in this page
@@ -176,6 +178,8 @@ export function OrderDetailPage() {
       toast.error("Error al registrar pagos", {
         description: err.response?.data?.message || err.message
       });
+    } finally {
+      setIsProcessingPayment(false);
     }
   };
 
@@ -439,7 +443,7 @@ export function OrderDetailPage() {
         onClose={() => setIsPaymentModalOpen(false)}
         orders={[order]}
         onConfirm={handleConfirmPayment}
-        isPending={isAddingPayment}
+        isPending={isProcessingPayment}
       />
 
       <ConfirmDialog
