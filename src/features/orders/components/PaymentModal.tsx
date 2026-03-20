@@ -107,35 +107,40 @@ export function PaymentModal({
       setPayAll(true);
       setSelectedOrderIds(orders.map(o => o.id));
       setPayments([]);
-      // Initialize current amount with the total remaining
+      
       const initialRemaining = orders.reduce((sum, o) => {
         const paid = o.payments?.reduce((s, p) => s + Number(p.amount), 0) || 0;
         return sum + Math.max(0, Number(o.totalAmount) - paid);
       }, 0);
       setCurrentAmount(initialRemaining);
     }
-  }, [isOpen, ordersIdsHash, orders]);
+  }, [isOpen, ordersIdsHash]); // Removed 'orders' to avoid unnecessary resets if order identity changes slightly
 
-  // Sync currentAmount when remainingToPay changes (if user hasn't typed anything else)
+  // Update currentAmount when the payment method changes to the remaining balance
   useEffect(() => {
-    if (isOpen && remainingToPay > 0 && (currentAmount === 0 || currentAmount > remainingToPay)) {
+    if (isOpen && remainingToPay > 0) {
       setCurrentAmount(remainingToPay);
     }
-  }, [remainingToPay, isOpen, currentAmount]);
+  }, [method, isOpen]); // Only reset when switching methods (Cash -> Nequi, etc)
 
   // --- HANDLERS ---
   const handleToggleOrder = (orderId: string) => {
     setPayAll(false);
-    setSelectedOrderIds(prev => 
-      prev.includes(orderId) 
-        ? prev.filter(id => id !== orderId) 
-        : [...prev, orderId]
-    );
+    const newSelected = selectedOrderIds.includes(orderId) 
+      ? selectedOrderIds.filter(id => id !== orderId) 
+      : [...selectedOrderIds, orderId];
+    
+    setSelectedOrderIds(newSelected);
+    
+    // Update amount to match the new selection
+    const newTotal = newSelected.reduce((sum, id) => sum + (remainingAmountsPerOrder[id] || 0), 0);
+    setCurrentAmount(newTotal);
   };
 
   const handleSelectAll = () => {
     setPayAll(true);
     setSelectedOrderIds(orders.map(o => o.id));
+    setCurrentAmount(Object.values(remainingAmountsPerOrder).reduce((sum, amt) => sum + amt, 0));
   };
 
   const handleAddPayment = () => {

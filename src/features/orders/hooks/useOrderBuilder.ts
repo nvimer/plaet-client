@@ -6,6 +6,7 @@
  */
 
 import { useState, useMemo, useEffect, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import axios from "axios";
 import { getLocalDateString } from "@/utils/dateUtils";
@@ -193,6 +194,8 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     handleSetCustomerName, handleSetCustomerPhone, handleSetCustomerPhone2,
     setDeliveryAddress, setAddress2, resetCustomer
   } = customerLookup;
+
+  const navigate = useNavigate();
 
   // 4. Data Hooks
   const { data: tablesData, isLoading: tablesLoading } = useTables();
@@ -562,6 +565,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       clearAll();
       resetCustomer();
       setPackagingFee(Number(dailyMenuData?.packagingFee || 1000));
+      
+      // Navigate to Orders Hub after successful creation
+      navigate(ROUTES.ORDERS);
 
     } catch (error: unknown) {
       logger.error("Order Creation Error", error instanceof Error ? error : new Error(String(error)));
