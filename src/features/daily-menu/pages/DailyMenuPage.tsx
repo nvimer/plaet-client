@@ -7,7 +7,7 @@ import { useDailyMenuToday, useDailyMenuByDate } from "@/features/daily-menu/hoo
 import { useAuth } from "@/hooks";
 import { RoleName } from "@/types";
 import { getLocalDateString } from "@/utils/dateUtils";
-import { Calendar, RefreshCw, UtensilsCrossed, Edit2, ArrowLeft, Beef, Salad, CupSoda, IceCream, PlusCircle, type LucideIcon } from "lucide-react";
+import { Calendar, RefreshCw, UtensilsCrossed, Edit2, ArrowLeft, Beef, Salad, CupSoda, IceCream, PlusCircle, PackageCheck, type LucideIcon } from "lucide-react";
 import { toast } from "sonner";
 import { motion } from "framer-motion";
 
