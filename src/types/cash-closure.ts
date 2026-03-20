@@ -25,5 +25,6 @@ export interface CreateCashClosureDTO {
 
 export interface CloseCashClosureDTO {
   actualBalance: number;
+  totalDelivery?: number;
   notes?: string;
 }

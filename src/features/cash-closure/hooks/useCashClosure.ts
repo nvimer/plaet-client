@@ -2,6 +2,8 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { cashClosureApi } from "@/services";
 import type { CreateCashClosureDTO, CloseCashClosureDTO, AxiosErrorWithResponse } from "@/types";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { ROUTES } from "@/app/routes";
 
 /**
  * HOOK: useCashClosure
@@ -9,6 +11,7 @@ import { toast } from "sonner";
  */
 export const useCashClosure = () => {
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
 
   // Fetch current shift status
   const { data: currentShift, isLoading, error } = useQuery({
@@ -43,6 +46,8 @@ export const useCashClosure = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["cash-closure"] });
       toast.success("Turno cerrado exitosamente");
+      // Navigate to orders list after closing
+      navigate(ROUTES.ORDERS);
     },
     onError: (error: AxiosErrorWithResponse) => {
       toast.error(error?.response?.data?.message || "Error al cerrar el turno");
