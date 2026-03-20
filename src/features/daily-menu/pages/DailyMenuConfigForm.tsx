@@ -381,6 +381,7 @@ export function DailyMenuConfigForm({
     drinkItems.isLoading ||
     extraItems.isLoading ||
     saladItems.isLoading ||
+    riceItems.isLoading ||
     (formState.includeDessert && dessertItems.isLoading);
 
   const isMutationPending = updateMenuToday.isPending || updateMenuByDate.isPending;
