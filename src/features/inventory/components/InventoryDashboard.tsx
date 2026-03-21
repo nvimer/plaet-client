@@ -18,13 +18,14 @@ import { Package, TrendingUp, AlertTriangle, CheckCircle2 } from "lucide-react";
 
 interface InventoryDashboardProps {
   items: MenuItem[];
+  movements?: { day: string; entradas: number; salidas: number }[];
 }
 
 /**
  * InventoryDashboard Component
  * Refined design with premium cards and consistent spacing.
  */
-export function InventoryDashboard({ items }: InventoryDashboardProps) {
+export function InventoryDashboard({ items, movements = [] }: InventoryDashboardProps) {
   const stats = useMemo(() => {
     const tracked = items.filter(
       (item) => item.inventoryType === InventoryType.TRACKED,
@@ -62,15 +63,19 @@ export function InventoryDashboard({ items }: InventoryDashboardProps) {
     { name: "Ilimitado", value: stats.unlimited, color: "#9CA3AF" },
   ];
 
-  const weeklyMovementsData = [
-    { day: "Lun", entradas: 45, salidas: 38 },
-    { day: "Mar", entradas: 52, salidas: 42 },
-    { day: "Mié", entradas: 38, salidas: 55 },
-    { day: "Jue", entradas: 65, salidas: 48 },
-    { day: "Vie", entradas: 78, salidas: 82 },
-    { day: "Sáb", entradas: 95, salidas: 105 },
-    { day: "Dom", entradas: 42, salidas: 35 },
-  ];
+  // Default empty data for the chart if none provided
+  const chartData = useMemo(() => {
+    if (movements && movements.length > 0) return movements;
+    
+    // Zeros for the last 7 days if no data
+    const days = ["Dom", "Lun", "Mar", "Mié", "Jue", "Vie", "Sáb"];
+    const today = new Date();
+    return Array.from({ length: 7 }).map((_, i) => {
+      const d = new Date();
+      d.setDate(today.getDate() - (6 - i));
+      return { day: days[d.getDay()], entradas: 0, salidas: 0 };
+    });
+  }, [movements]);
 
   return (
     <div className="space-y-8">
@@ -86,7 +91,7 @@ export function InventoryDashboard({ items }: InventoryDashboardProps) {
           title="Stock OK"
           value={stats.healthyStock.toString()}
           variant="success"
-          icon={<CheckCircle2 className="w-6 h-6" />}
+          icon={<Package className="w-6 h-6" />}
         />
         <StatCard
           title="Stock Bajo"
@@ -112,7 +117,7 @@ export function InventoryDashboard({ items }: InventoryDashboardProps) {
           </div>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={weeklyMovementsData}>
+              <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#F1F5F9" />
                 <XAxis dataKey="day" axisLine={false} tickLine={false} tick={{ fill: "#94A3B8", fontSize: 12, fontWeight: 600 }} dy={10} />
                 <YAxis axisLine={false} tickLine={false} tick={{ fill: "#94A3B8", fontSize: 12, fontWeight: 600 }} />

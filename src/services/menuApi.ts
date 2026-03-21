@@ -386,6 +386,19 @@ export const getAllStockHistory = async (params?: PaginationParams) => {
 };
 
 /**
+ * GET /menu/items/stock-movements
+ * 
+ * Get daily stock movements (entries/exits) for the last X days.
+ */
+export const getStockMovements = async (days: number = 7) => {
+  const { data } = await axiosClient.get<ApiResponse<{ day: string; entradas: number; salidas: number }[]>>(
+    "menu/items/stock-movements",
+    { params: { days } }
+  );
+  return data;
+};
+
+/**
  * PATCH /menu/items/:id/inventory-type
  *
  * Set inventory type for a menu item

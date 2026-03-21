@@ -10,6 +10,7 @@ import {
   InventoryDashboard,
 } from "../components";
 import { usePermissions } from "@/hooks/usePermissions";
+import { useStockMovements } from "../hooks/useStockMovements";
 import { Package, RotateCcw, Plus, AlertTriangle, Settings2, SlidersHorizontal } from "lucide-react";
 import { cn } from "@/utils/cn";
 import type { MenuItem } from "@/types";
@@ -48,6 +49,7 @@ export function StockManagementPage() {
   // Queries
   const { data: allItems, isLoading: loadingItems } = useItems();
   const { data: categories } = useCategories();
+  const { data: movements } = useStockMovements();
 
   // Category map for quick lookup
   const categoryMap = useMemo(() => {
@@ -184,7 +186,10 @@ export function StockManagementPage() {
         </header>
 
         {/* Dashboard Analytics */}
-        <InventoryDashboard items={allItems || []} />
+        <InventoryDashboard 
+          items={allItems || []} 
+          movements={movements}
+        />
 
         {/* Unified Filter System */}
         <div className="space-y-6">
