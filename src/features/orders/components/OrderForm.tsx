@@ -317,62 +317,61 @@ export function OrderForm({
                   <div className="w-10 h-10 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center">
                     <Box className="w-5 h-5" />
                   </div>
-                                      <div>
-                                        <p className="text-xs font-bold text-carbon-900">Costo de Portacomida</p>
-                                        <p className="text-[10px] text-carbon-500">${packagingFee.toLocaleString()} por unidad</p>
-                                      </div>
-                                    </div>
-                                    <div className="flex items-center gap-3">
-                                      <div className="flex items-center bg-sage-50 rounded-xl border border-sage-100 p-1">
-                                        <button
-                                          type="button"
-                                          onClick={() => setPackagingQuantity(Math.max(0, packagingQuantity - 1))}
-                                          className="w-8 h-8 flex items-center justify-center text-carbon-500 hover:text-primary-600 hover:bg-white rounded-lg transition-all"
-                                        >
-                                          <Minus className="w-4 h-4" />
-                                        </button>
-                                        <span className="w-10 text-center font-black text-carbon-900 text-sm">
-                                          {packagingQuantity}
-                                        </span>
-                                        <button
-                                          type="button"
-                                          onClick={() => setPackagingQuantity(packagingQuantity + 1)}
-                                          className="w-8 h-8 flex items-center justify-center text-carbon-500 hover:text-primary-600 hover:bg-white rounded-lg transition-all"
-                                        >
-                                          <Plus className="w-4 h-4" />
-                                        </button>
-                                      </div>
-                                      <div className="hidden sm:block text-right min-w-[60px]">
-                                        <p className="text-[10px] font-bold text-carbon-400 uppercase">Subtotal</p>
-                                        <p className="text-xs font-black text-primary-700">${(packagingFee * packagingQuantity).toLocaleString()}</p>
-                                      </div>
-                                    </div>
-                  
+                  <div>
+                    <p className="text-xs font-bold text-carbon-900">Costo de Portacomida</p>
+                    <p className="text-[10px] text-carbon-500">${packagingFee.toLocaleString()} por unidad</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center bg-sage-50 rounded-xl border border-sage-100 p-1">
+                    <button
+                      type="button"
+                      onClick={() => setPackagingQuantity(Math.max(0, packagingQuantity - 1))}
+                      className="w-8 h-8 flex items-center justify-center text-carbon-500 hover:text-primary-600 hover:bg-white rounded-lg transition-all"
+                    >
+                      <Minus className="w-4 h-4" />
+                    </button>
+                    <span className="w-10 text-center font-black text-carbon-900 text-sm">
+                      {packagingQuantity}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => setPackagingQuantity(packagingQuantity + 1)}
+                      className="w-8 h-8 flex items-center justify-center text-carbon-500 hover:text-primary-600 hover:bg-white rounded-lg transition-all"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <div className="hidden sm:block text-right min-w-[60px]">
+                    <p className="text-[10px] font-bold text-carbon-400 uppercase">Subtotal</p>
+                    <p className="text-xs font-black text-primary-700">${(packagingFee * packagingQuantity).toLocaleString()}</p>
+                  </div>
+                </div>
               </div>
-            )}
             </div>
+          </div>
 
-            {/* Ticket Book Info - NEW */}
-            {customerId && (
+          {/* Ticket Book Info - NEW */}
+          {customerId && (
             <div className="mt-6 pt-6 border-t border-primary-100/50">
               <CustomerTicketsInfo 
                 customerId={customerId} 
                 onSellClick={() => setShowSellModal(true)} 
               />
             </div>
-            )}
-            </Card>
-            )}
+          )}
+        </Card>
+      )}
 
-            {/* Sell Modal */}
-            {customerId && (
-            <SellTicketBookModal
-            isOpen={showSellModal}
-            onClose={() => setShowSellModal(false)}
-            customerId={customerId}
-            customerName={customerName}
-            />
-            )}
+      {/* Sell Modal */}
+      {customerId && (
+        <SellTicketBookModal
+          isOpen={showSellModal}
+          onClose={() => setShowSellModal(false)}
+          customerId={customerId}
+          customerName={customerName}
+        />
+      )}
 
             {/* Professional Header Banner */}
       <Card
