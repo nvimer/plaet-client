@@ -226,18 +226,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
   // 6. Effects
   useEffect(() => {
-    // Only set default if it's currently 0 (to avoid overwriting persisted quantity)
-    if (packagingQuantity === 0) {
-      if (selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) {
-        setPackagingQuantity(1);
-      }
-    } else if (selectedOrderType === OrderType.DINE_IN && packagingQuantity > 0 && currentOrderIndex === null) {
-      // If we switch to DINE_IN and it's not an edit, reset packaging
-      setPackagingQuantity(0);
-    }
-  }, [selectedOrderType, packagingQuantity, currentOrderIndex, setPackagingQuantity]);
-
-  useEffect(() => {
     if (dailyMenuData?.packagingFee) {
       setPackagingFee(Number(dailyMenuData.packagingFee));
     }
@@ -581,7 +569,15 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     }
   }, [selectedTable, selectedOrderType, tableOrders, createOrder, backdatedDate, clearAll, createBatchOrders, customerName, customerPhone, deliveryAddress, address2, customerPhone2, dailyMenuData, resetCustomer]);
 
-  const handleSelectOrderType = useCallback((type: OrderType) => setSelectedOrderType(type), [setSelectedOrderType]);
+  const handleSelectOrderType = useCallback((type: OrderType) => {
+    setSelectedOrderType(type);
+    // Auto-set packaging based on type
+    if (type === OrderType.DINE_IN) {
+      setPackagingQuantity(0);
+    } else {
+      setPackagingQuantity(1);
+    }
+  }, [setSelectedOrderType, setPackagingQuantity]);
 
   const handleBackToOrderType = useCallback(() => {
     clearAll();

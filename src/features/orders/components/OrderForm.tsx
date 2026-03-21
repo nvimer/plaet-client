@@ -40,6 +40,7 @@ import type {
   LooseItem,
   ValidationError,
 } from "../types/orderBuilder";
+import { useState } from "react";
 
 interface OrderFormProps {
   // Order type context
@@ -160,8 +161,6 @@ export function OrderForm({
   packagingFee,
   packagingQuantity,
   setPackagingQuantity,
-  _showDailyMenu,
-  _setShowDailyMenu,
   dailyMenuDisplay,
   dailyMenuPrices,
   selectedSoup,
@@ -179,7 +178,6 @@ export function OrderForm({
   proteins,
   selectedProtein,
   setSelectedProtein,
-  _lunchPrice,
   replacements,
   setReplacements,
   looseItems,
@@ -193,7 +191,6 @@ export function OrderForm({
   setOrderNotes,
   validationErrors,
   hasError,
-  _onAddToTable,
   onCancelEdit,
   isLoading,
 }: OrderFormProps) {
@@ -351,7 +348,7 @@ export function OrderForm({
             </div>
           </div>
 
-          {/* Ticket Book Info - NEW */}
+          {/* Ticket Book Info */}
           {customerId && (
             <div className="mt-6 pt-6 border-t border-primary-100/50">
               <CustomerTicketsInfo 
@@ -373,7 +370,7 @@ export function OrderForm({
         />
       )}
 
-            {/* Professional Header Banner */}
+      {/* Professional Header Banner */}
       <Card
         variant="elevated"
         className={cn(
@@ -690,20 +687,19 @@ export function OrderForm({
       )}
 
       {/* Replacement manager */}
-              <Card variant="elevated" className="p-6 rounded-2xl">
-                <ReplacementManager
-                  availableItems={{
-                    soup: dailyMenuDisplay.soupOptions,
-                    principle: dailyMenuDisplay.principleOptions,
-                    salad: dailyMenuDisplay.saladOptions,
-                    drink: dailyMenuDisplay.drinkOptions,
-                    extra: dailyMenuDisplay.extraOptions,
-                    rice: dailyMenuDisplay.riceOptions && dailyMenuDisplay.riceOptions.length > 0 
-                      ? dailyMenuDisplay.riceOptions 
-                      : (dailyMenuDisplay.riceOption ? [dailyMenuDisplay.riceOption] : []),
-                  }}
-                  replacements={replacements}
-      
+      <Card variant="elevated" className="p-6 rounded-2xl">
+        <ReplacementManager
+          availableItems={{
+            soup: dailyMenuDisplay.soupOptions,
+            principle: dailyMenuDisplay.principleOptions,
+            salad: dailyMenuDisplay.saladOptions,
+            drink: dailyMenuDisplay.drinkOptions,
+            extra: dailyMenuDisplay.extraOptions,
+            rice: dailyMenuDisplay.riceOptions && dailyMenuDisplay.riceOptions.length > 0 
+              ? dailyMenuDisplay.riceOptions 
+              : (dailyMenuDisplay.riceOption ? [dailyMenuDisplay.riceOption] : []),
+          }}
+          replacements={replacements}
           onAddReplacement={(replacement) =>
             setReplacements([...replacements, replacement])
           }
@@ -909,8 +905,6 @@ export function OrderForm({
           rows={3}
         />
       </Card>
-
-      {/* Botón removido: Ahora se maneja globalmente por FixedOrderSummaryBar en OrderCreatePage para que ocupe todo el ancho de la pantalla y no solo la columna */}
     </div>
   );
 }
