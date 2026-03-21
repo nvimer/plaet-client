@@ -32,6 +32,9 @@ export interface Role {
   updatedAt: string;
   deleted: boolean;
   deletedAt?: string;
+  _count?: {
+    users: number;
+  };
 }
 
 /**

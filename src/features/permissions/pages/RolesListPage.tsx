@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import type { RoleWithPermissions } from "@/types";
+import { RoleName } from "@/types";
+import { useAuth } from "@/hooks";
 
 const ROLE_NAME_MAP: Record<string, string> = {
   SUPERADMIN: "Superadministrador",
@@ -32,13 +34,22 @@ const ROLE_NAME_MAP: Record<string, string> = {
 
 export function RolesListPage() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { data: rolesData, isLoading } = useRoles({ limit: 100 });
   const deleteMutation = useDeleteRole();
   const [searchQuery, setSearchQuery] = useState("");
 
+  const isSuperAdmin = user?.roles?.some(r => {
+    const roleName = typeof r === 'object' && 'role' in r ? r.role.name : (r as any).name;
+    return roleName === RoleName.SUPERADMIN;
+  });
+
   const roles = rolesData?.data || [];
 
   const filteredRoles = roles.filter((role) => {
+    // Backend should already filter this, but double safeguard
+    if (role.name === RoleName.SUPERADMIN && !isSuperAdmin) return false;
+
     if (!searchQuery) return true;
     const search = searchQuery.toLowerCase();
     const nameEs = ROLE_NAME_MAP[role.name] || role.name;
@@ -50,13 +61,13 @@ export function RolesListPage() {
   });
 
   const handleDelete = async (role: RoleWithPermissions) => {
-    if (role.name === "SUPERADMIN") {
+    if (role.name === RoleName.SUPERADMIN) {
       toast.error("No puedes eliminar el rol de Superadministrador");
       return;
     }
 
-    const hasUsers = role.usersCount && role.usersCount > 0;
-    if (hasUsers) {
+    const usersCount = role._count?.users || 0;
+    if (usersCount > 0) {
       toast.error(
         "No puedes eliminar este rol porque tiene usuarios asignados"
       );
@@ -88,13 +99,15 @@ export function RolesListPage() {
               Administra los roles y permisos del sistema
             </p>
           </div>
-          <Button
-            variant="primary"
-            onClick={() => navigate(ROUTES.ROLE_CREATE)}
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Nuevo Rol
-          </Button>
+          {isSuperAdmin && (
+            <Button
+              variant="primary"
+              onClick={() => navigate(ROUTES.ROLE_CREATE)}
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Nuevo Rol
+            </Button>
+          )}
         </div>
 
         <div className="mb-6">
@@ -119,10 +132,10 @@ export function RolesListPage() {
             description={
               searchQuery
                 ? "No se encontraron roles con ese nombre"
-                : "Crea tu primer rol para comenzar"
+                : "No tienes roles asignados a tu restaurante"
             }
             action={
-              !searchQuery && (
+              !searchQuery && isSuperAdmin && (
                 <Button variant="primary" onClick={() => navigate(ROUTES.ROLE_CREATE)}>
                   <Plus className="w-5 h-5 mr-2" />
                   Crear Rol
@@ -166,6 +179,7 @@ function RoleCard({
 }: RoleCardProps) {
   const isSystemRole = ["SUPERADMIN", "ADMIN", "KITCHEN_MANAGER", "CASHIER", "WAITER"].includes(role.name);
   const permissionCount = role.permissions?.length || 0;
+  const usersCount = role._count?.users || 0;
 
   return (
     <Card
@@ -204,13 +218,13 @@ function RoleCard({
           >
             <Edit className="w-4 h-4 text-carbon-500" />
           </Button>
-          {isSystemRole && role.name !== "SUPERADMIN" && (
+          {!isSystemRole && (
             <Button
               variant="ghost"
               size="sm"
               onClick={onDelete}
               title="Eliminar"
-              disabled={role.usersCount && role.usersCount > 0}
+              disabled={usersCount > 0}
             >
               <Trash2 className="w-4 h-4 text-error-500" />
             </Button>
@@ -230,7 +244,7 @@ function RoleCard({
         </div>
         <div className="flex items-center gap-1">
           <Users className="w-3.5 h-3.5" />
-          <span>{role.usersCount || 0} usuarios</span>
+          <span>{usersCount} usuarios</span>
         </div>
       </div>
     </Card>
