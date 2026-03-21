@@ -1,5 +1,5 @@
 import axiosClient from "./axiosClient";
-import type { ApiResponse, Customer } from "@/types";
+import type { ApiResponse, Customer, PaginatedResponse, PaginationParams } from "@/types";
 
 /**
  * GET /customers/phone/:phone
@@ -11,6 +11,17 @@ export const getCustomerByPhone = async (phone: string) => {
   return data;
 };
 
+/**
+ * GET /customers/search
+ * 
+ * Busca clientes por nombre o teléfono con paginación
+ */
+export const searchCustomers = async (params: PaginationParams & { query?: string }) => {
+  const { data } = await axiosClient.get<PaginatedResponse<Customer>>("customers/search", { params });
+  return data;
+};
+
 export const customerApi = {
   getCustomerByPhone,
+  searchCustomers,
 };
