@@ -107,7 +107,7 @@ export function CustomersPage() {
           </div>
         ) : (
           <EmptyState
-            icon={User}
+            icon={<User />}
             title="No se encontraron clientes"
             description="Intenta buscar con otro nombre o número de teléfono."
           />
