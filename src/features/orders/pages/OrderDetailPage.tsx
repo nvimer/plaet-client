@@ -402,7 +402,7 @@ export function OrderDetailPage() {
                 variant="primary"
                 size="lg"
                 onClick={() => setIsPaymentModalOpen(true)}
-                isLoading={isAddingPayment}
+                isLoading={isProcessingPayment}
                 className="flex-1 min-h-[64px] rounded-2xl font-bold bg-carbon-900 hover:bg-carbon-800 text-white shadow-xl shadow-carbon-200"
               >
                 <DollarSign className="w-6 h-6 mr-2" />

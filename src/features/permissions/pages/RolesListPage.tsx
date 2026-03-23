@@ -127,7 +127,7 @@ export function RolesListPage() {
           </div>
         ) : filteredRoles.length === 0 ? (
           <EmptyState
-            icon={Shield}
+            icon={<Shield />}
             title="No hay roles"
             description={
               searchQuery

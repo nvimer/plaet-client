@@ -97,7 +97,7 @@ export function RoleEditPage() {
       <SidebarLayout title="Editar Rol" backRoute={ROUTES.ROLES}>
         <div className="max-w-2xl mx-auto py-8 px-4">
           <EmptyState
-            icon={Shield}
+            icon={<Shield />}
             title="Rol no encontrado"
             description="El rol que buscas no existe o fue eliminado"
             action={
