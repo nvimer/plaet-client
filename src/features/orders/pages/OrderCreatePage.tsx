@@ -74,7 +74,7 @@ export function OrderCreatePage() {
     setBackdatedDate,
     setIsHistoricalMode,
     setShowSummaryModal,
-    setSelectedOrderType,
+    handleSelectOrderType,
     setSelectedTable,
     handleBackToOrderType,
     handleShowSummary,
@@ -101,7 +101,7 @@ export function OrderCreatePage() {
 
   const handleQuickPackaging = () => {
     // 1. Set type to TAKE_OUT as default for packaging-only
-    setSelectedOrderType(OrderType.TAKE_OUT);
+    handleSelectOrderType(OrderType.TAKE_OUT);
     
     // 2. Clear anything existing
     clearCurrentOrder();
@@ -221,7 +221,7 @@ export function OrderCreatePage() {
               <motion.button
                 key={opt.type}
                 variants={variants.scaleIn}
-                onClick={() => setSelectedOrderType(opt.type)}
+                onClick={() => handleSelectOrderType(opt.type)}
                 className="group relative flex flex-col items-center p-10 rounded-[2.5rem] bg-white border-2 border-sage-100 hover:border-carbon-900 hover:shadow-soft-2xl transition-all duration-500 active:scale-[0.98] overflow-hidden"
               >
                 <div className={cn(

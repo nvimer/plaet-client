@@ -227,6 +227,14 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
   // 6. Effects
   useEffect(() => {
+    // Sync packaging quantity with order type if it's currently unset (0)
+    // and we are not in DINE_IN mode.
+    if (selectedOrderType && selectedOrderType !== OrderType.DINE_IN && packagingQuantity === 0 && tableOrders.length === 0) {
+      setPackagingQuantity(1);
+    }
+  }, [selectedOrderType, packagingQuantity, tableOrders.length, setPackagingQuantity]);
+
+  useEffect(() => {
     if (dailyMenuData?.packagingFee) {
       setPackagingFee(Number(dailyMenuData.packagingFee));
     }
