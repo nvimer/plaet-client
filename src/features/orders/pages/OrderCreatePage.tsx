@@ -410,10 +410,10 @@ export function OrderCreatePage() {
                 currentOrderIndex={currentOrderIndex}
                 tableOrdersLength={tableOrders.length}
                 customerName={orderBuilder.customerName}
-                setCustomerName={orderBuilder.handleSetCustomerName}
+                setCustomerName={orderBuilder.setCustomerName}
                 customerId={orderBuilder.customerId}
                 customerPhone={orderBuilder.customerPhone}
-                setCustomerPhone={orderBuilder.handleSetCustomerPhone}
+                setCustomerPhone={orderBuilder.setCustomerPhone}
                 customerPhone2={orderBuilder.customerPhone2}
                 setCustomerPhone2={orderBuilder.setCustomerPhone2}
                 deliveryAddress={orderBuilder.deliveryAddress}
