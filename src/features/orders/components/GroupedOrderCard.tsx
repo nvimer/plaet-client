@@ -31,14 +31,14 @@ interface GroupedOrderCardProps {
 /**
  * Calculate wait time and format it
  */
-function getWaitTime(createdAt: string): {
+function getWaitTime(createdAt: string, finishedAt?: string): {
   minutes: number;
   text: string;
   isUrgent: boolean;
 } {
   const created = new Date(createdAt);
-  const now = new Date();
-  const diffMs = now.getTime() - created.getTime();
+  const end = finishedAt ? new Date(finishedAt) : new Date();
+  const diffMs = end.getTime() - created.getTime();
   const diffMinutes = Math.floor(diffMs / 60000);
 
   if (diffMinutes < 1) {
@@ -47,7 +47,7 @@ function getWaitTime(createdAt: string): {
     return {
       minutes: diffMinutes,
       text: `${diffMinutes}m`,
-      isUrgent: diffMinutes > 20,
+      isUrgent: !finishedAt && diffMinutes > 20,
     };
   } else {
     const hours = Math.floor(diffMinutes / 60);
@@ -55,7 +55,7 @@ function getWaitTime(createdAt: string): {
     return {
       minutes: diffMinutes,
       text: `${hours}h ${mins}m`,
-      isUrgent: true,
+      isUrgent: !finishedAt,
     };
   }
 }
@@ -68,7 +68,13 @@ export function GroupedOrderCard({
   const [isExpanded, setIsExpanded] = useState(false);
   const { mutate: updateItemStatus } = useUpdateOrderItemStatus();
   
-  const waitTime = getWaitTime(groupedOrder.createdAt);
+  // Use the latest update time from the orders if the group is fully resolved
+  const isCompleted = groupedOrder.orders.every(o => o.status === OrderStatus.PAID || o.status === OrderStatus.CANCELLED);
+  const latestUpdateTime = isCompleted 
+    ? new Date(Math.max(...groupedOrder.orders.map(o => new Date(o.updatedAt).getTime()))).toISOString()
+    : undefined;
+    
+  const waitTime = getWaitTime(groupedOrder.createdAt, latestUpdateTime);
   
   // Calculate auto-cancel warning (10 min limit)
   const minutesRemaining = Math.max(0, 10 - waitTime.minutes);
@@ -170,7 +176,7 @@ export function GroupedOrderCard({
               isNearAutoCancel ? "bg-error-100 text-error-600 animate-pulse" : "bg-sage-100 text-sage-600"
             )}>
               <Clock className="w-3 h-3" />
-              {needsBilling ? `Cancela en ${minutesRemaining}m` : waitTime.text}
+              {needsBilling ? `Cancela en ${minutesRemaining}m` : isCompleted ? "Completado" : waitTime.text}
             </div>
             <div className={cn(
               "text-[10px] font-bold opacity-60",

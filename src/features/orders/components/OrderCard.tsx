@@ -79,14 +79,14 @@ const STATUS_CONFIG = {
 /**
  * Calculate wait time and format it
  */
-function getWaitTime(createdAt: string): {
+function getWaitTime(createdAt: string, finishedAt?: string): {
   minutes: number;
   text: string;
   isUrgent: boolean;
 } {
   const created = new Date(createdAt);
-  const now = new Date();
-  const diffMs = now.getTime() - created.getTime();
+  const end = finishedAt ? new Date(finishedAt) : new Date();
+  const diffMs = end.getTime() - created.getTime();
   const diffMinutes = Math.floor(diffMs / 60000);
 
   if (diffMinutes < 1) {
@@ -95,7 +95,7 @@ function getWaitTime(createdAt: string): {
     return {
       minutes: diffMinutes,
       text: `${diffMinutes}m`,
-      isUrgent: diffMinutes > 20,
+      isUrgent: !finishedAt && diffMinutes > 20,
     };
   } else {
     const hours = Math.floor(diffMinutes / 60);
@@ -103,7 +103,7 @@ function getWaitTime(createdAt: string): {
     return {
       minutes: diffMinutes,
       text: `${hours}h ${mins}m`,
-      isUrgent: true,
+      isUrgent: !finishedAt,
     };
   }
 }
@@ -148,7 +148,10 @@ export function OrderCard({
 
   const config = STATUS_CONFIG[order.status];
   const shortId = `#${order.id.slice(-6).toUpperCase()}`;
-  const waitTime = getWaitTime(order.createdAt);
+  
+  // If order is completed (PAID or CANCELLED), stop the timer at its last update
+  const isCompleted = order.status === OrderStatus.PAID || order.status === OrderStatus.CANCELLED;
+  const waitTime = getWaitTime(order.createdAt, isCompleted ? order.updatedAt : undefined);
 
   const createdTime = new Date(order.createdAt).toLocaleTimeString("es-CO", {
     hour: "2-digit",
@@ -346,7 +349,9 @@ export function OrderCard({
               <span className="text-3xl font-black tracking-tight">
                 {waitTime.text}
               </span>
-              <span className="text-sm font-medium opacity-70">esperando</span>
+              <span className="text-sm font-medium opacity-70">
+                {isCompleted ? "completado" : "esperando"}
+              </span>
             </div>
 
             {/* ID and Time */}
