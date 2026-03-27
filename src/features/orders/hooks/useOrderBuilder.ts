@@ -518,7 +518,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       return {
         type: selectedOrderType!,
         tableId: selectedOrderType === OrderType.DINE_IN ? (selectedTable ?? undefined) : undefined,
-        customerId: undefined,
+        customerId: orderBuilder.customerId || undefined,
         customerName: customerName.trim() || undefined,
         customerPhone: customerPhone.replace(/\D/g, "") || undefined,
         customerPhone2: customerPhone2.replace(/\D/g, "") || undefined,
