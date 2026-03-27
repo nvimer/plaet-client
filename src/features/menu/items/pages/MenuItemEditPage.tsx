@@ -451,7 +451,7 @@ export function MenuItemEditPage() {
                     className="sm:min-w-[180px]"
                   >
                     {!isSaving && <Check className="w-5 h-5 mr-2" />}
-                    Guardar Cambios
+                    {isSaving ? "Guardando..." : "Guardar Cambios"}
                   </Button>
                 </div>
                 <Button

@@ -297,12 +297,8 @@ export function TableManagePage() {
                       disabled={isUpdating}
                       className="flex-1"
                     >
-                      {isUpdating ? (
-                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                      ) : (
-                        <Check className="w-5 h-5 mr-2" />
-                      )}
-                      Guardar cambios
+                      {!isUpdating && <Check className="w-5 h-5 mr-2" />}
+                      {isUpdating ? "Guardando..." : "Guardar cambios"}
                     </Button>
                   </div>
                 </div>

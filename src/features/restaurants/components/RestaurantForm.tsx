@@ -129,16 +129,20 @@ export function RestaurantForm({ onSubmit, isLoading, initialData }: RestaurantF
 
       <div className="flex justify-end gap-3 pt-6">
         <Button type="submit" isLoading={isLoading} className="w-full md:w-auto px-8">
-          {isEditing ? (
-            <>
-              <Settings2 className="w-4 h-4 mr-2" />
-              Guardar Cambios
-            </>
+          {isLoading ? (
+            isEditing ? "Guardando..." : "Registrando..."
           ) : (
-            <>
-              <Save className="w-4 h-4 mr-2" />
-              Registrar Restaurante
-            </>
+            isEditing ? (
+              <>
+                <Settings2 className="w-4 h-4 mr-2" />
+                Guardar Cambios
+              </>
+            ) : (
+              <>
+                <Save className="w-4 h-4 mr-2" />
+                Registrar Restaurante
+              </>
+            )
           )}
         </Button>
       </div>

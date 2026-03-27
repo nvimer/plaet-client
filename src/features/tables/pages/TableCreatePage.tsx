@@ -221,17 +221,8 @@ export function TableCreatePage() {
                   disabled={isPending || !isValid}
                   className="sm:min-w-[180px]"
                 >
-                  {isPending ? (
-                    <>
-                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                      Creando...
-                    </>
-                  ) : (
-                    <>
-                      <Check className="w-5 h-5 mr-2" />
-                      Crear Mesa
-                    </>
-                  )}
+                  {!isPending && <Check className="w-5 h-5 mr-2" />}
+                  {isPending ? "Creando..." : "Crear Mesa"}
                 </Button>
               </div>
             </div>

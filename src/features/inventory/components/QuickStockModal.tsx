@@ -232,8 +232,8 @@ export function QuickStockModal({ item, isOpen, onClose }: QuickStockModalProps)
             isLoading={isPending}
             disabled={adjustment === 0}
           >
-            <Save className="w-4 h-4 mr-2" />
-            Guardar Ajuste
+            {!isPending && <Save className="w-4 h-4 mr-2" />}
+            {isPending ? "Guardando..." : "Guardar Ajuste"}
           </Button>
         </div>
       </div>

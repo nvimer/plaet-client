@@ -913,8 +913,8 @@ export function DailyMenuConfigForm({
               </>
             ) : (
               <>
-                <Save className="w-5 h-5 mr-2" />
-                Publicar Menú
+                {!(isMutationPending || isLoading) && <Save className="w-5 h-5 mr-2" />}
+                {isMutationPending || isLoading ? "Publicando..." : "Publicar Menú"}
               </>
             )}
           </Button>

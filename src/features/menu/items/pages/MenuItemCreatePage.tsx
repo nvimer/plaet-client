@@ -273,17 +273,8 @@ export function MenuItemCreatePage() {
                   disabled={!isValid}
                   className="sm:min-w-[180px]"
                 >
-                  {isPending ? (
-                    <>
-                      <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                      Creando...
-                    </>
-                  ) : (
-                    <>
-                      <Check className="w-5 h-5 mr-2" />
-                      Crear Producto
-                    </>
-                  )}
+                  {!isPending && <Check className="w-5 h-5 mr-2" />}
+                  {isPending ? "Creando..." : "Crear Producto"}
                 </Button>
               </div>
             </div>
