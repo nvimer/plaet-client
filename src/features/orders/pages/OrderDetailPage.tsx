@@ -205,66 +205,68 @@ export function OrderDetailPage() {
       >
         <div className="max-w-4xl mx-auto space-y-8 pb-24 pt-4">
           {/* Status & Type Banner - Refined */}
-          <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-5 rounded-2xl border-2 border-sage-100 shadow-smooth-md">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border-2 border-sage-100 shadow-smooth-md">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-sage-50 flex items-center justify-center text-sage-600 shadow-inner">
+              <div className="w-12 h-12 rounded-xl bg-sage-50 flex items-center justify-center text-sage-600 shadow-inner shrink-0">
                 <ReceiptText className="w-6 h-6" />
               </div>
-              <div>
-                <p className="text-[10px] font-bold text-carbon-400 tracking-wide leading-none mb-1.5">Estado Actual</p>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold text-carbon-400 tracking-wide leading-none mb-1.5 uppercase">Estado Actual</p>
                 <OrderStatusBadge status={order.status} />
               </div>
             </div>
-            <div className="text-right">
-              <p className="text-[10px] font-bold text-carbon-400 tracking-wide mb-0.5">Total del Pedido</p>
-              <p className="text-3xl font-bold text-carbon-900 tracking-tight">${Number(order.totalAmount).toLocaleString("es-CO")}</p>
+            <div className="sm:text-right border-t sm:border-t-0 pt-3 sm:pt-0 border-sage-50">
+              <p className="text-[10px] font-bold text-carbon-400 tracking-wide mb-0.5 uppercase">Total del Pedido</p>
+              <p className="text-2xl sm:text-3xl font-bold text-carbon-900 tracking-tight break-words">
+                ${Number(order.totalAmount).toLocaleString("es-CO")}
+              </p>
             </div>
           </div>
 
           {/* Info Grid */}
           <Card variant="bordered" padding="md" className="rounded-2xl border-2">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
               {order.table && (
-                <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-bold text-carbon-400 tracking-wide">Ubicación</span>
+                <div className="flex flex-col gap-1 min-w-0">
+                  <span className="text-[10px] font-bold text-carbon-400 tracking-wide uppercase">Ubicación</span>
                   <div className="flex items-center gap-2 text-carbon-700 font-bold">
-                    <div className="w-8 h-8 rounded-lg bg-sage-100 flex items-center justify-center text-sage-600">
+                    <div className="w-8 h-8 rounded-lg bg-sage-100 flex items-center justify-center text-sage-600 shrink-0">
                       <MapPin className="w-4 h-4" />
                     </div>
-                    <span>Mesa {order.table.number}</span>
+                    <span className="truncate">Mesa {order.table.number}</span>
                   </div>
                 </div>
               )}
 
               {order.waiter && (
-                <div className="flex flex-col gap-1">
-                  <span className="text-[10px] font-bold text-carbon-400 tracking-wide">Atendido por</span>
+                <div className="flex flex-col gap-1 min-w-0">
+                  <span className="text-[10px] font-bold text-carbon-400 tracking-wide uppercase">Atendido por</span>
                   <div className="flex items-center gap-2 text-carbon-700 font-bold">
-                    <div className="w-8 h-8 rounded-lg bg-carbon-100 flex items-center justify-center text-carbon-600">
+                    <div className="w-8 h-8 rounded-lg bg-carbon-100 flex items-center justify-center text-carbon-600 shrink-0">
                       <User className="w-4 h-4" />
                     </div>
-                    <span>{order.waiter.firstName}</span>
+                    <span className="truncate">{order.waiter.firstName}</span>
                   </div>
                 </div>
               )}
 
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-carbon-400 tracking-wide">Fecha</span>
+              <div className="flex flex-col gap-1 min-w-0">
+                <span className="text-[10px] font-bold text-carbon-400 tracking-wide uppercase">Fecha</span>
                 <div className="flex items-center gap-2 text-carbon-700 font-bold">
-                  <div className="w-8 h-8 rounded-lg bg-carbon-100 flex items-center justify-center text-carbon-600">
+                  <div className="w-8 h-8 rounded-lg bg-carbon-100 flex items-center justify-center text-carbon-600 shrink-0">
                     <Calendar className="w-4 h-4" />
                   </div>
-                  <span>{createdDate}</span>
+                  <span className="truncate">{createdDate}</span>
                 </div>
               </div>
 
-              <div className="flex flex-col gap-1">
-                <span className="text-[10px] font-bold text-carbon-400 tracking-wide">Hora</span>
+              <div className="flex flex-col gap-1 min-w-0">
+                <span className="text-[10px] font-bold text-carbon-400 tracking-wide uppercase">Hora</span>
                 <div className="flex items-center gap-2 text-carbon-700 font-bold">
-                  <div className="w-8 h-8 rounded-lg bg-carbon-100 flex items-center justify-center text-carbon-600">
+                  <div className="w-8 h-8 rounded-lg bg-carbon-100 flex items-center justify-center text-carbon-600 shrink-0">
                     <Clock className="w-4 h-4" />
                   </div>
-                  <span>{createdTime}</span>
+                  <span className="truncate">{createdTime}</span>
                 </div>
               </div>
             </div>
@@ -301,10 +303,10 @@ export function OrderDetailPage() {
                 {order.items?.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between p-4 bg-white rounded-2xl border-2 border-sage-50 shadow-sm"
+                    className="flex items-center justify-between p-4 bg-white rounded-2xl border-2 border-sage-50 shadow-sm gap-4"
                   >
-                    <div className="flex-1">
-                      <p className="font-bold text-carbon-900">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-bold text-carbon-900 truncate">
                         {item.quantity}x {item.menuItem?.name || "Producto"}
                       </p>
                       {showDetailedBreakdown && (
@@ -313,12 +315,12 @@ export function OrderDetailPage() {
                         </p>
                       )}
                       {item.notes && (
-                        <p className="text-sm text-carbon-500 italic mt-1 font-medium">
+                        <p className="text-sm text-carbon-500 italic mt-1 font-medium break-words">
                           📝 {item.notes}
                         </p>
                       )}
                     </div>
-                    <div className="text-right">
+                    <div className="text-right shrink-0">
                       <p className="font-bold text-carbon-900 text-lg">
                         $
                         {Number(item.priceAtOrder * item.quantity).toLocaleString(
@@ -396,7 +398,7 @@ export function OrderDetailPage() {
           </div>
 
           {/* Actions Bar */}
-          <div className="flex flex-wrap gap-3 pt-8 mt-4 border-t border-sage-200">
+          <div className="flex flex-col sm:flex-row gap-3 pt-8 mt-4 border-t border-sage-200">
             {remainingAmount > 0 ? (
               <Button
                 variant="primary"
@@ -405,8 +407,10 @@ export function OrderDetailPage() {
                 isLoading={isProcessingPayment}
                 className="flex-1 min-h-[64px] rounded-2xl font-bold bg-carbon-900 hover:bg-carbon-800 text-white shadow-xl shadow-carbon-200"
               >
-                <DollarSign className="w-6 h-6 mr-2" />
-                REGISTRAR PAGO
+                <div className="flex items-center justify-center min-w-0">
+                  <DollarSign className="w-6 h-6 mr-2 shrink-0" />
+                  <span className="truncate">REGISTRAR PAGO</span>
+                </div>
               </Button>
             ) : (
               availableActions.map((action) => (
@@ -419,8 +423,10 @@ export function OrderDetailPage() {
                   isLoading={isUpdatingStatus}
                   className="flex-1 min-h-[64px] rounded-2xl font-bold"
                 >
-                  {!isUpdatingStatus && <action.icon className="w-6 h-6 mr-2" />}
-                  {action.label}
+                  <div className="flex items-center justify-center min-w-0">
+                    {!isUpdatingStatus && <action.icon className="w-6 h-6 mr-2 shrink-0" />}
+                    <span className="truncate">{action.label}</span>
+                  </div>
                 </Button>
               ))
             )}
@@ -429,7 +435,7 @@ export function OrderDetailPage() {
               variant="ghost"
               size="lg"
               onClick={() => setShowDeleteConfirm(true)}
-              className="text-error-600 hover:bg-error-50 h-[64px] px-6 rounded-2xl font-bold"
+              className="text-error-600 hover:bg-error-50 h-[64px] px-6 rounded-2xl font-bold shrink-0 sm:flex-initial"
             >
               <Trash2 className="w-5 h-5" />
             </Button>
