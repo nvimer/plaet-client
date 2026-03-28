@@ -75,16 +75,11 @@ export function GroupedOrderCard({
     : undefined;
     
   const waitTime = getWaitTime(groupedOrder.createdAt, latestUpdateTime);
-  
-  // Calculate auto-cancel warning (10 min limit)
-  const minutesRemaining = Math.max(0, 10 - waitTime.minutes);
-  const isNearAutoCancel = waitTime.minutes >= 7; // Warning after 7 mins
 
   const createdTime = new Date(groupedOrder.createdAt).toLocaleTimeString("es-CO", {
-    hour: "2-digit",
-    minute: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
   });
-
   const totalItems = groupedOrder.orders.reduce(
     (sum, order) => sum + (order.items?.length || 0),
     0
@@ -125,7 +120,6 @@ export function GroupedOrderCard({
         "overflow-hidden border-2 transition-all duration-300 rounded-[2.5rem] flex flex-col group min-h-[520px]",
         isExpanded ? "border-carbon-900 shadow-soft-2xl" : "border-sage-100 hover:border-sage-300 hover:shadow-soft-xl",
         needsBilling && !isExpanded && "bg-white",
-        isNearAutoCancel && needsBilling && "border-error-200 ring-4 ring-error-50",
         canDeliver && !isExpanded && "border-success-500 ring-4 ring-success-50 animate-pulse-subtle"
       )}
     >
@@ -172,11 +166,10 @@ export function GroupedOrderCard({
           <div className="flex flex-col items-end gap-1">
             <div className={cn(
               "flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide transition-colors",
-              isExpanded ? "bg-white/10 text-white" : 
-              isNearAutoCancel ? "bg-error-100 text-error-600 animate-pulse" : "bg-sage-100 text-sage-600"
+              isExpanded ? "bg-white/10 text-white" : "bg-sage-100 text-sage-600"
             )}>
               <Clock className="w-3 h-3" />
-              {needsBilling ? `Cancela en ${minutesRemaining}m` : isCompleted ? "Completado" : waitTime.text}
+              {isCompleted ? "Completado" : waitTime.text}
             </div>
             <div className={cn(
               "text-[10px] font-bold opacity-60",
