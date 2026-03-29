@@ -1,4 +1,4 @@
-import { Button, Card, StatCard } from "@/components";
+import { Button, Card, StatCard, Skeleton } from "@/components";
 import { useTables } from "@/features/tables";
 import { useOrders } from "@/features/orders";
 import { ROUTES } from "@/app/routes";
