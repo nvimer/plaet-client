@@ -1,5 +1,6 @@
 import { forwardRef, type SelectHTMLAttributes } from "react";
 import { cn } from "@/utils/cn";
+import { AlertCircle } from "lucide-react";
 
 export interface SelectOption {
   label: string;
@@ -70,7 +71,8 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </div>
         </div>
         {error && (
-          <span className="text-xs font-bold text-error-600 px-1 animate-fade-in">
+          <span className="text-xs font-bold text-error-600 px-1 animate-fade-in flex items-center gap-1.5 mt-1.5">
+            <AlertCircle className="w-3 h-3" />
             {error}
           </span>
         )}

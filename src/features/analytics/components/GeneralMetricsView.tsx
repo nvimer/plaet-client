@@ -7,7 +7,18 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from "recha
 export const GeneralMetricsView = () => {
   const { dailySummary, isLoading, isError } = useAnalytics();
 
-  if (isLoading) return <Skeleton className="h-[400px] w-full rounded-3xl" />;
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <Skeleton key={i} variant="stat" className="rounded-3xl" />
+          ))}
+        </div>
+        <Skeleton className="h-[400px] w-full rounded-3xl" />
+      </div>
+    );
+  }
   if (isError || !dailySummary) {
     return (
       <div className="flex flex-col items-center justify-center h-[400px] text-error-500 bg-error-50 rounded-3xl">

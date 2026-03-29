@@ -2,7 +2,7 @@ import { Button } from "@/components";
 import React from "react";
 import { X, ArrowRight, ArrowLeft, Check, ArrowRightLeft } from "lucide-react";
 import { cn } from "@/utils/cn";
-import type { CategoryInfo, ReplacementCategory } from "./replacementConstants";
+import type { CategoryInfo, ReplacementCategory } from "../utils/replacementConstants";
 
 interface ReplacementModalProps {
   showAddModal: boolean;

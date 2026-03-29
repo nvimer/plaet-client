@@ -12,7 +12,7 @@ import type {
   PaginationParams,
 } from "@/types";
 import type { UpdateProfileInput } from "@/features/users/schemas/userSchemas";
-import axiosClient from "./axiosClient";
+import { axiosClient } from "./axiosClient";
 
 /**
  * GET /profile/me

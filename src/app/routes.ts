@@ -3,15 +3,9 @@
  *
  * Centralized route definitions for the application.
  * This ensures type safety and easy refactoring.
- *
- * All routes follow the pattern: /feature/action
- * - List views: /feature
- * - Create: /feature/new
- * - Detail: /feature/:id
- * - Edit: /feature/:id/edit
  */
 
-export const ROUTES = {
+const BASE_ROUTES = {
   // Public routes
   HOME: "/",
   LOGIN: "/login",
@@ -86,12 +80,24 @@ export const ROUTES = {
 /**
  * Helper functions to generate routes with parameters
  */
-export const getOrderDetailRoute = (id: string | number) => `/orders/${id}`;
-export const getOrderEditRoute = (id: string | number) => `/orders/${id}/edit`;
-export const getMenuItemEditRoute = (id: string | number) =>
-  `/menu/items/${id}/edit`;
-export const getCategoryEditRoute = (id: string | number) =>
-  `/menu/categories/${id}/edit`;
-export const getTableManageRoute = (id: string | number) => `/tables/${id}`;
-export const getUserEditRoute = (id: string | number) => `/users/${id}/edit`;
-export const getRoleEditRoute = (id: string | number) => `/admin/roles/${id}/edit`;
+export const getOrderDetailRoute = (id: string | number) => `/orders/${id}` as const;
+export const getOrderEditRoute = (id: string | number) => `/orders/${id}/edit` as const;
+export const getMenuItemEditRoute = (id: string | number) => `/menu/items/${id}/edit` as const;
+export const getCategoryEditRoute = (id: string | number) => `/menu/categories/${id}/edit` as const;
+export const getTableManageRoute = (id: string | number) => `/tables/${id}` as const;
+export const getUserEditRoute = (id: string | number) => `/users/${id}/edit` as const;
+export const getRoleEditRoute = (id: string | number) => `/admin/roles/${id}/edit` as const;
+
+/**
+ * ROUTES Object with helper functions
+ */
+export const ROUTES = {
+  ...BASE_ROUTES,
+  getOrderDetailRoute,
+  getOrderEditRoute,
+  getMenuItemEditRoute,
+  getCategoryEditRoute,
+  getTableManageRoute,
+  getUserEditRoute,
+  getRoleEditRoute,
+};

@@ -431,14 +431,16 @@ export function OrderDetailPage() {
               ))
             )}
 
-            <Button
-              variant="ghost"
-              size="lg"
-              onClick={() => setShowDeleteConfirm(true)}
-              className="text-error-600 hover:bg-error-50 h-[64px] px-6 rounded-2xl font-bold shrink-0 sm:flex-initial"
-            >
-              <Trash2 className="w-5 h-5" />
-            </Button>
+            <Tooltip content="Eliminar Pedido">
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={() => setShowDeleteConfirm(true)}
+                className="text-error-600 hover:bg-error-50 h-[64px] px-6 rounded-2xl font-bold shrink-0 sm:flex-initial"
+              >
+                <Trash2 className="w-5 h-5" />
+              </Button>
+            </Tooltip>
           </div>
         </div>
       </SidebarLayout>

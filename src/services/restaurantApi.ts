@@ -5,7 +5,7 @@
  * Base Endpoints: /restaurants/*
  */
 
-import axiosClient from "./axiosClient";
+import { axiosClient } from "./axiosClient";
 import type {
   Restaurant,
   CreateRestaurantInput,

@@ -5,7 +5,7 @@
  * Base Endpoints: /roles/*
  */
 
-import axiosClient from "./axiosClient";
+import { axiosClient } from "./axiosClient";
 import type {
   Role,
   ApiResponse,
@@ -72,18 +72,6 @@ export const getRoleById = async (id: number) => {
 };
 
 /**
- * GET /roles/permissions/:id
- * 
- * Get role with permissions
- */
-export const getRoleWithPermissions = async (id: number) => {
-  const { data } = await axiosClient.get<ApiResponse<Role>>(
-    `roles/permissions/${id}`
-  );
-  return data;
-};
-
-/**
  * POST /roles
  * 
  * Create a new role
@@ -131,22 +119,6 @@ export const assignPermissionsToRole = async (
   const { data } = await axiosClient.post<ApiResponse<Role>>(
     `roles/permissions/${roleId}/assign`,
     { permissionIds }
-  );
-  return data;
-};
-
-/**
- * DELETE /roles/permissions/:id/remove
- * 
- * Remove permissions from a role
- */
-export const removePermissionsFromRole = async (
-  roleId: number,
-  permissionIds: number[]
-) => {
-  const { data } = await axiosClient.delete<ApiResponse<Role>>(
-    `roles/permissions/${roleId}/remove`,
-    { data: { permissionIds } }
   );
   return data;
 };

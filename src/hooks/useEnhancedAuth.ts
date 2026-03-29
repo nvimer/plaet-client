@@ -99,4 +99,3 @@ export function useUser() {
   };
 }
 
-export default useAuth;

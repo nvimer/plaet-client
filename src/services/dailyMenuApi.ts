@@ -1,4 +1,4 @@
-import axiosClient from "./axiosClient";
+import { axiosClient } from "./axiosClient";
 
 /**
  * Menu Item Option - Simplified for daily menu display

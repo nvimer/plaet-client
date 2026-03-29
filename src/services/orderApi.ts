@@ -16,7 +16,7 @@ import {
   type UpdateOrderInput,
   type OrderItem,
 } from "@/types";
-import axiosClient from "./axiosClient";
+import { axiosClient } from "./axiosClient";
 
 // =================== EXISTING ENDPOINTS ===================
 
@@ -428,41 +428,6 @@ export const cancelOrder = async (
 
 // =================== PAYMENTS ===================
 
-/**
- * POST /orders/:id/payments
- *
- * Register a payment for an order
- *
- * @param orderId - Order ID
- * @param paymentData - Payment data
- * @returns Created payment
- */
-export const addPayment = async (
-  orderId: string,
-  paymentData: Omit<CreatePaymentInput, "orderId">,
-) => {
-  const { data } = await axiosClient.post<ApiResponse<Payment>>(
-    `orders/${orderId}/payments`,
-    paymentData,
-  );
-  return data;
-};
-
-/**
- * GET /orders/:id/payments
- *
- * Get all payments for an order
- *
- * @param orderId - Order ID
- * @returns Order payments
- */
-export const getOrderPayments = async (orderId: string) => {
-  const { data } = await axiosClient.get<ApiResponse<Payment[]>>(
-    `orders/${orderId}/payments`
-  );
-  return data;
-};
-
 // =================== EXPORTS ===================
 
 export const orderApi = {
@@ -473,34 +438,30 @@ export const orderApi = {
   updateOrder,
   updateOrderStatus,
   deleteOrder,
-  
+
   // Order items
   addOrderItem,
   removeOrderItem,
   updateOrderItem,
   updateOrderItemStatus,
-  
+
   // Batch operations
   updateBatchOrderStatus,
-  
+
   // Kitchen & Status
   getKitchenOrders,
-  
+
   // Reports & Analytics
   getDailySales,
-  
+
   // Search
   searchOrders,
-  
+
   // Actions
   duplicateOrder,
   validateOrder,
   cancelOrder,
-  
+
   // Utilities
   getTableAvailability,
-  
-  // Payments
-  addPayment,
-  getOrderPayments,
 };

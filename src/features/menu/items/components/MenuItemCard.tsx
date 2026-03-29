@@ -1,4 +1,4 @@
-import { Button, ConfirmDialog } from "@/components";
+import { Button, ConfirmDialog, Tooltip } from "@/components";
 import { useState } from "react";
 import { Edit2, ImageIcon, Trash2, Package, Star, Plus } from "lucide-react";
 import type { MenuItem } from "@/types";
@@ -135,39 +135,42 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete, highlighted
           {/* ACTIONS */}
           <div className="mt-auto flex items-center gap-2 pt-2 border-t border-sage-50">
             {item.inventoryType === "TRACKED" && (
-              <Button
-                variant="primary"
-                onClick={() => setIsStockModalOpen(true)}
-                className="flex-1 rounded-xl bg-sage-600 h-10 sm:h-11 px-0 shadow-sm transition-all hover:bg-sage-700"
-                title="Ajustar Stock"
-              >
-                <Plus className="w-5 h-5" />
-              </Button>
+              <Tooltip content="Ajustar Stock" className="flex-1">
+                <Button
+                  variant="primary"
+                  onClick={() => setIsStockModalOpen(true)}
+                  className="w-full rounded-xl bg-sage-600 h-10 sm:h-11 px-0 shadow-sm transition-all hover:bg-sage-700"
+                >
+                  <Plus className="w-5 h-5" />
+                </Button>
+              </Tooltip>
             )}
             
-            <Button
-              variant="ghost"
-              onClick={() => onEdit(item.id)}
-              className={cn(
-                "rounded-xl bg-carbon-50 h-10 sm:h-11 text-carbon-600 border border-carbon-100 transition-all hover:bg-white hover:border-sage-300 hover:text-sage-600 shrink-0",
-                item.inventoryType === "TRACKED" ? "w-10 sm:w-11" : "flex-1"
-              )}
-              title="Editar"
-            >
-              <Edit2 className="w-4 h-4" />
-            </Button>
+            <Tooltip content="Editar Producto" className={item.inventoryType === "TRACKED" ? "" : "flex-1"}>
+              <Button
+                variant="ghost"
+                onClick={() => onEdit(item.id)}
+                className={cn(
+                  "rounded-xl bg-carbon-50 h-10 sm:h-11 text-carbon-600 border border-carbon-100 transition-all hover:bg-white hover:border-sage-300 hover:text-sage-600 shrink-0",
+                  item.inventoryType === "TRACKED" ? "w-10 sm:w-11" : "w-full"
+                )}
+              >
+                <Edit2 className="w-4 h-4" />
+              </Button>
+            </Tooltip>
 
-            <Button
-              variant="ghost"
-              onClick={() => setIsDeleteDialogOpen(true)}
-              className={cn(
-                "rounded-xl bg-error-50 h-10 sm:h-11 text-error-600 border border-error-100 transition-all hover:bg-error-600 hover:text-white shrink-0",
-                item.inventoryType === "TRACKED" ? "w-10 sm:w-11" : "flex-1"
-              )}
-              title="Eliminar"
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
+            <Tooltip content="Eliminar Producto" className={item.inventoryType === "TRACKED" ? "" : "flex-1"}>
+              <Button
+                variant="ghost"
+                onClick={() => setIsDeleteDialogOpen(true)}
+                className={cn(
+                  "rounded-xl bg-error-50 h-10 sm:h-11 text-error-600 border border-error-100 transition-all hover:bg-error-600 hover:text-white shrink-0",
+                  item.inventoryType === "TRACKED" ? "w-10 sm:w-11" : "w-full"
+                )}
+              >
+                <Trash2 className="w-4 h-4" />
+              </Button>
+            </Tooltip>
           </div>
         </div>
       </article>

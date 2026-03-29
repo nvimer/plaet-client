@@ -5,7 +5,7 @@
  * Base Endpoints: /users/*
  */
 
-import axiosClient from "./axiosClient";
+import { axiosClient } from "./axiosClient";
 import type {
   User,
   UserWithRolesAndPermissions,

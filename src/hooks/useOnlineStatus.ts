@@ -74,4 +74,3 @@ export function useOnlineStatus(): UseOnlineStatusReturn {
   return { isOnline, wasOffline, lastChecked, checkConnection };
 }
 
-export default useOnlineStatus;

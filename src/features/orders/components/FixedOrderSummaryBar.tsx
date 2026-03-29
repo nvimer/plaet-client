@@ -88,4 +88,3 @@ export function FixedOrderSummaryBar({
   );
 }
 
-export default FixedOrderSummaryBar;

@@ -1,4 +1,4 @@
-import { Button, ConfirmDialog } from "@/components";
+import { Button, ConfirmDialog, Tooltip } from "@/components";
 import { TableStatus, type Table } from "@/types";
 import type { AxiosErrorWithResponse } from "@/types/common";
 import { useUpdateTableStatus } from "../hooks";
@@ -175,30 +175,34 @@ export function TableCard({ table, onEdit }: TableCardProps) {
           </Button>
 
           <div className="flex gap-1">
-            <button
-              onClick={() => {
-                const next: Record<TableStatus, TableStatus> = {
-                  [TableStatus.AVAILABLE]: TableStatus.OCCUPIED,
-                  [TableStatus.OCCUPIED]: TableStatus.NEEDS_CLEANING,
-                  [TableStatus.NEEDS_CLEANING]: TableStatus.AVAILABLE,
-                };
-                handleStatusChange(next[table.status]);
-              }}
-              disabled={isUpdatingStatus}
-              className={cn(
-                "flex-1 flex items-center justify-center rounded-2xl border-2 transition-all",
-                "bg-white border-sage-100 text-carbon-600 hover:border-carbon-900 hover:text-carbon-900 shadow-soft-sm active:scale-95"
-              )}
-              title="Cambiar estado"
-            >
-              <CircleDot className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setIsDeleteDialogOpen(true)}
-              className="w-11 h-11 flex items-center justify-center rounded-2xl border-2 border-sage-100 text-carbon-300 hover:border-error-200 hover:text-error-600 hover:bg-error-50 transition-all active:scale-95 shadow-soft-sm"
-            >
-              <Trash2 className="w-4 h-4" />
-            </button>
+            <Tooltip content="Cambiar estado">
+              <button
+                onClick={() => {
+                  const next: Record<TableStatus, TableStatus> = {
+                    [TableStatus.AVAILABLE]: TableStatus.OCCUPIED,
+                    [TableStatus.OCCUPIED]: TableStatus.NEEDS_CLEANING,
+                    [TableStatus.NEEDS_CLEANING]: TableStatus.AVAILABLE,
+                  };
+                  handleStatusChange(next[table.status]);
+                }}
+                disabled={isUpdatingStatus}
+                className={cn(
+                  "w-11 h-11 flex items-center justify-center rounded-2xl border-2 transition-all",
+                  "bg-white border-sage-100 text-carbon-600 hover:border-carbon-900 hover:text-carbon-900 shadow-soft-sm active:scale-95"
+                )}
+              >
+                <CircleDot className="w-4 h-4" />
+              </button>
+            </Tooltip>
+            
+            <Tooltip content="Eliminar mesa">
+              <button
+                onClick={() => setIsDeleteDialogOpen(true)}
+                className="w-11 h-11 flex items-center justify-center rounded-2xl border-2 border-sage-100 text-carbon-300 hover:border-error-200 hover:text-error-600 hover:bg-error-50 transition-all active:scale-95 shadow-soft-sm"
+              >
+                <Trash2 className="w-4 h-4" />
+              </button>
+            </Tooltip>
           </div>
         </div>
       </motion.article>

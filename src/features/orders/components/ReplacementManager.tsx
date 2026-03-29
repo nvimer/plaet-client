@@ -166,4 +166,3 @@ export function ReplacementManager({
   );
 }
 
-export default ReplacementManager;

@@ -19,12 +19,9 @@ const getApiBaseUrl = (): string => {
   return "http://localhost:8080";
 };
 
-// Check if we're in production
-export const isProduction = import.meta.env.PROD;
-
 // API Configuration
 export const API_BASE_URL = getApiBaseUrl();
-export const API_PREFIX = "/api/v1";
+const API_PREFIX = "/api/v1";
 export const API_URL = `${API_BASE_URL}${API_PREFIX}`;
 
 // Application Name

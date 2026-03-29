@@ -5,7 +5,7 @@
  * Base Endpoints: /permissions/*
  */
 
-import axiosClient from "./axiosClient";
+import { axiosClient } from "./axiosClient";
 import type {
   Permission,
   ApiResponse,

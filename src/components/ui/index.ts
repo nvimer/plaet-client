@@ -9,3 +9,4 @@ export * from "./ImageUpload/ImageUpload";
 export * from "./RadioGroup/RadioGroup";
 export * from "./Select/Select";
 export * from "./Skeleton/Skeleton";
+export * from "./Tooltip/Tooltip";

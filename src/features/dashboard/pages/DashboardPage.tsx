@@ -102,7 +102,7 @@ function UserDashboard() {
   const { user } = useAuth();
   const navigate = useNavigate();
 
-  const { data: tablesData } = useTables();
+  const { data: tablesData, isLoading: loadingTables } = useTables();
   const tables = tablesData?.tables;
 
   const getTodayFilter = () => {
@@ -111,7 +111,9 @@ function UserDashboard() {
     return { fromDate: todayString, toDate: todayString, pageSize: 1000 };
   };
 
-  const { data: todayOrders } = useOrders(getTodayFilter());
+  const { data: todayOrders, isLoading: loadingOrders } = useOrders(getTodayFilter());
+
+  const isLoading = loadingTables || loadingOrders;
 
   const activeTables = tables?.filter((t) => t.status === "OCCUPIED").length || 0;
   const totalTables = tables?.length || 0;
@@ -205,6 +207,40 @@ function UserDashboard() {
       bgColor: "bg-info-50",
     },
   ];
+
+  if (isLoading) {
+    return (
+      <SidebarLayout hideTitle fullWidth>
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-10 py-12 space-y-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8">
+            <div className="space-y-4 flex-1">
+              <Skeleton variant="text" width={150} />
+              <Skeleton variant="text" height={40} width="60%" />
+              <Skeleton variant="text" width={200} />
+            </div>
+            <Skeleton variant="card" width={320} height={120} className="hidden md:block" />
+          </div>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[...Array(6)].map((_, i) => (
+              <Skeleton key={i} variant="card" height={110} />
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[...Array(4)].map((_, i) => (
+              <Skeleton key={i} variant="stat" />
+            ))}
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <Skeleton variant="card" className="lg:col-span-2" height={300} />
+            <Skeleton variant="card" height={300} />
+          </div>
+        </div>
+      </SidebarLayout>
+    );
+  }
 
   return (
     <SidebarLayout hideTitle fullWidth>

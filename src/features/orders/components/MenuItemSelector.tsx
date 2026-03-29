@@ -167,5 +167,3 @@ export function MenuItemSelector({
     </div>
   );
 }
-
-export default MenuItemSelector;

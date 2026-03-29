@@ -1,6 +1,6 @@
 import React, { forwardRef, useState, useEffect } from "react";
 import { cn } from "@/utils/cn";
-import { DollarSign, Plus, Minus, RotateCcw } from "lucide-react";
+import { DollarSign, Plus, Minus, RotateCcw, AlertCircle } from "lucide-react";
 
 interface PriceInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "onChange" | "value" | "type"> {
   label?: string;
@@ -123,7 +123,8 @@ export const PriceInput = forwardRef<HTMLInputElement, PriceInputProps>(
         </div>
 
         {error && (
-          <p className="text-xs font-semibold text-error-600 px-1 animate-fade-in">
+          <p className="text-xs font-bold text-error-600 px-1 animate-fade-in flex items-center gap-1.5 mt-1">
+            <AlertCircle className="w-3 h-3" />
             {error}
           </p>
         )}

@@ -3,7 +3,7 @@
  * Left column of order creation with lunch configuration
  */
 
-import { Card, Input } from "@/components";
+import { Card, Input, Tooltip } from "@/components";
 import {
   ProteinSelector,
   MenuItemSelector,
@@ -414,13 +414,14 @@ export function OrderForm({
           
           <div className="flex items-center gap-2">
             {currentOrderIndex !== null && (
-              <button
-                onClick={onCancelEdit}
-                className="p-2.5 sm:p-3 bg-error-50 border-2 border-error-100 rounded-xl text-error-500 hover:bg-error-100 transition-all shadow-sm active:scale-90"
-                title="Cancelar edición"
-              >
-                <X className="w-5 h-5" />
-              </button>
+              <Tooltip content="Cancelar edición">
+                <button
+                  onClick={onCancelEdit}
+                  className="p-2.5 sm:p-3 bg-error-50 border-2 border-error-100 rounded-xl text-error-500 hover:bg-error-100 transition-all shadow-sm active:scale-90"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </Tooltip>
             )}
           </div>
         </div>
