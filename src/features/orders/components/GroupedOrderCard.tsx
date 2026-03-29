@@ -91,6 +91,42 @@ export function GroupedOrderCard({
   // Logic for primary actions based on account and items
   const activeOrders = groupedOrder.orders.filter(o => o.status === OrderStatus.OPEN || o.status === OrderStatus.SENT_TO_CASHIER);
   const allItems = groupedOrder.orders.flatMap(o => o.items || []);
+
+  // Aggregation Logic for Preview
+  const aggregatedItems = useMemo(() => {
+    const groups: Record<string, { name: string; quantity: number; isLunch: boolean }> = {};
+
+    allItems.forEach((item) => {
+      const isLunch = item.notes?.toLowerCase().startsWith("almuerzo:") || false;
+      const rawName = item.menuItem?.name || item.notes || "Producto";
+      
+      // Clean name for lunch items to group correctly (remove "Almuerzo: ")
+      let displayName = rawName;
+      if (isLunch && rawName.toLowerCase().startsWith("almuerzo:")) {
+        displayName = rawName.substring(rawName.indexOf(":") + 1).trim();
+      }
+
+      // Unique key based on ID and type
+      const key = `${item.menuItemId || 'notes'}-${isLunch}-${displayName}`;
+
+      if (!groups[key]) {
+        groups[key] = {
+          name: displayName,
+          quantity: 0,
+          isLunch,
+        };
+      }
+      groups[key].quantity += item.quantity;
+    });
+
+    return Object.values(groups).sort((a, b) => {
+      // Sort: Lunch items first, then others
+      if (a.isLunch && !b.isLunch) return -1;
+      if (!a.isLunch && b.isLunch) return 1;
+      return a.name.localeCompare(b.name);
+    });
+  }, [allItems]);
+
   const kitchenItems = allItems.filter(isKitchenBound);
 
   const itemsReadyForDelivery = kitchenItems.filter(i => i.status === OrderItemStatus.READY);
@@ -191,16 +227,21 @@ export function GroupedOrderCard({
             </div>
             
             <div className="space-y-1.5 opacity-80">
-              {groupedOrder.orders.flatMap(o => o.items || []).slice(0, 4).map((item, i) => (
+              {aggregatedItems.slice(0, 4).map((item, i) => (
                 <div key={i} className="flex items-center gap-2 text-xs text-carbon-600 font-medium">
-                  <div className="w-1.5 h-1.5 rounded-full bg-sage-300" />
+                  <div className={cn(
+                    "w-1.5 h-1.5 rounded-full",
+                    item.isLunch ? "bg-primary-500" : "bg-sage-300"
+                  )} />
                   <span className="truncate">
-                    {item.quantity}x {item.menuItem?.name || item.notes || 'Producto'}
+                    <span className="font-black text-carbon-900">{item.quantity}x</span>{" "}
+                    {item.isLunch && <span className="text-[9px] font-bold text-primary-600 uppercase mr-1">Alm:</span>}
+                    {item.name}
                   </span>
                 </div>
               ))}
-              {totalItems > 4 && (
-                <p className="text-[10px] text-carbon-400 font-bold pl-3.5">+ {totalItems - 4} productos más...</p>
+              {aggregatedItems.length > 4 && (
+                <p className="text-[10px] text-carbon-400 font-bold pl-3.5">+ {aggregatedItems.length - 4} productos más...</p>
               )}
             </div>
           </div>
