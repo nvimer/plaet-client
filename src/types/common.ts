@@ -34,6 +34,7 @@ export interface PaginationParams {
   page?: number;
   limit?: number;
   categoryId?: number | string;
+  forOrder?: boolean;
 }
 
 /**

@@ -92,11 +92,11 @@ export function useItemsPagination(
 }
 
 // Original hook for backward compatibility - shows all items without pagination
-export function useItems() {
+export function useItems(forOrder: boolean = false) {
   return useQuery({
-    queryKey: queryKeys.menu.all,
+    queryKey: [...queryKeys.menu.all, { forOrder }],
     queryFn: async () => {
-      const response = await menuApi.getMenuItems({ page: 1, limit: 100 });
+      const response = await menuApi.getMenuItems({ page: 1, limit: 100, forOrder });
       return response.data;
     },
     staleTime: 0,

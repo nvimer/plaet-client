@@ -200,7 +200,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
   // 4. Data Hooks
   const { data: tablesData, isLoading: tablesLoading } = useTables();
-  const { data: menuItems, isLoading: itemsLoading } = useItems();
+  const { data: menuItems, isLoading: itemsLoading } = useItems(true);
   const { data: categories } = useCategories();
   const dailyMenu = useDailyMenuByDate(backdatedDate || getLocalDateString(new Date()));
   
