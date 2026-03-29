@@ -46,6 +46,7 @@ export function PaymentModal({
   const [method, setMethod] = useState<PaymentMethod>(PaymentMethod.CASH);
   const [payments, setPayments] = useState<PaymentEntry[]>([]);
   const [currentAmount, setCurrentAmount] = useState<number>(0);
+  const [receivedAmount, setReceivedAmount] = useState<number>(0);
   
   // Selection logic
   const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
@@ -106,6 +107,7 @@ export function PaymentModal({
       setPayAll(true);
       setSelectedOrderIds(orders.map(o => o.id));
       setPayments([]);
+      setReceivedAmount(0);
       
       // Pre-fill phone if available in orders
       const firstWithPhone = orders.find(o => o.customer?.phone);
@@ -259,10 +261,19 @@ export function PaymentModal({
               <p className="text-[10px] font-semibold tracking-[0.2em] text-carbon-400 mb-1 uppercase">Total a Pagar</p>
               <h3 className="text-3xl font-black tracking-tighter">${totalToPay.toLocaleString("es-CO")}</h3>
             </div>
-            <div className="text-right">
-              <p className="text-[10px] font-semibold tracking-[0.2em] text-success-400 mb-1 uppercase">Pagado</p>
-              <h3 className="text-2xl font-black tracking-tighter text-success-400">${totalPaid.toLocaleString("es-CO")}</h3>
-            </div>
+            {method === PaymentMethod.CASH && receivedAmount > currentAmount ? (
+              <div className="text-right">
+                <p className="text-[10px] font-semibold tracking-[0.2em] text-success-400 mb-1 uppercase">Cambio</p>
+                <h3 className="text-2xl font-black tracking-tighter text-success-400">
+                  ${(receivedAmount - currentAmount).toLocaleString("es-CO")}
+                </h3>
+              </div>
+            ) : (
+              <div className="text-right">
+                <p className="text-[10px] font-semibold tracking-[0.2em] text-success-400 mb-1 uppercase">Pagado</p>
+                <h3 className="text-2xl font-black tracking-tighter text-success-400">${totalPaid.toLocaleString("es-CO")}</h3>
+              </div>
+            )}
           </div>
           {totalPaid > 0 && (
             <div className="mt-4 pt-4 border-t border-white/10">
@@ -320,8 +331,9 @@ export function PaymentModal({
                 {method === PaymentMethod.CASH && (
                   <CashPaymentForm 
                     amount={currentAmount} 
-                    remainingToPay={remainingToPay} 
                     onAmountChange={setCurrentAmount} 
+                    receivedAmount={receivedAmount}
+                    onReceivedChange={setReceivedAmount}
                   />
                 )}
                 {method === PaymentMethod.NEQUI && (
