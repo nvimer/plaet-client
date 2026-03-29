@@ -131,11 +131,11 @@ export function GroupedOrderCard({
         )}
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="flex items-center justify-between gap-4 mb-6">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+          <div className="flex items-center gap-4 min-w-0 flex-1">
             {/* TABLE NUMBER BOX */}
             <div className={cn(
-              "w-16 h-16 rounded-[1.25rem] flex items-center justify-center shadow-md transition-all duration-500",
+              "w-16 h-16 rounded-[1.25rem] flex items-center justify-center shadow-md transition-all duration-500 shrink-0",
               isExpanded ? "bg-white text-carbon-900" : "bg-carbon-900 text-white group-hover:rotate-3"
             )}>
               <span className="text-3xl font-black tracking-tighter">
@@ -143,19 +143,19 @@ export function GroupedOrderCard({
               </span>
             </div>
             
-            <div>
+            <div className="min-w-0">
               <h3 className={cn(
-                "text-sm font-semibold tracking-wide",
+                "text-sm font-semibold tracking-wide truncate",
                 isExpanded ? "text-white/60" : "text-carbon-400"
               )}>
                 {groupedOrder.table ? "Mesa" : "Pedido"}
               </h3>
-              <div className="flex items-center gap-2">
-                <span className={cn("text-xl font-bold", isExpanded ? "text-white" : "text-carbon-900")}>
+              <div className="flex items-center gap-2 min-w-0">
+                <span className={cn("text-xl font-bold truncate", isExpanded ? "text-white" : "text-carbon-900")}>
                   {groupedOrder.table ? `Mesa ${groupedOrder.table.number}` : `#${groupedOrder.id.slice(-4).toUpperCase()}`}
                 </span>
                 {groupedOrder.table && (
-                  <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-md", isExpanded ? "bg-white/20 text-white" : "bg-carbon-100 text-carbon-500")}>
+                  <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0", isExpanded ? "bg-white/20 text-white" : "bg-carbon-100 text-carbon-500")}>
                     #{groupedOrder.id.slice(-4).toUpperCase()}
                   </span>
                 )}
@@ -163,16 +163,16 @@ export function GroupedOrderCard({
             </div>
           </div>
 
-          <div className="flex flex-col items-end gap-1">
+          <div className="flex flex-col items-end gap-1 shrink-0">
             <div className={cn(
-              "flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide transition-colors",
+              "flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-semibold tracking-wide transition-colors whitespace-nowrap",
               isExpanded ? "bg-white/10 text-white" : "bg-sage-100 text-sage-600"
             )}>
               <Clock className="w-3 h-3" />
               {isCompleted ? "Completado" : waitTime.text}
             </div>
             <div className={cn(
-              "text-[10px] font-bold opacity-60",
+              "text-[10px] font-bold opacity-60 whitespace-nowrap",
               isExpanded ? "text-white" : "text-carbon-400"
             )}>
               Ingreso: {createdTime}
