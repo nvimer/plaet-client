@@ -138,6 +138,7 @@ interface OrderFormProps {
   // Actions
   onAddToTable: () => void;
   onCancelEdit: () => void;
+  identifyAsGenericCustomer?: () => void;
 
   // Loading
   isLoading: boolean;
@@ -258,7 +259,18 @@ export function OrderForm({
             </div>
 
             <div className="sm:col-span-2 space-y-2">
-              <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1">Nombre del Cliente</label>
+              <div className="flex items-center justify-between ml-1">
+                <label className="text-[10px] font-black text-carbon-500 tracking-wide uppercase italic">Nombre del Cliente</label>
+                {identifyAsGenericCustomer && (
+                  <button
+                    type="button"
+                    onClick={identifyAsGenericCustomer}
+                    className="text-[9px] font-black text-primary-600 hover:text-primary-700 uppercase tracking-widest bg-primary-50 px-2 py-1 rounded-lg transition-colors border border-primary-100"
+                  >
+                    Consumidor Final
+                  </button>
+                )}
+              </div>
               <div className="relative">
                 <User className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
                 <Input
