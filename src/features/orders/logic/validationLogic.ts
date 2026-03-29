@@ -26,6 +26,7 @@ interface ValidationParams {
   customerName: string;
   customerPhone: string;
   deliveryAddress: string;
+  hasCustomerData: boolean;
 }
 
 /**
@@ -51,6 +52,7 @@ export const validateOrderDraft = ({
   customerName,
   customerPhone,
   deliveryAddress,
+  hasCustomerData,
 }: ValidationParams): ValidationError[] => {
   const errors: ValidationError[] = [];
   
@@ -83,13 +85,23 @@ export const validateOrderDraft = ({
     errors.push({ field: "table", message: "Selecciona una mesa" });
   }
 
-  if (selectedOrderType === OrderType.TAKE_OUT || selectedOrderType === OrderType.DELIVERY) {
-    if (!customerName.trim()) errors.push({ field: "customerName", message: "Nombre del cliente requerido" });
-    if (!customerPhone.trim()) errors.push({ field: "customerPhone", message: "Teléfono requerido" });
+  // Customer Data is required if hasCustomerData is true OR if it's a Delivery
+  const isDelivery = selectedOrderType === OrderType.DELIVERY;
+  const isTakeOut = selectedOrderType === OrderType.TAKE_OUT;
+
+  if (hasCustomerData || isDelivery) {
+    if (!customerName.trim()) {
+      errors.push({ field: "customerName", message: "Nombre del cliente requerido" });
+    }
+    if (!customerPhone.trim()) {
+      errors.push({ field: "customerPhone", message: "Teléfono requerido" });
+    }
   }
 
-  if (selectedOrderType === OrderType.DELIVERY) {
-    if (!deliveryAddress.trim()) errors.push({ field: "deliveryAddress", message: "Dirección de entrega requerida" });
+  if (isDelivery) {
+    if (!deliveryAddress.trim()) {
+      errors.push({ field: "deliveryAddress", message: "Dirección de entrega requerida" });
+    }
   }
   
   return errors;

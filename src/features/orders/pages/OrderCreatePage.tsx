@@ -459,7 +459,8 @@ export function OrderCreatePage() {
                 hasError={formProps.hasError}
                 onAddToTable={formProps.handleAddOrderToTable}
                 onCancelEdit={handleCancelEdit}
-                identifyAsGenericCustomer={customerLookup.identifyAsGenericCustomer}
+                hasCustomerData={orderBuilder.hasCustomerData}
+                setHasCustomerData={orderBuilder.setHasCustomerData}
                 isLoading={orderBuilder.itemsLoading || orderBuilder.menuLoading}
               />
             </motion.div>

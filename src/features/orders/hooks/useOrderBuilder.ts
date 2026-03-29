@@ -62,6 +62,7 @@ export interface UseOrderBuilderReturn {
   customerPhone2: string;
   deliveryAddress: string;
   address2: string;
+  hasCustomerData: boolean;
   packagingFee: number;
   
   // Current order state
@@ -135,6 +136,7 @@ export interface UseOrderBuilderReturn {
   setCustomerPhone2: (phone: string) => void;
   setDeliveryAddress: (address: string) => void;
   setAddress2: (address: string) => void;
+  setHasCustomerData: (hasData: boolean) => void;
   packagingQuantity: number;
   setPackagingQuantity: (qty: number) => void;
   
@@ -178,6 +180,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     orderNotes, setOrderNotes,
     packagingFee, setPackagingFee,
     packagingQuantity, setPackagingQuantity,
+    hasCustomerData, setHasCustomerData,
     resetDraft, clearAll
   } = useOrderBuilderStore();
 
@@ -354,9 +357,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       extraOptions: dailyMenuDisplay.extraOptions,
       riceOptions: dailyMenuDisplay.riceOptions,
       selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedRice,
-      selectedOrderType, selectedTable, customerName, customerPhone, deliveryAddress
+      selectedOrderType, selectedTable, customerName, customerPhone, deliveryAddress, hasCustomerData
     });
-  }, [selectedProtein, looseItems, dailyMenuDisplay, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedRice, selectedOrderType, selectedTable, customerName, customerPhone, deliveryAddress]);
+  }, [selectedProtein, looseItems, dailyMenuDisplay, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedRice, selectedOrderType, selectedTable, customerName, customerPhone, deliveryAddress, hasCustomerData]);
 
   const hasError = useCallback((field: string) => {
     return validationErrors.some(e => e.field === field) && touchedFields.has(field);
@@ -518,12 +521,12 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       return {
         type: selectedOrderType!,
         tableId: selectedOrderType === OrderType.DINE_IN ? (selectedTable ?? undefined) : undefined,
-        customerId: customerLookup.customerId || undefined,
-        customerName: customerName.trim() || undefined,
-        customerPhone: customerPhone.replace(/\D/g, "") || undefined,
-        customerPhone2: customerPhone2.replace(/\D/g, "") || undefined,
-        address1: deliveryAddress.trim() || undefined,
-        address2: address2.trim() || undefined,
+        customerId: hasCustomerData ? (customerLookup.customerId || undefined) : undefined,
+        customerName: hasCustomerData ? (customerName.trim() || undefined) : "Consumidor Final",
+        customerPhone: hasCustomerData ? (customerPhone.replace(/\D/g, "") || undefined) : "0000000000",
+        customerPhone2: hasCustomerData ? (customerPhone2.replace(/\D/g, "") || undefined) : undefined,
+        address1: hasCustomerData ? (deliveryAddress.trim() || undefined) : undefined,
+        address2: hasCustomerData ? (address2.trim() || undefined) : undefined,
         items,
         notes: order.notes,
         createdAt: (backdatedDate && backdatedDate !== todayStr) 
@@ -615,6 +618,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     customerPhone2,
     deliveryAddress,
     address2,
+    hasCustomerData,
     packagingFee,
     selectedProtein,
     looseItems,
@@ -665,6 +669,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setCustomerPhone2: handleSetCustomerPhone2,
     setDeliveryAddress,
     setAddress2,
+    setHasCustomerData,
     packagingQuantity,
     setPackagingQuantity,
     handleAddLooseItem,

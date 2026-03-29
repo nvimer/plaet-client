@@ -25,6 +25,7 @@ interface OrderBuilderState {
   customerPhone2: string;
   deliveryAddress: string;
   address2: string;
+  hasCustomerData: boolean;
   
   // Current draft selections
   selectedProtein: ProteinOption | null;
@@ -54,6 +55,7 @@ interface OrderBuilderState {
   setCustomerPhone2: (phone: string) => void;
   setDeliveryAddress: (address: string) => void;
   setAddress2: (address: string) => void;
+  setHasCustomerData: (hasData: boolean) => void;
   
   setSelectedProtein: (protein: ProteinOption | null) => void;
   setSelectedSoup: (soup: MenuOption | null) => void;
@@ -88,6 +90,7 @@ export const useOrderBuilderStore = create<OrderBuilderState>()(
       customerPhone2: "",
       deliveryAddress: "",
       address2: "",
+      hasCustomerData: false,
       
       selectedProtein: null,
       selectedSoup: null,
@@ -118,6 +121,7 @@ export const useOrderBuilderStore = create<OrderBuilderState>()(
       setCustomerPhone2: (customerPhone2) => set({ customerPhone2 }),
       setDeliveryAddress: (deliveryAddress) => set({ deliveryAddress }),
       setAddress2: (address2) => set({ address2 }),
+      setHasCustomerData: (hasCustomerData) => set({ hasCustomerData }),
       
       setSelectedProtein: (selectedProtein) => set({ selectedProtein }),
       setSelectedSoup: (selectedSoup) => set({ selectedSoup }),
@@ -160,6 +164,7 @@ export const useOrderBuilderStore = create<OrderBuilderState>()(
         customerPhone2: "",
         deliveryAddress: "",
         address2: "",
+        hasCustomerData: false,
         selectedProtein: null,
         selectedSoup: null,
         selectedPrinciple: null,
