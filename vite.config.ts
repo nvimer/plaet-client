@@ -19,50 +19,33 @@ export default defineConfig({
   build: {
     rollupOptions: {
       output: {
+        // We simplify manualChunks to avoid circular dependencies between features.
+        // Let Vite handle internal feature splitting via React.lazy() imports.
         manualChunks(id) {
-          // Vendor chunks
           if (id.includes("node_modules")) {
-            if (id.includes("react") || id.includes("react-dom") || id.includes("react-router-dom")) {
-              return "vendor-core";
-            }
-            if (id.includes("framer-motion") || id.includes("lucide-react")) {
-              return "vendor-ui";
-            }
+            // Group large UI/Chart libraries separately
             if (id.includes("recharts")) {
               return "vendor-charts";
             }
-            if (id.includes("@tanstack/react-query")) {
-              return "vendor-query";
+            if (id.includes("framer-motion")) {
+              return "vendor-animations";
             }
             if (id.includes("@dnd-kit")) {
               return "vendor-dnd";
             }
-            return "vendor"; // Other small dependencies
-          }
-
-          // Feature chunks
-          if (id.includes("/src/features/orders/")) {
-            return "feature-orders";
-          }
-          if (id.includes("/src/features/inventory/") || id.includes("/src/features/daily-menu/")) {
-            return "feature-inventory";
-          }
-          if (id.includes("/src/features/menu/")) {
-            return "feature-menu";
-          }
-          if (id.includes("/src/features/analytics/") || id.includes("/src/features/permissions/") || id.includes("/src/features/restaurants/")) {
-            return "feature-admin";
-          }
-          if (id.includes("/src/features/users/") || id.includes("/src/features/customers/")) {
-            return "feature-users";
-          }
-          if (id.includes("/src/features/auth/")) {
-            return "feature-auth";
+            if (id.includes("lucide-react")) {
+              return "vendor-icons";
+            }
+            // React and core routing stay together for stability
+            if (id.includes("react") || id.includes("react-dom") || id.includes("react-router-dom")) {
+              return "vendor-core";
+            }
+            return "vendor-base";
           }
         },
       },
     },
-    chunkSizeWarningLimit: 800, // Increase limit slightly as we now have controlled chunks
+    chunkSizeWarningLimit: 1000,
   },
   // @ts-expect-error - Vitest configuration
   test: {
