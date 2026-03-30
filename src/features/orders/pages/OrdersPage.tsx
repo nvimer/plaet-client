@@ -23,6 +23,7 @@ import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { toast } from "sonner";
 import { groupOrders } from "@/utils/orderUtils";
 import { ORDER_TABS, calculateOrderCounts, calculateFinancialSummary, filterOrdersByTab, filterOrdersByTypeAndSearch } from "../utils/orderFilters";
+import { useDailyMenuToday } from "@/features/daily-menu/hooks/useDailyMenu";
 
 export function OrdersPage() {
   const navigate = useNavigate();
@@ -38,6 +39,7 @@ export function OrdersPage() {
   const { data: orders, isLoading, error: _error, refetch: _refetch } = useOrders({ limit: 100 });
   const { mutateAsync: addPaymentAsync } = useAddPayment();
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const { data: dailyMenu } = useDailyMenuToday();
 
   // Payment Modal State - Storing IDs for dynamic sync with React Query
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -62,34 +64,64 @@ export function OrdersPage() {
       
       const ordersWithBalance = ordersToPay.map(order => {
         const paid = order.payments?.reduce((sum, p) => sum + Number(p.amount), 0) || 0;
+        
+        // Identify if this order contains a "Lunch" (Protein)
+        const lunchItem = order.items?.find(
+          item => dailyMenu?.proteinCategory && item.menuItem?.categoryId === dailyMenu.proteinCategory.id
+        );
+
         return {
           id: order.id,
-          remaining: Math.max(0, Number(order.totalAmount) - paid)
+          remaining: Math.max(0, Number(order.totalAmount) - paid),
+          hasLunch: !!lunchItem,
+          lunchPrice: lunchItem ? Number(lunchItem.priceAtOrder) : 0
         };
       }).filter(o => o.remaining > 0);
 
       // 2. Distribute each payment fragment across orders
       for (const payment of payments) {
         let amountToDistribute = payment.amount;
+        let portionsToDistribute = payment.portionCount || 0;
 
         for (const orderBalance of ordersWithBalance) {
-          if (amountToDistribute <= 0) break;
+          if (amountToDistribute <= 0 && portionsToDistribute <= 0) break;
           if (orderBalance.remaining <= 0) continue;
 
-          const amountForThisOrder = Math.min(amountToDistribute, orderBalance.remaining);
-          
-          await addPaymentAsync({
-            orderId: orderBalance.id,
-            paymentData: {
-              method: payment.method,
-              amount: amountForThisOrder,
-              transactionRef: payment.reference,
-              phone: payment.phone
-            }
-          });
+          let amountForThisOrder = 0;
+          let portionsForThisOrder = 0;
 
-          amountToDistribute -= amountForThisOrder;
-          orderBalance.remaining -= amountForThisOrder;
+          if (payment.method === PaymentMethod.TICKET_BOOK) {
+            // Specialized logic for Ticket Book:
+            // If this order has a lunch and we have portions to spend, use 1 portion.
+            if (orderBalance.hasLunch && portionsToDistribute > 0) {
+              // The amount for this order is exactly the price of its lunch
+              amountForThisOrder = Math.min(amountToDistribute, orderBalance.lunchPrice, orderBalance.remaining);
+              portionsForThisOrder = 1;
+            } else {
+              // Skip if no lunch or no portions left for this specific payment entry
+              continue; 
+            }
+          } else {
+            // Standard logic for Cash/Nequi
+            amountForThisOrder = Math.min(amountToDistribute, orderBalance.remaining);
+          }
+
+          if (amountForThisOrder > 0 || portionsForThisOrder > 0) {
+            await addPaymentAsync({
+              orderId: orderBalance.id,
+              paymentData: {
+                method: payment.method,
+                amount: amountForThisOrder,
+                transactionRef: payment.reference,
+                phone: payment.phone,
+                portionCount: portionsForThisOrder > 0 ? portionsForThisOrder : undefined
+              }
+            });
+
+            amountToDistribute -= amountForThisOrder;
+            portionsToDistribute -= portionsForThisOrder;
+            orderBalance.remaining -= amountForThisOrder;
+          }
         }
       }
 

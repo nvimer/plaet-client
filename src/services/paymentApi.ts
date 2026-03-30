@@ -6,6 +6,7 @@ export interface CreatePaymentData {
   amount: number;
   transactionRef?: string;
   phone?: string;
+  portionCount?: number;
 }
 
 /**

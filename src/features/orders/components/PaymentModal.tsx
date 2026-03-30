@@ -11,6 +11,7 @@ import {
 import { PaymentMethod, OrderStatus, type Order } from "@/types";
 import { cn } from "@/utils/cn";
 import { useCustomerTickets } from "../hooks/useCustomerTickets";
+import { useDailyMenuToday } from "@/features/daily-menu/hooks/useDailyMenu";
 import { AnimatePresence } from "framer-motion";
 
 // Sub-components
@@ -25,6 +26,7 @@ export interface PaymentEntry {
   amount: number;
   reference?: string;
   phone?: string;
+  portionCount?: number;
 }
 
 interface PaymentModalProps {
@@ -48,6 +50,9 @@ export function PaymentModal({
   const [currentAmount, setCurrentAmount] = useState<number>(0);
   const [receivedAmount, setReceivedAmount] = useState<number>(0);
   
+  // Portion logic for TicketBook
+  const [portionCount, setPortionCount] = useState<number>(0);
+  
   // Selection logic
   const [selectedOrderIds, setSelectedOrderIds] = useState<string[]>([]);
   const [payAll, setPayAll] = useState(true);
@@ -58,8 +63,38 @@ export function PaymentModal({
   // TicketBook specific
   const [customerPhone, setCustomerPhone] = useState("");
   const { data: customer, isLoading: isLoadingCustomer, isError: isCustomerError } = useCustomerTickets(customerPhone);
+  const { data: dailyMenu } = useDailyMenuToday();
 
   // --- DERIVED STATE ---
+  const activeOrders = useMemo(() => {
+    return payAll ? orders : orders.filter(o => selectedOrderIds.includes(o.id));
+  }, [payAll, orders, selectedOrderIds]);
+
+  // Identify "Lunches" in the current selection
+  const lunchItemsInSelection = useMemo(() => {
+    if (!dailyMenu?.proteinCategory) return [];
+    
+    const lunchItems: Array<{ orderId: string; price: number }> = [];
+    
+    activeOrders.forEach(order => {
+      // Find the main protein item which represents the "Lunch" in this system
+      const lunchItem = order.items?.find(
+        item => item.menuItem?.categoryId === dailyMenu.proteinCategory?.id
+      );
+      
+      if (lunchItem) {
+        lunchItems.push({
+          orderId: order.id,
+          price: Number(lunchItem.priceAtOrder)
+        });
+      }
+    });
+    
+    return lunchItems;
+  }, [activeOrders, dailyMenu]);
+
+  const maxPortionsAvailable = lunchItemsInSelection.length;
+
   const hasActiveTickets = useMemo(() => {
     return !!(customer?.ticketBooks && customer.ticketBooks.some((tb) => tb.consumedPortions < tb.totalPortions));
   }, [customer]);
@@ -108,6 +143,7 @@ export function PaymentModal({
       setSelectedOrderIds(orders.map(o => o.id));
       setPayments([]);
       setReceivedAmount(0);
+      setPortionCount(0);
       
       // Pre-fill phone if available in orders
       const firstWithPhone = orders.find(o => o.customer?.phone);
@@ -128,9 +164,27 @@ export function PaymentModal({
   // Update currentAmount when the payment method changes to the remaining balance
   useEffect(() => {
     if (isOpen && remainingToPay > 0) {
-      setCurrentAmount(remainingToPay);
+      if (method !== PaymentMethod.TICKET_BOOK) {
+        setCurrentAmount(remainingToPay);
+        setPortionCount(0);
+      }
     }
   }, [method, isOpen, remainingToPay]);
+
+  // Handle automatic amount calculation when portionCount changes
+  useEffect(() => {
+    if (method === PaymentMethod.TICKET_BOOK && portionCount > 0) {
+      // Calculate total value of selected portions (starting from the most expensive lunches)
+      const sortedLunches = [...lunchItemsInSelection].sort((a, b) => b.price - a.price);
+      const coveredAmount = sortedLunches
+        .slice(0, portionCount)
+        .reduce((sum, lunch) => sum + lunch.price, 0);
+      
+      setCurrentAmount(coveredAmount);
+    } else if (method === PaymentMethod.TICKET_BOOK) {
+      setCurrentAmount(0);
+    }
+  }, [method, portionCount, lunchItemsInSelection]);
 
   // --- HANDLERS ---
   const handleToggleOrder = (orderId: string) => {
@@ -161,6 +215,7 @@ export function PaymentModal({
       amount: currentAmount,
       reference: method === PaymentMethod.NEQUI ? reference : undefined,
       phone: method === PaymentMethod.TICKET_BOOK ? customerPhone : undefined,
+      portionCount: method === PaymentMethod.TICKET_BOOK ? portionCount : undefined,
     };
 
     const newPayments = [...payments, newPayment];
@@ -170,6 +225,7 @@ export function PaymentModal({
     const nextRemaining = totalToPay - newPayments.reduce((sum, p) => sum + p.amount, 0);
     setCurrentAmount(Math.max(0, nextRemaining));
     setReference("");
+    setPortionCount(0);
     setMethod(PaymentMethod.CASH);
   };
 
@@ -346,14 +402,16 @@ export function PaymentModal({
                 )}
                 {method === PaymentMethod.TICKET_BOOK && (
                   <TicketBookPaymentForm 
-                    amount={currentAmount}
+                    portionCount={portionCount}
+                    onPortionChange={setPortionCount}
+                    maxPortions={maxPortionsAvailable}
                     phone={customerPhone}
                     customer={customer}
                     isLoading={isLoadingCustomer}
                     isError={isCustomerError}
                     onPhoneChange={setCustomerPhone}
-                    onAmountChange={setCurrentAmount}
                     hasActiveTickets={hasActiveTickets}
+                    calculatedAmount={currentAmount}
                   />
                 )}
               </AnimatePresence>

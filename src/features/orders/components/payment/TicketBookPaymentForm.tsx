@@ -1,4 +1,4 @@
-import { Search, User, AlertCircle } from "lucide-react";
+import { Search, User, AlertCircle, Plus, Minus, Ticket } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/utils/cn";
 import type { Customer } from "@/types/order";
@@ -15,26 +15,36 @@ interface CustomerWithTickets extends Customer {
 }
 
 interface TicketBookPaymentFormProps {
-  amount: number;
+  portionCount: number;
+  onPortionChange: (val: number) => void;
+  maxPortions: number;
   phone: string;
   customer: CustomerWithTickets | null;
   isLoading: boolean;
   isError: boolean;
   onPhoneChange: (val: string) => void;
-  onAmountChange: (val: number) => void;
   hasActiveTickets: boolean;
+  calculatedAmount: number;
 }
 
 export function TicketBookPaymentForm({
-  amount,
+  portionCount,
+  onPortionChange,
+  maxPortions,
   phone,
   customer,
   isLoading,
   isError,
   onPhoneChange,
-  onAmountChange,
   hasActiveTickets,
+  calculatedAmount,
 }: TicketBookPaymentFormProps) {
+  
+  const activeTicketBook = customer?.ticketBooks.find((tb) => tb.consumedPortions < tb.totalPortions);
+  const availableBalance = activeTicketBook ? activeTicketBook.totalPortions - activeTicketBook.consumedPortions : 0;
+  
+  const maxAllowed = Math.min(availableBalance, maxPortions);
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 10 }}
@@ -61,7 +71,7 @@ export function TicketBookPaymentForm({
         </div>
       </div>
 
-      <AnimatePresence>
+      <AnimatePresence mode="wait">
         {customer && (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
@@ -83,9 +93,9 @@ export function TicketBookPaymentForm({
               </div>
               {hasActiveTickets && (
                 <div className="text-right">
-                  <p className="text-[10px] font-black text-blue-600 tracking-wide uppercase">Saldo</p>
+                  <p className="text-[10px] font-black text-blue-600 tracking-wide uppercase">Saldo disponible</p>
                   <p className="text-lg font-black text-blue-800">
-                    {customer.ticketBooks.find((tb) => tb.consumedPortions < tb.totalPortions)?.totalPortions - customer.ticketBooks.find((tb) => tb.consumedPortions < tb.totalPortions)?.consumedPortions} Almuerzos
+                    {availableBalance} Almuerzos
                   </p>
                 </div>
               )}
@@ -107,18 +117,52 @@ export function TicketBookPaymentForm({
       </AnimatePresence>
 
       {hasActiveTickets && (
-        <div className="space-y-2">
-          <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1 uppercase">Monto a cargar</label>
-          <div className="relative">
-            <span className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 font-bold text-lg">$</span>
-            <input
-              type="number"
-              value={amount || ""}
-              onChange={(e) => onAmountChange(Number(e.target.value))}
-              className="w-full h-14 pl-9 pr-4 rounded-2xl border-2 border-sage-100 focus:border-blue-600 focus:ring-0 text-xl font-bold text-carbon-900 shadow-inner bg-sage-50/30"
-              placeholder="0"
-            />
+        <div className="space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white border-2 border-blue-100 rounded-2xl shadow-soft-sm">
+            <div className="space-y-1">
+              <div className="flex items-center gap-2">
+                <Ticket className="w-4 h-4 text-blue-600" />
+                <p className="text-xs font-black text-carbon-900 uppercase tracking-tight">Tiquetes a usar</p>
+              </div>
+              <p className="text-[10px] text-carbon-400 font-bold uppercase">
+                {maxPortions > 0 
+                  ? `Pedido contiene ${maxPortions} ${maxPortions === 1 ? 'almuerzo' : 'almuerzos'}` 
+                  : "No se detectan almuerzos en el pedido"}
+              </p>
+            </div>
+
+            <div className="flex items-center justify-center gap-4 bg-blue-50 p-1.5 rounded-xl border border-blue-100 shadow-inner">
+              <button
+                onClick={() => onPortionChange(Math.max(0, portionCount - 1))}
+                className="w-9 h-9 flex items-center justify-center bg-white border border-blue-200 rounded-lg text-blue-600 hover:bg-blue-50 active:scale-90 transition-all shadow-sm"
+              >
+                <Minus className="w-4 h-4" />
+              </button>
+              <span className="w-8 text-center font-black text-blue-900 text-lg">
+                {portionCount}
+              </span>
+              <button
+                onClick={() => onPortionChange(Math.min(maxAllowed, portionCount + 1))}
+                disabled={portionCount >= maxAllowed}
+                className="w-9 h-9 flex items-center justify-center bg-white border border-blue-200 rounded-lg text-blue-600 hover:bg-blue-50 active:scale-90 transition-all shadow-sm disabled:opacity-50"
+              >
+                <Plus className="w-4 h-4" />
+              </button>
+            </div>
           </div>
+
+          <AnimatePresence>
+            {portionCount > 0 && (
+              <motion.div
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="flex items-center justify-between px-2"
+              >
+                <span className="text-[10px] font-bold text-success-600 uppercase tracking-widest">Monto Cubierto</span>
+                <span className="text-lg font-black text-success-700">${calculatedAmount.toLocaleString("es-CO")}</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       )}
     </motion.div>
