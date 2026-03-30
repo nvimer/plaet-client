@@ -181,9 +181,9 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean, userPerm
       description: "Finanzas y reportes",
       allowedRoles: [RoleName.ADMIN, RoleName.CASHIER],
       children: [
-        { type: "link", path: ROUTES.ADMIN_DASHBOARD, name: "Analítica", icon: BarChart3, allowedRoles: [RoleName.SUPERADMIN] },
+        { type: "link", path: ROUTES.ADMIN_DASHBOARD, name: "Analítica", icon: BarChart3, allowedRoles: [RoleName.ADMIN] },
         { type: "link", path: ROUTES.CASH_CLOSURE, name: "Cuadre de Caja", icon: Wallet },
-        { type: "link", path: ROUTES.EXPENSES, name: "Gestión de Gastos", icon: ReceiptText, allowedRoles: [RoleName.SUPERADMIN] },
+        { type: "link", path: ROUTES.EXPENSES, name: "Gestión de Gastos", icon: ReceiptText, allowedRoles: [RoleName.ADMIN] },
       ],
     },
     {
@@ -194,9 +194,9 @@ export const getNavigationItems = (role: string, isSuperAdmin: boolean, userPerm
       description: "Personal y clientes",
       allowedRoles: [RoleName.ADMIN, RoleName.CASHIER],
       children: [
-        { type: "link", path: ROUTES.USERS_LIST, name: "Lista de Equipo", icon: ShieldCheck, allowedRoles: [RoleName.SUPERADMIN] },
+        { type: "link", path: ROUTES.USERS_LIST, name: "Lista de Equipo", icon: ShieldCheck, allowedRoles: [RoleName.ADMIN] },
         { type: "link", path: ROUTES.CUSTOMERS_LIST, name: "Lista de Clientes", icon: Users },
-        { type: "link", path: ROUTES.USER_CREATE, name: "Nuevo Usuario", icon: Plus, allowedRoles: [RoleName.SUPERADMIN] },
+        { type: "link", path: ROUTES.USER_CREATE, name: "Nuevo Usuario", icon: Plus, allowedRoles: [RoleName.ADMIN] },
         { type: "link", path: ROUTES.ROLES, name: "Gestionar Roles", icon: ShieldCheck, allowedRoles: [RoleName.SUPERADMIN] },
       ]
     },

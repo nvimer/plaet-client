@@ -14,7 +14,9 @@ import { usePermissions } from "@/hooks";
  */
 export function UsersHubPage() {
   const navigate = useNavigate();
-  const { isSuperAdmin } = usePermissions();
+  const { isSuperAdmin, hasPermission } = usePermissions();
+
+  const canManageRoles = isSuperAdmin() || hasPermission("roles:manage");
 
   const options = [
     {
