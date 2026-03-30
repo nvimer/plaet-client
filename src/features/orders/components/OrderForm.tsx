@@ -133,6 +133,7 @@ interface OrderFormProps {
   // Validation
   validationErrors: ValidationError[];
   hasError: (field: string) => boolean;
+  touchedFields: Set<string>;
 
   // Actions
   onAddToTable: () => void;
@@ -194,6 +195,7 @@ export function OrderForm({
   setOrderNotes,
   validationErrors,
   hasError,
+  touchedFields,
   onCancelEdit,
   isLoading,
 }: OrderFormProps) {
@@ -324,14 +326,14 @@ export function OrderForm({
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-6"
+          className="space-y-4 bg-sage-50/10 p-4 rounded-[2rem] border border-sage-100"
         >
-          <div className="flex items-center gap-2 px-2">
-            <Sparkles className="w-4 h-4 text-primary-500" />
-            <h3 className="text-[10px] font-black text-carbon-900 uppercase tracking-[0.2em]">Opciones del Día</h3>
+          <div className="flex items-center gap-2 px-1">
+            <Sparkles className="w-3.5 h-3.5 text-primary-500" />
+            <h3 className="text-[10px] font-bold text-carbon-400 uppercase tracking-[0.15em]">Menú del Día</h3>
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-4">
             <MenuItemSelector
               label="Sopa"
               icon={<Soup className="w-3.5 h-3.5" />}
@@ -341,6 +343,7 @@ export function OrderForm({
               color="amber"
               required
               compact
+              touched={touchedFields.has("soup")}
               error={hasError("soup") ? "Requerido" : undefined}
             />
 
@@ -353,6 +356,7 @@ export function OrderForm({
               color="emerald"
               required
               compact
+              touched={touchedFields.has("principle")}
               error={hasError("principle") ? "Requerido" : undefined}
             />
 
@@ -365,6 +369,7 @@ export function OrderForm({
               color="sage"
               required
               compact
+              touched={touchedFields.has("salad")}
               error={hasError("salad") ? "Requerido" : undefined}
             />
 
@@ -377,6 +382,7 @@ export function OrderForm({
               color="blue"
               required
               compact
+              touched={touchedFields.has("drink")}
               error={hasError("drink") ? "Requerido" : undefined}
             />
 

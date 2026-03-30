@@ -13,6 +13,7 @@ interface MenuItemSelectorProps {
   icon?: React.ReactNode;
   color?: "amber" | "emerald" | "sage" | "blue" | "purple";
   compact?: boolean;
+  touched?: boolean;
 }
 
 /**
@@ -31,6 +32,7 @@ export function MenuItemSelector({
   icon,
   color = "sage",
   compact = false,
+  touched = false,
 }: MenuItemSelectorProps) {
   const colorClasses = {
     amber: { text: "text-amber-600", bg: "bg-amber-50", border: "border-amber-100" },
@@ -44,20 +46,20 @@ export function MenuItemSelector({
 
   if (options.length === 0) return null;
 
-  // COMPACT MODE: Minimalist Pill Layout
+  // COMPACT MODE: Minimalist Pill Layout (Narrower)
   if (compact) {
     return (
-      <div className="space-y-2">
+      <div className="space-y-1.5">
         <div className="flex items-center gap-2 px-1">
-          <div className={cn("w-6 h-6 rounded-lg flex items-center justify-center scale-90", colors.bg, colors.text)}>
+          <div className={cn("w-5 h-5 rounded-lg flex items-center justify-center scale-90", colors.bg, colors.text)}>
             {icon}
           </div>
-          <span className="text-[11px] font-bold text-carbon-700">
+          <span className="text-[10px] font-bold text-carbon-500 uppercase tracking-wider">
             {label} {required && <span className="text-error-500">*</span>}
           </span>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-1.5">
           {options.map((option) => {
             const isSelected = selectedOption?.id === option.id;
             return (
@@ -65,10 +67,10 @@ export function MenuItemSelector({
                 key={option.id}
                 onClick={() => onSelect(option)}
                 className={cn(
-                  "px-3 py-1.5 rounded-full text-xs font-medium transition-all border-2 flex items-center gap-1.5 active:scale-95",
+                  "px-3 py-1.5 rounded-full text-xs font-semibold transition-all border-2 flex items-center gap-1.5 active:scale-95",
                   isSelected
                     ? "bg-carbon-900 border-carbon-900 text-white shadow-soft-md"
-                    : "bg-white border-sage-50 text-carbon-500 hover:border-sage-200"
+                    : "bg-white border-sage-50 text-carbon-600 hover:border-sage-200"
                 )}
               >
                 {isSelected && <Check className="w-3 h-3 stroke-[3px]" />}
@@ -84,7 +86,7 @@ export function MenuItemSelector({
     );
   }
 
-  // STANDARD MODE (Used if needed elsewhere)
+  // STANDARD MODE
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between px-1">
