@@ -24,9 +24,14 @@ export const getCurrentShift = async (): Promise<CashClosure | null> => {
 export interface CashShiftSummary {
   openingBalance: number;
   cashSales: number;
+  nequiSales: number;
   totalExpenses: number;
+  totalVouchers?: number;
   expectedBalance: number;
   openingDate: string;
+  totalDelivery?: number;
+  deliveryCash?: number;
+  deliveryNequi?: number;
 }
 
 export const getShiftSummary = async (id: string): Promise<CashShiftSummary> => {
