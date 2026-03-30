@@ -81,30 +81,30 @@ export function CustomersPage() {
 
   return (
     <SidebarLayout hideTitle fullWidth>
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+      <div className="max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-10 space-y-6 sm:space-y-8">
         
         {/* Header Section */}
-        <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <header className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-6">
           <div className="space-y-2">
             <div className="flex items-center gap-2 text-sage-600">
-              <Users className="w-5 h-5" />
+              <Users className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="text-[10px] font-semibold tracking-[0.2em]">Administración</span>
             </div>
-            <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-carbon-900 tracking-tight">
               Directorio de Clientes
             </h1>
-            <p className="text-lg text-carbon-500 font-medium">
+            <p className="text-sm sm:text-base text-carbon-500 font-medium">
               Gestiona perfiles, historial de consumos y tiqueteras.
             </p>
           </div>
 
           <Button 
-            size="lg" 
+            size="sm" 
             onClick={handleCreateNew}
-            className="rounded-2xl px-8 h-14 bg-carbon-900 hover:bg-carbon-800 text-white font-bold shadow-soft-lg transition-all active:scale-95"
+            className="rounded-xl sm:rounded-2xl px-4 sm:px-8 h-10 sm:h-14 bg-carbon-900 hover:bg-carbon-800 text-white font-bold shadow-soft-lg transition-all active:scale-95"
           >
-            <Plus className="w-5 h-5 mr-2 stroke-[3px]" />
-            Nuevo Cliente
+            <Plus className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2 stroke-[3px]" />
+            <span className="text-xs sm:text-sm">Nuevo</span>
           </Button>
         </header>
 
@@ -131,25 +131,25 @@ export function CustomersPage() {
         </div>
 
         {/* Main List */}
-        <Card padding="none" className="overflow-hidden border-2 border-sage-100 rounded-[2rem] shadow-soft-sm bg-white">
+        <Card padding="none" className="overflow-hidden border-2 border-sage-100 rounded-2xl sm:rounded-[2rem] shadow-soft-sm bg-white">
           <div className="overflow-x-auto">
             <table className="w-full border-collapse">
               <thead>
                 <tr className="bg-sage-50/50 border-b border-sage-100">
-                  <th className="px-6 py-4 text-left text-[10px] font-black text-carbon-400 uppercase tracking-widest">Cliente</th>
-                  <th className="px-6 py-4 text-left text-[10px] font-black text-carbon-400 uppercase tracking-widest hidden md:table-cell">Contacto</th>
-                  <th className="px-6 py-4 text-center text-[10px] font-black text-carbon-400 uppercase tracking-widest hidden sm:table-cell">Actividad</th>
-                  <th className="px-6 py-4 text-right text-[10px] font-black text-carbon-400 uppercase tracking-widest">Acciones</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] font-black text-carbon-400 uppercase tracking-widest">Cliente</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] font-black text-carbon-400 uppercase tracking-widest hidden md:table-cell">Contacto</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-center text-[10px] font-black text-carbon-400 uppercase tracking-widest hidden sm:table-cell">Actividad</th>
+                  <th className="px-3 sm:px-6 py-3 sm:py-4 text-right text-[10px] font-black text-carbon-400 uppercase tracking-widest">Acciones</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-sage-50">
                 {loadingList ? (
                   [...Array(5)].map((_, i) => (
                     <tr key={i}>
-                      <td className="px-6 py-4"><Skeleton variant="text" width={150} /></td>
-                      <td className="px-6 py-4 hidden md:table-cell"><Skeleton variant="text" width={100} /></td>
-                      <td className="px-6 py-4 hidden sm:table-cell"><div className="flex justify-center"><Skeleton variant="text" width={60} /></div></td>
-                      <td className="px-6 py-4 text-right"><Skeleton variant="text" width={80} className="ml-auto" /></td>
+                      <td className="px-3 sm:px-6 py-3 sm:py-4"><Skeleton variant="text" width={120} /></td>
+                      <td className="px-3 sm:px-6 py-3 sm:py-4 hidden md:table-cell"><Skeleton variant="text" width={80} /></td>
+                      <td className="px-3 sm:px-6 py-3 sm:py-4 hidden sm:table-cell"><div className="flex justify-center"><Skeleton variant="text" width={40} /></div></td>
+                      <td className="px-3 sm:px-6 py-3 sm:py-4 text-right"><Skeleton variant="text" width={60} className="ml-auto" /></td>
                     </tr>
                   ))
                 ) : customers.length > 0 ? (
@@ -159,13 +159,13 @@ export function CustomersPage() {
                       className="hover:bg-sage-50/30 transition-colors cursor-pointer group"
                       onClick={() => handleViewDetail(customer.id)}
                     >
-                      <td className="px-6 py-5">
-                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 rounded-xl bg-carbon-100 text-carbon-600 flex items-center justify-center font-black text-xs shadow-inner shrink-0 group-hover:bg-primary-500 group-hover:text-white transition-colors">
+                      <td className="px-3 sm:px-6 py-3 sm:py-5">
+                        <div className="flex items-center gap-3 sm:gap-4">
+                          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl bg-carbon-100 text-carbon-600 flex items-center justify-center font-black text-xs shadow-inner shrink-0 group-hover:bg-primary-500 group-hover:text-white transition-colors">
                             {customer.firstName.charAt(0)}{customer.lastName?.charAt(0) || ""}
                           </div>
                           <div className="min-w-0">
-                            <p className="font-bold text-carbon-900 truncate">
+                            <p className="font-bold text-carbon-900 text-sm sm:text-base truncate">
                               {customer.firstName} {customer.lastName}
                             </p>
                             {customer.address1 && (
@@ -178,7 +178,7 @@ export function CustomersPage() {
                         </div>
                       </td>
                       
-                      <td className="px-6 py-5 hidden md:table-cell">
+                      <td className="px-3 sm:px-6 py-3 sm:py-5 hidden md:table-cell">
                         <div className="space-y-1">
                           <p className="text-sm font-bold text-carbon-700 flex items-center gap-2">
                             <Phone className="w-3.5 h-3.5 text-carbon-300" />
@@ -192,8 +192,8 @@ export function CustomersPage() {
                         </div>
                       </td>
 
-                      <td className="px-6 py-5 hidden sm:table-cell text-center border-x border-sage-50/50">
-                        <div className="flex items-center justify-center gap-4">
+                      <td className="px-3 sm:px-6 py-3 sm:py-5 hidden sm:table-cell text-center border-x border-sage-50/50">
+                        <div className="flex items-center justify-center gap-2 sm:gap-4">
                           <div className="flex flex-col items-center">
                             <span className="text-xs font-black text-carbon-900">{customer._count?.orders || 0}</span>
                             <span className="text-[8px] font-bold text-carbon-400 uppercase tracking-tighter">pedidos</span>
@@ -211,36 +211,30 @@ export function CustomersPage() {
                         </div>
                       </td>
 
-                      <td className="px-6 py-5 text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          <Tooltip content="Editar">
-                            <button 
-                              onClick={(e) => { e.stopPropagation(); handleEdit(customer); }}
-                              className="w-9 h-9 rounded-lg hover:bg-white hover:shadow-soft-sm border border-transparent hover:border-sage-200 flex items-center justify-center text-carbon-400 hover:text-primary-600 transition-all active:scale-90"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                            </button>
-                          </Tooltip>
+                      <td className="px-3 sm:px-6 py-3 sm:py-5 text-right">
+                        <div className="flex items-center justify-end gap-1 sm:gap-2">
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleEdit(customer); }}
+                            className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg hover:bg-white hover:shadow-soft-sm border border-transparent hover:border-sage-200 flex items-center justify-center text-carbon-400 hover:text-primary-600 transition-all active:scale-90"
+                          >
+                            <Edit2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          </button>
                           
-                          <Tooltip content="Tiquetera">
-                            <button 
-                              onClick={(e) => { e.stopPropagation(); handleSellTicket(customer); }}
-                              className="w-9 h-9 rounded-lg hover:bg-white hover:shadow-soft-sm border border-transparent hover:border-warning-200 flex items-center justify-center text-carbon-400 hover:text-warning-600 transition-all active:scale-90"
-                            >
-                              <Ticket className="w-4 h-4" />
-                            </button>
-                          </Tooltip>
+                          <button 
+                            onClick={(e) => { e.stopPropagation(); handleSellTicket(customer); }}
+                            className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg hover:bg-white hover:shadow-soft-sm border border-transparent hover:border-warning-200 flex items-center justify-center text-carbon-400 hover:text-warning-600 transition-all active:scale-90"
+                          >
+                            <Ticket className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          </button>
 
-                          <Tooltip content="Eliminar">
-                            <button 
-                              onClick={(e) => handleDelete(e, customer.id)}
-                              className="w-9 h-9 rounded-lg hover:bg-error-50 border border-transparent hover:border-error-100 flex items-center justify-center text-carbon-400 hover:text-error-600 transition-all active:scale-90"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </Tooltip>
+                          <button 
+                            onClick={(e) => handleDelete(e, customer.id)}
+                            className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg hover:bg-error-50 border border-transparent hover:border-error-100 flex items-center justify-center text-carbon-400 hover:text-error-600 transition-all active:scale-90"
+                          >
+                            <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                          </button>
 
-                          <ChevronRight className="w-5 h-5 text-sage-200 ml-2 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" />
+                          <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5 text-sage-200 ml-1 sm:ml-2 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" />
                         </div>
                       </td>
                     </tr>

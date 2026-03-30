@@ -39,29 +39,29 @@ export function CustomerDetailDrawer({
         animate={{ x: 0 }}
         exit={{ x: "100%" }}
         transition={{ type: "spring", damping: 30, stiffness: 300 }}
-        className="absolute right-0 top-0 bottom-0 w-full max-w-2xl bg-sage-50 shadow-2xl flex flex-col"
+        className="absolute right-0 top-0 bottom-0 w-full sm:max-w-2xl bg-sage-50 shadow-2xl flex flex-col"
       >
         {/* Header */}
-        <div className="p-6 bg-white border-b border-sage-100 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center shadow-inner">
-              <User className="w-6 h-6" />
+        <div className="p-4 sm:p-6 bg-white border-b border-sage-100 flex items-center justify-between">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-primary-50 text-primary-600 flex items-center justify-center shadow-inner">
+              <User className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-carbon-900 tracking-tight leading-none uppercase">Detalle de Cliente</h2>
-              <p className="text-xs text-carbon-400 font-bold mt-1 uppercase tracking-widest">Historial y Datos</p>
+              <h2 className="text-base sm:text-xl font-black text-carbon-900 tracking-tight leading-none uppercase">Detalle de Cliente</h2>
+              <p className="text-[10px] sm:text-xs text-carbon-400 font-bold mt-1 uppercase tracking-widest">Historial y Datos</p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="w-10 h-10 rounded-xl hover:bg-sage-50 flex items-center justify-center text-carbon-400 transition-colors"
+            className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl hover:bg-sage-50 flex items-center justify-center text-carbon-400 transition-colors"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-8">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6 sm:space-y-8">
           {isLoading ? (
             <div className="space-y-6">
               <Skeleton variant="card" height={150} />
@@ -72,8 +72,8 @@ export function CustomerDetailDrawer({
           ) : customer ? (
             <>
               {/* Basic Info Card */}
-              <Card className="p-6 rounded-[2rem] border-2 border-white shadow-soft-xl">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <Card className="p-4 sm:p-6 rounded-2xl sm:rounded-[2rem] border-2 border-white shadow-soft-xl">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
                   <div className="space-y-4">
                     <div className="space-y-1">
                       <span className="text-[10px] font-black text-carbon-400 uppercase tracking-widest">Nombre Completo</span>

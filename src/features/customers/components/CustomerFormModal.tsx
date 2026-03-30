@@ -82,101 +82,101 @@ export function CustomerFormModal({
       title={customer ? "Editar Cliente" : "Nuevo Cliente"}
       size="lg"
     >
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="space-y-2">
+      <form onSubmit={handleSubmit(onSubmit)} className="space-y-5 sm:space-y-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+          <div className="space-y-1.5 sm:space-y-2">
             <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Primer Nombre</label>
             <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
+              <User className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
               <Input
                 {...register("firstName")}
                 placeholder="Ej: Juan"
-                className="pl-11"
+                className="pl-10 sm:pl-11"
                 error={errors.firstName?.message}
                 fullWidth
               />
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5 sm:space-y-2">
             <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Apellido (Opcional)</label>
             <div className="relative">
-              <User className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4 opacity-50" />
+              <User className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4 opacity-50" />
               <Input
                 {...register("lastName")}
                 placeholder="Ej: Pérez"
-                className="pl-11"
+                className="pl-10 sm:pl-11"
                 error={errors.lastName?.message}
                 fullWidth
               />
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5 sm:space-y-2">
             <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Teléfono Principal</label>
             <div className="relative">
-              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
+              <Phone className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
               <Input
                 {...register("phone")}
                 placeholder="Ej: 3001234567"
-                className="pl-11"
+                className="pl-10 sm:pl-11"
                 error={errors.phone?.message}
                 fullWidth
               />
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5 sm:space-y-2">
             <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Teléfono Secundario</label>
             <div className="relative">
-              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4 opacity-50" />
+              <Phone className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4 opacity-50" />
               <Input
                 {...register("phone2")}
                 placeholder="Otro número..."
-                className="pl-11"
+                className="pl-10 sm:pl-11"
                 error={errors.phone2?.message}
                 fullWidth
               />
             </div>
           </div>
 
-          <div className="sm:col-span-2 space-y-2">
+          <div className="sm:col-span-2 space-y-1.5 sm:space-y-2">
             <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Email</label>
             <div className="relative">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
+              <Mail className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
               <Input
                 {...register("email")}
                 type="email"
                 placeholder="juan@ejemplo.com"
-                className="pl-11"
+                className="pl-10 sm:pl-11"
                 error={errors.email?.message}
                 fullWidth
               />
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5 sm:space-y-2">
             <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Dirección 1</label>
             <div className="relative">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
+              <MapPin className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
               <Input
                 {...register("address1")}
                 placeholder="Calle 123..."
-                className="pl-11"
+                className="pl-10 sm:pl-11"
                 error={errors.address1?.message}
                 fullWidth
               />
             </div>
           </div>
 
-          <div className="space-y-2">
+          <div className="space-y-1.5 sm:space-y-2">
             <label className="text-[10px] font-black text-carbon-500 uppercase tracking-widest ml-1">Dirección 2 (Opcional)</label>
             <div className="relative">
-              <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4 opacity-50" />
+              <MapPin className="absolute left-3 sm:left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4 opacity-50" />
               <Input
                 {...register("address2")}
                 placeholder="Apto, Oficina..."
-                className="pl-11"
+                className="pl-10 sm:pl-11"
                 error={errors.address2?.message}
                 fullWidth
               />
@@ -184,13 +184,13 @@ export function CustomerFormModal({
           </div>
         </div>
 
-        <div className="flex justify-end gap-3 pt-4">
-          <Button variant="ghost" type="button" onClick={onClose} disabled={isPending}>
+        <div className="flex justify-end gap-2 sm:gap-3 pt-2 sm:pt-4">
+          <Button variant="ghost" type="button" onClick={onClose} disabled={isPending} className="h-10 sm:h-11">
             Cancelar
           </Button>
-          <Button variant="primary" type="submit" isLoading={isPending} disabled={!isDirty || isPending} className="px-8">
-            <Save className="w-4 h-4 mr-2" />
-            {customer ? "Guardar Cambios" : "Crear Cliente"}
+          <Button variant="primary" type="submit" isLoading={isPending} disabled={!isDirty || isPending} className="px-4 sm:px-8 h-10 sm:h-11">
+            <Save className="w-4 h-4 mr-1.5 sm:mr-2" />
+            <span className="text-xs sm:text-sm">{customer ? "Guardar" : "Crear"}</span>
           </Button>
         </div>
       </form>

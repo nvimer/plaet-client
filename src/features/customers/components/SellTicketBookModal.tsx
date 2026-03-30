@@ -46,18 +46,18 @@ export const SellTicketBookModal: React.FC<SellTicketBookModalProps> = ({
       onClose={onClose}
       title="Vender Tiquetera"
     >
-      <div className="space-y-6">
-        <div className="bg-sage-50 p-4 rounded-2xl border border-sage-100 flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center text-sage-600 shadow-sm">
-            <Ticket className="w-6 h-6" />
+      <div className="space-y-5 sm:space-y-6">
+        <div className="bg-sage-50 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-sage-100 flex items-center gap-3 sm:gap-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-white flex items-center justify-center text-sage-600 shadow-sm">
+            <Ticket className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div>
             <p className="text-[10px] font-black text-sage-600 uppercase tracking-widest">Cliente</p>
-            <p className="text-lg font-bold text-carbon-900 leading-tight">{customerName}</p>
+            <p className="text-base sm:text-lg font-bold text-carbon-900 leading-tight">{customerName}</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <Input
             label="Número de Almuerzos"
             type="number"
@@ -83,7 +83,7 @@ export const SellTicketBookModal: React.FC<SellTicketBookModalProps> = ({
           required
         />
 
-        <div className="bg-carbon-900 text-white p-5 rounded-2xl shadow-lg space-y-3">
+        <div className="bg-carbon-900 text-white p-4 sm:p-5 rounded-xl sm:rounded-2xl shadow-lg space-y-3">
           <div className="flex items-center gap-2 text-carbon-400">
             <Calculator className="w-4 h-4" />
             <span className="text-xs font-bold uppercase tracking-wide">Resumen Financiero</span>
@@ -91,7 +91,7 @@ export const SellTicketBookModal: React.FC<SellTicketBookModalProps> = ({
           <div className="flex justify-between items-end">
             <div>
               <p className="text-[10px] text-carbon-400 font-medium">Precio por Almuerzo</p>
-              <p className="text-xl font-black">${unitPrice.toLocaleString("es-CO")}</p>
+              <p className="text-lg sm:text-xl font-black">${unitPrice.toLocaleString("es-CO")}</p>
             </div>
             <div className="text-right">
               <p className="text-[10px] text-carbon-400 font-medium">Vence en</p>
@@ -103,13 +103,13 @@ export const SellTicketBookModal: React.FC<SellTicketBookModalProps> = ({
           </div>
         </div>
 
-        <div className="flex gap-3 pt-2">
+        <div className="flex gap-2 sm:gap-3 pt-2">
           <Button
             variant="ghost"
             fullWidth
             onClick={onClose}
             disabled={isSelling}
-            className="h-14 rounded-2xl font-bold text-carbon-400"
+            className="h-11 sm:h-14 rounded-xl sm:rounded-2xl font-bold text-carbon-400"
           >
             Cancelar
           </Button>
@@ -118,10 +118,10 @@ export const SellTicketBookModal: React.FC<SellTicketBookModalProps> = ({
             fullWidth
             onClick={handleSell}
             disabled={isSelling || !totalPortions || !purchasePrice}
-            className="h-14 rounded-2xl font-black bg-carbon-900 hover:bg-carbon-800 text-white shadow-xl shadow-carbon-200"
+            className="h-11 sm:h-14 rounded-xl sm:rounded-2xl font-black bg-carbon-900 hover:bg-carbon-800 text-white shadow-xl shadow-carbon-200"
           >
-            {isSelling ? "Registrando..." : "Confirmar Venta"}
-            <Check className="w-5 h-5 ml-2" />
+            <span className="text-xs sm:text-sm">{isSelling ? "Registrando..." : "Confirmar"}</span>
+            <Check className="w-4 h-4 sm:w-5 sm:h-5 ml-1.5 sm:ml-2" />
           </Button>
         </div>
       </div>
