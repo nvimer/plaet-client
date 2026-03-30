@@ -500,7 +500,7 @@ export function OrderForm({
                   <h3 className="text-sm font-black text-carbon-900 uppercase italic">Selecciona la Sopa</h3>
                 </div>
                 <div className="space-y-2">
-                  {dailyMenuDisplay.soupOptions.map((opt) => (
+                  {(dailyMenuDisplay?.soupOptions || []).map((opt) => (
                     <button
                       key={opt.id}
                       onClick={() => setSelectedSoup(opt)}
@@ -529,7 +529,7 @@ export function OrderForm({
                   <h3 className="text-sm font-black text-carbon-900 uppercase italic">Principio</h3>
                 </div>
                 <div className="space-y-2">
-                  {dailyMenuDisplay.principleOptions.map((opt) => (
+                  {(dailyMenuDisplay?.principleOptions || []).map((opt) => (
                     <button
                       key={opt.id}
                       onClick={() => setSelectedPrinciple(opt)}
@@ -558,7 +558,7 @@ export function OrderForm({
                   <h3 className="text-sm font-black text-carbon-900 uppercase italic">Ensalada</h3>
                 </div>
                 <div className="space-y-2">
-                  {dailyMenuDisplay.saladOptions.map((opt) => (
+                  {(dailyMenuDisplay?.saladOptions || []).map((opt) => (
                     <button
                       key={opt.id}
                       onClick={() => setSelectedSalad(opt)}
@@ -587,7 +587,7 @@ export function OrderForm({
                   <h3 className="text-sm font-black text-carbon-900 uppercase italic">Bebida</h3>
                 </div>
                 <div className="space-y-2">
-                  {dailyMenuDisplay.drinkOptions.map((opt) => (
+                  {(dailyMenuDisplay?.drinkOptions || []).map((opt) => (
                     <button
                       key={opt.id}
                       onClick={() => setSelectedDrink(opt)}
@@ -618,7 +618,7 @@ export function OrderForm({
                   <h3 className="text-sm font-black text-carbon-900 uppercase italic">Acompañamiento Extra</h3>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {dailyMenuDisplay.extraOptions.map((opt) => (
+                  {(dailyMenuDisplay?.extraOptions || []).map((opt) => (
                     <button
                       key={opt.id}
                       onClick={() => setSelectedExtra(opt)}
