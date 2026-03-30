@@ -52,14 +52,11 @@ export function ProteinSelector({
               <Beef className="w-6 h-6 text-sage-300" />
             </div>
             <div>
-              <h3 className="text-lg font-bold tracking-tight uppercase tracking-[0.1em]">Precio del Menú</h3>
-              <p className="text-xs text-carbon-400 font-medium">
-                Almuerzo completo configurado
-              </p>
+              <h3 className="text-sm font-bold tracking-tight uppercase tracking-[0.1em]">Precio Menú</h3>
             </div>
           </div>
           <div className="text-right">
-            <p className="text-3xl font-black text-white tracking-tighter">
+            <p className="text-xl sm:text-2xl font-black text-white tracking-tighter">
               {selectedProteinTotal
                 ? `$${selectedProteinTotal.toLocaleString("es-CO")}`
                 : `$${minPrice.toLocaleString("es-CO")}${minPrice !== maxPrice ? ` - $${maxPrice.toLocaleString("es-CO")}` : ""}`}

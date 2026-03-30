@@ -53,7 +53,7 @@ export function ReplacementModal({
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-lg w-full h-[85vh] sm:h-auto sm:max-h-[90vh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-300"
+        className="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-lg w-full h-[75vh] sm:h-auto sm:max-h-[80vh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="bg-gradient-to-br from-carbon-900 to-carbon-800 px-6 py-4 sm:py-5 flex-shrink-0">
@@ -89,7 +89,7 @@ export function ReplacementModal({
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto p-3 sm:p-5 bg-sage-50/30 custom-scrollbar-hide">
+        <div className="flex-1 overflow-y-auto p-3 sm:p-5 bg-sage-50/30 scrollbar-hide">
           {currentStep === 0 && (
             <div className="grid gap-2">
               {replaceableCategories
