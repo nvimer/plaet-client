@@ -13,6 +13,7 @@ interface MenuItemSelectorProps {
   error?: string;
   icon?: React.ReactNode;
   color?: "amber" | "emerald" | "sage" | "blue" | "purple";
+  compact?: boolean;
 }
 
 /**
@@ -28,6 +29,7 @@ export function MenuItemSelector({
   error,
   icon,
   color = "sage",
+  compact = false,
 }: MenuItemSelectorProps) {
   const colorClasses = {
     amber: { text: "text-warning-600", bg: "bg-warning-50" },
@@ -41,6 +43,47 @@ export function MenuItemSelector({
 
   if (options.length === 0) {
     return null; // Don't show empty categories
+  }
+
+  // Compact mode - simple list without images
+  if (compact) {
+    return (
+      <div className="space-y-2">
+        <div className="flex items-center gap-2">
+          <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center text-xs shadow-inner", colors.bg, colors.text)}>
+            {icon}
+          </div>
+          <span className="font-bold text-xs text-carbon-900 uppercase tracking-wide">
+            {label}
+          </span>
+          {required && (
+            <span className="text-[8px] bg-error-500 text-white px-1.5 py-0.5 rounded font-bold">Requerido</span>
+          )}
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {options.map((option) => {
+            const isSelected = selectedOption?.id === option.id;
+            return (
+              <button
+                key={option.id}
+                onClick={() => onSelect(option)}
+                className={cn(
+                  "px-3 py-1.5 rounded-lg text-xs font-bold transition-all border",
+                  isSelected
+                    ? "bg-carbon-900 text-white border-carbon-900"
+                    : "bg-white text-carbon-600 border-sage-200 hover:border-carbon-400"
+                )}
+              >
+                {option.name}
+              </button>
+            );
+          })}
+        </div>
+        {error && (
+          <p className="text-[10px] text-error-600 font-medium">{error}</p>
+        )}
+      </div>
+    );
   }
 
   return (

@@ -213,7 +213,81 @@ export function OrderForm({
 
   return (
     <div className="space-y-6 pb-24 sm:pb-0 font-sans">
-      {/* 1. LUNCH CONFIGURATION (TOP PRIORITY) */}
+      {/* 1. DAILY MENU (SHOW FIRST, COMPACT) */}
+      {showDailyMenu && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="space-y-4 p-4 bg-sage-50 rounded-2xl border border-sage-100"
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="w-4 h-4 text-sage-600" />
+            <span className="font-black text-xs text-carbon-900 uppercase tracking-widest">Menú del Día</span>
+          </div>
+          
+          <MenuItemSelector
+            label="Sopa"
+            icon={<Soup className="w-3 h-3" />}
+            options={dailyMenuDisplay?.soupOptions || []}
+            selectedOption={selectedSoup}
+            onSelect={setSelectedSoup}
+            color="amber"
+            required
+            compact
+            error={hasError("soup") ? "Requerido" : undefined}
+          />
+
+          <MenuItemSelector
+            label="Principio"
+            icon={<Utensils className="w-3 h-3" />}
+            options={dailyMenuDisplay?.principleOptions || []}
+            selectedOption={selectedPrinciple}
+            onSelect={setSelectedPrinciple}
+            color="emerald"
+            required
+            compact
+            error={hasError("principle") ? "Requerido" : undefined}
+          />
+
+          <MenuItemSelector
+            label="Ensalada"
+            icon={<Salad className="w-3 h-3" />}
+            options={dailyMenuDisplay?.saladOptions || []}
+            selectedOption={selectedSalad}
+            onSelect={setSelectedSalad}
+            color="sage"
+            required
+            compact
+            error={hasError("salad") ? "Requerido" : undefined}
+          />
+
+          <MenuItemSelector
+            label="Bebida"
+            icon={<CupSoda className="w-3 h-3" />}
+            options={dailyMenuDisplay?.drinkOptions || []}
+            selectedOption={selectedDrink}
+            onSelect={setSelectedDrink}
+            color="blue"
+            required
+            compact
+            error={hasError("drink") ? "Requerido" : undefined}
+          />
+
+          {dailyMenuDisplay?.extraOptions && dailyMenuDisplay.extraOptions.length > 0 && (
+            <MenuItemSelector
+              label="Extra"
+              icon={<IceCream className="w-3 h-3" />}
+              options={dailyMenuDisplay.extraOptions}
+              selectedOption={selectedExtra}
+              onSelect={setSelectedExtra}
+              color="purple"
+              compact
+            />
+          )}
+        </motion.div>
+      )}
+
+      {/* 2. PROTEIN SELECTOR */}
       <div className="space-y-6">
         <ProteinSelector
           proteins={proteins}
@@ -224,6 +298,7 @@ export function OrderForm({
             "transition-all duration-300",
             hasError("protein") ? "ring-2 ring-error-500 rounded-[2.5rem]" : ""
           )}
+        />
         />
 
         {showDailyMenu && (
