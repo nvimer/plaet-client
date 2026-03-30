@@ -1,6 +1,6 @@
-import { Button, Card, EmptyState, Skeleton, Tooltip } from "@/components";
+import { Button, Card, EmptyState, Skeleton, Tooltip, FilterBar, FilterSearch, ActiveFilterChips } from "@/components";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
-import { Search, User, Phone, MapPin, Ticket, Plus, Edit2, History, Trash2, ShoppingBag } from "lucide-react";
+import { Search, User, Phone, MapPin, Ticket, Plus, Edit2, History, Trash2, ShoppingBag, ChevronRight, Mail } from "lucide-react";
 import { useState, useMemo } from "react";
 import { SellTicketBookModal } from "../components/SellTicketBookModal";
 import { CustomerFormModal } from "../components/CustomerFormModal";
@@ -10,12 +10,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/utils/cn";
 
 /**
- * CustomersPage - Full Management Edition
+ * CustomersPage - Normalized List Edition
  * 
- * Provides absolute control over the customer database:
- * - Create / Edit / Delete
- * - View detailed history (Orders & Ticket Books)
- * - Sell ticket books directly
+ * Standardized list view for customer management.
+ * Follows the functional design of orders and menu modules.
  */
 export function CustomersPage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -29,7 +27,7 @@ export function CustomersPage() {
   // --- DATA HOOKS ---
   const { data: customersResponse, isLoading: loadingList } = useCustomers({ 
     query: searchTerm, 
-    limit: 50 
+    limit: 100 
   });
   
   const { data: detailedCustomerResponse, isLoading: loadingDetail } = useCustomer(selectedCustomerId);
@@ -57,7 +55,7 @@ export function CustomersPage() {
   };
 
   const handleSellTicket = (customer: any) => {
-    setEditingCustomer(customer); // Use this to store name/id for the modal
+    setEditingCustomer(customer);
     setIsSellModalOpen(true);
   };
 
@@ -70,179 +68,199 @@ export function CustomersPage() {
     setIsFormModalOpen(false);
   };
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
     if (window.confirm("¿Estás seguro de eliminar este cliente?")) {
-      await deleteCustomer.mutateAsync(id);
+      deleteCustomer.mutate(id);
     }
   };
 
+  const activeChips = [
+    ...(searchTerm !== "" ? [{ key: "search", label: "Búsqueda", value: searchTerm }] : []),
+  ];
+
   return (
     <SidebarLayout hideTitle fullWidth>
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
         
         {/* Header Section */}
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-2">
+          <div className="space-y-1">
             <div className="flex items-center gap-2 text-primary-600">
-              <div className="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center">
-                <User className="w-4 h-4" />
-              </div>
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Módulo Comercial</span>
+              <User className="w-4 h-4" />
+              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Administración</span>
             </div>
-            <h1 className="text-5xl font-black text-carbon-900 tracking-tighter leading-none italic uppercase">
-              Clientes <span className="text-primary-500">&</span> Lealtad
+            <h1 className="text-4xl font-bold text-carbon-900 tracking-tight leading-none">
+              Directorio de Clientes
             </h1>
-            <p className="text-lg text-carbon-500 font-medium max-w-xl">
-              Gestiona tu base de datos, historial de consumos y saldos de tiqueteras prepago.
+            <p className="text-base text-carbon-500 font-medium">
+              Gestiona perfiles, historial de consumos y tiqueteras.
             </p>
           </div>
 
           <Button 
             size="lg" 
             onClick={handleCreateNew}
-            className="rounded-[1.5rem] px-8 h-14 bg-carbon-900 hover:bg-carbon-800 text-white font-black shadow-xl shadow-carbon-200 uppercase tracking-widest text-xs"
+            className="rounded-2xl px-8 h-14 bg-carbon-900 hover:bg-carbon-800 text-white font-bold shadow-soft-lg transition-all active:scale-95"
           >
-            <Plus className="w-5 h-5 mr-2" />
+            <Plus className="w-5 h-5 mr-2 stroke-[3px]" />
             Nuevo Cliente
           </Button>
         </header>
 
-        {/* Search & Filters */}
-        <div className="relative group max-w-3xl">
-          <div className="absolute inset-y-0 left-0 pl-6 flex items-center pointer-events-none">
-            <Search className="h-6 w-6 text-carbon-300 group-focus-within:text-primary-500 transition-colors" />
-          </div>
-          <input
-            type="text"
-            className="block w-full pl-14 pr-6 py-6 bg-white border-2 border-sage-100 rounded-[2rem] text-carbon-900 placeholder-carbon-300 focus:ring-0 focus:border-primary-500 transition-all shadow-smooth-sm group-hover:shadow-smooth-md text-xl font-bold"
-            placeholder="Buscar por nombre o teléfono..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+        {/* Unified Filter System */}
+        <div className="space-y-6">
+          <FilterBar>
+            <div className="flex-1 max-w-md">
+              <FilterSearch
+                value={searchTerm}
+                onChange={setSearchTerm}
+                placeholder="Buscar por nombre o teléfono..."
+                onClear={() => setSearchTerm("")}
+              />
+            </div>
+          </FilterBar>
+
+          <ActiveFilterChips
+            chips={activeChips}
+            resultCount={customers.length}
+            resultLabel="clientes"
+            onClearFilter={() => setSearchTerm("")}
+            onClearAll={() => setSearchTerm("")}
           />
         </div>
 
-        {/* Customers Grid */}
-        {loadingList ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {[...Array(6)].map((_, i) => <Skeleton key={i} variant="card" height={280} className="rounded-[2.5rem]" />)}
-          </div>
-        ) : customers.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {customers.map((customer: any) => (
-              <motion.div
-                key={customer.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                layout
-              >
-                <Card className="p-8 rounded-[2.5rem] border-2 border-white hover:border-primary-100 transition-all duration-500 hover:shadow-soft-2xl group relative overflow-hidden bg-white h-full flex flex-col">
-                  {/* Visual Accent */}
-                  <div className="absolute top-0 right-0 w-32 h-32 bg-primary-50/30 rounded-bl-[5rem] -mr-10 -mt-10 group-hover:bg-primary-50/50 transition-colors" />
-                  
-                  <div className="flex justify-between items-start mb-6 relative z-10">
-                    <div className="w-16 h-16 rounded-3xl bg-carbon-900 flex items-center justify-center text-white shadow-lg group-hover:rotate-3 transition-transform duration-500">
-                      <User className="w-8 h-8" />
-                    </div>
-                    <div className="flex gap-2">
-                      <Tooltip content="Editar Datos">
-                        <button 
-                          onClick={() => handleEdit(customer)}
-                          className="w-10 h-10 rounded-xl border-2 border-sage-50 text-carbon-400 hover:text-primary-600 hover:border-primary-100 hover:bg-primary-50 transition-all active:scale-90 flex items-center justify-center bg-white"
-                        >
-                          <Edit2 className="w-4 h-4" />
-                        </button>
-                      </Tooltip>
-                      <Tooltip content="Eliminar">
-                        <button 
-                          onClick={() => handleDelete(customer.id)}
-                          className="w-10 h-10 rounded-xl border-2 border-sage-50 text-carbon-400 hover:text-error-600 hover:border-error-100 hover:bg-error-50 transition-all active:scale-90 flex items-center justify-center bg-white"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </Tooltip>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 flex-1 relative z-10">
-                    <div>
-                      <h3 className="text-2xl font-black text-carbon-900 leading-tight tracking-tight">
-                        {customer.firstName} {customer.lastName}
-                      </h3>
-                      <div className="flex items-center gap-2 mt-2">
-                        <div className="px-2 py-0.5 rounded-md bg-sage-100 text-sage-600 text-[9px] font-black uppercase tracking-widest">
-                          ID: {customer.id.slice(-6).toUpperCase()}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2.5">
-                      <div className="flex items-center gap-3 text-carbon-600 font-bold">
-                        <div className="w-8 h-8 rounded-lg bg-sage-50 flex items-center justify-center text-sage-500">
-                          <Phone className="w-4 h-4" />
-                        </div>
-                        <span className="text-base">{customer.phone}</span>
-                      </div>
-
-                      {customer.address1 && (
-                        <div className="flex items-start gap-3 text-carbon-400 font-medium">
-                          <div className="w-8 h-8 rounded-lg bg-sage-50 flex items-center justify-center text-sage-500 shrink-0">
-                            <MapPin className="w-4 h-4" />
-                          </div>
-                          <span className="text-sm leading-tight pt-1">{customer.address1}</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Summary Stats */}
-                  <div className="mt-8 grid grid-cols-2 gap-3 relative z-10">
-                    <div className="bg-sage-50/50 p-3 rounded-2xl border border-sage-100/50">
-                      <p className="text-[9px] font-black text-carbon-400 uppercase tracking-widest mb-1">Pedidos</p>
-                      <div className="flex items-center gap-2 text-carbon-900 font-black">
-                        <ShoppingBag className="w-3.5 h-3.5 text-primary-500" />
-                        <span>{customer._count?.orders || 0}</span>
-                      </div>
-                    </div>
-                    <div className="bg-warning-50/30 p-3 rounded-2xl border border-warning-100/50">
-                      <p className="text-[9px] font-black text-carbon-400 uppercase tracking-widest mb-1">Tiqueteras</p>
-                      <div className="flex items-center gap-2 text-carbon-900 font-black">
-                        <Ticket className="w-3.5 h-3.5 text-warning-500" />
-                        <span>{customer._count?.ticketBooks || 0}</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Main Action Footer */}
-                  <div className="mt-6 pt-6 border-t border-sage-50 flex gap-3 relative z-10">
-                    <Button 
-                      variant="primary" 
-                      className="flex-1 rounded-2xl h-12 font-black text-[10px] uppercase tracking-widest bg-carbon-900"
+        {/* Main List */}
+        <Card padding="none" className="overflow-hidden border-2 border-sage-100 rounded-[2rem] shadow-soft-sm bg-white">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-sage-50/50 border-b border-sage-100">
+                  <th className="px-6 py-4 text-left text-[10px] font-black text-carbon-400 uppercase tracking-widest">Cliente</th>
+                  <th className="px-6 py-4 text-left text-[10px] font-black text-carbon-400 uppercase tracking-widest hidden md:table-cell">Contacto</th>
+                  <th className="px-6 py-4 text-center text-[10px] font-black text-carbon-400 uppercase tracking-widest hidden sm:table-cell">Actividad</th>
+                  <th className="px-6 py-4 text-right text-[10px] font-black text-carbon-400 uppercase tracking-widest">Acciones</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-sage-50">
+                {loadingList ? (
+                  [...Array(5)].map((_, i) => (
+                    <tr key={i}>
+                      <td className="px-6 py-4"><Skeleton variant="text" width={150} /></td>
+                      <td className="px-6 py-4 hidden md:table-cell"><Skeleton variant="text" width={100} /></td>
+                      <td className="px-6 py-4 hidden sm:table-cell"><div className="flex justify-center"><Skeleton variant="text" width={60} /></div></td>
+                      <td className="px-6 py-4 text-right"><Skeleton variant="text" width={80} className="ml-auto" /></td>
+                    </tr>
+                  ))
+                ) : customers.length > 0 ? (
+                  customers.map((customer: any) => (
+                    <tr 
+                      key={customer.id} 
+                      className="hover:bg-sage-50/30 transition-colors cursor-pointer group"
                       onClick={() => handleViewDetail(customer.id)}
                     >
-                      <History className="w-4 h-4 mr-2" />
-                      Ver Historial
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="flex-1 rounded-2xl h-12 font-black text-[10px] uppercase tracking-widest border-2 border-warning-200 text-warning-700 hover:bg-warning-50"
-                      onClick={() => handleSellTicket(customer)}
-                    >
-                      <Plus className="w-4 h-4 mr-2" />
-                      Tiquetera
-                    </Button>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
+                      <td className="px-6 py-5">
+                        <div className="flex items-center gap-4">
+                          <div className="w-10 h-10 rounded-xl bg-carbon-100 text-carbon-600 flex items-center justify-center font-black text-xs shadow-inner shrink-0 group-hover:bg-primary-500 group-hover:text-white transition-colors">
+                            {customer.firstName.charAt(0)}{customer.lastName?.charAt(0) || ""}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="font-bold text-carbon-900 truncate">
+                              {customer.firstName} {customer.lastName}
+                            </p>
+                            {customer.address1 && (
+                              <p className="text-[10px] text-carbon-400 truncate flex items-center gap-1 mt-0.5">
+                                <MapPin className="w-3 h-3" />
+                                {customer.address1}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      
+                      <td className="px-6 py-5 hidden md:table-cell">
+                        <div className="space-y-1">
+                          <p className="text-sm font-bold text-carbon-700 flex items-center gap-2">
+                            <Phone className="w-3.5 h-3.5 text-carbon-300" />
+                            {customer.phone}
+                          </p>
+                          {customer.email && (
+                            <p className="text-[10px] text-carbon-400 font-medium truncate max-w-[180px]">
+                              {customer.email}
+                            </p>
+                          )}
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-5 hidden sm:table-cell text-center">
+                        <div className="flex items-center justify-center gap-4">
+                          <div className="flex flex-col items-center">
+                            <span className="text-xs font-black text-carbon-900">{customer._count?.orders || 0}</span>
+                            <span className="text-[8px] font-black text-carbon-400 uppercase tracking-tighter">Pedidos</span>
+                          </div>
+                          <div className="w-px h-6 bg-sage-100" />
+                          <div className="flex flex-col items-center">
+                            <span className={cn(
+                              "text-xs font-black",
+                              (customer._count?.ticketBooks || 0) > 0 ? "text-warning-600" : "text-carbon-900"
+                            )}>
+                              {customer._count?.ticketBooks || 0}
+                            </span>
+                            <span className="text-[8px] font-black text-carbon-400 uppercase tracking-tighter">Tiquetera</span>
+                          </div>
+                        </div>
+                      </td>
+
+                      <td className="px-6 py-5 text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Tooltip content="Editar">
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); handleEdit(customer); }}
+                              className="w-9 h-9 rounded-lg hover:bg-white hover:shadow-soft-sm border border-transparent hover:border-sage-200 flex items-center justify-center text-carbon-400 hover:text-primary-600 transition-all active:scale-90"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+                          </Tooltip>
+                          
+                          <Tooltip content="Tiquetera">
+                            <button 
+                              onClick={(e) => { e.stopPropagation(); handleSellTicket(customer); }}
+                              className="w-9 h-9 rounded-lg hover:bg-white hover:shadow-soft-sm border border-transparent hover:border-warning-200 flex items-center justify-center text-carbon-400 hover:text-warning-600 transition-all active:scale-90"
+                            >
+                              <Ticket className="w-4 h-4" />
+                            </button>
+                          </Tooltip>
+
+                          <Tooltip content="Eliminar">
+                            <button 
+                              onClick={(e) => handleDelete(e, customer.id)}
+                              className="w-9 h-9 rounded-lg hover:bg-error-50 border border-transparent hover:border-error-100 flex items-center justify-center text-carbon-400 hover:text-error-600 transition-all active:scale-90"
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </button>
+                          </Tooltip>
+
+                          <ChevronRight className="w-5 h-5 text-sage-200 ml-2 group-hover:text-primary-500 group-hover:translate-x-1 transition-all" />
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={4}>
+                      <EmptyState
+                        icon={<User size={48} />}
+                        title="Sin resultados"
+                        description={searchTerm ? `No encontramos clientes para "${searchTerm}"` : "Aún no tienes clientes registrados."}
+                        action={!searchTerm ? <Button onClick={handleCreateNew}>Nuevo Cliente</Button> : undefined}
+                      />
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
           </div>
-        ) : (
-          <EmptyState
-            icon={<User size={48} />}
-            title="Tu base de datos está vacía"
-            description="Comienza registrando a tu primer cliente para llevar un control de sus consumos."
-            action={<Button onClick={handleCreateNew}>Registrar Cliente</Button>}
-          />
-        )}
+        </Card>
 
         {/* --- MODALS & DRAWERS --- */}
         
