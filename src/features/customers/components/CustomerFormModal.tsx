@@ -194,6 +194,6 @@ export function CustomerFormModal({
           </Button>
         </div>
       </form>
-BaseModal>
+    </BaseModal>
   );
 }
