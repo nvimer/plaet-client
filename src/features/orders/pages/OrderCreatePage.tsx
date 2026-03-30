@@ -425,8 +425,8 @@ export function OrderCreatePage() {
                 packagingFee={orderBuilder.packagingFee}
                 packagingQuantity={orderBuilder.packagingQuantity}
                 setPackagingQuantity={orderBuilder.setPackagingQuantity}
-                showDailyMenu={formProps.showDailyMenu}
-                setShowDailyMenu={formProps.setShowDailyMenu}
+                showDailyMenu={showDailyMenu}
+                setShowDailyMenu={setShowDailyMenu}
                 dailyMenuDisplay={formProps.dailyMenuDisplay}
                 dailyMenuPrices={formProps.dailyMenuPrices}
                 selectedSoup={formProps.selectedSoup}
