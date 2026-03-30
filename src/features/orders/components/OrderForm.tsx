@@ -25,9 +25,9 @@ import {
   Salad,
   CupSoda,
   IceCream,
-  PackageCheck,
   User,
   Sparkles,
+  ChevronRight,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { OrderType } from "@/types";
@@ -212,204 +212,9 @@ export function OrderForm({
   const showCustomerForm = hasCustomerData || isDelivery;
 
   return (
-    <div className="space-y-6 pb-24 sm:pb-0">
-      {/* CLIENT DATA SECTION */}
-      <Card variant="bordered" padding="md" className="rounded-[2.5rem] border-2 border-sage-100 bg-white shadow-soft-sm">
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center text-primary-600 shadow-inner">
-                <User className="w-5 h-5" />
-              </div>
-              <div>
-                <h3 className="text-sm font-black text-carbon-900 uppercase tracking-wider">Datos del Cliente</h3>
-                <p className="text-[10px] text-carbon-400 font-medium">
-                  {isDelivery ? "Requerido para domicilio" : "Opcional: Asocia esta venta"}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 bg-sage-50/50 p-1.5 rounded-2xl border border-sage-100 shadow-inner">
-              <span className={cn(
-                "text-[10px] font-black uppercase tracking-widest px-2",
-                !showCustomerForm ? "text-primary-600" : "text-carbon-300"
-              )}>Consumidor Final</span>
-              
-              <button
-                type="button"
-                disabled={isDelivery}
-                onClick={() => setHasCustomerData(!hasCustomerData)}
-                className={cn(
-                  "relative w-12 h-6 rounded-full transition-all duration-300",
-                  showCustomerForm ? "bg-primary-600 shadow-primary-100" : "bg-carbon-200"
-                )}
-              >
-                <div className={cn(
-                  "absolute top-1 left-1 w-4 h-4 rounded-full bg-white transition-all duration-300 shadow-sm",
-                  showCustomerForm ? "translate-x-6" : "translate-x-0"
-                )} />
-              </button>
-
-              <span className={cn(
-                "text-[10px] font-black uppercase tracking-widest px-2",
-                showCustomerForm ? "text-primary-600" : "text-carbon-300"
-              )}>Con Datos</span>
-            </div>
-          </div>
-
-          <AnimatePresence mode="wait">
-            {showCustomerForm && (
-              <motion.div 
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: "auto" }}
-                exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden"
-              >
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-sage-50">
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1 uppercase">Teléfono</label>
-                    <div className="relative">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
-                      <Input
-                        type="tel"
-                        placeholder="Ej: 3001234567"
-                        value={customerPhone}
-                        onChange={(e) => setCustomerPhone(e.target.value)}
-                        className="pl-11 h-12"
-                        error={hasError("customerPhone") ? validationErrors.find(e => e.field === "customerPhone")?.message : undefined}
-                        fullWidth
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-1 space-y-2">
-                    <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1 uppercase">Nombre</label>
-                    <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
-                      <Input
-                        type="text"
-                        placeholder="Ej: Juan Pérez"
-                        value={customerName}
-                        onChange={(e) => setCustomerName(e.target.value)}
-                        className="pl-11 h-12"
-                        error={hasError("customerName") ? validationErrors.find(e => e.field === "customerName")?.message : undefined}
-                        fullWidth
-                      />
-                    </div>
-                  </div>
-
-                  {isDelivery && (
-                    <div className="sm:col-span-2 space-y-2">
-                      <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1 uppercase">Dirección</label>
-                      <div className="relative">
-                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
-                        <Input
-                          type="text"
-                          placeholder="Calle 123 # 45-67"
-                          value={deliveryAddress}
-                          onChange={(e) => setDeliveryAddress(e.target.value)}
-                          className="pl-11 h-12"
-                          error={hasError("deliveryAddress") ? validationErrors.find(e => e.field === "deliveryAddress")?.message : undefined}
-                          fullWidth
-                        />
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-
-          {selectedOrderType !== OrderType.DINE_IN && (
-            <div className="pt-4 border-t border-sage-50">
-              <div className="flex items-center justify-between p-4 bg-sage-50/30 rounded-2xl border-2 border-dashed border-sage-100">
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-white text-primary-600 flex items-center justify-center shadow-soft-sm">
-                    <Box className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="text-xs font-black text-carbon-900 uppercase">Portacomida</p>
-                    <p className="text-[10px] text-carbon-500 font-medium">${packagingFee.toLocaleString()} / unidad</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center bg-white rounded-xl border-2 border-sage-100 p-1 shadow-inner">
-                    <button
-                      type="button"
-                      onClick={() => setPackagingQuantity(Math.max(0, packagingQuantity - 1))}
-                      className="w-8 h-8 flex items-center justify-center text-carbon-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all active:scale-90"
-                    >
-                      <Minus className="w-4 h-4" />
-                    </button>
-                    <span className="w-10 text-center font-black text-carbon-900 text-sm">
-                      {packagingQuantity}
-                    </span>
-                    <button
-                      type="button"
-                      onClick={() => setPackagingQuantity(packagingQuantity + 1)}
-                      className="w-8 h-8 flex items-center justify-center text-carbon-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-all active:scale-90"
-                    >
-                      <Plus className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {customerId && showCustomerForm && (
-            <div className="mt-2 pt-6 border-t border-sage-50">
-              <CustomerTicketsInfo 
-                customerId={customerId} 
-                onSellClick={() => setShowSellModal(true)} 
-              />
-            </div>
-          )}
-        </div>
-      </Card>
-
-      {/* Professional Header Banner */}
-      <Card
-        variant="elevated"
-        className={cn(
-          "overflow-hidden rounded-2xl border-2 transition-all duration-300",
-          currentOrderIndex !== null
-            ? "border-warning-200 bg-white shadow-soft-xl"
-            : "border-sage-200 bg-white shadow-smooth-md"
-        )}
-      >
-        <div className="px-4 py-4 sm:px-6 sm:py-5 flex items-center justify-between">
-          <div className="flex items-center gap-3 sm:gap-4">
-            <div className={cn(
-              "w-10 h-10 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-inner transition-colors",
-              currentOrderIndex !== null ? "bg-warning-100 text-warning-600" : "bg-sage-100 text-sage-600"
-            )}>
-              {currentOrderIndex !== null ? (
-                <Sparkles className="w-5 h-5 sm:w-6 sm:h-6" />
-              ) : (
-                <Plus className="w-5 h-5 sm:w-6 sm:h-6" />
-              )}
-            </div>
-            <div>
-              <h2 className="text-carbon-900 font-bold text-lg sm:text-xl tracking-tight leading-tight uppercase">
-                {currentOrderIndex !== null
-                  ? `Editando Pedido #${currentOrderIndex + 1}`
-                  : `Nuevo Pedido #${tableOrdersLength + 1}`}
-              </h2>
-              <span className="text-xs font-bold text-primary-600 uppercase tracking-widest">
-                {currentOrderIndex !== null ? 'Actualiza tu selección' : 'Configura el almuerzo'}
-              </span>
-            </div>
-          </div>
-          {currentOrderIndex !== null && (
-            <button onClick={onCancelEdit} className="p-3 bg-error-50 text-error-500 rounded-xl">
-              <X className="w-5 h-5" />
-            </button>
-          )}
-        </div>
-      </Card>
-
-      <div className="space-y-8">
+    <div className="space-y-6 pb-24 sm:pb-0 font-sans">
+      {/* 1. LUNCH CONFIGURATION (TOP PRIORITY) */}
+      <div className="space-y-6">
         <ProteinSelector
           proteins={proteins}
           selectedProteinId={selectedProtein?.id}
@@ -423,62 +228,71 @@ export function OrderForm({
 
         {showDailyMenu && (
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-8"
+            className="space-y-6 bg-sage-50/20 p-4 sm:p-6 rounded-[2.5rem] border-2 border-sage-100"
           >
-            <MenuItemSelector
-              label="Sopa"
-              icon={<Soup />}
-              options={dailyMenuDisplay?.soupOptions || []}
-              selectedOption={selectedSoup}
-              onSelect={setSelectedSoup}
-              color="amber"
-              required
-              error={hasError("soup") ? "Selecciona una sopa" : undefined}
-            />
+            <div className="flex items-center gap-2 px-2 mb-2">
+              <Sparkles className="w-4 h-4 text-primary-500" />
+              <h3 className="text-xs font-bold text-carbon-900 uppercase tracking-widest">Opciones del Almuerzo</h3>
+            </div>
 
-            <MenuItemSelector
-              label="Principio"
-              icon={<Utensils />}
-              options={dailyMenuDisplay?.principleOptions || []}
-              selectedOption={selectedPrinciple}
-              onSelect={setSelectedPrinciple}
-              color="emerald"
-              required
-              error={hasError("principle") ? "Selecciona un principio" : undefined}
-            />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <MenuItemSelector
+                label="Sopa"
+                icon={<Soup className="w-4 h-4" />}
+                options={dailyMenuDisplay?.soupOptions || []}
+                selectedOption={selectedSoup}
+                onSelect={setSelectedSoup}
+                color="amber"
+                required
+                error={hasError("soup") ? "Requerido" : undefined}
+              />
 
-            <MenuItemSelector
-              label="Ensalada"
-              icon={<Salad />}
-              options={dailyMenuDisplay?.saladOptions || []}
-              selectedOption={selectedSalad}
-              onSelect={setSelectedSalad}
-              color="sage"
-              required
-              error={hasError("salad") ? "Selecciona una ensalada" : undefined}
-            />
+              <MenuItemSelector
+                label="Principio"
+                icon={<Utensils className="w-4 h-4" />}
+                options={dailyMenuDisplay?.principleOptions || []}
+                selectedOption={selectedPrinciple}
+                onSelect={setSelectedPrinciple}
+                color="emerald"
+                required
+                error={hasError("principle") ? "Requerido" : undefined}
+              />
 
-            <MenuItemSelector
-              label="Bebida"
-              icon={<CupSoda />}
-              options={dailyMenuDisplay?.drinkOptions || []}
-              selectedOption={selectedDrink}
-              onSelect={setSelectedDrink}
-              color="blue"
-              required
-              error={hasError("drink") ? "Selecciona una bebida" : undefined}
-            />
+              <MenuItemSelector
+                label="Ensalada"
+                icon={<Salad className="w-4 h-4" />}
+                options={dailyMenuDisplay?.saladOptions || []}
+                selectedOption={selectedSalad}
+                onSelect={setSelectedSalad}
+                color="sage"
+                required
+                error={hasError("salad") ? "Requerido" : undefined}
+              />
 
-            <MenuItemSelector
-              label="Extra / Acompañamiento"
-              icon={<IceCream />}
-              options={dailyMenuDisplay?.extraOptions || []}
-              selectedOption={selectedExtra}
-              onSelect={setSelectedExtra}
-              color="purple"
-            />
+              <MenuItemSelector
+                label="Bebida"
+                icon={<CupSoda className="w-4 h-4" />}
+                options={dailyMenuDisplay?.drinkOptions || []}
+                selectedOption={selectedDrink}
+                onSelect={setSelectedDrink}
+                color="blue"
+                required
+                error={hasError("drink") ? "Requerido" : undefined}
+              />
+            </div>
+
+            {dailyMenuDisplay?.extraOptions && dailyMenuDisplay.extraOptions.length > 0 && (
+              <MenuItemSelector
+                label="Acompañamiento"
+                icon={<IceCream className="w-4 h-4" />}
+                options={dailyMenuDisplay.extraOptions}
+                selectedOption={selectedExtra}
+                onSelect={setSelectedExtra}
+                color="purple"
+              />
+            )}
 
             <ReplacementManager
               availableItems={{
@@ -496,29 +310,147 @@ export function OrderForm({
             />
           </motion.div>
         )}
-
-        <div className="pt-4 border-t-2 border-sage-100">
-          <LooseItemSelector
-            searchTerm={searchTerm}
-            setSearchTerm={setSearchTerm}
-            filteredItems={filteredLooseItems as never}
-            popularProducts={popularProducts}
-            onAddItem={handleAddLooseItem}
-            onUpdateQuantity={handleUpdateLooseItemQuantity}
-            selectedItems={looseItems}
-          />
-        </div>
       </div>
 
+      {/* 2. ADDITIONALS & DRINKS (INDIVIDUAL ITEMS) */}
+      <div className="pt-4 border-t-2 border-sage-100">
+        <LooseItemSelector
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          filteredItems={filteredLooseItems as never}
+          popularProducts={popularProducts}
+          onAddItem={handleAddLooseItem}
+          onUpdateQuantity={handleUpdateLooseItemQuantity}
+          selectedItems={looseItems}
+        />
+      </div>
+
+      {/* 3. CLIENT DATA & PACKAGING (COLLAPSIBLE/SECONDARY) */}
+      <Card variant="bordered" padding="md" className="rounded-[2.5rem] border-2 border-sage-100 bg-white shadow-soft-sm">
+        <div className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-primary-50 flex items-center justify-center text-primary-600">
+                <User className="w-4 h-4" />
+              </div>
+              <h3 className="text-xs font-bold text-carbon-900 uppercase tracking-widest">Cliente y Empaque</h3>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setHasCustomerData(!hasCustomerData)}
+                className={cn(
+                  "px-3 py-1.5 rounded-xl text-[10px] font-bold uppercase tracking-wider transition-all",
+                  showCustomerForm ? "bg-primary-600 text-white shadow-soft-md" : "bg-sage-50 text-carbon-400 border border-sage-100"
+                )}
+              >
+                {showCustomerForm ? "Identificado" : "Consumidor Final"}
+              </button>
+            </div>
+          </div>
+
+          <AnimatePresence>
+            {showCustomerForm && (
+              <motion.div 
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-sage-50 overflow-hidden"
+              >
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest ml-1">Teléfono</label>
+                  <div className="relative">
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-300 w-3.5 h-3.5" />
+                    <Input
+                      type="tel"
+                      placeholder="300..."
+                      value={customerPhone}
+                      onChange={(e) => setCustomerPhone(e.target.value)}
+                      className="pl-10 h-11 text-sm rounded-xl border-sage-100"
+                      fullWidth
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest ml-1">Nombre</label>
+                  <div className="relative">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-300 w-3.5 h-3.5" />
+                    <Input
+                      type="text"
+                      placeholder="Nombre..."
+                      value={customerName}
+                      onChange={(e) => setCustomerName(e.target.value)}
+                      className="pl-10 h-11 text-sm rounded-xl border-sage-100"
+                      fullWidth
+                    />
+                  </div>
+                </div>
+
+                {isDelivery && (
+                  <div className="sm:col-span-2 space-y-1.5">
+                    <label className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest ml-1">Dirección</label>
+                    <Input
+                      type="text"
+                      placeholder="Calle..."
+                      value={deliveryAddress}
+                      onChange={(e) => setDeliveryAddress(e.target.value)}
+                      className="h-11 text-sm rounded-xl border-sage-100"
+                      fullWidth
+                    />
+                  </div>
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {selectedOrderType !== OrderType.DINE_IN && (
+            <div className="pt-4 border-t border-sage-50">
+              <div className="flex items-center justify-between p-3 bg-sage-50/30 rounded-xl border border-sage-100">
+                <div className="flex items-center gap-3">
+                  <Box className="w-4 h-4 text-primary-500" />
+                  <span className="text-[11px] font-bold text-carbon-700 uppercase tracking-wide">Portacomidas</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setPackagingQuantity(Math.max(0, packagingQuantity - 1))}
+                    className="w-7 h-7 flex items-center justify-center bg-white border border-sage-200 rounded-lg text-carbon-400 active:scale-90 transition-all"
+                  >
+                    <Minus className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="font-bold text-sm text-carbon-900">{packagingQuantity}</span>
+                  <button
+                    onClick={() => setPackagingQuantity(packagingQuantity + 1)}
+                    className="w-7 h-7 flex items-center justify-center bg-white border border-sage-200 rounded-lg text-carbon-400 active:scale-90 transition-all"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </Card>
+
+      {/* 4. ADDITIONAL NOTES */}
       <Card variant="bordered" padding="md" className="rounded-[2.5rem] border-2 border-sage-100 bg-white shadow-soft-sm">
         <textarea
           value={orderNotes}
           onChange={(e) => setOrderNotes(e.target.value)}
-          placeholder="Notas adicionales (Ej: Sin sal...)"
-          className="w-full p-4 rounded-2xl border-2 border-sage-50 bg-sage-50/20 focus:border-carbon-900 focus:bg-white focus:outline-none resize-none transition-all font-medium text-carbon-700"
-          rows={3}
+          placeholder="Notas adicionales..."
+          className="w-full p-4 rounded-2xl border-2 border-sage-50 bg-sage-50/20 focus:border-carbon-900 focus:bg-white focus:outline-none resize-none transition-all font-medium text-sm text-carbon-700"
+          rows={2}
         />
       </Card>
+
+      {/* Ticket Book Info */}
+      {customerId && showCustomerForm && (
+        <CustomerTicketsInfo 
+          customerId={customerId} 
+          onSellClick={() => setShowSellModal(true)} 
+        />
+      )}
 
       {/* Sell Modal */}
       {customerId && (
