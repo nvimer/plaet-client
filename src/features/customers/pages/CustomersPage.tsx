@@ -80,15 +80,15 @@ export function CustomersPage() {
   ];
 
   return (
-    <SidebarLayout fullWidth>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <SidebarLayout hideTitle fullWidth>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-10">
         
         {/* Header Section */}
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="space-y-1">
+          <div className="space-y-2">
             <div className="flex items-center gap-2 text-primary-600">
               <Users className="w-5 h-5" />
-              <span className="text-[10px] font-semibold tracking-[0.2em]">Administración</span>
+              <span className="text-[10px] font-semibold tracking-[0.2em]">administración</span>
             </div>
             <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">
               Directorio de Clientes
@@ -192,11 +192,11 @@ export function CustomersPage() {
                         </div>
                       </td>
 
-                      <td className="px-6 py-5 hidden sm:table-cell text-center">
+                      <td className="px-6 py-5 hidden sm:table-cell text-center border-x border-sage-50/50">
                         <div className="flex items-center justify-center gap-4">
                           <div className="flex flex-col items-center">
                             <span className="text-xs font-black text-carbon-900">{customer._count?.orders || 0}</span>
-                            <span className="text-[8px] font-black text-carbon-400 uppercase tracking-tighter">Pedidos</span>
+                            <span className="text-[8px] font-bold text-carbon-400 uppercase tracking-tighter">pedidos</span>
                           </div>
                           <div className="w-px h-6 bg-sage-100" />
                           <div className="flex flex-col items-center">
@@ -206,7 +206,7 @@ export function CustomersPage() {
                             )}>
                               {customer._count?.ticketBooks || 0}
                             </span>
-                            <span className="text-[8px] font-black text-carbon-400 uppercase tracking-tighter">Tiquetera</span>
+                            <span className="text-[8px] font-bold text-carbon-400 uppercase tracking-tighter">tiquetera</span>
                           </div>
                         </div>
                       </td>
