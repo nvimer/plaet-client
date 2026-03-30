@@ -307,9 +307,16 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
   const dailyMenuDisplay = useMemo(() => {
     if (!dailyMenuData) return {
-      soupOptions: [], principleOptions: [], saladOptions: [], extraOptions: [],
-      drinkOptions: [], dessertOptions: [], riceOptions: [], riceOption: null,
-      basePrice: 0, isConfigured: false,
+      soupOptions: [], 
+      principleOptions: [], 
+      saladOptions: [], 
+      extraOptions: [],
+      drinkOptions: [], 
+      dessertOptions: [], 
+      riceOptions: [], 
+      riceOption: null,
+      basePrice: 0, 
+      isConfigured: false,
     };
     
     const riceOptions = dailyMenuData.riceOptions || [];
