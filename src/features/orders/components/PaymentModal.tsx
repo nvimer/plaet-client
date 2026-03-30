@@ -299,7 +299,7 @@ export function PaymentModal({
             </div>
 
             {!payAll && (
-              <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+              <div className="grid grid-cols-1 gap-2 max-h-40 overflow-y-auto pr-2 scrollbar-hide">
                 {orders.map((order, idx) => {
                   const isSelected = selectedOrderIds.includes(order.id);
                   const remaining = remainingAmountsPerOrder[order.id];
@@ -370,7 +370,7 @@ export function PaymentModal({
           {payments.length > 0 && (
             <div className="space-y-2">
               <p className="text-[10px] font-black text-carbon-500 tracking-widest uppercase ml-1">Pagos Registrados</p>
-              <div className="max-h-32 overflow-y-auto space-y-2 pr-2 custom-scrollbar">
+              <div className="max-h-32 overflow-y-auto space-y-2 pr-2 scrollbar-hide">
                 {payments.map((p) => (
                   <PaymentEntryItem key={p.id} payment={p} onRemove={handleRemovePayment} />
                 ))}
@@ -382,7 +382,7 @@ export function PaymentModal({
         {/* 4. PAYMENT FORM */}
         {remainingToPay > 0 && (
           <div className="space-y-4">
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-3 gap-2 sm:gap-3">
               {methods.map((m) => {
                 const Icon = m.icon;
                 const isActive = method === m.id;
@@ -391,7 +391,7 @@ export function PaymentModal({
                     key={m.id}
                     onClick={() => setMethod(m.id)}
                     className={cn(
-                      "flex flex-col items-center justify-center p-4 rounded-3xl border-2 transition-all duration-300 gap-2 active:scale-95",
+                      "flex flex-col items-center justify-center p-3 sm:p-4 rounded-3xl border-2 transition-all duration-300 gap-1 sm:gap-2 active:scale-95",
                       isActive 
                         ? "border-carbon-900 bg-carbon-900 text-white shadow-soft-lg" 
                         : "border-sage-100 bg-white text-carbon-500 hover:border-sage-300 hover:bg-sage-50/50"
