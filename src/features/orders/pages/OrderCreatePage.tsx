@@ -585,7 +585,6 @@ export function OrderCreatePage() {
                 showDailyMenu={showDailyMenu}
                 setShowDailyMenu={setShowDailyMenu}
                 dailyMenuDisplay={dailyMenuDisplay}
-                dailyMenuPrices={dailyMenuPrices}
                 selectedSoup={selectedSoup}
                 setSelectedSoup={setSelectedSoup}
                 selectedPrinciple={selectedPrinciple}
