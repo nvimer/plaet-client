@@ -80,20 +80,20 @@ export function CustomersPage() {
   ];
 
   return (
-    <SidebarLayout hideTitle fullWidth>
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-8">
+    <SidebarLayout fullWidth>
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
         {/* Header Section */}
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-1">
             <div className="flex items-center gap-2 text-primary-600">
-              <User className="w-4 h-4" />
-              <span className="text-[10px] font-black uppercase tracking-[0.2em]">Administración</span>
+              <Users className="w-5 h-5" />
+              <span className="text-[10px] font-semibold tracking-[0.2em]">Administración</span>
             </div>
-            <h1 className="text-4xl font-bold text-carbon-900 tracking-tight leading-none">
+            <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">
               Directorio de Clientes
             </h1>
-            <p className="text-base text-carbon-500 font-medium">
+            <p className="text-lg text-carbon-500 font-medium">
               Gestiona perfiles, historial de consumos y tiqueteras.
             </p>
           </div>

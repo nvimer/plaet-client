@@ -165,6 +165,21 @@ const BREADCRUMB_MAP: Array<{ path: string; items: BreadcrumbItem[] }> = [
     path: "/profile",
     items: [{ label: "Inicio", path: "/dashboard" }, { label: "Mi perfil" }],
   },
+
+  // Customers
+  {
+    path: "/customers",
+    items: [{ label: "Inicio", path: "/dashboard" }, { label: "Personas", path: "/users" }, { label: "Clientes" }],
+  },
+  {
+    path: "/customers/list",
+    items: [
+      { label: "Inicio", path: "/dashboard" },
+      { label: "Personas", path: "/users" },
+      { label: "Clientes", path: "/customers" },
+      { label: "Directorio" },
+    ],
+  },
 ];
 
 /**
@@ -234,6 +249,12 @@ export function getBreadcrumbs(pathname: string): BreadcrumbItem[] {
     const base = [{ label: "Inicio", path: "/dashboard" }, { label: "Equipo", path: "/users" }];
     if (segments[2] === "edit") return [...base, { label: "Editar usuario" }];
     return base;
+  }
+
+  if (segments[0] === "customers" && segments.length >= 2) {
+    const id = segments[1];
+    if (id === "list") return BREADCRUMB_MAP.find(b => b.path === "/customers/list")?.items || [];
+    return [{ label: "Inicio", path: "/dashboard" }, { label: "Personas", path: "/users" }, { label: "Clientes" }];
   }
 
   // Fallback: single item

@@ -48,7 +48,7 @@ export function CustomerDetailDrawer({
               <User className="w-6 h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-carbon-900 tracking-tight leading-none uppercase italic">Detalle de Cliente</h2>
+              <h2 className="text-xl font-black text-carbon-900 tracking-tight leading-none uppercase">Detalle de Cliente</h2>
               <p className="text-xs text-carbon-400 font-bold mt-1 uppercase tracking-widest">Historial y Datos</p>
             </div>
           </div>
@@ -112,7 +112,7 @@ export function CustomerDetailDrawer({
                             </div>
                           </div>
                         ) : (
-                          <p className="text-sm text-carbon-300 italic">No hay dirección registrada</p>
+                          <p className="text-sm text-carbon-300">No hay dirección registrada</p>
                         )}
                       </div>
                     </div>
@@ -125,7 +125,7 @@ export function CustomerDetailDrawer({
                 <div className="flex items-center justify-between px-2">
                   <div className="flex items-center gap-2">
                     <Ticket className="w-5 h-5 text-warning-500" />
-                    <h3 className="font-black text-carbon-900 uppercase tracking-wider italic">Tiqueteras Activas</h3>
+                    <h3 className="font-black text-carbon-900 uppercase tracking-wider">Tiqueteras Activas</h3>
                   </div>
                   <Badge variant="warning">{customer.ticketBooks.filter(t => t.status === 'active').length}</Badge>
                 </div>
@@ -178,7 +178,7 @@ export function CustomerDetailDrawer({
                 <div className="flex items-center justify-between px-2">
                   <div className="flex items-center gap-2">
                     <ShoppingBag className="w-5 h-5 text-primary-500" />
-                    <h3 className="font-black text-carbon-900 uppercase tracking-wider italic">Pedidos Recientes</h3>
+                    <h3 className="font-black text-carbon-900 uppercase tracking-wider">Pedidos Recientes</h3>
                   </div>
                   <Badge variant="primary">{customer.orders.length}</Badge>
                 </div>
@@ -217,7 +217,7 @@ export function CustomerDetailDrawer({
                       </div>
                     ))
                   ) : (
-                    <p className="text-sm text-sage-400 italic text-center py-4 underline underline-offset-4 decoration-sage-200">
+                    <p className="text-sm text-sage-400 text-center py-4 underline underline-offset-4 decoration-sage-200">
                       No se registran pedidos previos
                     </p>
                   )}
