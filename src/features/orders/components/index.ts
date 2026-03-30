@@ -6,6 +6,7 @@ export { DailyMenuSection } from "./DailyMenuSection";
 export { ProteinSelector } from "./ProteinSelector";
 export { OrderSummary } from "./OrderSummary";
 export { MenuItemSelector } from "./MenuItemSelector";
+export { LooseItemSelector } from "./LooseItemSelector";
 export { ReplacementManager, type Replacement } from "./ReplacementManager";
 export { FixedOrderSummaryBar } from "./FixedOrderSummaryBar";
 export { OrderForm } from "./OrderForm";

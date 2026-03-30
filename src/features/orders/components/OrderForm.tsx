@@ -7,6 +7,7 @@ import { Card, Input, Tooltip } from "@/components";
 import {
   ProteinSelector,
   MenuItemSelector,
+  LooseItemSelector,
   ReplacementManager,
   type Replacement,
 } from "./";
@@ -15,10 +16,6 @@ import { SellTicketBookModal } from "../../customers/components/SellTicketBookMo
 import {
   Plus,
   Minus,
-  UtensilsCrossed,
-  Sparkles,
-  Search,
-  User,
   X,
   Phone,
   MapPin,
@@ -28,8 +25,9 @@ import {
   Salad,
   CupSoda,
   IceCream,
-  CircleCheck,
   PackageCheck,
+  User,
+  Sparkles,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { OrderType } from "@/types";
@@ -118,7 +116,7 @@ interface OrderFormProps {
   filteredLooseItems: Array<{
     id: number;
     name: string;
-    price: string;
+    price: string | number;
     isAvailable: boolean;
   }>;
   popularProducts: Array<{ id: number; name: string; price: number }>;
@@ -224,17 +222,16 @@ export function OrderForm({
                 <User className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-sm font-black text-carbon-900 uppercase tracking-wider italic">Datos del Cliente</h3>
-                <p className="text-[10px] text-carbon-400 font-medium italic">
-                  {isDelivery ? "Requerido para el servicio de domicilio" : "Opcional: Asocia esta venta a un cliente"}
+                <h3 className="text-sm font-black text-carbon-900 uppercase tracking-wider">Datos del Cliente</h3>
+                <p className="text-[10px] text-carbon-400 font-medium">
+                  {isDelivery ? "Requerido para domicilio" : "Opcional: Asocia esta venta"}
                 </p>
               </div>
             </div>
 
-            {/* Toggle: Mandatory for Delivery, Optional for others */}
             <div className="flex items-center gap-3 bg-sage-50/50 p-1.5 rounded-2xl border border-sage-100 shadow-inner">
               <span className={cn(
-                "text-[10px] font-black uppercase tracking-widest px-2 transition-colors",
+                "text-[10px] font-black uppercase tracking-widest px-2",
                 !showCustomerForm ? "text-primary-600" : "text-carbon-300"
               )}>Consumidor Final</span>
               
@@ -254,7 +251,7 @@ export function OrderForm({
               </button>
 
               <span className={cn(
-                "text-[10px] font-black uppercase tracking-widest px-2 transition-colors",
+                "text-[10px] font-black uppercase tracking-widest px-2",
                 showCustomerForm ? "text-primary-600" : "text-carbon-300"
               )}>Con Datos</span>
             </div>
@@ -266,12 +263,11 @@ export function OrderForm({
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                transition={{ duration: 0.3, ease: "easeInOut" }}
                 className="overflow-hidden"
               >
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-sage-50">
                   <div className="space-y-2">
-                    <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1 uppercase italic italic">Teléfono Principal</label>
+                    <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1 uppercase">Teléfono</label>
                     <div className="relative">
                       <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
                       <Input
@@ -286,23 +282,8 @@ export function OrderForm({
                     </div>
                   </div>
 
-                  <div className="space-y-2">
-                    <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1 uppercase italic">Teléfono Secundario (Opcional)</label>
-                    <div className="relative">
-                      <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4 opacity-50" />
-                      <Input
-                        type="tel"
-                        placeholder="Otro número..."
-                        value={customerPhone2}
-                        onChange={(e) => setCustomerPhone2(e.target.value)}
-                        className="pl-11 h-12"
-                        fullWidth
-                      />
-                    </div>
-                  </div>
-
-                  <div className="sm:col-span-2 space-y-2">
-                    <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1 uppercase italic">Nombre del Cliente</label>
+                  <div className="sm:col-span-1 space-y-2">
+                    <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1 uppercase">Nombre</label>
                     <div className="relative">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
                       <Input
@@ -318,45 +299,27 @@ export function OrderForm({
                   </div>
 
                   {isDelivery && (
-                    <>
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1 uppercase italic">Dirección Principal</label>
-                        <div className="relative">
-                          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
-                          <Input
-                            type="text"
-                            placeholder="Calle 123 # 45-67"
-                            value={deliveryAddress}
-                            onChange={(e) => setDeliveryAddress(e.target.value)}
-                            className="pl-11 h-12"
-                            error={hasError("deliveryAddress") ? validationErrors.find(e => e.field === "deliveryAddress")?.message : undefined}
-                            fullWidth
-                          />
-                        </div>
+                    <div className="sm:col-span-2 space-y-2">
+                      <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1 uppercase">Dirección</label>
+                      <div className="relative">
+                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4" />
+                        <Input
+                          type="text"
+                          placeholder="Calle 123 # 45-67"
+                          value={deliveryAddress}
+                          onChange={(e) => setDeliveryAddress(e.target.value)}
+                          className="pl-11 h-12"
+                          error={hasError("deliveryAddress") ? validationErrors.find(e => e.field === "deliveryAddress")?.message : undefined}
+                          fullWidth
+                        />
                       </div>
-
-                      <div className="space-y-2">
-                        <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1 uppercase italic">Dirección Secundaria (Opcional)</label>
-                        <div className="relative">
-                          <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4 opacity-50" />
-                          <Input
-                            type="text"
-                            placeholder="Apartamento, local, etc..."
-                            value={address2}
-                            onChange={(e) => setAddress2(e.target.value)}
-                            className="pl-11 h-12"
-                            fullWidth
-                          />
-                        </div>
-                      </div>
-                    </>
+                    </div>
                   )}
                 </div>
               </motion.div>
             )}
           </AnimatePresence>
 
-          {/* Packaging Section - Always visible if not Dine-in */}
           {selectedOrderType !== OrderType.DINE_IN && (
             <div className="pt-4 border-t border-sage-50">
               <div className="flex items-center justify-between p-4 bg-sage-50/30 rounded-2xl border-2 border-dashed border-sage-100">
@@ -365,7 +328,7 @@ export function OrderForm({
                     <Box className="w-5 h-5" />
                   </div>
                   <div>
-                    <p className="text-xs font-black text-carbon-900 uppercase italic">Portacomida</p>
+                    <p className="text-xs font-black text-carbon-900 uppercase">Portacomida</p>
                     <p className="text-[10px] text-carbon-500 font-medium">${packagingFee.toLocaleString()} / unidad</p>
                   </div>
                 </div>
@@ -389,16 +352,11 @@ export function OrderForm({
                       <Plus className="w-4 h-4" />
                     </button>
                   </div>
-                  <div className="hidden sm:block text-right min-w-[70px]">
-                    <p className="text-[9px] font-black text-carbon-400 uppercase tracking-widest">Cargo</p>
-                    <p className="text-xs font-black text-primary-700">${(packagingFee * packagingQuantity).toLocaleString()}</p>
-                  </div>
                 </div>
               </div>
             </div>
           )}
 
-          {/* Ticket Book Info - Only when customer is identified */}
           {customerId && showCustomerForm && (
             <div className="mt-2 pt-6 border-t border-sage-50">
               <CustomerTicketsInfo 
@@ -409,16 +367,6 @@ export function OrderForm({
           )}
         </div>
       </Card>
-
-      {/* Sell Modal */}
-      {customerId && (
-        <SellTicketBookModal
-          isOpen={showSellModal}
-          onClose={() => setShowSellModal(false)}
-          customerId={customerId}
-          customerName={customerName}
-        />
-      )}
 
       {/* Professional Header Banner */}
       <Card
@@ -443,39 +391,25 @@ export function OrderForm({
               )}
             </div>
             <div>
-              <h2 className="text-carbon-900 font-semibold text-lg sm:text-xl tracking-tight leading-tight">
+              <h2 className="text-carbon-900 font-bold text-lg sm:text-xl tracking-tight leading-tight uppercase">
                 {currentOrderIndex !== null
                   ? `Editando Pedido #${currentOrderIndex + 1}`
                   : `Nuevo Pedido #${tableOrdersLength + 1}`}
               </h2>
-              <div className="flex items-center gap-2 mt-1">
-                <span className="text-xs font-medium text-carbon-400">
-                  {selectedOrderType === OrderType.DINE_IN ? 'Servicio en Mesa' : 
-                   selectedOrderType === OrderType.TAKE_OUT ? 'Para Recoger' : 'Servicio a Domicilio'}
-                </span>
-                <div className="w-1 h-1 rounded-full bg-carbon-200" />
-                <span className="text-xs font-bold text-primary-600">
-                  {currentOrderIndex !== null ? 'Actualiza tu selección' : 'Configura el almuerzo'}
-                </span>
-              </div>
+              <span className="text-xs font-bold text-primary-600 uppercase tracking-widest">
+                {currentOrderIndex !== null ? 'Actualiza tu selección' : 'Configura el almuerzo'}
+              </span>
             </div>
           </div>
-          <div className="flex items-center gap-2">
-            {currentOrderIndex !== null && (
-              <Tooltip content="Cancelar edición">
-                <button
-                  onClick={onCancelEdit}
-                  className="p-2.5 sm:p-3 bg-error-50 border-2 border-error-100 rounded-xl text-error-500 hover:bg-error-100 transition-all shadow-sm active:scale-90"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </Tooltip>
-            )}
-          </div>
+          {currentOrderIndex !== null && (
+            <button onClick={onCancelEdit} className="p-3 bg-error-50 text-error-500 rounded-xl">
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
+      <div className="space-y-8">
         <ProteinSelector
           proteins={proteins}
           selectedProteinId={selectedProtein?.id}
@@ -491,200 +425,110 @@ export function OrderForm({
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-6"
+            className="space-y-8"
           >
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              {/* Sopa */}
-              <Card variant="bordered" padding="md" className={cn("rounded-[2rem] border-2 transition-all", hasError("soup") ? "border-error-200 bg-error-50/10 shadow-error-100" : "border-sage-100 bg-white")}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center">
-                    <Soup className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-sm font-black text-carbon-900 uppercase italic">Selecciona la Sopa</h3>
-                </div>
-                <div className="space-y-2">
-                  {(dailyMenuDisplay?.soupOptions || []).map((opt) => (
-                    <button
-                      key={opt.id}
-                      onClick={() => setSelectedSoup(opt)}
-                      className={cn(
-                        "w-full p-4 rounded-2xl border-2 text-left transition-all relative overflow-hidden group",
-                        selectedSoup?.id === opt.id
-                          ? "border-carbon-900 bg-carbon-900 text-white shadow-soft-xl"
-                          : "border-sage-50 bg-sage-50/30 text-carbon-600 hover:border-sage-200"
-                      )}
-                    >
-                      <div className="flex items-center justify-between relative z-10">
-                        <span className="font-bold text-sm">{opt.name}</span>
-                        {selectedSoup?.id === opt.id && <CircleCheck className="w-5 h-5 text-primary-400" />}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </Card>
+            <MenuItemSelector
+              label="Sopa"
+              icon={<Soup />}
+              options={dailyMenuDisplay?.soupOptions || []}
+              selectedOption={selectedSoup}
+              onSelect={setSelectedSoup}
+              color="amber"
+              required
+              error={hasError("soup") ? "Selecciona una sopa" : undefined}
+            />
 
-              {/* Principio */}
-              <Card variant="bordered" padding="md" className={cn("rounded-[2rem] border-2 transition-all", hasError("principle") ? "border-error-200 bg-error-50/10 shadow-error-100" : "border-sage-100 bg-white")}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center">
-                    <Utensils className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-sm font-black text-carbon-900 uppercase italic">Principio</h3>
-                </div>
-                <div className="space-y-2">
-                  {(dailyMenuDisplay?.principleOptions || []).map((opt) => (
-                    <button
-                      key={opt.id}
-                      onClick={() => setSelectedPrinciple(opt)}
-                      className={cn(
-                        "w-full p-4 rounded-2xl border-2 text-left transition-all",
-                        selectedPrinciple?.id === opt.id
-                          ? "border-carbon-900 bg-carbon-900 text-white shadow-soft-xl"
-                          : "border-sage-50 bg-sage-50/30 text-carbon-600 hover:border-sage-200"
-                      )}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-sm">{opt.name}</span>
-                        {selectedPrinciple?.id === opt.id && <CircleCheck className="w-5 h-5 text-primary-400" />}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </Card>
+            <MenuItemSelector
+              label="Principio"
+              icon={<Utensils />}
+              options={dailyMenuDisplay?.principleOptions || []}
+              selectedOption={selectedPrinciple}
+              onSelect={setSelectedPrinciple}
+              color="emerald"
+              required
+              error={hasError("principle") ? "Selecciona un principio" : undefined}
+            />
 
-              {/* Ensalada */}
-              <Card variant="bordered" padding="md" className={cn("rounded-[2rem] border-2 transition-all", hasError("salad") ? "border-error-200 bg-error-50/10 shadow-error-100" : "border-sage-100 bg-white")}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center">
-                    <Salad className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-sm font-black text-carbon-900 uppercase italic">Ensalada</h3>
-                </div>
-                <div className="space-y-2">
-                  {(dailyMenuDisplay?.saladOptions || []).map((opt) => (
-                    <button
-                      key={opt.id}
-                      onClick={() => setSelectedSalad(opt)}
-                      className={cn(
-                        "w-full p-4 rounded-2xl border-2 text-left transition-all",
-                        selectedSalad?.id === opt.id
-                          ? "border-carbon-900 bg-carbon-900 text-white shadow-soft-xl"
-                          : "border-sage-50 bg-sage-50/30 text-carbon-600 hover:border-sage-200"
-                      )}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-sm">{opt.name}</span>
-                        {selectedSalad?.id === opt.id && <CircleCheck className="w-5 h-5 text-primary-400" />}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </Card>
+            <MenuItemSelector
+              label="Ensalada"
+              icon={<Salad />}
+              options={dailyMenuDisplay?.saladOptions || []}
+              selectedOption={selectedSalad}
+              onSelect={setSelectedSalad}
+              color="sage"
+              required
+              error={hasError("salad") ? "Selecciona una ensalada" : undefined}
+            />
 
-              {/* Bebida */}
-              <Card variant="bordered" padding="md" className={cn("rounded-[2rem] border-2 transition-all", hasError("drink") ? "border-error-200 bg-error-50/10 shadow-error-100" : "border-sage-100 bg-white")}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center">
-                    <CupSoda className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-sm font-black text-carbon-900 uppercase italic">Bebida</h3>
-                </div>
-                <div className="space-y-2">
-                  {(dailyMenuDisplay?.drinkOptions || []).map((opt) => (
-                    <button
-                      key={opt.id}
-                      onClick={() => setSelectedDrink(opt)}
-                      className={cn(
-                        "w-full p-4 rounded-2xl border-2 text-left transition-all",
-                        selectedDrink?.id === opt.id
-                          ? "border-carbon-900 bg-carbon-900 text-white shadow-soft-xl"
-                          : "border-sage-50 bg-sage-50/30 text-carbon-600 hover:border-sage-200"
-                      )}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-sm">{opt.name}</span>
-                        {selectedDrink?.id === opt.id && <CircleCheck className="w-5 h-5 text-primary-400" />}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </Card>
-            </div>
+            <MenuItemSelector
+              label="Bebida"
+              icon={<CupSoda />}
+              options={dailyMenuDisplay?.drinkOptions || []}
+              selectedOption={selectedDrink}
+              onSelect={setSelectedDrink}
+              color="blue"
+              required
+              error={hasError("drink") ? "Selecciona una bebida" : undefined}
+            />
 
-            {/* Acompañamiento Opcional */}
-            {(dailyMenuDisplay?.extraOptions || []).length > 0 && (
-              <Card variant="bordered" padding="md" className={cn("rounded-[2rem] border-2 transition-all", hasError("extra") ? "border-error-200 bg-error-50/10 shadow-error-100" : "border-sage-100 bg-white")}>
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center">
-                    <IceCream className="w-5 h-5" />
-                  </div>
-                  <h3 className="text-sm font-black text-carbon-900 uppercase italic">Acompañamiento Extra</h3>
-                </div>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                  {(dailyMenuDisplay?.extraOptions || []).map((opt) => (
-                    <button
-                      key={opt.id}
-                      onClick={() => setSelectedExtra(opt)}
-                      className={cn(
-                        "w-full p-4 rounded-2xl border-2 text-left transition-all",
-                        selectedExtra?.id === opt.id
-                          ? "border-carbon-900 bg-carbon-900 text-white shadow-soft-xl"
-                          : "border-sage-50 bg-sage-50/30 text-carbon-600 hover:border-sage-200"
-                      )}
-                    >
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-sm">{opt.name}</span>
-                        {selectedExtra?.id === opt.id && <CircleCheck className="w-5 h-5 text-primary-400" />}
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </Card>
-            )}
+            <MenuItemSelector
+              label="Extra / Acompañamiento"
+              icon={<IceCream />}
+              options={dailyMenuDisplay?.extraOptions || []}
+              selectedOption={selectedExtra}
+              onSelect={setSelectedExtra}
+              color="purple"
+            />
+
+            <ReplacementManager
+              availableItems={{
+                soup: dailyMenuDisplay?.soupOptions || [],
+                principle: dailyMenuDisplay?.principleOptions || [],
+                salad: dailyMenuDisplay?.saladOptions || [],
+                drink: dailyMenuDisplay?.drinkOptions || [],
+                extra: dailyMenuDisplay?.extraOptions || [],
+                rice: dailyMenuDisplay?.riceOptions || [],
+              }}
+              replacements={replacements}
+              onAddReplacement={(r) => setReplacements([...replacements, r])}
+              onRemoveReplacement={(id) => setReplacements(replacements.filter(r => r.id !== id))}
+              disabled={!selectedProtein}
+            />
           </motion.div>
         )}
 
-        <ReplacementManager
-          availableItems={{
-            soup: dailyMenuDisplay?.soupOptions || [],
-            principle: dailyMenuDisplay?.principleOptions || [],
-            salad: dailyMenuDisplay?.saladOptions || [],
-            drink: dailyMenuDisplay?.drinkOptions || [],
-            extra: dailyMenuDisplay?.extraOptions || [],
-            rice: dailyMenuDisplay?.riceOptions || [],
-          }}
-          replacements={replacements}
-          onAddReplacement={(r) => setReplacements([...replacements, r])}
-          onRemoveReplacement={(id) => setReplacements(replacements.filter(r => r.id !== id))}
-          disabled={!selectedProtein}
-        />
-
-        <MenuItemSelector
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          filteredItems={filteredLooseItems}
-          popularProducts={popularProducts}
-          onAddItem={handleAddLooseItem}
-          onUpdateQuantity={handleUpdateLooseItemQuantity}
-          selectedItems={looseItems}
-        />
+        <div className="pt-4 border-t-2 border-sage-100">
+          <LooseItemSelector
+            searchTerm={searchTerm}
+            setSearchTerm={setSearchTerm}
+            filteredItems={filteredLooseItems as never}
+            popularProducts={popularProducts}
+            onAddItem={handleAddLooseItem}
+            onUpdateQuantity={handleUpdateLooseItemQuantity}
+            selectedItems={looseItems}
+          />
+        </div>
       </div>
 
-      <Card variant="bordered" padding="md" className="rounded-[2rem] border-2 border-sage-100 bg-white shadow-soft-sm">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-10 rounded-xl bg-sage-50 text-sage-600 flex items-center justify-center">
-            <PackageCheck className="w-5 h-5" />
-          </div>
-          <h3 className="text-sm font-black text-carbon-900 uppercase italic tracking-widest">Notas Adicionales</h3>
-        </div>
+      <Card variant="bordered" padding="md" className="rounded-[2.5rem] border-2 border-sage-100 bg-white shadow-soft-sm">
         <textarea
           value={orderNotes}
           onChange={(e) => setOrderNotes(e.target.value)}
-          placeholder="Ej: Sin sal, bien cocido, alérgenos..."
+          placeholder="Notas adicionales (Ej: Sin sal...)"
           className="w-full p-4 rounded-2xl border-2 border-sage-50 bg-sage-50/20 focus:border-carbon-900 focus:bg-white focus:outline-none resize-none transition-all font-medium text-carbon-700"
           rows={3}
         />
       </Card>
+
+      {/* Sell Modal */}
+      {customerId && (
+        <SellTicketBookModal
+          isOpen={showSellModal}
+          onClose={() => setShowSellModal(false)}
+          customerId={customerId}
+          customerName={customerName}
+        />
+      )}
     </div>
   );
 }

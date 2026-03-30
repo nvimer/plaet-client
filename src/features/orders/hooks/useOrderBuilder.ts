@@ -254,28 +254,34 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const popularProducts = useMemo(() => {
     if (!menuItems || !Array.isArray(menuItems) || !dailyMenuData) return [];
     
-    // POS Strategy: Only show Drinks and Extras that are explicitly in the daily menu
-    const allowedCategoryIds = [
-      dailyMenuData?.drinkCategory?.id,
-      dailyMenuData?.extraCategory?.id,
+    // POS Strategy: Show top items from standard non-lunch categories
+    const lunchCategoryIds = [
+      dailyMenuData?.soupCategory?.id,
+      dailyMenuData?.principleCategory?.id,
+      dailyMenuData?.proteinCategory?.id,
+      dailyMenuData?.saladCategory?.id,
+      dailyMenuData?.riceCategory?.id,
     ].filter(Boolean);
 
-    const menuOptions = [
-      ...(dailyMenuData?.drinkOptions || []),
-      ...(dailyMenuData?.extraOptions || []),
-    ];
-    
-    const menuOptionIds = menuOptions.map(o => o.id);
-
-    // Filter items: Must be in allowed categories AND in daily menu options
+    // Categories to prioritize in the "Loose Items" selector (Drinks, Extras, etc)
     const availableItems = menuItems.filter(item => 
-      item.isAvailable && 
-      allowedCategoryIds.includes(item.categoryId) &&
-      menuOptionIds.includes(item.id)
+      item.isAvailable && !lunchCategoryIds.includes(item.categoryId)
     );
 
+    // Categories to prioritize by keyword
+    const priorityKeywords = ["gaseosa", "jugo", "agua", "pony", "cerveza"];
+
     return availableItems
-      .sort((a, b) => a.name.localeCompare(b.name))
+      .sort((a, b) => {
+        const aName = a.name.toLowerCase();
+        const bName = b.name.toLowerCase();
+        const aHasPriority = priorityKeywords.some(key => aName.includes(key));
+        const bHasPriority = priorityKeywords.some(key => bName.includes(key));
+        if (aHasPriority && !bHasPriority) return -1;
+        if (!aHasPriority && bHasPriority) return 1;
+        return a.name.localeCompare(b.name);
+      })
+      .slice(0, 15)
       .map(item => ({
         id: item.id,
         name: item.name,
@@ -293,13 +299,23 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   }, [dailyMenuData]);
 
   const filteredLooseItems = useMemo(() => {
-    if (!menuItems) return [];
+    if (!menuItems || !dailyMenuData) return [];
+    
+    const lunchCategoryIds = [
+      dailyMenuData?.soupCategory?.id,
+      dailyMenuData?.principleCategory?.id,
+      dailyMenuData?.proteinCategory?.id,
+      dailyMenuData?.saladCategory?.id,
+      dailyMenuData?.riceCategory?.id,
+    ].filter(Boolean);
+
     return menuItems.filter(
       (item) =>
         item.isAvailable &&
+        !lunchCategoryIds.includes(item.categoryId) &&
         (searchTerm === "" || item.name.toLowerCase().includes(searchTerm.toLowerCase()))
     );
-  }, [menuItems, searchTerm]);
+  }, [menuItems, searchTerm, dailyMenuData]);
 
   const dailyMenuDisplay = useMemo(() => {
     const defaultMenu = {
