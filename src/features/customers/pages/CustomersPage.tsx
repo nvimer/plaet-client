@@ -86,9 +86,9 @@ export function CustomersPage() {
         {/* Header Section */}
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-2">
-            <div className="flex items-center gap-2 text-primary-600">
+            <div className="flex items-center gap-2 text-sage-600">
               <Users className="w-5 h-5" />
-              <span className="text-[10px] font-semibold tracking-[0.2em]">administración</span>
+              <span className="text-[10px] font-semibold tracking-[0.2em]">Administración</span>
             </div>
             <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">
               Directorio de Clientes
