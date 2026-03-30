@@ -64,6 +64,7 @@ const BASE_ROUTES = {
 
   // Customers
   CUSTOMERS: "/customers",
+  CUSTOMERS_LIST: "/customers/list",
 
   // Profile
   PROFILE: "/profile",

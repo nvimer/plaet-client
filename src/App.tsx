@@ -59,7 +59,8 @@ const OrderEditPage = lazy(() => import("./features/orders/pages/OrderEditPage")
 const KitchenOrdersPage = lazy(() => import("./features/orders/pages/KitchenOrdersPage").then(m => ({ default: m.KitchenOrdersPage })));
 
 // Customers Feature
-const CustomersPage = lazy(() => import("./features/customers/pages/CustomersPage").then(m => ({ default: m.CustomersPage })));
+const CustomersHubPage = lazy(() => import("./features/customers/pages").then(m => ({ default: m.CustomersHubPage })));
+const CustomersPage = lazy(() => import("./features/customers/pages").then(m => ({ default: m.CustomersPage })));
 
 // Users & Profile Feature
 const UsersPage = lazy(() => import("./features/users/pages").then(m => ({ default: m.UsersPage })));
@@ -553,6 +554,17 @@ const App = () => {
 
               <Route
                 path={ROUTES.CUSTOMERS}
+                element={
+                  <ProtectedRoute>
+                    <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.CASHIER]}>
+                      <CustomersHubPage />
+                    </RoleProtectedRoute>
+                  </ProtectedRoute>
+                }
+              />
+
+              <Route
+                path={ROUTES.CUSTOMERS_LIST}
                 element={
                   <ProtectedRoute>
                     <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.CASHIER]}>
