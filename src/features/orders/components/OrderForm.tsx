@@ -478,10 +478,13 @@ export function OrderForm({
       <div className="grid grid-cols-1 lg:grid-cols-1 gap-6">
         <ProteinSelector
           proteins={proteins}
-          selectedProtein={selectedProtein}
-          onSelectProtein={setSelectedProtein}
-          isLoading={isLoading}
-          error={hasError("protein")}
+          selectedProteinId={selectedProtein?.id}
+          onSelect={setSelectedProtein}
+          basePrice={dailyMenuPrices.basePrice}
+          className={cn(
+            "transition-all duration-300",
+            hasError("protein") ? "ring-2 ring-error-500 rounded-[2.5rem]" : ""
+          )}
         />
 
         {showDailyMenu && (

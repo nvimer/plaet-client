@@ -230,6 +230,13 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
   // 6. Effects
   useEffect(() => {
+    // Auto-show daily menu when a protein is selected
+    if (selectedProtein && !showDailyMenu) {
+      setShowDailyMenu(true);
+    }
+  }, [selectedProtein, showDailyMenu, setShowDailyMenu]);
+
+  useEffect(() => {
     // Sync packaging quantity with order type if it's currently unset (0)
     // and we are not in DINE_IN mode.
     if (selectedOrderType && selectedOrderType !== OrderType.DINE_IN && packagingQuantity === 0 && tableOrders.length === 0) {
@@ -245,41 +252,30 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
   // 7. Computed Values (Memoized)
   const popularProducts = useMemo(() => {
-    if (!menuItems || !Array.isArray(menuItems)) return [];
+    if (!menuItems || !Array.isArray(menuItems) || !dailyMenuData) return [];
     
-    const lunchCategoryIds = [
-      dailyMenuData?.soupCategory?.id,
-      dailyMenuData?.principleCategory?.id,
-      dailyMenuData?.proteinCategory?.id,
-      dailyMenuData?.saladCategory?.id,
-      // We explicitly allow Drink and Extra categories in rapid additions
-      dailyMenuData?.dessertCategory?.id,
+    // POS Strategy: Only show Drinks and Extras that are explicitly in the daily menu
+    const allowedCategoryIds = [
+      dailyMenuData?.drinkCategory?.id,
+      dailyMenuData?.extraCategory?.id,
     ].filter(Boolean);
 
-    // Categories to prioritize
-    const priorityKeywords = ["huevo", "gaseosa", "jugo", "agua", "pony", "arroz"];
+    const menuOptions = [
+      ...(dailyMenuData?.drinkOptions || []),
+      ...(dailyMenuData?.extraOptions || []),
+    ];
+    
+    const menuOptionIds = menuOptions.map(o => o.id);
 
+    // Filter items: Must be in allowed categories AND in daily menu options
     const availableItems = menuItems.filter(item => 
-      item.isAvailable && !lunchCategoryIds.includes(item.categoryId)
+      item.isAvailable && 
+      allowedCategoryIds.includes(item.categoryId) &&
+      menuOptionIds.includes(item.id)
     );
 
-    // Sort: Priority items first, then by category importance
     return availableItems
-      .sort((a, b) => {
-        // 1. Keywords priority (case insensitive)
-        const aName = a.name.toLowerCase();
-        const bName = b.name.toLowerCase();
-        
-        const aHasPriority = priorityKeywords.some(key => aName.includes(key));
-        const bHasPriority = priorityKeywords.some(key => bName.includes(key));
-        
-        if (aHasPriority && !bHasPriority) return -1;
-        if (!aHasPriority && bHasPriority) return 1;
-
-        // 2. Fallback to name sorting
-        return a.name.localeCompare(b.name);
-      })
-      .slice(0, 15) // Show more items for POS efficiency
+      .sort((a, b) => a.name.localeCompare(b.name))
       .map(item => ({
         id: item.id,
         name: item.name,
