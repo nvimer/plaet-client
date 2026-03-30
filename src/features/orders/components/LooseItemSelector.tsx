@@ -29,12 +29,12 @@ interface MenuItemSelectorProps {
 }
 
 /**
- * Premium MenuItemSelector
+ * Premium LooseItemSelector
  * 
  * Used for selecting "loose items" (drinks, extras, desserts) that are not part of the lunch menu.
  * High-density tactile interface with visual search.
  */
-export function MenuItemSelector({
+export function LooseItemSelector({
   searchTerm,
   setSearchTerm,
   filteredItems = [],
