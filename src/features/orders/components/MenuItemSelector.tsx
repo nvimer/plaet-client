@@ -1,169 +1,222 @@
-import { Card } from "@/components";
+import { Card, Input, Button } from "@/components";
 import { cn } from "@/utils/cn";
-import { AlertCircle, Check, ImageIcon, PackageCheck } from "lucide-react";
-import type { MenuOption } from "../types/orderBuilder";
-import { motion } from "framer-motion";
+import { Search, Plus, Minus, ShoppingBag, ImageIcon, PackageCheck, AlertCircle } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+
+interface MenuItem {
+  id: number;
+  name: string;
+  price: string | number;
+  imageUrl?: string | null;
+  isAvailable: boolean;
+}
+
+interface SelectedItem {
+  id: number;
+  name: string;
+  price: number;
+  quantity: number;
+}
 
 interface MenuItemSelectorProps {
-  label: string;
-  options: MenuOption[];
-  selectedOption: MenuOption | null;
-  onSelect: (option: MenuOption) => void;
-  required?: boolean;
-  error?: string;
-  icon?: React.ReactNode;
-  color?: "amber" | "emerald" | "sage" | "blue" | "purple";
-  showRiceInfo?: boolean;
-  riceName?: string;
+  searchTerm: string;
+  setSearchTerm: (term: string) => void;
+  filteredItems: MenuItem[];
+  popularProducts: Array<{ id: number; name: string; price: number }>;
+  onAddItem: (item: { id: number; name: string; price: number }) => void;
+  onUpdateQuantity: (id: number, quantity: number) => void;
+  selectedItems: SelectedItem[];
 }
 
 /**
  * Premium MenuItemSelector
- * High-density tactile selection for daily menu options.
+ * 
+ * Used for selecting "loose items" (drinks, extras, desserts) that are not part of the lunch menu.
+ * High-density tactile interface with visual search.
  */
 export function MenuItemSelector({
-  label,
-  options,
-  selectedOption,
-  onSelect,
-  required = false,
-  error,
-  icon,
-  color = "sage",
-  showRiceInfo = false,
-  riceName,
+  searchTerm,
+  setSearchTerm,
+  filteredItems = [],
+  popularProducts = [],
+  onAddItem,
+  onUpdateQuantity,
+  selectedItems = [],
 }: MenuItemSelectorProps) {
-  const colorClasses = {
-    amber: { text: "text-warning-600", bg: "bg-warning-50" },
-    emerald: { text: "text-success-600", bg: "bg-success-50" },
-    sage: { text: "text-sage-600", bg: "bg-sage-50" },
-    blue: { text: "text-blue-600", bg: "bg-blue-50" },
-    purple: { text: "text-info-600", bg: "bg-info-50" },
+  
+  const getSelectedQuantity = (id: number) => {
+    return selectedItems?.find(i => i.id === id)?.quantity || 0;
   };
 
-  const colors = colorClasses[color];
-
-  if (options.length === 0) {
-    return (
-      <Card variant="bordered" className="p-4 border-dashed border-sage-200 bg-sage-50/30">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-xl shadow-soft-sm grayscale opacity-50">
-            {icon}
-          </div>
-          <div>
-            <p className="text-sm font-bold text-carbon-400 tracking-wide">{label}</p>
-            <p className="text-xs text-carbon-400 font-medium">No disponible hoy</p>
-          </div>
-        </div>
-      </Card>
-    );
-  }
+  const safeFilteredItems = Array.isArray(filteredItems) ? filteredItems : [];
+  const safePopularProducts = Array.isArray(popularProducts) ? popularProducts : [];
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-y-3 px-1">
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-          <div className={cn("w-9 h-9 rounded-xl flex items-center justify-center text-base shadow-soft-sm", colors.bg)}>
-            {icon}
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="font-black text-[11px] sm:text-xs text-carbon-900 uppercase tracking-[0.15em]">
-              {label}
+    <div className="space-y-6">
+      {/* Search Header */}
+      <div className="px-1 space-y-4">
+        <div className="flex items-center justify-between">
+          <span className="text-[11px] font-black text-carbon-900 uppercase tracking-[0.2em] flex items-center gap-2">
+            <div className="w-1 h-4 bg-primary-500 rounded-full" />
+            Adicionales y Bebidas
+          </span>
+          {selectedItems?.length > 0 && (
+            <span className="text-[10px] font-bold text-primary-600 bg-primary-50 px-2 py-0.5 rounded-full border border-primary-100">
+              {selectedItems.length} seleccionados
             </span>
-            {required && (
-              <span className="text-[9px] bg-carbon-900 text-white px-2 py-0.5 rounded-full font-semibold tracking-tighter whitespace-nowrap">
-                Obligatorio
-              </span>
-            )}
-          </div>
+          )}
         </div>
-        {selectedOption && (
-          <motion.div 
-            initial={{ opacity: 0, x: 5 }}
-            animate={{ opacity: 1, x: 0 }}
-            className="flex items-center gap-1.5 px-2.5 py-1 bg-success-50 rounded-lg border border-success-100"
-          >
-            <Check className="w-3.5 h-3.5 text-success-600 stroke-[4px]" />
-            <span className="text-[10px] text-success-700 font-semibold tracking-wide">Elegido</span>
-          </motion.div>
-        )}
+
+        <div className="relative group">
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-4 h-4 group-focus-within:text-primary-500 transition-colors" />
+          <Input
+            placeholder="Buscar bebidas, postres, extras..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-11 h-14 bg-white border-2 border-sage-100 focus:border-primary-500 rounded-2xl shadow-soft-sm transition-all text-base"
+            fullWidth
+          />
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-        {options.map((option) => {
-          const isSelected = selectedOption?.id === option.id;
-          return (
-            <button
-              key={option.id}
-              onClick={() => onSelect(option)}
-              className={cn(
-                "group relative flex flex-col rounded-2xl border-2 transition-all duration-300 text-left overflow-hidden active:scale-95",
-                isSelected
-                  ? "border-carbon-900 bg-white shadow-soft-xl z-10"
-                  : "border-sage-100 bg-white hover:border-sage-300 hover:shadow-soft-md"
-              )}
+      {/* Main Content Area */}
+      <div className="min-h-[200px]">
+        <AnimatePresence mode="wait">
+          {searchTerm === "" ? (
+            <motion.div
+              key="popular"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-4"
             >
-              {/* Image Container */}
-              <div className="relative aspect-[16/10] w-full bg-sage-50 overflow-hidden">
-                {option.imageUrl ? (
-                  <img 
-                    src={option.imageUrl} 
-                    alt={option.name} 
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" 
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-sage-200">
-                    <ImageIcon className="w-8 h-8 stroke-[1.5px]" />
-                  </div>
-                )}
-                
-                {/* Visual Checkmark Overlay */}
-                <div className={cn(
-                  "absolute inset-0 bg-carbon-900/10 transition-opacity duration-300",
-                  isSelected ? "opacity-100" : "opacity-0"
-                )} />
-                
-                <div className={cn(
-                  "absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-300 shadow-lg",
-                  isSelected ? "bg-carbon-900 text-white scale-100" : "bg-white/90 text-transparent scale-75 opacity-0 group-hover:opacity-100 group-hover:scale-90"
-                )}>
-                  <Check className="w-4 h-4 stroke-[3px]" />
+              <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest ml-1">Productos Frecuentes</p>
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                {safePopularProducts.map((item) => {
+                  const quantity = getSelectedQuantity(item.id);
+                  const isSelected = quantity > 0;
+
+                  return (
+                    <button
+                      key={item.id}
+                      onClick={() => onAddItem(item)}
+                      className={cn(
+                        "group relative flex flex-col p-4 rounded-2xl border-2 transition-all duration-300 text-left active:scale-95",
+                        isSelected
+                          ? "border-primary-600 bg-white shadow-soft-xl z-10"
+                          : "border-sage-50 bg-sage-50/20 hover:border-sage-200 hover:bg-white"
+                      )}
+                    >
+                      <div className="flex flex-col h-full justify-between gap-3">
+                        <div className="flex justify-between items-start">
+                          <div className={cn(
+                            "w-8 h-8 rounded-lg flex items-center justify-center transition-colors",
+                            isSelected ? "bg-primary-100 text-primary-600" : "bg-white text-carbon-400"
+                          )}>
+                            <ShoppingBag className="w-4 h-4" />
+                          </div>
+                          {quantity > 0 && (
+                            <span className="bg-primary-600 text-white text-[10px] font-black w-6 h-6 rounded-full flex items-center justify-center shadow-md">
+                              {quantity}
+                            </span>
+                          )}
+                        </div>
+                        <div>
+                          <p className="text-xs font-bold text-carbon-900 line-clamp-2 leading-tight">{item.name}</p>
+                          <p className="text-[10px] font-black text-primary-700 mt-1">${item.price.toLocaleString()}</p>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="results"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="space-y-4"
+            >
+              {safeFilteredItems.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {safeFilteredItems.map((item) => {
+                    const quantity = getSelectedQuantity(item.id);
+                    const isSelected = quantity > 0;
+                    const price = parseFloat(String(item.price)) || 0;
+
+                    return (
+                      <div
+                        key={item.id}
+                        className={cn(
+                          "flex items-center justify-between p-3 rounded-2xl border-2 transition-all",
+                          isSelected ? "border-primary-200 bg-primary-50/30" : "border-sage-50 bg-white"
+                        )}
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 rounded-xl bg-sage-50 flex items-center justify-center text-carbon-400 shrink-0">
+                            {item.imageUrl ? (
+                              <img src={item.imageUrl} className="w-full h-full object-cover rounded-xl" alt="" />
+                            ) : (
+                              <ShoppingBag className="w-5 h-5" />
+                            )}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-xs font-bold text-carbon-900 truncate">{item.name}</p>
+                            <p className="text-[10px] font-black text-primary-700">${price.toLocaleString()}</p>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                          {isSelected ? (
+                            <div className="flex items-center bg-white rounded-xl border border-primary-100 p-0.5 shadow-sm">
+                              <button
+                                onClick={() => onUpdateQuantity(item.id, quantity - 1)}
+                                className="w-7 h-7 flex items-center justify-center text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                              >
+                                <Minus className="w-3.5 h-3.5" />
+                              </button>
+                              <span className="w-6 text-center font-black text-carbon-900 text-xs">
+                                {quantity}
+                              </span>
+                              <button
+                                onClick={() => onUpdateQuantity(item.id, quantity + 1)}
+                                className="w-7 h-7 flex items-center justify-center text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                              >
+                                <Plus className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => onAddItem({ id: item.id, name: item.name, price })}
+                              className="h-8 rounded-xl border-sage-200 text-[10px] font-bold"
+                            >
+                              Agregar
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              </div>
-
-              {/* Name Container */}
-              <div className="p-3 flex-1 flex items-center justify-center min-h-[56px]">
-                <span className={cn(
-                  "text-xs font-bold leading-tight text-center tracking-tight",
-                  isSelected ? "text-carbon-900" : "text-carbon-600"
-                )}>
-                  {option.name}
-                </span>
-              </div>
-            </button>
-          );
-        })}
+              ) : (
+                <div className="py-12 flex flex-col items-center justify-center text-center space-y-3 bg-sage-50/30 rounded-[2rem] border-2 border-dashed border-sage-100">
+                  <div className="w-12 h-12 rounded-2xl bg-white flex items-center justify-center text-carbon-300 shadow-soft-sm">
+                    <Search className="w-6 h-6" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-carbon-900">Sin resultados</p>
+                    <p className="text-xs text-carbon-400">No encontramos &quot;{searchTerm}&quot;</p>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
-
-      {showRiceInfo && riceName && (
-        <div className="p-3 bg-warning-50/50 rounded-xl border border-warning-100 flex items-center gap-2">
-          <PackageCheck className="w-4 h-4 text-warning-600" />
-          <p className="text-[10px] font-bold text-warning-800 tracking-wide">
-            Incluye: <span className="text-carbon-900">{riceName}</span>
-          </p>
-        </div>
-      )}
-
-      {error && (
-        <motion.div 
-          initial={{ opacity: 0, x: -10 }}
-          animate={{ opacity: 1, x: 0 }}
-          className="flex items-center gap-1.5 text-error-600 bg-error-50 px-3 py-2 rounded-lg border border-error-100"
-        >
-          <AlertCircle className="w-3.5 h-3.5" />
-          <span className="text-[10px] font-semibold tracking-wide">{error}</span>
-        </motion.div>
-      )}
     </div>
   );
 }
