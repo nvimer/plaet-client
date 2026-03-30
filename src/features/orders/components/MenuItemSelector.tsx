@@ -45,13 +45,13 @@ export function MenuItemSelector({
     return null; // Don't show empty categories
   }
 
-  // Compact mode - high-density grid with icons
+  // Compact mode - text-only high-density grid
   if (compact) {
     return (
       <div className="space-y-3">
         <div className="flex items-center justify-between px-1">
           <div className="flex items-center gap-2">
-            <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center text-xs shadow-inner transition-all", colors.bg, colors.text)}>
+            <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center text-xs shadow-inner transition-all", colors.bg, colors.text)}>
               {icon}
             </div>
             <span className="font-black text-[10px] text-carbon-900 uppercase tracking-[0.15em] leading-none">
@@ -69,7 +69,7 @@ export function MenuItemSelector({
               className="flex items-center gap-1 text-primary-600"
             >
               <Check className="w-3 h-3 stroke-[4px]" />
-              <span className="text-[8px] font-black uppercase">Listo</span>
+              <span className="text-[8px] font-black uppercase tracking-widest">Listo</span>
             </motion.div>
           )}
         </div>
@@ -82,27 +82,20 @@ export function MenuItemSelector({
                 key={option.id}
                 onClick={() => onSelect(option)}
                 className={cn(
-                  "group relative flex items-center gap-2 p-2 rounded-xl border-2 transition-all duration-300 text-left overflow-hidden active:scale-95",
+                  "group relative flex items-center justify-center p-3 rounded-xl border-2 transition-all duration-300 text-center active:scale-95 min-h-[48px]",
                   isSelected
-                    ? "border-carbon-900 bg-white shadow-soft-lg z-10"
-                    : "border-sage-50 bg-white hover:border-sage-200"
+                    ? "border-carbon-900 bg-carbon-900 text-white shadow-soft-xl z-10"
+                    : "border-sage-50 bg-sage-50/30 text-carbon-600 hover:border-sage-200"
                 )}
               >
-                <div className="w-8 h-8 rounded-lg bg-sage-50 overflow-hidden shrink-0 flex items-center justify-center">
-                  {option.imageUrl ? (
-                    <img src={option.imageUrl} className="w-full h-full object-cover" alt="" />
-                  ) : (
-                    <ImageIcon className="w-4 h-4 text-sage-200 stroke-[1.5px]" />
-                  )}
-                </div>
                 <span className={cn(
-                  "text-[10px] font-black leading-tight truncate uppercase tracking-tight",
-                  isSelected ? "text-carbon-900" : "text-carbon-500"
+                  "text-[10px] font-black leading-tight uppercase tracking-tight",
+                  isSelected ? "text-white" : "text-carbon-600"
                 )}>
                   {option.name}
                 </span>
                 {isSelected && (
-                  <div className="absolute top-1 right-1 w-4 h-4 bg-carbon-900 rounded-full flex items-center justify-center shadow-md">
+                  <div className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-primary-500 border-2 border-white rounded-full flex items-center justify-center shadow-md">
                     <Check className="w-2.5 h-2.5 text-white stroke-[4px]" />
                   </div>
                 )}
