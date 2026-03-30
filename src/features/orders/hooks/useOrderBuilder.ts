@@ -458,18 +458,36 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
   const handleEditOrder = useCallback((index: number) => {
     const order = tableOrders[index];
+    if (!order) return;
+    
     setCurrentOrderIndex(index);
     setSelectedProtein(order.protein);
     
-    if (order.lunch) {
-      const { soup, principle, salad, drink, extra, rice, replacements } = order.lunch;
-      setSelectedSoup(soup);
-      setSelectedPrinciple(principle);
-      setSelectedSalad(salad);
-      setSelectedDrink(drink);
-      setSelectedExtra(extra);
-      setSelectedRice(rice);
-      setReplacements([...replacements]);
+    if (order.lunch && typeof order.lunch === "object" && order.lunch !== null) {
+      const lunch = order.lunch as {
+        soup?: unknown;
+        principle?: unknown;
+        salad?: unknown;
+        drink?: unknown;
+        extra?: unknown;
+        rice?: unknown;
+        replacements?: unknown;
+      };
+      setSelectedSoup(lunch.soup as never ?? null);
+      setSelectedPrinciple(lunch.principle as never ?? null);
+      setSelectedSalad(lunch.salad as never ?? null);
+      setSelectedDrink(lunch.drink as never ?? null);
+      setSelectedExtra(lunch.extra as never ?? null);
+      setSelectedRice(lunch.rice as never ?? null);
+      setReplacements(Array.isArray(lunch.replacements) ? [...lunch.replacements] : []);
+    } else {
+      setSelectedSoup(null);
+      setSelectedPrinciple(null);
+      setSelectedSalad(null);
+      setSelectedDrink(null);
+      setSelectedExtra(null);
+      setSelectedRice(null);
+      setReplacements([]);
     }
     
     const packagingItem = order.looseItems.find(i => i.name === "Portacomida");

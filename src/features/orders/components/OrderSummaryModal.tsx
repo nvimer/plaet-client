@@ -128,7 +128,7 @@ export function OrderSummaryModal({
 
                 {/* Specific Details */}
                 <div className="p-4 sm:p-5 space-y-4">
-                  {order.lunch && (
+                  {order.lunch && typeof order.lunch === "object" && (
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
                       {order.lunch.soup && (
                         <div className="flex items-center gap-2 text-carbon-600 font-medium">
