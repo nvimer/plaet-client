@@ -230,58 +230,51 @@ export function OrderForm({
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="space-y-6 bg-sage-50/20 p-4 sm:p-6 rounded-[2.5rem] border-2 border-sage-100"
+            className="space-y-8"
           >
-            <div className="flex items-center gap-2 px-2 mb-2">
-              <Sparkles className="w-4 h-4 text-primary-500" />
-              <h3 className="text-xs font-bold text-carbon-900 uppercase tracking-widest">Opciones del Almuerzo</h3>
-            </div>
+            <MenuItemSelector
+              label="Sopa"
+              icon={<Soup className="w-4 h-4" />}
+              options={dailyMenuDisplay?.soupOptions || []}
+              selectedOption={selectedSoup}
+              onSelect={setSelectedSoup}
+              color="amber"
+              required
+              error={hasError("soup") ? "Requerido" : undefined}
+            />
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <MenuItemSelector
-                label="Sopa"
-                icon={<Soup className="w-4 h-4" />}
-                options={dailyMenuDisplay?.soupOptions || []}
-                selectedOption={selectedSoup}
-                onSelect={setSelectedSoup}
-                color="amber"
-                required
-                error={hasError("soup") ? "Requerido" : undefined}
-              />
+            <MenuItemSelector
+              label="Principio"
+              icon={<Utensils className="w-4 h-4" />}
+              options={dailyMenuDisplay?.principleOptions || []}
+              selectedOption={selectedPrinciple}
+              onSelect={setSelectedPrinciple}
+              color="emerald"
+              required
+              error={hasError("principle") ? "Requerido" : undefined}
+            />
 
-              <MenuItemSelector
-                label="Principio"
-                icon={<Utensils className="w-4 h-4" />}
-                options={dailyMenuDisplay?.principleOptions || []}
-                selectedOption={selectedPrinciple}
-                onSelect={setSelectedPrinciple}
-                color="emerald"
-                required
-                error={hasError("principle") ? "Requerido" : undefined}
-              />
+            <MenuItemSelector
+              label="Ensalada"
+              icon={<Salad className="w-4 h-4" />}
+              options={dailyMenuDisplay?.saladOptions || []}
+              selectedOption={selectedSalad}
+              onSelect={setSelectedSalad}
+              color="sage"
+              required
+              error={hasError("salad") ? "Requerido" : undefined}
+            />
 
-              <MenuItemSelector
-                label="Ensalada"
-                icon={<Salad className="w-4 h-4" />}
-                options={dailyMenuDisplay?.saladOptions || []}
-                selectedOption={selectedSalad}
-                onSelect={setSelectedSalad}
-                color="sage"
-                required
-                error={hasError("salad") ? "Requerido" : undefined}
-              />
-
-              <MenuItemSelector
-                label="Bebida"
-                icon={<CupSoda className="w-4 h-4" />}
-                options={dailyMenuDisplay?.drinkOptions || []}
-                selectedOption={selectedDrink}
-                onSelect={setSelectedDrink}
-                color="blue"
-                required
-                error={hasError("drink") ? "Requerido" : undefined}
-              />
-            </div>
+            <MenuItemSelector
+              label="Bebida"
+              icon={<CupSoda className="w-4 h-4" />}
+              options={dailyMenuDisplay?.drinkOptions || []}
+              selectedOption={selectedDrink}
+              onSelect={setSelectedDrink}
+              color="blue"
+              required
+              error={hasError("drink") ? "Requerido" : undefined}
+            />
 
             {dailyMenuDisplay?.extraOptions && dailyMenuDisplay.extraOptions.length > 0 && (
               <MenuItemSelector
