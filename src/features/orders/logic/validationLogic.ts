@@ -9,12 +9,12 @@ import type {
 interface ValidationParams {
   selectedProtein: ProteinOption | null;
   looseItems: LooseItem[];
-  soupOptions: MenuOption[];
-  principleOptions: MenuOption[];
-  saladOptions: MenuOption[];
-  drinkOptions: MenuOption[];
-  extraOptions: MenuOption[];
-  riceOptions: MenuOption[];
+  soupOptions?: MenuOption[];
+  principleOptions?: MenuOption[];
+  saladOptions?: MenuOption[];
+  drinkOptions?: MenuOption[];
+  extraOptions?: MenuOption[];
+  riceOptions?: MenuOption[];
   selectedSoup: MenuOption | null;
   selectedPrinciple: MenuOption | null;
   selectedSalad: MenuOption | null;
@@ -35,12 +35,12 @@ interface ValidationParams {
 export const validateOrderDraft = ({
   selectedProtein,
   looseItems,
-  soupOptions,
-  principleOptions,
-  saladOptions,
-  drinkOptions,
-  extraOptions,
-  riceOptions,
+  soupOptions = [],
+  principleOptions = [],
+  saladOptions = [],
+  drinkOptions = [],
+  extraOptions = [],
+  riceOptions = [],
   selectedSoup,
   selectedPrinciple,
   selectedSalad,
