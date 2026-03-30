@@ -306,7 +306,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   }, [menuItems, searchTerm]);
 
   const dailyMenuDisplay = useMemo(() => {
-    if (!dailyMenuData) return {
+    const defaultMenu = {
       soupOptions: [], 
       principleOptions: [], 
       saladOptions: [], 
@@ -318,6 +318,8 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       basePrice: 0, 
       isConfigured: false,
     };
+
+    if (!dailyMenuData) return defaultMenu;
     
     const riceOptions = dailyMenuData.riceOptions || [];
 

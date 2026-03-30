@@ -460,7 +460,18 @@ export function OrderCreatePage() {
                 setPackagingQuantity={setPackagingQuantity}
                 showDailyMenu={showDailyMenu}
                 setShowDailyMenu={setShowDailyMenu}
-                dailyMenuDisplay={dailyMenuDisplay}
+                dailyMenuDisplay={dailyMenuDisplay || {
+                  soupOptions: [],
+                  principleOptions: [],
+                  saladOptions: [],
+                  extraOptions: [],
+                  drinkOptions: [],
+                  dessertOptions: [],
+                  riceOptions: [],
+                  riceOption: null,
+                  basePrice: 0,
+                  isConfigured: false,
+                }}
                 dailyMenuPrices={dailyMenuPrices}
                 selectedSoup={selectedSoup}
                 setSelectedSoup={setSelectedSoup}
