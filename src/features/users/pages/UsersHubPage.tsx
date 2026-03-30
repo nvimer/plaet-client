@@ -38,15 +38,6 @@ export function UsersHubPage() {
       show: true,
     },
     {
-      title: "Nuevo Usuario",
-      description: "Registra un nuevo integrante en tu equipo.",
-      icon: UserPlus,
-      path: ROUTES.USER_CREATE,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50",
-      show: true,
-    },
-    {
       title: "Roles y Permisos",
       description: "Configura qué puede hacer cada perfil en el sistema.",
       icon: ShieldCheck,
