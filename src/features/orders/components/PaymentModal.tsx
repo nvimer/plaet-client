@@ -77,17 +77,20 @@ export function PaymentModal({
     const lunchItems: Array<{ orderId: string; price: number }> = [];
     
     activeOrders.forEach(order => {
-      // Find the main protein item which represents the "Lunch" in this system
-      const lunchItem = order.items?.find(
+      // Find all protein items which represent "Lunches" in this system
+      const lunchItemsInOrder = order.items?.filter(
         item => item.menuItem?.categoryId === dailyMenu.proteinCategory?.id
-      );
+      ) || [];
       
-      if (lunchItem) {
-        lunchItems.push({
-          orderId: order.id,
-          price: Number(lunchItem.priceAtOrder)
-        });
-      }
+      lunchItemsInOrder.forEach(item => {
+        // Create an entry for each portion in the item quantity
+        for (let i = 0; i < item.quantity; i++) {
+          lunchItems.push({
+            orderId: order.id,
+            price: Number(item.priceAtOrder)
+          });
+        }
+      });
     });
     
     return lunchItems;

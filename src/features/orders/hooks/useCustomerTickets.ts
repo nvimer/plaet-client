@@ -10,11 +10,11 @@ export function useCustomerTickets(phone: string) {
   return useQuery({
     queryKey: ["customer-tickets", phone],
     queryFn: async () => {
-      if (!phone || phone.length < 7) return null;
+      if (!phone || phone.length < 3) return null;
       const response = await paymentApi.getCustomerTickets(phone);
       return response.data;
     },
-    enabled: phone.length >= 7,
+    enabled: phone.length >= 3,
     retry: false,
     staleTime: 30000, // 30 seconds
   });

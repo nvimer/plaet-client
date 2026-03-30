@@ -40,8 +40,11 @@ export function TicketBookPaymentForm({
   calculatedAmount,
 }: TicketBookPaymentFormProps) {
   
-  const activeTicketBook = customer?.ticketBooks.find((tb) => tb.consumedPortions < tb.totalPortions);
-  const availableBalance = activeTicketBook ? activeTicketBook.totalPortions - activeTicketBook.consumedPortions : 0;
+  const availableBalance = customer?.ticketBooks
+    ? customer.ticketBooks
+        .filter((tb) => tb.status === "active" || tb.status === "ACTIVE")
+        .reduce((sum, tb) => sum + (tb.totalPortions - tb.consumedPortions), 0)
+    : 0;
   
   const maxAllowed = Math.min(availableBalance, maxPortions);
 
@@ -53,15 +56,15 @@ export function TicketBookPaymentForm({
       className="space-y-4"
     >
       <div className="space-y-2">
-        <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1 uppercase">Celular del Cliente</label>
+        <label className="text-[10px] font-black text-carbon-500 tracking-wide ml-1 uppercase">Buscar Cliente</label>
         <div className="relative">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-400 w-5 h-5" />
           <input
-            type="tel"
+            type="text"
             value={phone}
             onChange={(e) => onPhoneChange(e.target.value)}
             className="w-full h-14 pl-12 pr-6 rounded-2xl border-2 border-sage-100 focus:border-blue-600 focus:ring-0 text-lg font-bold text-carbon-900 shadow-inner bg-sage-50/30 transition-all"
-            placeholder="Buscar por número..."
+            placeholder="Nombre o celular..."
           />
           {isLoading && (
             <div className="absolute right-4 top-1/2 -translate-y-1/2">

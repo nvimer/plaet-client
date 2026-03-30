@@ -65,16 +65,20 @@ export function OrdersPage() {
       const ordersWithBalance = ordersToPay.map(order => {
         const paid = order.payments?.reduce((sum, p) => sum + Number(p.amount), 0) || 0;
         
-        // Identify if this order contains a "Lunch" (Protein)
-        const lunchItem = order.items?.find(
-          item => dailyMenu?.proteinCategory && item.menuItem?.categoryId === dailyMenu.proteinCategory.id
-        );
+        // Identify all lunch portions in this order
+        const lunchPortions: number[] = [];
+        order.items?.forEach(item => {
+          if (dailyMenu?.proteinCategory && item.menuItem?.categoryId === dailyMenu.proteinCategory.id) {
+            for (let i = 0; i < item.quantity; i++) {
+              lunchPortions.push(Number(item.priceAtOrder));
+            }
+          }
+        });
 
         return {
           id: order.id,
           remaining: Math.max(0, Number(order.totalAmount) - paid),
-          hasLunch: !!lunchItem,
-          lunchPrice: lunchItem ? Number(lunchItem.priceAtOrder) : 0
+          lunchPortions: lunchPortions.sort((a, b) => b - a), // Most expensive first
         };
       }).filter(o => o.remaining > 0);
 
@@ -92,18 +96,23 @@ export function OrdersPage() {
 
           if (payment.method === PaymentMethod.TICKET_BOOK) {
             // Specialized logic for Ticket Book:
-            // If this order has a lunch and we have portions to spend, use 1 portion.
-            if (orderBalance.hasLunch && portionsToDistribute > 0) {
-              // The amount for this order is exactly the price of its lunch
-              amountForThisOrder = Math.min(amountToDistribute, orderBalance.lunchPrice, orderBalance.remaining);
-              portionsForThisOrder = 1;
-            } else {
-              // Skip if no lunch or no portions left for this specific payment entry
-              continue; 
+            // Use as many portions as the order contains lunches AND as we have available to spend
+            while (orderBalance.lunchPortions.length > 0 && portionsToDistribute > 0 && orderBalance.remaining > 0) {
+              const lunchPrice = orderBalance.lunchPortions.shift()!;
+              const amountToCover = Math.min(lunchPrice, orderBalance.remaining);
+              
+              amountForThisOrder += amountToCover;
+              portionsForThisOrder += 1;
+              
+              portionsToDistribute -= 1;
+              orderBalance.remaining -= amountToCover;
+              amountToDistribute -= amountToCover;
             }
           } else {
             // Standard logic for Cash/Nequi
             amountForThisOrder = Math.min(amountToDistribute, orderBalance.remaining);
+            orderBalance.remaining -= amountForThisOrder;
+            amountToDistribute -= amountForThisOrder;
           }
 
           if (amountForThisOrder > 0 || portionsForThisOrder > 0) {
@@ -117,10 +126,6 @@ export function OrdersPage() {
                 portionCount: portionsForThisOrder > 0 ? portionsForThisOrder : undefined
               }
             });
-
-            amountToDistribute -= amountForThisOrder;
-            portionsToDistribute -= portionsForThisOrder;
-            orderBalance.remaining -= amountForThisOrder;
           }
         }
       }
