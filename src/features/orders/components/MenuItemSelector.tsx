@@ -45,22 +45,36 @@ export function MenuItemSelector({
     return null; // Don't show empty categories
   }
 
-  // Compact mode - simple list without images
+  // Compact mode - high-density grid with icons
   if (compact) {
     return (
-      <div className="space-y-2">
-        <div className="flex items-center gap-2">
-          <div className={cn("w-7 h-7 rounded-lg flex items-center justify-center text-xs shadow-inner", colors.bg, colors.text)}>
-            {icon}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between px-1">
+          <div className="flex items-center gap-2">
+            <div className={cn("w-8 h-8 rounded-xl flex items-center justify-center text-xs shadow-inner transition-all", colors.bg, colors.text)}>
+              {icon}
+            </div>
+            <span className="font-black text-[10px] text-carbon-900 uppercase tracking-[0.15em] leading-none">
+              {label}
+            </span>
+            {required && (
+              <span className="text-[7px] bg-carbon-900 text-white px-1.5 py-0.5 rounded font-black tracking-tighter uppercase">
+                Requerido
+              </span>
+            )}
           </div>
-          <span className="font-bold text-xs text-carbon-900 uppercase tracking-wide">
-            {label}
-          </span>
-          {required && (
-            <span className="text-[8px] bg-error-500 text-white px-1.5 py-0.5 rounded font-bold">Requerido</span>
+          {selectedOption && (
+            <motion.div 
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              className="flex items-center gap-1 text-primary-600"
+            >
+              <Check className="w-3 h-3 stroke-[4px]" />
+              <span className="text-[8px] font-black uppercase">Listo</span>
+            </motion.div>
           )}
         </div>
-        <div className="flex flex-wrap gap-2">
+
+        <div className="grid grid-cols-2 gap-2">
           {options.map((option) => {
             const isSelected = selectedOption?.id === option.id;
             return (
@@ -68,19 +82,36 @@ export function MenuItemSelector({
                 key={option.id}
                 onClick={() => onSelect(option)}
                 className={cn(
-                  "px-3 py-1.5 rounded-lg text-xs font-bold transition-all border",
+                  "group relative flex items-center gap-2 p-2 rounded-xl border-2 transition-all duration-300 text-left overflow-hidden active:scale-95",
                   isSelected
-                    ? "bg-carbon-900 text-white border-carbon-900"
-                    : "bg-white text-carbon-600 border-sage-200 hover:border-carbon-400"
+                    ? "border-carbon-900 bg-white shadow-soft-lg z-10"
+                    : "border-sage-50 bg-white hover:border-sage-200"
                 )}
               >
-                {option.name}
+                <div className="w-8 h-8 rounded-lg bg-sage-50 overflow-hidden shrink-0 flex items-center justify-center">
+                  {option.imageUrl ? (
+                    <img src={option.imageUrl} className="w-full h-full object-cover" alt="" />
+                  ) : (
+                    <ImageIcon className="w-4 h-4 text-sage-200 stroke-[1.5px]" />
+                  )}
+                </div>
+                <span className={cn(
+                  "text-[10px] font-black leading-tight truncate uppercase tracking-tight",
+                  isSelected ? "text-carbon-900" : "text-carbon-500"
+                )}>
+                  {option.name}
+                </span>
+                {isSelected && (
+                  <div className="absolute top-1 right-1 w-4 h-4 bg-carbon-900 rounded-full flex items-center justify-center shadow-md">
+                    <Check className="w-2.5 h-2.5 text-white stroke-[4px]" />
+                  </div>
+                )}
               </button>
             );
           })}
         </div>
         {error && (
-          <p className="text-[10px] text-error-600 font-medium">{error}</p>
+          <p className="text-[10px] text-error-600 font-bold ml-1 uppercase tracking-widest">{error}</p>
         )}
       </div>
     );

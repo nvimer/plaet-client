@@ -230,11 +230,11 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
   // 6. Effects
   useEffect(() => {
-    // Auto-show daily menu when a protein is selected
-    if (selectedProtein && !showDailyMenu) {
+    // Proactive UI: Show daily menu options as soon as they are configured
+    if (dailyMenuData && !showDailyMenu) {
       setShowDailyMenu(true);
     }
-  }, [selectedProtein, showDailyMenu, setShowDailyMenu]);
+  }, [dailyMenuData, showDailyMenu, setShowDailyMenu]);
 
   useEffect(() => {
     // Sync packaging quantity with order type if it's currently unset (0)
