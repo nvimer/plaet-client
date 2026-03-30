@@ -144,6 +144,7 @@ export function OrderCreatePage() {
         handleDuplicateOrder: () => {},
         currentOrderTotal: 0,
         tableTotal: 0,
+        touchedFields: new Set<string>(),
       };
     }
 
@@ -177,6 +178,7 @@ export function OrderCreatePage() {
       selectedExtra: orderBuilderRaw.selectedExtra ?? null,
       selectedRice: orderBuilderRaw.selectedRice ?? null,
       selectedProtein: orderBuilderRaw.selectedProtein ?? null,
+      touchedFields: orderBuilderRaw.touchedFields || new Set<string>(),
     };
   }, [orderBuilderRaw]);
 
@@ -250,6 +252,7 @@ export function OrderCreatePage() {
     setOrderNotes,
     validationErrors,
     hasError,
+    touchedFields,
     handleAddOrderToTable,
     handleEditOrder,
     handleRemoveOrder,
@@ -614,6 +617,7 @@ export function OrderCreatePage() {
                 setOrderNotes={setOrderNotes}
                 validationErrors={validationErrors}
                 hasError={hasError}
+                touchedFields={touchedFields}
                 onAddToTable={handleAddOrderToTable}
                 onCancelEdit={handleCancelEdit}
                 hasCustomerData={hasCustomerData}
