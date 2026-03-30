@@ -102,6 +102,11 @@ export function PaymentModal({
 
   const maxPortionsAvailable = lunchItemsInSelection.length;
 
+  const hasActiveTickets = useMemo(() => {
+    if (!customer?.ticketBooks) return false;
+    return customer.ticketBooks.some((tb) => (tb.totalPortions - tb.consumedPortions) > 0);
+  }, [customer]);
+
   // Automatically set portionCount to max when customer is found and has tickets
   useEffect(() => {
     if (method === PaymentMethod.TICKET_BOOK && customer && hasActiveTickets && maxPortionsAvailable > 0) {
@@ -115,11 +120,6 @@ export function PaymentModal({
       }
     }
   }, [customer, hasActiveTickets, maxPortionsAvailable, method, portionCount]);
-
-  const hasActiveTickets = useMemo(() => {
-    if (!customer?.ticketBooks) return false;
-    return customer.ticketBooks.some((tb) => (tb.totalPortions - tb.consumedPortions) > 0);
-  }, [customer]);
 
   const remainingAmountsPerOrder = useMemo(() => {
     return orders.reduce((acc, order) => {
