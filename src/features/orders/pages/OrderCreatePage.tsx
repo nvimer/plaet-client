@@ -53,9 +53,35 @@ export function OrderCreatePage() {
     return shiftDate !== today;
   }, [isCashOpen, currentShift]);
 
-  const orderBuilder = useOrderBuilder();
+  const orderBuilderRaw = useOrderBuilder();
 
-  // Explicit destructuring to avoid ReferenceErrors with rest operator in production
+  // 100% Safe normalization of the hook return to prevent production crashes
+  const orderBuilder = useMemo(() => ({
+    ...orderBuilderRaw,
+    dailyMenuDisplay: orderBuilderRaw.dailyMenuDisplay || {
+      soupOptions: [],
+      principleOptions: [],
+      saladOptions: [],
+      extraOptions: [],
+      drinkOptions: [],
+      dessertOptions: [],
+      riceOptions: [],
+      riceOption: null,
+      basePrice: 0,
+      isConfigured: false,
+    },
+    dailyMenuPrices: orderBuilderRaw.dailyMenuPrices || { basePrice: 0, isConfigured: false },
+    validationErrors: orderBuilderRaw.validationErrors || [],
+    tableOrders: orderBuilderRaw.tableOrders || [],
+    availableTables: orderBuilderRaw.availableTables || [],
+    proteins: orderBuilderRaw.proteins || [],
+    looseItems: orderBuilderRaw.looseItems || [],
+    filteredLooseItems: orderBuilderRaw.filteredLooseItems || [],
+    popularProducts: orderBuilderRaw.popularProducts || [],
+    replacements: orderBuilderRaw.replacements || [],
+  }), [orderBuilderRaw]);
+
+  // Explicit destructuring for high-visibility debugging and compiler safety
   const {
     isLoading,
     isPending,
@@ -79,7 +105,6 @@ export function OrderCreatePage() {
     handleShowSummary,
     handleConfirmTableOrders,
     clearCurrentOrder,
-    // Form specific props
     customerName,
     setCustomerName,
     customerId,
@@ -460,18 +485,7 @@ export function OrderCreatePage() {
                 setPackagingQuantity={setPackagingQuantity}
                 showDailyMenu={showDailyMenu}
                 setShowDailyMenu={setShowDailyMenu}
-                dailyMenuDisplay={dailyMenuDisplay || {
-                  soupOptions: [],
-                  principleOptions: [],
-                  saladOptions: [],
-                  extraOptions: [],
-                  drinkOptions: [],
-                  dessertOptions: [],
-                  riceOptions: [],
-                  riceOption: null,
-                  basePrice: 0,
-                  isConfigured: false,
-                }}
+                dailyMenuDisplay={dailyMenuDisplay}
                 dailyMenuPrices={dailyMenuPrices}
                 selectedSoup={selectedSoup}
                 setSelectedSoup={setSelectedSoup}

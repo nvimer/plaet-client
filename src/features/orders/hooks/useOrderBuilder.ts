@@ -321,18 +321,25 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
 
     if (!dailyMenuData) return defaultMenu;
     
-    const riceOptions = dailyMenuData.riceOptions || [];
+    // Total defensive mapping
+    const soupOptions = dailyMenuData?.soupOptions || [];
+    const principleOptions = dailyMenuData?.principleOptions || [];
+    const saladOptions = dailyMenuData?.saladOptions || [];
+    const extraOptions = dailyMenuData?.extraOptions || [];
+    const drinkOptions = dailyMenuData?.drinkOptions || [];
+    const dessertOptions = dailyMenuData?.dessertOptions || [];
+    const riceOptions = dailyMenuData?.riceOptions || [];
 
     return {
-      soupOptions: dailyMenuData.soupOptions || [],
-      principleOptions: dailyMenuData.principleOptions || [],
-      saladOptions: dailyMenuData.saladOptions || [],
-      extraOptions: dailyMenuData.extraOptions || [],
-      drinkOptions: dailyMenuData.drinkOptions || [],
-      dessertOptions: dailyMenuData.dessertOptions || [],
-      riceOptions: riceOptions,
+      soupOptions,
+      principleOptions,
+      saladOptions,
+      extraOptions,
+      drinkOptions,
+      dessertOptions,
+      riceOptions,
       riceOption: riceOptions[0] || null,
-      basePrice: Number(dailyMenuData.basePrice) || 3000,
+      basePrice: Number(dailyMenuData?.basePrice || 0) || 3000,
       isConfigured: true,
     };
   }, [dailyMenuData]);
