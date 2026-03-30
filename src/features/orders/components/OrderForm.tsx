@@ -165,6 +165,8 @@ export function OrderForm({
   packagingFee,
   packagingQuantity,
   setPackagingQuantity,
+  showDailyMenu,
+  setShowDailyMenu,
   dailyMenuDisplay,
   dailyMenuPrices,
   selectedSoup,
