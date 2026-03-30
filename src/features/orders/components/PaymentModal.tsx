@@ -72,14 +72,18 @@ export function PaymentModal({
 
   // Identify "Lunches" in the current selection
   const lunchItemsInSelection = useMemo(() => {
-    if (!dailyMenu?.proteinCategory) return [];
-    
     const lunchItems: Array<{ orderId: string; price: number }> = [];
     
     activeOrders.forEach(order => {
       // Find all protein items which represent "Lunches" in this system
       const lunchItemsInOrder = order.items?.filter(
-        item => item.menuItem?.categoryId === dailyMenu.proteinCategory?.id
+        item => {
+          const isProteinCategory = dailyMenu?.proteinCategory && item.menuItem?.categoryId === dailyMenu.proteinCategory.id;
+          const isLunchByName = item.menuItem?.name?.toLowerCase().includes("almuerzo") || 
+                               item.notes?.toLowerCase().includes("almuerzo");
+          
+          return isProteinCategory || isLunchByName;
+        }
       ) || [];
       
       lunchItemsInOrder.forEach(item => {
@@ -98,8 +102,23 @@ export function PaymentModal({
 
   const maxPortionsAvailable = lunchItemsInSelection.length;
 
+  // Automatically set portionCount to max when customer is found and has tickets
+  useEffect(() => {
+    if (method === PaymentMethod.TICKET_BOOK && customer && hasActiveTickets && maxPortionsAvailable > 0) {
+      // If we haven't set a portion count yet, or if it's 0, set it to the max available
+      if (portionCount === 0) {
+        const availableTickets = customer.ticketBooks
+          .filter((tb) => tb.status === "active" || tb.status === "ACTIVE")
+          .reduce((sum, tb) => sum + (tb.totalPortions - tb.consumedPortions), 0);
+        
+        setPortionCount(Math.min(availableTickets, maxPortionsAvailable));
+      }
+    }
+  }, [customer, hasActiveTickets, maxPortionsAvailable, method, portionCount]);
+
   const hasActiveTickets = useMemo(() => {
-    return !!(customer?.ticketBooks && customer.ticketBooks.some((tb) => tb.consumedPortions < tb.totalPortions));
+    if (!customer?.ticketBooks) return false;
+    return customer.ticketBooks.some((tb) => (tb.totalPortions - tb.consumedPortions) > 0);
   }, [customer]);
 
   const remainingAmountsPerOrder = useMemo(() => {

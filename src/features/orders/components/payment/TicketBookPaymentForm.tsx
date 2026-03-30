@@ -42,8 +42,7 @@ export function TicketBookPaymentForm({
   
   const availableBalance = customer?.ticketBooks
     ? customer.ticketBooks
-        .filter((tb) => tb.status === "active" || tb.status === "ACTIVE")
-        .reduce((sum, tb) => sum + (tb.totalPortions - tb.consumedPortions), 0)
+        .reduce((sum, tb) => sum + Math.max(0, tb.totalPortions - tb.consumedPortions), 0)
     : 0;
   
   const maxAllowed = Math.min(availableBalance, maxPortions);

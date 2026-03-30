@@ -65,10 +65,14 @@ export function OrdersPage() {
       const ordersWithBalance = ordersToPay.map(order => {
         const paid = order.payments?.reduce((sum, p) => sum + Number(p.amount), 0) || 0;
         
-        // Identify all lunch portions in this order
+        // Identify all lunch portions in this order using the same logic as PaymentModal
         const lunchPortions: number[] = [];
         order.items?.forEach(item => {
-          if (dailyMenu?.proteinCategory && item.menuItem?.categoryId === dailyMenu.proteinCategory.id) {
+          const isProteinCategory = dailyMenu?.proteinCategory && item.menuItem?.categoryId === dailyMenu.proteinCategory.id;
+          const isLunchByName = item.menuItem?.name?.toLowerCase().includes("almuerzo") || 
+                               item.notes?.toLowerCase().includes("almuerzo");
+
+          if (isProteinCategory || isLunchByName) {
             for (let i = 0; i < item.quantity; i++) {
               lunchPortions.push(Number(item.priceAtOrder));
             }
