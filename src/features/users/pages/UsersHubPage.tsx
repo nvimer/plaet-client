@@ -14,9 +14,7 @@ import { usePermissions } from "@/hooks";
  */
 export function UsersHubPage() {
   const navigate = useNavigate();
-  const { isSuperAdmin, hasPermission } = usePermissions();
-
-  const canManageRoles = isSuperAdmin() || hasPermission("roles:manage");
+  const { isSuperAdmin } = usePermissions();
 
   const options = [
     {
@@ -26,6 +24,15 @@ export function UsersHubPage() {
       path: ROUTES.USERS_LIST,
       color: "text-sage-600",
       bgColor: "bg-sage-50",
+      show: true,
+    },
+    {
+      title: "Directorio de Clientes",
+      description: "Base de datos completa con perfiles y contactos.",
+      icon: Users,
+      path: ROUTES.CUSTOMERS_LIST,
+      color: "text-primary-600",
+      bgColor: "bg-primary-50",
       show: true,
     },
     {
@@ -44,7 +51,7 @@ export function UsersHubPage() {
       path: ROUTES.PERMISSIONS,
       color: "text-info-600",
       bgColor: "bg-info-50",
-      show: canManageRoles,
+      show: isSuperAdmin(),
     },
   ].filter(opt => opt.show);
 

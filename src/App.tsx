@@ -173,7 +173,7 @@ const App = () => {
                 path={ROUTES.ADMIN_DASHBOARD}
                 element={
                   <ProtectedRoute>
-                    <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN]}>
+                    <RoleProtectedRoute allowedRoles={[RoleName.SUPERADMIN]}>
                       <AdminDashboardPage />
                     </RoleProtectedRoute>
                   </ProtectedRoute>
@@ -197,7 +197,7 @@ const App = () => {
                 path={ROUTES.PERMISSIONS}
                 element={
                   <ProtectedRoute>
-                    <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN]}>
+                    <RoleProtectedRoute allowedRoles={[RoleName.SUPERADMIN]}>
                       <RolePermissionsPage />
                     </RoleProtectedRoute>
                   </ProtectedRoute>
@@ -209,7 +209,7 @@ const App = () => {
                 path={ROUTES.ROLES}
                 element={
                   <ProtectedRoute>
-                    <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN]}>
+                    <RoleProtectedRoute allowedRoles={[RoleName.SUPERADMIN]}>
                       <RolesListPage />
                     </RoleProtectedRoute>
                   </ProtectedRoute>
@@ -221,7 +221,7 @@ const App = () => {
                 path={ROUTES.ROLE_CREATE}
                 element={
                   <ProtectedRoute>
-                    <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN]}>
+                    <RoleProtectedRoute allowedRoles={[RoleName.SUPERADMIN]}>
                       <RoleCreatePage />
                     </RoleProtectedRoute>
                   </ProtectedRoute>
@@ -233,7 +233,7 @@ const App = () => {
                 path={ROUTES.ROLE_EDIT}
                 element={
                   <ProtectedRoute>
-                    <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN]}>
+                    <RoleProtectedRoute allowedRoles={[RoleName.SUPERADMIN]}>
                       <RoleEditPage />
                     </RoleProtectedRoute>
                   </ProtectedRoute>
@@ -259,7 +259,7 @@ const App = () => {
                 path={ROUTES.EXPENSES}
                 element={
                   <ProtectedRoute>
-                    <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN]}>
+                    <RoleProtectedRoute allowedRoles={[RoleName.SUPERADMIN]}>
                       <ExpensesPage />
                     </RoleProtectedRoute>
                   </ProtectedRoute>
@@ -534,7 +534,7 @@ const App = () => {
                 path={ROUTES.USERS}
                 element={
                   <ProtectedRoute>
-                    <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN]}>
+                    <RoleProtectedRoute allowedRoles={[RoleName.SUPERADMIN]}>
                       <UsersHubPage />
                     </RoleProtectedRoute>
                   </ProtectedRoute>
@@ -545,7 +545,7 @@ const App = () => {
                 path={ROUTES.USERS_LIST}
                 element={
                   <ProtectedRoute>
-                    <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN]}>
+                    <RoleProtectedRoute allowedRoles={[RoleName.SUPERADMIN]}>
                       <UsersPage />
                     </RoleProtectedRoute>
                   </ProtectedRoute>
@@ -579,7 +579,7 @@ const App = () => {
                 path={ROUTES.USER_CREATE}
                 element={
                   <ProtectedRoute>
-                    <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN]}>
+                    <RoleProtectedRoute allowedRoles={[RoleName.SUPERADMIN]}>
                       <UserCreatePage />
                     </RoleProtectedRoute>
                   </ProtectedRoute>
@@ -591,7 +591,7 @@ const App = () => {
                 path={ROUTES.USER_EDIT}
                 element={
                   <ProtectedRoute>
-                    <RoleProtectedRoute allowedRoles={[RoleName.ADMIN, RoleName.SUPERADMIN]}>
+                    <RoleProtectedRoute allowedRoles={[RoleName.SUPERADMIN]}>
                       <UserEditPage />
                     </RoleProtectedRoute>
                   </ProtectedRoute>

@@ -22,6 +22,7 @@ export function CustomersHubPage() {
       path: ROUTES.CUSTOMERS_LIST,
       color: "text-primary-600",
       bgColor: "bg-primary-50",
+      show: true,
     },
     {
       title: "Vender Tiquetera",
@@ -30,6 +31,7 @@ export function CustomersHubPage() {
       path: ROUTES.CUSTOMERS_LIST, // Navigate to list to select customer
       color: "text-warning-600",
       bgColor: "bg-warning-50",
+      show: true,
     },
     {
       title: "Consumidores Fieles",
