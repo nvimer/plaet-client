@@ -32,15 +32,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/utils/cn";
 import { useMemo } from "react";
 import { variants, transitions } from "@/utils/motion";
-
 import { getLocalDateString } from "@/utils/dateUtils";
-
 import { useUIStore } from "@/stores/useUIStore";
 
 export function OrderCreatePage() {
   const { user } = useAuth();
-// ... (omitting some lines for context matching if needed, but I'll use a better block)
-
   const isCollapsed = useUIStore((state) => state.isCollapsed);
   const isMobile = useUIStore((state) => state.isMobile);
   const isAdmin = user?.roles?.some(r => 
@@ -59,6 +55,7 @@ export function OrderCreatePage() {
 
   const orderBuilder = useOrderBuilder();
 
+  // Explicit destructuring to avoid ReferenceErrors with rest operator in production
   const {
     isLoading,
     isPending,
@@ -82,7 +79,59 @@ export function OrderCreatePage() {
     handleShowSummary,
     handleConfirmTableOrders,
     clearCurrentOrder,
-    ...formProps
+    // Form specific props
+    customerName,
+    setCustomerName,
+    customerId,
+    customerPhone,
+    setCustomerPhone,
+    customerPhone2,
+    setCustomerPhone2,
+    deliveryAddress,
+    setDeliveryAddress,
+    address2,
+    setAddress2,
+    hasCustomerData,
+    setHasCustomerData,
+    packagingFee,
+    packagingQuantity,
+    setPackagingQuantity,
+    dailyMenuDisplay,
+    dailyMenuPrices,
+    selectedSoup,
+    setSelectedSoup,
+    selectedPrinciple,
+    setSelectedPrinciple,
+    selectedSalad,
+    setSelectedSalad,
+    selectedDrink,
+    setSelectedDrink,
+    selectedExtra,
+    setSelectedExtra,
+    selectedRice,
+    setSelectedRice,
+    proteins,
+    selectedProtein,
+    setSelectedProtein,
+    replacements,
+    setReplacements,
+    looseItems,
+    searchTerm,
+    setSearchTerm,
+    filteredLooseItems,
+    popularProducts,
+    handleAddLooseItem,
+    handleUpdateLooseItemQuantity,
+    orderNotes,
+    setOrderNotes,
+    validationErrors,
+    hasError,
+    handleAddOrderToTable,
+    handleEditOrder,
+    handleRemoveOrder,
+    handleDuplicateOrder,
+    currentOrderTotal,
+    tableTotal,
   } = orderBuilder;
 
   const handleTableSelect = (table: { id: number }) => {
@@ -102,43 +151,33 @@ export function OrderCreatePage() {
   };
 
   const handleQuickPackaging = () => {
-    // 1. Set type to TAKE_OUT as default for packaging-only
     handleSelectOrderType(OrderType.TAKE_OUT);
-    
-    // 2. Clear anything existing
     clearCurrentOrder();
-
-    // 3. Pre-fill customer info for quick sale validation
-    orderBuilder.setCustomerName("Venta Rápida");
-    orderBuilder.setCustomerPhone("0000000");
+    setCustomerName("Venta Rápida");
+    setCustomerPhone("0000000");
     
-    // 4. Add the virtual item directly
     const packagingItem = {
       id: -1,
       name: "Portacomida",
-      price: orderBuilder.packagingFee,
+      price: packagingFee,
       quantity: 1
     };
     
-    // 5. Create a TableOrder object and add it to state
     const quickOrder = {
       id: Date.now().toString(),
       protein: null,
       lunch: null,
       looseItems: [packagingItem],
-      total: orderBuilder.packagingFee,
+      total: packagingFee,
       notes: "Venta Rápida: Portacomida",
       createdAt: Date.now(),
     };
     
-    orderBuilder.setTableOrders([quickOrder]);
-    
-    // 6. Open summary immediately
+    setTableOrders([quickOrder]);
     setShowSummaryModal(true);
     toast.success("Venta rápida de empaque preparada");
   };
 
-  // Loading state
   if (isLoading || isCashLoading) {
     return (
       <SidebarLayout title="Nuevo Pedido" backRoute={ROUTES.ORDERS}>
@@ -150,7 +189,6 @@ export function OrderCreatePage() {
     );
   }
 
-  // BLOCKING STATE: Previous day shift not closed (Bypass if it's a historical entry)
   if (isShiftFromPreviousDay && !backdatedDate) {
     return (
       <SidebarLayout title="Bloqueo de Caja" backRoute={ROUTES.ORDERS}>
@@ -192,7 +230,6 @@ export function OrderCreatePage() {
     );
   }
 
-  // STEP 1: SELECT ORDER TYPE
   if (!selectedOrderType) {
     return (
       <SidebarLayout title="Tipo de Pedido" backRoute={ROUTES.ORDERS}>
@@ -238,7 +275,6 @@ export function OrderCreatePage() {
             ))}
           </motion.div>
 
-          {/* VENTAS RÁPIDAS SECTION */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -261,7 +297,7 @@ export function OrderCreatePage() {
                 </div>
                 <div className="text-left">
                   <p className="text-xs font-black text-carbon-900 uppercase tracking-tight">Portacomida</p>
-                  <p className="text-[10px] font-bold text-warning-600">${orderBuilder.packagingFee.toLocaleString()} (Solo empaque)</p>
+                  <p className="text-[10px] font-bold text-warning-600">${packagingFee.toLocaleString()} (Solo empaque)</p>
                 </div>
               </button>
             </div>
@@ -271,7 +307,6 @@ export function OrderCreatePage() {
     );
   }
 
-  // STEP 2: TABLE SELECTOR (if DINE_IN)
   if (selectedOrderType === OrderType.DINE_IN && !selectedTable) {
     return (
       <SidebarLayout
@@ -338,7 +373,6 @@ export function OrderCreatePage() {
     );
   }
 
-  // STEP 3: MAIN ORDER BUILDER
   return (
     <>
       <SidebarLayout
@@ -399,7 +433,6 @@ export function OrderCreatePage() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-32">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
-            {/* LEFT: Order Form */}
             <motion.div 
               id="current-order"
               variants={variants.fadeInUp}
@@ -411,63 +444,60 @@ export function OrderCreatePage() {
                 selectedOrderType={selectedOrderType}
                 currentOrderIndex={currentOrderIndex}
                 tableOrdersLength={tableOrders.length}
-                customerName={orderBuilder.customerName}
-                setCustomerName={orderBuilder.setCustomerName}
-                customerId={orderBuilder.customerId}
-                customerPhone={orderBuilder.customerPhone}
-                setCustomerPhone={orderBuilder.setCustomerPhone}
-                customerPhone2={orderBuilder.customerPhone2}
-                setCustomerPhone2={orderBuilder.setCustomerPhone2}
-                deliveryAddress={orderBuilder.deliveryAddress}
-                setDeliveryAddress={orderBuilder.setDeliveryAddress}
-                address2={orderBuilder.address2}
-                setAddress2={orderBuilder.setAddress2}
-                packagingFee={orderBuilder.packagingFee}
-                packagingQuantity={orderBuilder.packagingQuantity}
-                setPackagingQuantity={orderBuilder.setPackagingQuantity}
+                customerName={customerName}
+                setCustomerName={setCustomerName}
+                customerId={customerId}
+                customerPhone={customerPhone}
+                setCustomerPhone={setCustomerPhone}
+                customerPhone2={customerPhone2}
+                setCustomerPhone2={setCustomerPhone2}
+                deliveryAddress={deliveryAddress}
+                setDeliveryAddress={setDeliveryAddress}
+                address2={address2}
+                setAddress2={setAddress2}
+                packagingFee={packagingFee}
+                packagingQuantity={packagingQuantity}
+                setPackagingQuantity={setPackagingQuantity}
                 showDailyMenu={showDailyMenu}
                 setShowDailyMenu={setShowDailyMenu}
-                dailyMenuDisplay={formProps.dailyMenuDisplay}
-                dailyMenuPrices={formProps.dailyMenuPrices}
-                selectedSoup={formProps.selectedSoup}
-                setSelectedSoup={formProps.setSelectedSoup}
-                selectedPrinciple={formProps.selectedPrinciple}
-                setSelectedPrinciple={formProps.setSelectedPrinciple}
-                selectedSalad={formProps.selectedSalad}
-                setSelectedSalad={formProps.setSelectedSalad}
-                selectedDrink={formProps.selectedDrink}
-                setSelectedDrink={formProps.setSelectedDrink}
-                selectedExtra={formProps.selectedExtra}
-                setSelectedExtra={formProps.setSelectedExtra}
-                selectedRice={formProps.selectedRice}
-                setSelectedRice={formProps.setSelectedRice}
-                proteins={formProps.proteins}
-                selectedProtein={formProps.selectedProtein}
-                setSelectedProtein={formProps.setSelectedProtein}
-                replacements={formProps.replacements}
-                setReplacements={formProps.setReplacements}
-                looseItems={formProps.looseItems}
-                searchTerm={formProps.searchTerm}
-                setSearchTerm={formProps.setSearchTerm}
-                filteredLooseItems={formProps.filteredLooseItems}
-                popularProducts={formProps.popularProducts}
-                handleAddLooseItem={formProps.handleAddLooseItem}
-                handleUpdateLooseItemQuantity={
-                  formProps.handleUpdateLooseItemQuantity
-                }
-                orderNotes={formProps.orderNotes}
-                setOrderNotes={formProps.setOrderNotes}
-                validationErrors={formProps.validationErrors}
-                hasError={formProps.hasError}
-                onAddToTable={formProps.handleAddOrderToTable}
+                dailyMenuDisplay={dailyMenuDisplay}
+                dailyMenuPrices={dailyMenuPrices}
+                selectedSoup={selectedSoup}
+                setSelectedSoup={setSelectedSoup}
+                selectedPrinciple={selectedPrinciple}
+                setSelectedPrinciple={setSelectedPrinciple}
+                selectedSalad={selectedSalad}
+                setSelectedSalad={setSelectedSalad}
+                selectedDrink={selectedDrink}
+                setSelectedDrink={setSelectedDrink}
+                selectedExtra={selectedExtra}
+                setSelectedExtra={setSelectedExtra}
+                selectedRice={selectedRice}
+                setSelectedRice={setSelectedRice}
+                proteins={proteins}
+                selectedProtein={selectedProtein}
+                setSelectedProtein={setSelectedProtein}
+                replacements={replacements}
+                setReplacements={setReplacements}
+                looseItems={looseItems}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                filteredLooseItems={filteredLooseItems}
+                popularProducts={popularProducts}
+                handleAddLooseItem={handleAddLooseItem}
+                handleUpdateLooseItemQuantity={handleUpdateLooseItemQuantity}
+                orderNotes={orderNotes}
+                setOrderNotes={setOrderNotes}
+                validationErrors={validationErrors}
+                hasError={hasError}
+                onAddToTable={handleAddOrderToTable}
                 onCancelEdit={handleCancelEdit}
-                hasCustomerData={orderBuilder.hasCustomerData}
-                setHasCustomerData={orderBuilder.setHasCustomerData}
-                isLoading={orderBuilder.itemsLoading || orderBuilder.menuLoading}
+                hasCustomerData={hasCustomerData}
+                setHasCustomerData={setHasCustomerData}
+                isLoading={isLoading}
               />
             </motion.div>
 
-            {/* RIGHT: Orders List */}
             <motion.div 
               variants={variants.fadeInRight}
               initial="initial"
@@ -477,52 +507,50 @@ export function OrderCreatePage() {
               <OrdersListPanel
                 orders={tableOrders}
                 currentOrderIndex={currentOrderIndex}
-                tableTotal={formProps.tableTotal}
+                tableTotal={tableTotal}
                 isDineIn={selectedOrderType === OrderType.DINE_IN}
                 isPending={isPending}
-                onEdit={formProps.handleEditOrder}
-                onRemove={formProps.handleRemoveOrder}
-                onDuplicate={formProps.handleDuplicateOrder}
+                onEdit={handleEditOrder}
+                onRemove={handleRemoveOrder}
+                onDuplicate={handleDuplicateOrder}
                 onShowSummary={handleShowSummary}
               />
             </motion.div>
           </div>
         </div>
 
-        {/* Fixed Order Summary Bar */}
         <div className={cn(
           "fixed bottom-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-xl border-t border-sage-100 shadow-soft-2xl transition-all duration-500",
           !isMobile && (isCollapsed ? "ml-20" : "ml-72")
         )}>
           <FixedOrderSummaryBar
-            looseItems={formProps.looseItems}
-            currentOrderTotal={formProps.currentOrderTotal}
-            tableTotal={formProps.tableTotal}
-            hasProtein={!!formProps.selectedProtein}
-            currentProteinName={formProps.selectedProtein?.name}
-            onAddOrder={() => formProps.handleAddOrderToTable()}
+            looseItems={looseItems}
+            currentOrderTotal={currentOrderTotal}
+            tableTotal={tableTotal}
+            hasProtein={!!selectedProtein}
+            currentProteinName={selectedProtein?.name}
+            onAddOrder={() => handleAddOrderToTable()}
             onShowSummary={handleShowSummary}
             scrollToOrder={scrollToOrder}
             ordersCount={tableOrders.length}
-            onAddManualItem={formProps.handleAddLooseItem}
-            packagingFee={orderBuilder.packagingFee}
+            onAddManualItem={handleAddLooseItem}
+            packagingFee={packagingFee}
             isHistorical={isHistoricalMode}
           />
         </div>
       </SidebarLayout>
 
-      {/* Summary Modal */}
       <OrderSummaryModal
         isOpen={showSummaryModal}
         orders={tableOrders}
-        tableTotal={formProps.tableTotal}
+        tableTotal={tableTotal}
         orderType={selectedOrderType}
         tableId={selectedTable}
         isPending={isPending}
         isHistorical={isHistoricalMode}
-        customerName={orderBuilder.customerName}
-        customerPhone={orderBuilder.customerPhone}
-        deliveryAddress={orderBuilder.deliveryAddress}
+        customerName={customerName}
+        customerPhone={customerPhone}
+        deliveryAddress={deliveryAddress}
         onClose={() => setShowSummaryModal(false)}
         onConfirm={handleConfirmTableOrders}
       />
