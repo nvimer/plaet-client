@@ -56,7 +56,7 @@ export function useReplacementWizard({
 
   const availableTargets = useMemo(() => {
     if (!selectedFrom) return [];
-    return replaceableCategories.filter(
+    return (replaceableCategories || []).filter(
       (cat) =>
         cat.key !== selectedFrom &&
         !replacements.some((r) => r.from === selectedFrom && r.to === cat.key),
@@ -65,7 +65,7 @@ export function useReplacementWizard({
 
   const targetItems = useMemo(() => {
     if (!selectedTo) return [];
-    return (availableItems as Record<string, MenuOption[]>)[selectedTo] || [];
+    return (availableItems as Record<string, MenuOption[] | undefined>)?.[selectedTo] || [];
   }, [selectedTo, availableItems]);
 
   const isCategoryReplaced = useCallback(

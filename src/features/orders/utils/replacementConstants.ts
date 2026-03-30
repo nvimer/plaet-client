@@ -28,15 +28,16 @@ export interface CategoryInfo {
 }
 
 export function getReplaceableCategories(
-  availableItems: Record<string, { length: number }>
+  availableItems: Record<string, { length: number }> | undefined
 ): CategoryInfo[] {
+  const items = availableItems || {};
   const categories: CategoryInfo[] = [
-    { key: "soup", name: CATEGORY_NAMES.soup, icon: CATEGORY_ICONS.soup, hasItems: availableItems.soup?.length > 0 },
-    { key: "principle", name: CATEGORY_NAMES.principle, icon: CATEGORY_ICONS.principle, hasItems: availableItems.principle?.length > 0 },
-    { key: "salad", name: CATEGORY_NAMES.salad, icon: CATEGORY_ICONS.salad, hasItems: availableItems.salad?.length > 0 },
-    { key: "drink", name: CATEGORY_NAMES.drink, icon: CATEGORY_ICONS.drink, hasItems: availableItems.drink?.length > 0 },
-    { key: "extra", name: CATEGORY_NAMES.extra, icon: CATEGORY_ICONS.extra, hasItems: availableItems.extra?.length > 0 },
-    { key: "rice", name: CATEGORY_NAMES.rice, icon: CATEGORY_ICONS.rice, hasItems: (availableItems.rice?.length || 0) > 0 },
+    { key: "soup", name: CATEGORY_NAMES.soup, icon: CATEGORY_ICONS.soup, hasItems: (items.soup?.length || 0) > 0 },
+    { key: "principle", name: CATEGORY_NAMES.principle, icon: CATEGORY_ICONS.principle, hasItems: (items.principle?.length || 0) > 0 },
+    { key: "salad", name: CATEGORY_NAMES.salad, icon: CATEGORY_ICONS.salad, hasItems: (items.salad?.length || 0) > 0 },
+    { key: "drink", name: CATEGORY_NAMES.drink, icon: CATEGORY_ICONS.drink, hasItems: (items.drink?.length || 0) > 0 },
+    { key: "extra", name: CATEGORY_NAMES.extra, icon: CATEGORY_ICONS.extra, hasItems: (items.extra?.length || 0) > 0 },
+    { key: "rice", name: CATEGORY_NAMES.rice, icon: CATEGORY_ICONS.rice, hasItems: (items.rice?.length || 0) > 0 },
   ];
   return categories.filter((c) => c.hasItems);
 }

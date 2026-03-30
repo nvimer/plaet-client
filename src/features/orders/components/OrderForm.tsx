@@ -642,8 +642,18 @@ export function OrderForm({
         )}
 
         <ReplacementManager
+          availableItems={{
+            soup: dailyMenuDisplay?.soupOptions || [],
+            principle: dailyMenuDisplay?.principleOptions || [],
+            salad: dailyMenuDisplay?.saladOptions || [],
+            drink: dailyMenuDisplay?.drinkOptions || [],
+            extra: dailyMenuDisplay?.extraOptions || [],
+            rice: dailyMenuDisplay?.riceOptions || [],
+          }}
           replacements={replacements}
-          setReplacements={setReplacements}
+          onAddReplacement={(r) => setReplacements([...replacements, r])}
+          onRemoveReplacement={(id) => setReplacements(replacements.filter(r => r.id !== id))}
+          disabled={!selectedProtein}
         />
 
         <MenuItemSelector
