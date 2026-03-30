@@ -23,15 +23,15 @@ const iconMap = {
  * Blends the intuitive old layout with new high-contrast standards.
  */
 export function ProteinSelector({
-  proteins,
+  proteins = [],
   selectedProteinId,
   onSelect,
   basePrice,
   className,
 }: ProteinSelectorProps) {
-  const availableProteins = proteins.filter((p) => p.isAvailable);
+  const availableProteins = (proteins || []).filter((p) => p.isAvailable);
 
-  const lunchPrices = availableProteins.map((p) => basePrice + p.price);
+  const lunchPrices = availableProteins.map((p) => basePrice + (p.price || 0));
   const minPrice = availableProteins.length > 0 ? Math.min(...lunchPrices) : 0;
   const maxPrice = availableProteins.length > 0 ? Math.max(...lunchPrices) : 0;
 

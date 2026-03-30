@@ -609,7 +609,7 @@ export function OrderForm({
             </div>
 
             {/* Acompañamiento Opcional */}
-            {dailyMenuDisplay.extraOptions.length > 0 && (
+            {(dailyMenuDisplay?.extraOptions || []).length > 0 && (
               <Card variant="bordered" padding="md" className={cn("rounded-[2rem] border-2 transition-all", hasError("extra") ? "border-error-200 bg-error-50/10 shadow-error-100" : "border-sage-100 bg-white")}>
                 <div className="flex items-center gap-3 mb-4">
                   <div className="w-10 h-10 rounded-xl bg-primary-50 text-primary-600 flex items-center justify-center">
