@@ -16,7 +16,7 @@ import {
   XCircle,
   CheckCircle,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { cn } from "@/utils/cn";
 import type { GroupedOrder } from "../pages/OrdersPage";
 import { useUpdateOrderItemStatus } from "../hooks";
