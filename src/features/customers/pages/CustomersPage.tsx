@@ -1,6 +1,6 @@
 import { Button, Card, EmptyState, Skeleton, Tooltip, FilterBar, FilterSearch, ActiveFilterChips } from "@/components";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
-import { Search, User, Phone, MapPin, Ticket, Plus, Edit2, History, Trash2, ShoppingBag, ChevronRight, Mail } from "lucide-react";
+import { Search, User, Users, Phone, MapPin, Ticket, Plus, Edit2, History, Trash2, ShoppingBag, ChevronRight, Mail } from "lucide-react";
 import { useState, useMemo } from "react";
 import { SellTicketBookModal } from "../components/SellTicketBookModal";
 import { CustomerFormModal } from "../components/CustomerFormModal";
