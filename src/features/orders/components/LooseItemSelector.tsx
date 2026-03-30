@@ -91,7 +91,8 @@ export function LooseItemSelector({
               className="space-y-4"
             >
               <p className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest ml-1">Productos Frecuentes</p>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              <div className="max-h-[280px] overflow-y-auto scrollbar-hide">
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pb-2">
                 {safePopularProducts.map((item) => {
                   const quantity = getSelectedQuantity(item.id);
                   const isSelected = quantity > 0;
@@ -129,6 +130,7 @@ export function LooseItemSelector({
                     </button>
                   );
                 })}
+                </div>
               </div>
             </motion.div>
           ) : (
