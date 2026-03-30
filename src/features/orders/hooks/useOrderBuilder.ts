@@ -365,15 +365,26 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   // 8. Callbacks and Handlers (Delegating to Logic)
   const validateOrder = useCallback(() => {
     return validateOrderDraft({
-      selectedProtein, looseItems,
-      soupOptions: dailyMenuDisplay.soupOptions,
-      principleOptions: dailyMenuDisplay.principleOptions,
-      saladOptions: dailyMenuDisplay.saladOptions,
-      drinkOptions: dailyMenuDisplay.drinkOptions,
-      extraOptions: dailyMenuDisplay.extraOptions,
-      riceOptions: dailyMenuDisplay.riceOptions,
-      selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedRice,
-      selectedOrderType, selectedTable, customerName, customerPhone, deliveryAddress, hasCustomerData
+      selectedProtein, 
+      looseItems,
+      soupOptions: dailyMenuDisplay?.soupOptions || [],
+      principleOptions: dailyMenuDisplay?.principleOptions || [],
+      saladOptions: dailyMenuDisplay?.saladOptions || [],
+      drinkOptions: dailyMenuDisplay?.drinkOptions || [],
+      extraOptions: dailyMenuDisplay?.extraOptions || [],
+      riceOptions: dailyMenuDisplay?.riceOptions || [],
+      selectedSoup, 
+      selectedPrinciple, 
+      selectedSalad, 
+      selectedDrink, 
+      selectedExtra, 
+      selectedRice,
+      selectedOrderType, 
+      selectedTable, 
+      customerName, 
+      customerPhone, 
+      deliveryAddress, 
+      hasCustomerData
     });
   }, [selectedProtein, looseItems, dailyMenuDisplay, selectedSoup, selectedPrinciple, selectedSalad, selectedDrink, selectedExtra, selectedRice, selectedOrderType, selectedTable, customerName, customerPhone, deliveryAddress, hasCustomerData]);
 
