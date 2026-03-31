@@ -218,7 +218,7 @@ export function GroupedOrderCard({
 
         {/* Content Preview */}
         {!isExpanded && (
-          <div className="h-28 xl:h-32 overflow-hidden mb-2">
+          <div className="h-36 xl:h-40 overflow-hidden mb-2">
             <div className="flex flex-wrap gap-2 mb-3 xl:mb-4">
               <OrderTypeBadge type={groupedOrder.type} />
               <div className="px-2 xl:px-3 py-1 rounded-full bg-carbon-50 text-carbon-600 text-[8px] xl:text-[9px] font-black border border-carbon-100 tracking-wide">
