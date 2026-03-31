@@ -194,10 +194,20 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   // 3. Sub-hooks for specialized state
   const customerLookup = useCustomerLookup();
   const { 
-    customerId, customerName, customerPhone, customerPhone2, deliveryAddress, address2,
-    handleSetCustomerName, handleSetCustomerPhone, handleSetCustomerPhone2,
-    setDeliveryAddress, setAddress2, resetCustomer,
-    searchResults, isSearching, showDropdown, searchCustomersByName, selectSearchedCustomer, clearSearch
+    // Customer data from store (we use direct setters, not these handlers)
+    customerId: _customerId,
+    customerName: _customerName,
+    customerPhone: _customerPhone,
+    customerPhone2: _customerPhone2,
+    deliveryAddress: _deliveryAddress,
+    address2: _address2,
+    // Customer search state and functions
+    searchResults,
+    isSearching,
+    showDropdown,
+    searchCustomersByName,
+    selectSearchedCustomer,
+    clearSearch,
   } = customerLookup;
 
   const navigate = useNavigate();
@@ -690,14 +700,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     currentOrderTotal,
     tableTotal,
     popularProducts,
-    // Exclude from customerLookup spread to avoid overwriting explicit setters
-    customerId,
-    searchResults,
-    isSearching,
-    showDropdown,
-    searchCustomersByName,
-    selectSearchedCustomer,
-    clearSearch,
+    // Setters from store (must be explicit, not from customerLookup spread)
     setSelectedOrderType,
     setSelectedTable,
     setSearchTerm,
@@ -719,14 +722,22 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setCurrentOrderIndex,
     setBackdatedDate,
     setIsHistoricalMode,
-    setCustomerName: handleSetCustomerName,
-    setCustomerPhone: handleSetCustomerPhone,
-    setCustomerPhone2: handleSetCustomerPhone2,
+    setCustomerName,
+    setCustomerPhone,
+    setCustomerPhone2,
     setDeliveryAddress,
     setAddress2,
     setHasCustomerData,
     packagingQuantity,
     setPackagingQuantity,
+    // Customer search functions
+    searchResults,
+    isSearching,
+    showDropdown,
+    searchCustomersByName,
+    selectSearchedCustomer,
+    clearSearch,
+    // Complex handlers
     handleAddLooseItem,
     handleUpdateLooseItemQuantity,
     handleAddOrderToTable,
