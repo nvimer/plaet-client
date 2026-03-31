@@ -57,7 +57,7 @@ export function OrderCreatePage() {
 
   // 100% Safe normalization of the hook return to prevent production crashes
   const orderBuilder = useMemo(() => {
-    if (!orderBuilderRaw) {
+    if (!orderBuilderRaw || typeof orderBuilderRaw !== "object" || !Object.keys(orderBuilderRaw).length) {
       return {
         isLoading: true,
         isPending: false,
