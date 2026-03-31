@@ -740,6 +740,8 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     searchCustomersByName,
     selectSearchedCustomer,
     clearSearch,
+    // Customer reset from customerLookup hook
+    resetCustomer: customerLookup.resetCustomer,
     // Complex handlers
     handleAddLooseItem,
     handleUpdateLooseItemQuantity,
