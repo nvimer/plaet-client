@@ -628,6 +628,8 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     // Auto-enable customer data for delivery and take-out orders
     if (type === OrderType.DELIVERY || type === OrderType.TAKE_OUT) {
       setHasCustomerData(true);
+      // Scroll to top for better UX when capturing customer data
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   }, [setSelectedOrderType, setPackagingQuantity, setHasCustomerData]);
 
