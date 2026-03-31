@@ -5,6 +5,7 @@ import { ROUTES } from "@/app/routes";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { motion } from "framer-motion";
 import { cn } from "@/utils/cn";
+import { useEffect } from "react";
 
 interface InventoryOption {
   title: string;
@@ -24,6 +25,10 @@ interface InventoryOption {
  */
 export function InventoryHubPage() {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const options: InventoryOption[] = [
     {

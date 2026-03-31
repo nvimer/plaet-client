@@ -1,6 +1,6 @@
 import { Button, Card, EmptyState, Skeleton } from "@/components";
 import { OrderType, PaymentMethod, type GroupedOrder } from "@/types";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { useOrders, useAddPayment } from "../hooks"; 
@@ -27,6 +27,11 @@ import { useDailyMenuToday } from "@/features/daily-menu/hooks/useDailyMenu";
 
 export function OrdersPage() {
   const navigate = useNavigate();
+
+  // Scroll to top on mount
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // ============ STATE =============
   const [activeTab, setActiveTab] = useState<"BILLING" | "PREPARATION" | "READY" | "HISTORY">("BILLING");
