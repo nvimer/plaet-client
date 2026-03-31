@@ -659,19 +659,34 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   }, [clearAll, dailyMenuData, resetCustomer, setPackagingFee]);
 
   return {
+    // ============================================
+    // 1. LOADING STATES
+    // ============================================
     isLoading: tablesLoading || itemsLoading,
     isMenuLoading: menuLoading,
     isPending,
+
+    // ============================================
+    // 2. DATA (from external APIs)
+    // ============================================
     tables,
     availableTables,
     menuItems,
     dailyMenuData,
+
+    // ============================================
+    // 3. STATE VALUES (from Zustand Store)
+    // ============================================
+    // Order type & table
     selectedOrderType,
     selectedTable,
+    // Table orders
     tableOrders,
     currentOrderIndex,
+    // Historical mode
     backdatedDate,
     isHistoricalMode,
+    // Customer data
     customerId,
     customerName,
     customerPhone,
@@ -679,6 +694,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     deliveryAddress,
     address2,
     hasCustomerData,
+    // Menu selections
     packagingFee,
     selectedProtein,
     looseItems,
@@ -692,9 +708,11 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     selectedExtra,
     selectedRice,
     replacements,
+    // UI state
     showSummaryModal,
     validationErrors,
     touchedFields,
+    // Computed data from sub-hooks
     proteins,
     filteredLooseItems,
     dailyMenuDisplay,
@@ -703,12 +721,24 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     currentOrderTotal,
     tableTotal,
     popularProducts,
-    // Setters from store (must be explicit, not from customerLookup spread)
+    // Customer search (local state)
+    searchResults,
+    isSearching,
+    showDropdown,
+    // Packaging
+    packagingQuantity,
+
+    // ============================================
+    // 4. SETTERS (from Zustand Store - direct, no wrappers)
+    // ============================================
+    // Order type & table
     setSelectedOrderType,
     setSelectedTable,
+    // Search & Menu
     setSearchTerm,
     setShowDailyMenu,
     setOrderNotes,
+    // Order state
     setShowSummaryModal,
     setSelectedProtein,
     setSelectedSoup,
@@ -723,26 +753,30 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setTouchedFields,
     setTableOrders,
     setCurrentOrderIndex,
+    // Historical mode
     setBackdatedDate,
     setIsHistoricalMode,
+    // Customer
     setCustomerName,
     setCustomerPhone,
     setCustomerPhone2,
     setDeliveryAddress,
     setAddress2,
     setHasCustomerData,
-    packagingQuantity,
+    // Packaging
     setPackagingQuantity,
-    // Customer search functions
-    searchResults,
-    isSearching,
-    showDropdown,
+
+    // ============================================
+    // 5. SEARCH FUNCTIONS (from customerLookup)
+    // ============================================
     searchCustomersByName,
     selectSearchedCustomer,
     clearSearch,
-    // Customer reset from customerLookup hook
-    resetCustomer: customerLookup.resetCustomer,
-    // Complex handlers
+    resetCustomer,
+
+    // ============================================
+    // 6. HANDLERS (complex logic)
+    // ============================================
     handleAddLooseItem,
     handleUpdateLooseItemQuantity,
     handleAddOrderToTable,
