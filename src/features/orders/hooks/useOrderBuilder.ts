@@ -554,15 +554,18 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
         });
       });
       
+      // For DINE_IN orders, force "Consumidor Final" as customer
+      const isDineInOrder = selectedOrderType === OrderType.DINE_IN;
+      
       return {
         type: selectedOrderType!,
-        tableId: selectedOrderType === OrderType.DINE_IN ? (selectedTable ?? undefined) : undefined,
-        customerId: hasCustomerData ? (customerLookup.customerId || undefined) : undefined,
-        customerName: hasCustomerData ? (customerName.trim() || undefined) : "Consumidor Final",
-        customerPhone: hasCustomerData ? (customerPhone.replace(/\D/g, "") || undefined) : "0000000000",
-        customerPhone2: hasCustomerData ? (customerPhone2.replace(/\D/g, "") || undefined) : undefined,
-        address1: hasCustomerData ? (deliveryAddress.trim() || undefined) : undefined,
-        address2: hasCustomerData ? (address2.trim() || undefined) : undefined,
+        tableId: isDineInOrder ? (selectedTable ?? undefined) : undefined,
+        customerId: isDineInOrder ? undefined : (hasCustomerData ? (customerLookup.customerId || undefined) : undefined),
+        customerName: isDineInOrder ? "Consumidor Final" : (hasCustomerData ? (customerName.trim() || undefined) : "Consumidor Final"),
+        customerPhone: isDineInOrder ? "0000000000" : (hasCustomerData ? (customerPhone.replace(/\D/g, "") || undefined) : "0000000000"),
+        customerPhone2: isDineInOrder ? undefined : (hasCustomerData ? (customerPhone2.replace(/\D/g, "") || undefined) : undefined),
+        address1: isDineInOrder ? undefined : (hasCustomerData ? (deliveryAddress.trim() || undefined) : undefined),
+        address2: isDineInOrder ? undefined : (hasCustomerData ? (address2.trim() || undefined) : undefined),
         items,
         notes: order.notes,
         createdAt: (backdatedDate && backdatedDate !== todayStr) 
