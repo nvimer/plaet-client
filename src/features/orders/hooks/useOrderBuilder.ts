@@ -161,13 +161,7 @@ export interface UseOrderBuilderReturn {
 
 export function useOrderBuilder(): UseOrderBuilderReturn {
   // 1. Core State from Zustand Store (Persistent)
-  let store: ReturnType<typeof useOrderBuilderStore>;
-  try {
-    store = useOrderBuilderStore();
-  } catch (e) {
-    console.error("useOrderBuilderStore not available:", e);
-    return {} as UseOrderBuilderReturn;
-  }
+  const store = useOrderBuilderStore();
   
   const {
     selectedOrderType, setSelectedOrderType,
