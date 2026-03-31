@@ -153,7 +153,7 @@ export function GroupedOrderCard({
     <Card
       variant="elevated"
       className={cn(
-        "overflow-hidden border-2 transition-all duration-300 rounded-2xl xl:rounded-[2.5rem] flex flex-col group",
+        "overflow-hidden border-2 transition-all duration-300 rounded-2xl xl:rounded-[2.5rem] flex flex-col group min-h-[280px] xl:min-h-[320px]",
         isExpanded ? "border-carbon-900 shadow-soft-2xl" : "border-sage-100 hover:border-sage-300 hover:shadow-soft-xl",
         needsBilling && !isExpanded && "bg-white",
         canDeliver && !isExpanded && "border-success-500 ring-4 ring-success-50 animate-pulse-subtle"
