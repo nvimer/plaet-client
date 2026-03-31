@@ -649,8 +649,6 @@ export function OrderCreatePage() {
                 availableTables={availableTables}
                 selectedTable={selectedTable}
                 setSelectedTable={setSelectedTable}
-                showDailyMenu={showDailyMenu}
-                setShowDailyMenu={setShowDailyMenu}
                 orderNotes={orderNotes}
                 setOrderNotes={setOrderNotes}
                 validationErrors={validationErrors}
