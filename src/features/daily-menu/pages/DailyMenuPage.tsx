@@ -159,7 +159,7 @@ export function DailyMenuPage() {
               <span className="text-[10px] font-semibold tracking-[0.2em]">Operación Diaria</span>
             </div>
             <h1 className="text-4xl font-bold text-carbon-900 tracking-tight">Menú del Día</h1>
-            <p className="text-lg text-carbon-500 font-medium">Gestiona el "Corrientazo" y las ofertas diarias de tu restaurante.</p>
+            <p className="text-lg text-carbon-500 font-medium">Configura el menú del día y las ofertas de tu restaurante.</p>
           </div>
         
         <div className="flex flex-wrap items-center gap-3">
