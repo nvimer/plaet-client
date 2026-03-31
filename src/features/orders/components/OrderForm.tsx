@@ -27,6 +27,7 @@ import {
   IceCream,
   User,
   Sparkles,
+  Search,
 } from "lucide-react";
 import { cn } from "@/utils/cn";
 import { OrderType } from "@/types";
@@ -61,6 +62,11 @@ interface OrderFormProps {
   setAddress2: (address: string) => void;
   hasCustomerData: boolean;
   setHasCustomerData: (hasData: boolean) => void;
+  // Customer search
+  searchResults?: Array<{ id: string; firstName: string; lastName?: string; phone?: string; address1?: string }>;
+  showDropdown?: boolean;
+  onSearchCustomers?: (query: string) => void;
+  onSelectCustomer?: (customer: { id: string; firstName: string; lastName?: string; phone?: string; phone2?: string; address1?: string; address2?: string }) => void;
   packagingFee: number;
   packagingQuantity: number;
   setPackagingQuantity: (qty: number) => void;
@@ -279,15 +285,40 @@ export function OrderForm({
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest ml-1">Nombre</label>
                   <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-300 w-3.5 h-3.5" />
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-300 w-3.5 h-3.5" />
                     <Input
                       type="text"
-                      placeholder="Nombre..."
+                      placeholder="Buscar cliente..."
                       value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
+                      onChange={(e) => {
+                        setCustomerName(e.target.value);
+                        if (onSearchCustomers) {
+                          onSearchCustomers(e.target.value);
+                        }
+                      }}
+                      onFocus={() => searchResults && searchResults.length > 0 && showDropdown && onSelectCustomer}
                       className="pl-10 h-11 text-sm rounded-xl border-sage-100 font-bold"
                       fullWidth
                     />
+                    {showDropdown && searchResults && searchResults.length > 0 && (
+                      <div className="absolute z-50 w-full mt-1 bg-white border-2 border-sage-100 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                        {searchResults.map((customer) => (
+                          <button
+                            key={customer.id}
+                            type="button"
+                            onClick={() => onSelectCustomer && onSelectCustomer(customer as any)}
+                            className="w-full px-4 py-3 text-left hover:bg-sage-50 border-b border-sage-50 last:border-b-0"
+                          >
+                            <p className="font-bold text-carbon-900 text-sm">
+                              {customer.firstName} {customer.lastName}
+                            </p>
+                            <p className="text-xs text-carbon-500">
+                              {customer.phone} {customer.address1 && ` - ${customer.address1}`}
+                            </p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 </div>
 

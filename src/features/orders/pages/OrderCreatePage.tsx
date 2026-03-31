@@ -602,27 +602,32 @@ export function OrderCreatePage() {
                 selectedRice={selectedRice}
                 setSelectedRice={setSelectedRice}
                 proteins={proteins}
+                filteredLooseItems={filteredLooseItems}
+                popularProducts={popularProducts}
                 selectedProtein={selectedProtein}
                 setSelectedProtein={setSelectedProtein}
                 replacements={replacements}
                 setReplacements={setReplacements}
                 looseItems={looseItems}
-                searchTerm={searchTerm}
-                setSearchTerm={setSearchTerm}
-                filteredLooseItems={filteredLooseItems}
-                popularProducts={popularProducts}
-                handleAddLooseItem={handleAddLooseItem}
-                handleUpdateLooseItemQuantity={handleUpdateLooseItemQuantity}
+                setLooseItems={setLooseItems}
+                hasCustomerData={hasCustomerData}
+                setHasCustomerData={setHasCustomerData}
+                searchResults={searchResults}
+                showDropdown={showDropdown}
+                onSearchCustomers={searchCustomersByName}
+                onSelectCustomer={selectSearchedCustomer}
+                availableTables={availableTables}
+                selectedTable={selectedTable}
+                setSelectedTable={setSelectedTable}
+                showDailyMenu={showDailyMenu}
+                setShowDailyMenu={setShowDailyMenu}
                 orderNotes={orderNotes}
                 setOrderNotes={setOrderNotes}
                 validationErrors={validationErrors}
                 hasError={hasError}
                 touchedFields={touchedFields}
-                onAddToTable={handleAddOrderToTable}
-                onCancelEdit={handleCancelEdit}
-                hasCustomerData={hasCustomerData}
-                setHasCustomerData={setHasCustomerData}
-                isLoading={isLoading}
+                setTouchedFields={setTouchedFields}
+                dailyMenuData={dailyMenuData}
               />
             </motion.div>
 

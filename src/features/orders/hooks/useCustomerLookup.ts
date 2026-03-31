@@ -1,8 +1,9 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { toast } from "sonner";
 import { customerApi } from "@/services";
 import { logger } from "@/utils";
 import { useOrderBuilderStore } from "@/stores/useOrderBuilderStore";
+import type { Customer } from "@/types";
 
 /**
  * useCustomerLookup Hook
@@ -18,6 +19,10 @@ export function useCustomerLookup() {
     deliveryAddress, setDeliveryAddress,
     address2, setAddress2,
   } = useOrderBuilderStore();
+
+  const [searchResults, setSearchResults] = useState<Customer[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
 
   const handleSetCustomerName = useCallback((name: string) => {
     // Allow letters, numbers and some common characters for names like "Consumidor Final 01"
@@ -79,6 +84,45 @@ export function useCustomerLookup() {
     setCustomerPhone2(phone.replace(/\D/g, ""));
   }, [setCustomerPhone2]);
 
+  const searchCustomersByName = useCallback(async (query: string) => {
+    if (query.length < 2) {
+      setSearchResults([]);
+      setShowDropdown(false);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const response = await customerApi.searchCustomers({ query, limit: 5 });
+      setSearchResults(response.data || []);
+      setShowDropdown(true);
+    } catch (error) {
+      logger.debug("Error searching customers:", error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  const selectSearchedCustomer = useCallback((customer: Customer) => {
+    setCustomerId(customer.id);
+    setCustomerName(`${customer.firstName} ${customer.lastName || ""}`.trim());
+    setCustomerPhone(customer.phone || "");
+    setCustomerPhone2(customer.phone2 || "");
+    setDeliveryAddress(customer.address1 || "");
+    setAddress2(customer.address2 || "");
+    setSearchResults([]);
+    setShowDropdown(false);
+    toast.success("Cliente seleccionado", {
+      description: `${customer.firstName} ${customer.lastName || ""}`,
+    });
+  }, [setCustomerId, setCustomerName, setCustomerPhone, setCustomerPhone2, setDeliveryAddress, setAddress2]);
+
+  const clearSearch = useCallback(() => {
+    setSearchResults([]);
+    setShowDropdown(false);
+  }, []);
+
   const resetCustomer = useCallback(() => {
     setCustomerId(null);
     setCustomerName("");
@@ -102,5 +146,11 @@ export function useCustomerLookup() {
     setAddress2,
     resetCustomer,
     identifyAsGenericCustomer,
+    searchResults,
+    isSearching,
+    showDropdown,
+    searchCustomersByName,
+    selectSearchedCustomer,
+    clearSearch,
   };
 }
