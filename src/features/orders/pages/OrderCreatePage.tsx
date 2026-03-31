@@ -128,6 +128,7 @@ export function OrderCreatePage() {
         replacements: [],
         setReplacements: () => {},
         looseItems: [],
+        setLooseItems: () => {},
         searchTerm: "",
         setSearchTerm: () => {},
         filteredLooseItems: [],
