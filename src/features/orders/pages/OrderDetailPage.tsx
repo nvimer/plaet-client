@@ -204,12 +204,12 @@ export function OrderDetailPage() {
         title={`Pedido ${shortId}`}
         backRoute={ROUTES.ORDERS}
       >
-        <div className="max-w-4xl mx-auto space-y-8 pb-24 pt-4">
+        <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8 pb-24 pt-2 sm:pt-4 px-3 sm:px-0">
           {/* Status & Type Banner - Refined */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-2xl border-2 border-sage-100 shadow-smooth-md">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-4 sm:p-5 rounded-xl sm:rounded-2xl border-2 border-sage-100 shadow-smooth-md">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-xl bg-sage-50 flex items-center justify-center text-sage-600 shadow-inner shrink-0">
-                <ReceiptText className="w-6 h-6" />
+              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-sage-50 flex items-center justify-center text-sage-600 shadow-inner shrink-0">
+                <ReceiptText className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
               <div className="min-w-0">
                 <p className="text-[10px] font-bold text-carbon-400 tracking-wide leading-none mb-1.5 uppercase">Estado Actual</p>
@@ -218,15 +218,15 @@ export function OrderDetailPage() {
             </div>
             <div className="sm:text-right border-t sm:border-t-0 pt-3 sm:pt-0 border-sage-50">
               <p className="text-[10px] font-bold text-carbon-400 tracking-wide mb-0.5 uppercase">Total del Pedido</p>
-              <p className="text-2xl sm:text-3xl font-bold text-carbon-900 tracking-tight break-words">
+              <p className="text-xl sm:text-2xl sm:text-3xl font-bold text-carbon-900 tracking-tight break-words">
                 ${Number(order.totalAmount).toLocaleString("es-CO")}
               </p>
             </div>
           </div>
 
           {/* Info Grid */}
-          <Card variant="bordered" padding="md" className="rounded-2xl border-2">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card variant="bordered" padding="md" className="rounded-xl sm:rounded-2xl border-2">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {order.table && (
                 <div className="flex flex-col gap-1 min-w-0">
                   <span className="text-[10px] font-bold text-carbon-400 tracking-wide uppercase">Ubicación</span>
@@ -304,10 +304,10 @@ export function OrderDetailPage() {
                 {order.items?.map((item) => (
                   <div
                     key={item.id}
-                    className="flex items-center justify-between p-4 bg-white rounded-2xl border-2 border-sage-50 shadow-sm gap-4"
+                    className="flex items-center justify-between p-3 sm:p-4 bg-white rounded-xl sm:rounded-2xl border-2 border-sage-50 shadow-sm gap-2 sm:gap-4"
                   >
                     <div className="flex-1 min-w-0">
-                      <p className="font-bold text-carbon-900 truncate">
+                      <p className="font-bold text-carbon-900 text-sm sm:text-base truncate">
                         {item.quantity}x {item.menuItem?.name || "Producto"}
                       </p>
                       {showDetailedBreakdown && (
@@ -316,7 +316,7 @@ export function OrderDetailPage() {
                         </p>
                       )}
                       {item.notes && (
-                        <p className="text-sm text-carbon-500 italic mt-1 font-medium break-words">
+                        <p className="text-xs sm:text-sm text-carbon-500 italic mt-1 font-medium break-words">
                           📝 {item.notes}
                         </p>
                       )}
@@ -432,16 +432,18 @@ export function OrderDetailPage() {
               ))
             )}
 
-            <Tooltip content="Eliminar Pedido">
-              <Button
-                variant="ghost"
-                size="lg"
-                onClick={() => setShowDeleteConfirm(true)}
-                className="text-error-600 hover:bg-error-50 h-[64px] px-6 rounded-2xl font-bold shrink-0 sm:flex-initial"
-              >
-                <Trash2 className="w-5 h-5" />
-              </Button>
-            </Tooltip>
+            {order.status !== OrderStatus.PAID && (
+              <Tooltip content="Eliminar Pedido">
+                <Button
+                  variant="ghost"
+                  size="lg"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="text-error-600 hover:bg-error-50 h-[64px] px-6 rounded-2xl font-bold shrink-0 sm:flex-initial"
+                >
+                  <Trash2 className="w-5 h-5" />
+                </Button>
+              </Tooltip>
+            )}
           </div>
         </div>
       </SidebarLayout>
