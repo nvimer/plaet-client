@@ -201,6 +201,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     searchCustomersByName,
     selectSearchedCustomer,
     clearSearch,
+    resetCustomer,
   } = customerLookup;
 
   // 4. Get customer state directly from store
@@ -574,7 +575,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
       return {
         type: selectedOrderType!,
         tableId: isDineInOrder ? (selectedTable ?? undefined) : undefined,
-        customerId: isDineInOrder ? undefined : (hasCustomerData ? (customerLookup.customerId || undefined) : undefined),
+        customerId: isDineInOrder ? undefined : (hasCustomerData ? (customerId || undefined) : undefined),
         customerName: isDineInOrder ? "Consumidor Final" : (hasCustomerData ? (customerName.trim() || undefined) : "Consumidor Final"),
         customerPhone: isDineInOrder ? "0000000000" : (hasCustomerData ? (customerPhone.replace(/\D/g, "") || undefined) : "0000000000"),
         customerPhone2: isDineInOrder ? undefined : (hasCustomerData ? (customerPhone2.replace(/\D/g, "") || undefined) : undefined),
