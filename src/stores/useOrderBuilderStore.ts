@@ -181,6 +181,41 @@ export const useOrderBuilderStore = create<OrderBuilderState>()(
     {
       name: "plaet-order-builder-storage",
       storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        // Only persist items that matter for continuity
+        selectedTable: state.selectedTable,
+        tableOrders: state.tableOrders,
+        customerId: state.customerId,
+        customerName: state.customerName,
+        customerPhone: state.customerPhone,
+        customerPhone2: state.customerPhone2,
+        deliveryAddress: state.deliveryAddress,
+        address2: state.address2,
+        hasCustomerData: state.hasCustomerData,
+        selectedProtein: state.selectedProtein,
+        selectedSoup: state.selectedSoup,
+        selectedPrinciple: state.selectedPrinciple,
+        selectedSalad: state.selectedSalad,
+        selectedDrink: state.selectedDrink,
+        selectedExtra: state.selectedExtra,
+        selectedRice: state.selectedRice,
+        replacements: state.replacements,
+        looseItems: state.looseItems,
+        orderNotes: state.orderNotes,
+        packagingFee: state.packagingFee,
+        packagingQuantity: state.packagingQuantity,
+        backdatedDate: state.backdatedDate,
+        isHistoricalMode: state.isHistoricalMode,
+        // NOT persisted: selectedOrderType, currentOrderIndex
+        // These should reset when user returns to create new order
+      }),
+      onRehydrateStorage: () => (state) => {
+        // Reset transient UI state after hydration to prevent stale data persistence
+        if (state) {
+          state.setSelectedOrderType(null);
+          state.setCurrentOrderIndex(null);
+        }
+      },
     }
   )
 );
