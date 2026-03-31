@@ -747,7 +747,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setSelectedExtra,
     setSelectedRice,
     setReplacements,
-    setLooseItems,
+    setLooseItems: useOrderBuilderStore.getState().setLooseItems,
     setValidationErrors,
     setTouchedFields,
     setTableOrders,
