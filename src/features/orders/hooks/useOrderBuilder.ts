@@ -181,6 +181,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     packagingFee, setPackagingFee,
     packagingQuantity, setPackagingQuantity,
     hasCustomerData, setHasCustomerData,
+    customerId, setCustomerId,
     customerName, setCustomerName,
     customerPhone, setCustomerPhone,
     customerPhone2, setCustomerPhone2,
