@@ -194,7 +194,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   // 3. Sub-hooks for specialized state
   const customerLookup = useCustomerLookup();
   const { 
-    customerName, customerPhone, customerPhone2, deliveryAddress, address2,
+    customerId, customerName, customerPhone, customerPhone2, deliveryAddress, address2,
     handleSetCustomerName, handleSetCustomerPhone, handleSetCustomerPhone2,
     setDeliveryAddress, setAddress2, resetCustomer
   } = customerLookup;
