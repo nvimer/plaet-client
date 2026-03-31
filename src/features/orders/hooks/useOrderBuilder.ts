@@ -625,7 +625,11 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     } else {
       setPackagingQuantity(1);
     }
-  }, [setSelectedOrderType, setPackagingQuantity]);
+    // Auto-enable customer data for delivery and take-out orders
+    if (type === OrderType.DELIVERY || type === OrderType.TAKE_OUT) {
+      setHasCustomerData(true);
+    }
+  }, [setSelectedOrderType, setPackagingQuantity, setHasCustomerData]);
 
   const handleBackToOrderType = useCallback(() => {
     clearAll();

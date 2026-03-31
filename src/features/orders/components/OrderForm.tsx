@@ -262,6 +262,21 @@ export function OrderForm({
                 </div>
 
                 <div className="space-y-1.5">
+                  <label className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest ml-1">Teléfono 2 (Opcional)</label>
+                  <div className="relative">
+                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-300 w-3.5 h-3.5 opacity-50" />
+                    <Input
+                      type="tel"
+                      placeholder="Otro..."
+                      value={customerPhone2}
+                      onChange={(e) => setCustomerPhone2(e.target.value)}
+                      className="pl-10 h-11 text-sm rounded-xl border-sage-100 font-bold"
+                      fullWidth
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-1.5">
                   <label className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest ml-1">Nombre</label>
                   <div className="relative">
                     <User className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-300 w-3.5 h-3.5" />
@@ -277,17 +292,36 @@ export function OrderForm({
                 </div>
 
                 {isDelivery && (
-                  <div className="sm:col-span-2 space-y-1.5">
-                    <label className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest ml-1">Dirección</label>
-                    <Input
-                      type="text"
-                      placeholder="Calle..."
-                      value={deliveryAddress}
-                      onChange={(e) => setDeliveryAddress(e.target.value)}
-                      className="h-11 text-sm rounded-xl border-sage-100 font-bold"
-                      fullWidth
-                    />
-                  </div>
+                  <>
+                    <div className="sm:col-span-2 space-y-1.5">
+                      <label className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest ml-1">Dirección</label>
+                      <div className="relative">
+                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-300 w-3.5 h-3.5" />
+                        <Input
+                          type="text"
+                          placeholder="Calle..."
+                          value={deliveryAddress}
+                          onChange={(e) => setDeliveryAddress(e.target.value)}
+                          className="pl-10 h-11 text-sm rounded-xl border-sage-100 font-bold"
+                          fullWidth
+                        />
+                      </div>
+                    </div>
+                    <div className="sm:col-span-2 space-y-1.5">
+                      <label className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest ml-1">Dirección 2 (Opcional)</label>
+                      <div className="relative">
+                        <MapPin className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-300 w-3.5 h-3.5 opacity-50" />
+                        <Input
+                          type="text"
+                          placeholder="Apartamento, oficina..."
+                          value={address2}
+                          onChange={(e) => setAddress2(e.target.value)}
+                          className="pl-10 h-11 text-sm rounded-xl border-sage-100 font-bold"
+                          fullWidth
+                        />
+                      </div>
+                    </div>
+                  </>
                 )}
               </motion.div>
             )}
