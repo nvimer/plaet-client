@@ -104,8 +104,7 @@ export function DailyMenuPage() {
 
   const handleSuccess = () => {
     toast.success("Menú del día actualizado correctamente");
-    setIsEditing(false); // Switch back to view mode
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    setIsEditing(false);
   };
 
   const hasOptions = 
