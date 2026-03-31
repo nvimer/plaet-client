@@ -60,7 +60,7 @@ export function TableSelector({
   }
 
   return (
-    <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5">
+    <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 gap-2 sm:gap-4 lg:gap-5">
       {filteredTables.map((table) => {
         const isSelected = selectedTableId === table.id;
         const isAvailable = table.status === "AVAILABLE";
@@ -81,31 +81,31 @@ export function TableSelector({
               ${!isAvailable && !isSelected ? "opacity-60" : ""}
             `}
           >
-            <div className="flex flex-col items-center justify-center py-2 sm:py-3 lg:py-4">
+            <div className="flex flex-col items-center justify-center py-1.5 sm:py-3 lg:py-4">
               {/* Table Number - Gets much bigger on large screens */}
               <span className={`
-                text-2xl sm:text-3xl lg:text-5xl xl:text-6xl font-bold mb-1 sm:mb-2 lg:mb-3
+                text-xl sm:text-2xl lg:text-5xl xl:text-6xl font-bold
                 ${isSelected ? "text-sage-700" : "text-carbon-800"}
               `}>
                 {table.number}
               </span>
 
               {/* Status Badge - Full size on all screens */}
-              <div className="scale-90 sm:scale-90 lg:scale-100 origin-center">
+              <div className="scale-75 sm:scale-90 lg:scale-100 origin-center">
                 <TableStatusBadge status={table.status} />
               </div>
 
               {/* Location - Always visible on sm+, bigger on large screens */}
               {table.location && (
-                <span className="text-xs sm:text-sm lg:text-base text-carbon-500 mt-1 sm:mt-2 lg:mt-3 truncate max-w-full px-1">
+                <span className="text-[10px] sm:text-sm lg:text-base text-carbon-500 mt-0.5 sm:mt-2 lg:mt-3 truncate max-w-full px-0.5 sm:px-1">
                   {table.location}
                 </span>
               )}
 
               {/* Selected indicator */}
               {isSelected && (
-                <span className="text-xs sm:text-sm lg:text-base text-sage-600 font-medium mt-1 sm:mt-2 lg:mt-3">
-                  ✓ Seleccionada
+                <span className="text-[9px] sm:text-sm lg:text-base text-sage-600 font-medium mt-0.5 sm:mt-2 lg:mt-3">
+                  ✓
                 </span>
               )}
             </div>
