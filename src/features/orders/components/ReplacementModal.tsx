@@ -49,14 +49,14 @@ export function ReplacementModal({
 
   return (
     <div
-      className="fixed inset-0 z-[110] flex items-start sm:items-center justify-center bg-carbon-900/60 backdrop-blur-sm"
+      className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center p-0 sm:p-4 bg-carbon-900/60 backdrop-blur-sm"
       onClick={onClose}
     >
       <div
-        className="bg-white rounded-none sm:rounded-3xl shadow-2xl max-w-lg w-full h-full sm:h-auto sm:max-h-[80vh] flex flex-col overflow-hidden"
+        className="bg-white rounded-t-3xl sm:rounded-3xl shadow-2xl max-w-lg w-full h-[75vh] sm:h-auto sm:max-h-[80vh] flex flex-col overflow-hidden animate-in slide-in-from-bottom-full sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="bg-gradient-to-br from-carbon-900 to-carbon-800 px-4 sm:px-6 py-4 sm:py-5 flex-shrink-0">
+        <div className="bg-gradient-to-br from-carbon-900 to-carbon-800 px-6 py-4 sm:py-5 flex-shrink-0">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center shadow-inner">
@@ -121,7 +121,7 @@ export function ReplacementModal({
           )}
 
           {currentStep === 1 && (
-            <div className="space-y-3 -mt-2">
+            <div className="space-y-3">
               <div className="flex items-center justify-between p-3 bg-white rounded-xl border-2 border-warning-100 shadow-sm">
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 rounded-lg bg-warning-50 flex items-center justify-center text-warning-600 opacity-50">
