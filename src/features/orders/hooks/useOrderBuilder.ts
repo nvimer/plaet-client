@@ -161,6 +161,14 @@ export interface UseOrderBuilderReturn {
 
 export function useOrderBuilder(): UseOrderBuilderReturn {
   // 1. Core State from Zustand Store (Persistent)
+  let store: ReturnType<typeof useOrderBuilderStore>;
+  try {
+    store = useOrderBuilderStore();
+  } catch (e) {
+    console.error("useOrderBuilderStore not available:", e);
+    return {} as UseOrderBuilderReturn;
+  }
+  
   const {
     selectedOrderType, setSelectedOrderType,
     selectedTable, setSelectedTable,
@@ -188,7 +196,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     deliveryAddress, setDeliveryAddress,
     address2, setAddress2,
     resetDraft, clearAll
-  } = useOrderBuilderStore();
+  } = store;
 
   // 2. Transiente UI State (Not persistent)
   const [searchTerm, setSearchTerm] = useState("");
