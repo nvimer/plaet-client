@@ -18,6 +18,7 @@ import { useDailyMenuByDate } from "@/features/daily-menu/hooks";
 import { OrderItemStatus, OrderType, OrderStatus } from "@/types";
 import { logger } from "@/utils";
 import type { DailyMenuResponse } from "@/services/dailyMenuApi";
+import { useOrderBuilderStore } from "@/stores/useOrderBuilderStore";
 import type {
   MenuOption,
   ProteinOption,
@@ -34,7 +35,6 @@ import { useCustomerLookup } from "./useCustomerLookup";
 import { useOrderPricing } from "./useOrderPricing";
 import { buildOrderNotesString, extractManualNotes } from "../logic/noteLogic";
 import { validateOrderDraft } from "../logic/validationLogic";
-import { useOrderBuilderStore } from "@/stores/useOrderBuilderStore";
 
 export interface UseOrderBuilderReturn {
   // Loading states
@@ -658,8 +658,8 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     currentOrderIndex,
     backdatedDate,
     isHistoricalMode,
-    customerName,
     customerId,
+    customerName,
     customerPhone,
     customerPhone2,
     deliveryAddress,
@@ -689,8 +689,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     currentOrderTotal,
     tableTotal,
     popularProducts,
-    ...customerLookup,
-    setSelectedOrderType,
+    setSelectedOrderType: useOrderBuilderStore.getState().setSelectedOrderType,
     setSelectedTable,
     setSearchTerm,
     setShowDailyMenu,
@@ -704,7 +703,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setSelectedExtra,
     setSelectedRice,
     setReplacements,
-    setLooseItems,
+    setLooseItems: useOrderBuilderStore.getState().setLooseItems,
     setValidationErrors,
     setTouchedFields,
     setTableOrders,
