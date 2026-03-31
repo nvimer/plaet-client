@@ -196,7 +196,8 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   const { 
     customerId, customerName, customerPhone, customerPhone2, deliveryAddress, address2,
     handleSetCustomerName, handleSetCustomerPhone, handleSetCustomerPhone2,
-    setDeliveryAddress, setAddress2, resetCustomer
+    setDeliveryAddress, setAddress2, resetCustomer,
+    searchResults, isSearching, showDropdown, searchCustomersByName, selectSearchedCustomer, clearSearch
   } = customerLookup;
 
   const navigate = useNavigate();
