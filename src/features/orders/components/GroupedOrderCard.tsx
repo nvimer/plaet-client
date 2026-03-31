@@ -186,12 +186,12 @@ export function GroupedOrderCard({
               )}>
                 {groupedOrder.table ? "Mesa" : "Pedido"}
               </h3>
-              <div className="flex items-center gap-2 min-w-0">
+              <div className="flex flex-col items-start gap-1">
                 <span className={cn("text-base xl:text-xl font-bold truncate", isExpanded ? "text-white" : "text-carbon-900")}>
                   {groupedOrder.table ? `Mesa ${groupedOrder.table.number}` : `#${groupedOrder.id.slice(-4).toUpperCase()}`}
                 </span>
                 {groupedOrder.table && (
-                  <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-md shrink-0", isExpanded ? "bg-white/20 text-white" : "bg-carbon-100 text-carbon-500")}>
+                  <span className={cn("text-[10px] font-bold px-2 py-0.5 rounded-md", isExpanded ? "bg-white/20 text-white" : "bg-carbon-100 text-carbon-500")}>
                     #{groupedOrder.id.slice(-4).toUpperCase()}
                   </span>
                 )}
