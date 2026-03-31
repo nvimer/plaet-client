@@ -181,6 +181,11 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     packagingFee, setPackagingFee,
     packagingQuantity, setPackagingQuantity,
     hasCustomerData, setHasCustomerData,
+    customerName, setCustomerName,
+    customerPhone, setCustomerPhone,
+    customerPhone2, setCustomerPhone2,
+    deliveryAddress, setDeliveryAddress,
+    address2, setAddress2,
     resetDraft, clearAll
   } = useOrderBuilderStore();
 
@@ -203,16 +208,6 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     clearSearch,
     resetCustomer,
   } = customerLookup;
-
-  // 4. Get customer state directly from store
-  const {
-    customerId,
-    customerName,
-    customerPhone,
-    customerPhone2,
-    deliveryAddress,
-    address2,
-  } = useOrderBuilderStore();
 
   const navigate = useNavigate();
 
