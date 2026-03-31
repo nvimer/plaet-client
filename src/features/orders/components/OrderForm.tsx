@@ -141,10 +141,6 @@ interface OrderFormProps {
   hasError: (field: string) => boolean;
   touchedFields: Set<string>;
 
-  // Actions
-  onAddToTable: () => void;
-  onCancelEdit: () => void;
-
   // Loading
   isLoading: boolean;
 }
@@ -166,6 +162,10 @@ export function OrderForm({
   setAddress2,
   hasCustomerData,
   setHasCustomerData,
+  searchResults,
+  showDropdown,
+  onSearchCustomers,
+  onSelectCustomer,
   packagingFee,
   packagingQuantity,
   setPackagingQuantity,
@@ -202,7 +202,6 @@ export function OrderForm({
   validationErrors,
   hasError,
   touchedFields,
-  onCancelEdit,
   isLoading,
 }: OrderFormProps) {
   const [showSellModal, setShowSellModal] = useState(false);

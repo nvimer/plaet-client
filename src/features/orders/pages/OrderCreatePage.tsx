@@ -146,6 +146,15 @@ export function OrderCreatePage() {
         currentOrderTotal: 0,
         tableTotal: 0,
         touchedFields: new Set<string>(),
+        setTouchedFields: () => {},
+        dailyMenuData: undefined,
+        searchResults: [],
+        isSearching: false,
+        showDropdown: false,
+        searchCustomersByName: () => {},
+        selectSearchedCustomer: () => {},
+        clearSearch: () => {},
+        resetCustomer: () => {},
       };
     }
 
@@ -180,6 +189,10 @@ export function OrderCreatePage() {
       setHasCustomerData: orderBuilderRaw.setHasCustomerData || (() => {}),
       setPackagingQuantity: orderBuilderRaw.setPackagingQuantity || (() => {}),
       setSearchTerm: orderBuilderRaw.setSearchTerm || (() => {}),
+      searchCustomersByName: orderBuilderRaw.searchCustomersByName || (() => {}),
+      selectSearchedCustomer: orderBuilderRaw.selectSearchedCustomer || (() => {}),
+      clearSearch: orderBuilderRaw.clearSearch || (() => {}),
+      resetCustomer: orderBuilderRaw.resetCustomer || (() => {}),
       dailyMenuDisplay: orderBuilderRaw.dailyMenuDisplay || {
         soupOptions: [],
         principleOptions: [],
@@ -209,6 +222,10 @@ export function OrderCreatePage() {
       selectedRice: orderBuilderRaw.selectedRice ?? null,
       selectedProtein: orderBuilderRaw.selectedProtein ?? null,
       touchedFields: orderBuilderRaw.touchedFields || new Set<string>(),
+      dailyMenuData: orderBuilderRaw.dailyMenuData,
+      searchResults: orderBuilderRaw.searchResults || [],
+      isSearching: orderBuilderRaw.isSearching || false,
+      showDropdown: orderBuilderRaw.showDropdown || false,
     };
   }, [orderBuilderRaw]);
 
@@ -272,6 +289,7 @@ export function OrderCreatePage() {
     replacements,
     setReplacements,
     looseItems,
+    setLooseItems,
     searchTerm,
     setSearchTerm,
     filteredLooseItems,
@@ -283,12 +301,18 @@ export function OrderCreatePage() {
     validationErrors,
     hasError,
     touchedFields,
+    setTouchedFields,
     handleAddOrderToTable,
     handleEditOrder,
     handleRemoveOrder,
     handleDuplicateOrder,
     currentOrderTotal,
     tableTotal,
+    dailyMenuData,
+    searchResults,
+    showDropdown,
+    searchCustomersByName,
+    selectSearchedCustomer,
   } = orderBuilder;
 
   const handleTableSelect = (table: { id: number }) => {
@@ -634,28 +658,27 @@ export function OrderCreatePage() {
                 proteins={proteins}
                 filteredLooseItems={filteredLooseItems}
                 popularProducts={popularProducts}
+                searchTerm={searchTerm}
+                setSearchTerm={setSearchTerm}
+                handleAddLooseItem={handleAddLooseItem}
+                handleUpdateLooseItemQuantity={handleUpdateLooseItemQuantity}
                 selectedProtein={selectedProtein}
                 setSelectedProtein={setSelectedProtein}
                 replacements={replacements}
                 setReplacements={setReplacements}
                 looseItems={looseItems}
-                setLooseItems={setLooseItems}
                 hasCustomerData={hasCustomerData}
                 setHasCustomerData={setHasCustomerData}
                 searchResults={searchResults}
                 showDropdown={showDropdown}
                 onSearchCustomers={searchCustomersByName}
                 onSelectCustomer={selectSearchedCustomer}
-                availableTables={availableTables}
-                selectedTable={selectedTable}
-                setSelectedTable={setSelectedTable}
                 orderNotes={orderNotes}
                 setOrderNotes={setOrderNotes}
                 validationErrors={validationErrors}
                 hasError={hasError}
                 touchedFields={touchedFields}
-                setTouchedFields={setTouchedFields}
-                dailyMenuData={dailyMenuData}
+                isLoading={isLoading}
               />
             </motion.div>
 
