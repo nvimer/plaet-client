@@ -194,14 +194,7 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
   // 3. Sub-hooks for specialized state
   const customerLookup = useCustomerLookup();
   const { 
-    // Customer data from store (we use direct setters, not these handlers)
-    customerId: _customerId,
-    customerName: _customerName,
-    customerPhone: _customerPhone,
-    customerPhone2: _customerPhone2,
-    deliveryAddress: _deliveryAddress,
-    address2: _address2,
-    // Customer search state and functions
+    // Customer search state and functions (these are local, not from store)
     searchResults,
     isSearching,
     showDropdown,
@@ -209,6 +202,16 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     selectSearchedCustomer,
     clearSearch,
   } = customerLookup;
+
+  // 4. Get customer state directly from store
+  const {
+    customerId,
+    customerName,
+    customerPhone,
+    customerPhone2,
+    deliveryAddress,
+    address2,
+  } = useOrderBuilderStore();
 
   const navigate = useNavigate();
 
