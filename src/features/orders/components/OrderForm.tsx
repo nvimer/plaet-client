@@ -221,7 +221,7 @@ export function OrderForm({
     <div className="space-y-6 pb-24 sm:pb-0 font-sans">
       
       {/* 1. CLIENT DATA & PACKAGING (TOP PRIORITY) */}
-      <Card variant="bordered" padding="md" className="rounded-[2rem] border-2 border-sage-100 bg-white shadow-soft-sm">
+      <Card variant="bordered" padding="md" className="rounded-[2rem] border-2 border-sage-100 bg-white shadow-soft-sm overflow-visible">
         <div className="space-y-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -249,7 +249,7 @@ export function OrderForm({
                 initial={{ opacity: 0, height: 0 }}
                 animate={{ opacity: 1, height: "auto" }}
                 exit={{ opacity: 0, height: 0 }}
-                className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-sage-50 overflow-hidden"
+                className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-sage-50 overflow-visible"
               >
                 <div className="space-y-1.5">
                   <label className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest ml-1">Teléfono</label>
@@ -281,7 +281,7 @@ export function OrderForm({
                   </div>
                 </div>
 
-                <div className="space-y-1.5">
+                <div className="space-y-1.5 overflow-visible">
                   <label className="text-[10px] font-bold text-carbon-400 uppercase tracking-widest ml-1">Nombre</label>
                   <div className="relative">
                     <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-carbon-300 w-3.5 h-3.5" />
@@ -295,12 +295,11 @@ export function OrderForm({
                           onSearchCustomers(e.target.value);
                         }
                       }}
-                      onFocus={() => searchResults && searchResults.length > 0 && showDropdown && onSelectCustomer}
                       className="pl-10 h-11 text-sm rounded-xl border-sage-100 font-bold"
                       fullWidth
                     />
                     {showDropdown && searchResults && searchResults.length > 0 && (
-                      <div className="absolute z-50 w-full mt-1 bg-white border-2 border-sage-100 rounded-xl shadow-lg max-h-48 overflow-y-auto">
+                      <div className="absolute z-[100] w-full mt-1 bg-white border-2 border-sage-100 rounded-xl shadow-lg max-h-48 overflow-y-auto">
                         {searchResults.map((customer) => (
                           <button
                             key={customer.id}

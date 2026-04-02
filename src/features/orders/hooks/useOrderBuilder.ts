@@ -756,9 +756,9 @@ export function useOrderBuilder(): UseOrderBuilderReturn {
     setBackdatedDate,
     setIsHistoricalMode,
     // Customer
-    setCustomerName,
-    setCustomerPhone,
-    setCustomerPhone2,
+    setCustomerName: customerLookup.handleSetCustomerName,
+    setCustomerPhone: customerLookup.handleSetCustomerPhone,
+    setCustomerPhone2: customerLookup.handleSetCustomerPhone2,
     setDeliveryAddress,
     setAddress2,
     setHasCustomerData,

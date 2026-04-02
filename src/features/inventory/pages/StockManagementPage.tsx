@@ -101,7 +101,17 @@ export function StockManagementPage() {
         break;
     }
 
-    return items;
+    // Apply primary sorting: TRACKED items first, then alphabetical by name
+    return [...items].sort((a, b) => {
+      const isATracked = a.inventoryType === "TRACKED";
+      const isBTracked = b.inventoryType === "TRACKED";
+
+      if (isATracked && !isBTracked) return -1;
+      if (!isATracked && isBTracked) return 1;
+
+      // Secondary sort: Alphabetical
+      return a.name.localeCompare(b.name);
+    });
   }, [allItems, filter, searchTerm]);
 
   // Group items by category
@@ -114,8 +124,16 @@ export function StockManagementPage() {
       groups[catName].push(item);
     });
 
-    // Sort category names alphabetically
-    const sortedKeys = Object.keys(groups).sort();
+    // Sort category names: those with tracked items first, then alphabetical
+    const sortedKeys = Object.keys(groups).sort((a, b) => {
+      const aHasTracked = groups[a].some(item => item.inventoryType === "TRACKED");
+      const bHasTracked = groups[b].some(item => item.inventoryType === "TRACKED");
+
+      if (aHasTracked && !bHasTracked) return -1;
+      if (!aHasTracked && bHasTracked) return 1;
+
+      return a.localeCompare(b);
+    });
 
     return { groups, sortedKeys };
   }, [filteredItems, categoryMap]);
