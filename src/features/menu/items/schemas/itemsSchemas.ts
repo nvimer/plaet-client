@@ -24,9 +24,21 @@ export const createItemSchema = z.object({
 
   inventoryType: z.nativeEnum(InventoryType),
 
-  stockQuantity: z.number({ invalid_type_error: "Ingresa una cantidad válida" }).int("Debe ser un número entero").min(0, "El stock no puede ser negativo").optional(),
+  stockQuantity: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined || Number.isNaN(val) ? undefined : val),
+    z.number({ invalid_type_error: "Ingresa una cantidad válida" })
+      .int("Debe ser un número entero")
+      .min(0, "El stock no puede ser negativo")
+      .optional()
+  ),
 
-  lowStockAlert: z.number({ invalid_type_error: "Ingresa una alerta válida" }).int("Debe ser un número entero").min(4, "La alerta debe ser mayor a 3 por seguridad").optional(),
+  lowStockAlert: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined || Number.isNaN(val) ? undefined : val),
+    z.number({ invalid_type_error: "Ingresa una alerta válida" })
+      .int("Debe ser un número entero")
+      .min(0, "La alerta debe ser mayor o igual a 0")
+      .optional()
+  ),
 
   autoMarkUnavailable: z.boolean(),
 }).refine(
@@ -62,9 +74,21 @@ export const updateItemSchema = z.object({
 
   inventoryType: z.nativeEnum(InventoryType).optional(),
 
-  stockQuantity: z.number({ invalid_type_error: "Ingresa una cantidad válida" }).int("Debe ser un número entero").min(0, "El stock no puede ser negativo").optional(),
+  stockQuantity: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined || Number.isNaN(val) ? undefined : val),
+    z.number({ invalid_type_error: "Ingresa una cantidad válida" })
+      .int("Debe ser un número entero")
+      .min(0, "El stock no puede ser negativo")
+      .optional()
+  ),
 
-  lowStockAlert: z.number({ invalid_type_error: "Ingresa una alerta válida" }).int("Debe ser un número entero").min(4, "La alerta debe ser mayor a 3 por seguridad").optional(),
+  lowStockAlert: z.preprocess(
+    (val) => (val === "" || val === null || val === undefined || Number.isNaN(val) ? undefined : val),
+    z.number({ invalid_type_error: "Ingresa una alerta válida" })
+      .int("Debe ser un número entero")
+      .min(0, "La alerta debe ser mayor o igual a 0")
+      .optional()
+  ),
 
   autoMarkUnavailable: z.boolean().optional(),
 }).refine(

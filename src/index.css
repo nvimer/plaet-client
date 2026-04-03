@@ -250,3 +250,16 @@
     @apply py-16 md:py-20 lg:py-24;
   }
 }
+
+/* ====================================
+   9. MOBILE UX FIXES
+   ==================================== */
+/* Prevent automatic zoom on focus in iOS and Android by ensuring font-size is at least 16px */
+@layer base {
+  input, 
+  textarea, 
+  select {
+    font-size: 16px !important;
+  }
+}
+

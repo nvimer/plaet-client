@@ -117,7 +117,10 @@ export function MenuItemCreatePage() {
                   <Select
                     label="Categoría"
                     required
-                    options={categories?.map(c => ({ label: c.name, value: c.id })) || []}
+                    options={[
+                      { label: "Selecciona una categoría...", value: 0 },
+                      ...(categories?.map(c => ({ label: c.name, value: c.id })) || [])
+                    ]}
                     {...register("categoryId", { valueAsNumber: true })}
                     error={errors.categoryId?.message}
                     disabled={loadingCategories}

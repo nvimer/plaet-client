@@ -260,7 +260,7 @@ export function OrderForm({
                       placeholder="300..."
                       value={customerPhone}
                       onChange={(e) => setCustomerPhone(e.target.value)}
-                      className="pl-10 h-11 text-sm rounded-xl border-sage-100 font-bold"
+                      className="pl-10 h-11 rounded-xl border-sage-100"
                       fullWidth
                     />
                   </div>
@@ -275,7 +275,7 @@ export function OrderForm({
                       placeholder="Otro..."
                       value={customerPhone2}
                       onChange={(e) => setCustomerPhone2(e.target.value)}
-                      className="pl-10 h-11 text-sm rounded-xl border-sage-100 font-bold"
+                      className="pl-10 h-11 rounded-xl border-sage-100"
                       fullWidth
                     />
                   </div>
@@ -295,7 +295,7 @@ export function OrderForm({
                           onSearchCustomers(e.target.value);
                         }
                       }}
-                      className="pl-10 h-11 text-sm rounded-xl border-sage-100 font-bold"
+                      className="pl-10 h-11 rounded-xl border-sage-100"
                       fullWidth
                     />
                     {showDropdown && searchResults && searchResults.length > 0 && (
@@ -331,7 +331,7 @@ export function OrderForm({
                           placeholder="Calle..."
                           value={deliveryAddress}
                           onChange={(e) => setDeliveryAddress(e.target.value)}
-                          className="pl-10 h-11 text-sm rounded-xl border-sage-100 font-bold"
+                          className="pl-10 h-11 rounded-xl border-sage-100"
                           fullWidth
                         />
                       </div>
@@ -345,7 +345,7 @@ export function OrderForm({
                           placeholder="Apartamento, oficina..."
                           value={address2}
                           onChange={(e) => setAddress2(e.target.value)}
-                          className="pl-10 h-11 text-sm rounded-xl border-sage-100 font-bold"
+                          className="pl-10 h-11 rounded-xl border-sage-100"
                           fullWidth
                         />
                       </div>
@@ -514,7 +514,7 @@ export function OrderForm({
           value={orderNotes}
           onChange={(e) => setOrderNotes(e.target.value)}
           placeholder="Notas adicionales..."
-          className="w-full p-4 rounded-2xl border-2 border-sage-50 bg-sage-50/20 focus:border-carbon-900 focus:bg-white focus:outline-none resize-none transition-all font-bold text-sm text-carbon-700"
+          className="w-full p-4 rounded-2xl border-2 border-sage-50 bg-sage-50/20 focus:border-carbon-900 focus:bg-white focus:outline-none resize-none transition-all text-carbon-700"
           rows={2}
         />
       </Card>
