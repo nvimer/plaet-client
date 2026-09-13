@@ -13,7 +13,7 @@ import type {
 
 const FUNCTION_HEADERS = {
   "Content-Type": "application/json",
-  apikey: import.meta.env.VITE_DB_ANON_KEY,
+  apikey: import.meta.env.DB_ANON_KEY,
 };
 
 async function authFetch(url: string, options: RequestInit = {}) {
