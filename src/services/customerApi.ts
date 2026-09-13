@@ -1,72 +1,118 @@
-import { axiosClient } from "./axiosClient";
+// CUSTOMERS API SERVICE - Supabase Edge Functions
+
+import { FUNCTIONS_BASE } from "@/lib/supabase";
 import type { ApiResponse, Customer, PaginatedResponse, PaginationParams } from "@/types";
 
-/**
- * GET /customers/phone/:phone
- * 
- * Busca un cliente por su número de teléfono
- */
-export const getCustomerByPhone = async (phone: string) => {
-  const { data } = await axiosClient.get<ApiResponse<Customer>>(`customers/phone/${phone}`);
-  return data;
+const FUNCTION_HEADERS = {
+  "Content-Type": "application/json",
+  apikey: import.meta.env.VITE_DB_ANON_KEY,
 };
 
-/**
- * GET /customers/search
- * 
- * Busca clientes por nombre o teléfono con paginación
- */
-export const searchCustomers = async (params: PaginationParams & { query?: string }) => {
-  const { data } = await axiosClient.get<PaginatedResponse<Customer>>("customers/search", { params });
+async function authFetch(url: string, options: RequestInit = {}) {
+  const res = await fetch(url, {
+    ...options,
+    credentials: "include",
+    headers: { ...FUNCTION_HEADERS, ...options.headers },
+  });
+  const data = await res.json();
+  if (!res.ok || !data.success) {
+    throw { response: { status: res.status, data } };
+  }
   return data;
+}
+
+export interface CustomersFilterParams extends PaginationParams {
+  search?: string;
+}
+
+export const getCustomers = async (params?: CustomersFilterParams): Promise<PaginatedResponse<Customer>> => {
+  const queryParams = new URLSearchParams();
+  if (params?.page) queryParams.set("page", String(params.page));
+  if (params?.limit) queryParams.set("limit", String(params.limit));
+  if (params?.search) queryParams.set("search", params.search);
+
+  const data = await authFetch(`${FUNCTIONS_BASE}/customers-list?${queryParams}`);
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+    meta: data.meta,
+  };
 };
 
-/**
- * GET /customers
- */
-export const getCustomers = async (params: PaginationParams) => {
-  const { data } = await axiosClient.get<PaginatedResponse<Customer>>("customers", { params });
-  return data;
+export const getCustomerByPhone = async (phone: string): Promise<ApiResponse<Customer>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/customers-list?search=${phone}`);
+  const customer = data.data.find((c: Customer) => c.phone === phone);
+  if (!customer) throw { response: { status: 404, data: { message: "Customer not found" } } };
+  return {
+    success: true,
+    message: "Customer fetched successfully",
+    data: customer,
+  };
 };
 
-/**
- * GET /customers/:id
- */
-export const getCustomerById = async (id: string) => {
-  const { data } = await axiosClient.get<ApiResponse<Customer>>(`customers/${id}`);
-  return data;
+export const searchCustomers = async (params: PaginationParams & { query?: string }): Promise<PaginatedResponse<Customer>> => {
+  const queryParams = new URLSearchParams();
+  if (params.page) queryParams.set("page", String(params.page));
+  if (params.limit) queryParams.set("limit", String(params.limit));
+  if (params.query) queryParams.set("search", params.query);
+
+  const data = await authFetch(`${FUNCTIONS_BASE}/customers-list?${queryParams}`);
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+    meta: data.meta,
+  };
 };
 
-/**
- * POST /customers
- */
-export const createCustomer = async (customerData: any) => {
-  const { data } = await axiosClient.post<ApiResponse<Customer>>("customers", customerData);
-  return data;
+export const createCustomer = async (customerData: {
+  firstName: string;
+  lastName: string;
+  phone: string;
+  phone2?: string;
+  email?: string;
+  address1?: string;
+  address2?: string;
+}): Promise<ApiResponse<Customer>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/customers-create`, {
+    method: "POST",
+    body: JSON.stringify(customerData),
+  });
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+  };
 };
 
-/**
- * PATCH /customers/:id
- */
-export const updateCustomer = async (id: string, customerData: any) => {
-  const { data } = await axiosClient.patch<ApiResponse<Customer>>(`customers/${id}`, customerData);
-  return data;
-};
-
-/**
- * DELETE /customers/:id
- */
-export const deleteCustomer = async (id: string) => {
-  const { data } = await axiosClient.delete<ApiResponse<Customer>>(`customers/${id}`);
-  return data;
+export const updateCustomer = async (
+  id: string,
+  customerData: Partial<{
+    firstName: string;
+    lastName: string;
+    phone: string;
+    phone2: string;
+    email: string;
+    address1: string;
+    address2: string;
+  }>,
+): Promise<ApiResponse<Customer>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/customers-update/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(customerData),
+  });
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+  };
 };
 
 export const customerApi = {
+  getCustomers,
   getCustomerByPhone,
   searchCustomers,
-  getCustomers,
-  getCustomerById,
   createCustomer,
   updateCustomer,
-  deleteCustomer,
 };

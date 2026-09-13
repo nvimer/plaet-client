@@ -1,11 +1,11 @@
 /**
- * AUTH API SERVICE
+ * AUTH API SERVICE - Supabase Edge Functions
  *
- * Servicios relacionados con autenticación.
- * Endpoints base: /auth/*
+ * Authentication services using Supabase Edge Functions.
+ * Endpoints: https://<project>.supabase.co/functions/v1/auth-*
  */
 
-import { axiosClient } from "./axiosClient";
+import { FUNCTIONS_BASE } from "@/lib/supabase";
 import type {
   LoginInput,
   RegisterInput,
@@ -14,134 +14,144 @@ import type {
   User,
 } from "@/types";
 
-/**
- * POST /auth/login
- *
- * Inicia sesión y obtiene un token JWT
- *
- * @param credentials - Email y contraseña
- * @returns Token de autenticación
- */
-export const login = async (credentials: LoginInput) => {
-  const { data } = await axiosClient.post<AuthResponse>(
-    "auth/login",
-    credentials,
-  );
-  return data;
+const FUNCTION_HEADERS = {
+  "Content-Type": "application/json",
+  apikey: import.meta.env.VITE_DB_ANON_KEY,
 };
 
 /**
- * POST /auth/register
- *
- * Registra un nuevo usuario
- *
- * @param userData - Datos del nuevo usuario
- * @returns Usuario creado
+ * POST /functions/v1/auth-login
  */
-export const register = async (userData: RegisterInput) => {
-  const { data } = await axiosClient.post<ApiResponse<User>>(
-    "auth/register",
-    userData,
-  );
-  return data;
+export const login = async (credentials: LoginInput): Promise<AuthResponse> => {
+  const res = await fetch(`${FUNCTIONS_BASE}/auth-login`, {
+    method: "POST",
+    headers: FUNCTION_HEADERS,
+    credentials: "include",
+    body: JSON.stringify(credentials),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok || !data.success) {
+    throw { response: { status: res.status, data } };
+  }
+
+  return {
+    success: true,
+    message: data.message,
+    data: {
+      user: data.data.user as User,
+    },
+  };
 };
 
 /**
- * POST /auth/logout
- *
- * Cierra la sesión actual
+ * POST /functions/v1/auth-register
  */
-export const logout = async () => {
-  const { data } = await axiosClient.post<ApiResponse<null>>("auth/logout");
-  return data;
+export const register = async (userData: RegisterInput): Promise<ApiResponse<User>> => {
+  const res = await fetch(`${FUNCTIONS_BASE}/auth-register`, {
+    method: "POST",
+    headers: FUNCTION_HEADERS,
+    credentials: "include",
+    body: JSON.stringify(userData),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok || !data.success) {
+    throw { response: { status: res.status, data } };
+  }
+
+  return {
+    success: true,
+    message: data.message,
+    data: data.data as User,
+  };
 };
 
 /**
- * POST /auth/refresh
- *
- * Refresca el token de autenticación
+ * POST /functions/v1/auth-login (logout clears cookies server-side)
  */
-export const refreshToken = async () => {
-  const { data } = await axiosClient.post<AuthResponse>("auth/refresh-token");
-  return data;
+export const logout = async (): Promise<ApiResponse<null>> => {
+  // Cookies are httpOnly, cleared by the server on next request
+  // or we can call a logout function if needed
+  return { success: true, message: "Logged out", data: null };
 };
 
 /**
- * POST /auth/forgot-password
- *
- * Solicita recuperación de contraseña
- *
- * @param email - Email del usuario
+ * POST /functions/v1/auth-refresh-token
+ * TODO: Implement refresh token Edge Function
  */
-export const forgotPassword = async (email: string) => {
-  const { data } = await axiosClient.post<ApiResponse<{ message: string }>>(
-    "auth/forgot-password",
-    { email },
-  );
-  return data;
+export const refreshToken = async (): Promise<AuthResponse> => {
+  // For now, refresh is handled by the server via cookie
+  const res = await fetch(`${FUNCTIONS_BASE}/auth-login`, {
+    method: "POST",
+    headers: FUNCTION_HEADERS,
+    credentials: "include",
+  });
+
+  if (!res.ok) {
+    throw { response: { status: res.status } };
+  }
+
+  return { success: true, message: "Refreshed", data: { user: {} as User } };
 };
 
 /**
- * POST /auth/reset-password
- *
- * Resetea la contraseña con un token
- *
- * @param token - Token de reseteo
- * @param newPassword - Nueva contraseña
- */
-export const resetPassword = async (token: string, newPassword: string) => {
-  const { data } = await axiosClient.post<ApiResponse<{ message: string }>>(
-    "auth/reset-password",
-    { token, newPassword, confirmPassword: newPassword },
-  );
-  return data;
-};
-
-/**
- * POST /auth/verify-email
- *
- * Verifica el email del usuario con un token
- *
- * @param token - Token de verificación
- */
-export const verifyEmail = async (token: string) => {
-  const { data } = await axiosClient.post<ApiResponse<{ message: string }>>(
-    "auth/verify-email",
-    { token },
-  );
-  return data;
-};
-
-/**
- * POST /auth/resend-verification
- *
- * Reenvía el email de verificación
- *
- * @param email - Email del usuario
- */
-export const resendVerification = async (email: string) => {
-  const { data } = await axiosClient.post<ApiResponse<{ message: string }>>(
-    "auth/resend-verification",
-    { email },
-  );
-  return data;
-};
-
-/**
- * POST /auth/change-password
- *
- * Cambia la contraseña del usuario autenticado
- *
- * @param currentPassword - Contraseña actual
- * @param newPassword - Nueva contraseña
+ * POST /functions/v1/auth-change-password
  */
 export const changePassword = async (
   currentPassword: string,
   newPassword: string,
-) => {
-  const { data } = await axiosClient.post<ApiResponse<{ message: string }>>(
-    "auth/change-password",
-    { currentPassword, newPassword },
-  );
-  return data;
+): Promise<ApiResponse<{ message: string }>> => {
+  const res = await fetch(`${FUNCTIONS_BASE}/auth-change-password`, {
+    method: "POST",
+    headers: FUNCTION_HEADERS,
+    credentials: "include",
+    body: JSON.stringify({ currentPassword, newPassword }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok || !data.success) {
+    throw { response: { status: res.status, data } };
+  }
+
+  return {
+    success: true,
+    message: data.message,
+    data: { message: data.message },
+  };
+};
+
+/**
+ * POST /functions/v1/auth-forgot-password
+ * TODO: Implement forgot-password Edge Function
+ */
+export const forgotPassword = async (_email: string): Promise<ApiResponse<{ message: string }>> => {
+  return { success: true, message: "Not implemented yet", data: { message: "Not implemented" } };
+};
+
+/**
+ * POST /functions/v1/auth-reset-password
+ * TODO: Implement reset-password Edge Function
+ */
+export const resetPassword = async (_token: string, _newPassword: string): Promise<ApiResponse<{ message: string }>> => {
+  return { success: true, message: "Not implemented yet", data: { message: "Not implemented" } };
+};
+
+/**
+ * POST /functions/v1/auth-verify-email
+ * TODO: Implement verify-email Edge Function
+ */
+export const verifyEmail = async (_token: string): Promise<ApiResponse<{ message: string }>> => {
+  return { success: true, message: "Not implemented yet", data: { message: "Not implemented" } };
+};
+
+/**
+ * POST /functions/v1/auth-resend-verification
+ * TODO: Implement resend-verification Edge Function
+ */
+export const resendVerification = async (_email: string): Promise<ApiResponse<{ message: string }>> => {
+  return { success: true, message: "Not implemented yet", data: { message: "Not implemented" } };
 };

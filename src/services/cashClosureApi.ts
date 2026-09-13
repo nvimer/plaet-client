@@ -1,23 +1,68 @@
-import { axiosClient } from "./axiosClient";
-import type { CashClosure, CreateCashClosureDTO, CloseCashClosureDTO, ApiResponse } from "../types";
+// CASH CLOSURE API SERVICE - Supabase Edge Functions
 
-/**
- * CASH CLOSURE API - Client
- * Handles opening and closing of cash shifts.
- */
+import { FUNCTIONS_BASE } from "@/lib/supabase";
+import type { CashClosure, ApiResponse, PaginatedResponse, PaginationParams } from "../types";
 
-export const openShift = async (dto: CreateCashClosureDTO): Promise<CashClosure> => {
-  const { data } = await axiosClient.post<ApiResponse<CashClosure>>("cash-closures", dto);
-  return data.data;
+const FUNCTION_HEADERS = {
+  "Content-Type": "application/json",
+  apikey: import.meta.env.VITE_DB_ANON_KEY,
 };
 
-export const closeShift = async (id: string, dto: CloseCashClosureDTO): Promise<CashClosure> => {
-  const { data } = await axiosClient.patch<ApiResponse<CashClosure>>(`cash-closures/${id}/close`, dto);
-  return data.data;
+async function authFetch(url: string, options: RequestInit = {}) {
+  const res = await fetch(url, {
+    ...options,
+    credentials: "include",
+    headers: { ...FUNCTION_HEADERS, ...options.headers },
+  });
+  const data = await res.json();
+  if (!res.ok || !data.success) {
+    throw { response: { status: res.status, data } };
+  }
+  return data;
+}
+
+export const getCashClosures = async (params?: PaginationParams & { status?: string }): Promise<PaginatedResponse<CashClosure>> => {
+  const queryParams = new URLSearchParams();
+  if (params?.page) queryParams.set("page", String(params.page));
+  if (params?.limit) queryParams.set("limit", String(params.limit));
+  if (params?.status) queryParams.set("status", params.status);
+
+  const data = await authFetch(`${FUNCTIONS_BASE}/cash-closures-list?${queryParams}`);
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+    meta: data.meta,
+  };
+};
+
+export const getCashClosureById = async (id: string): Promise<ApiResponse<CashClosure>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/cash-closures-get/${id}`);
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+  };
 };
 
 export const getCurrentShift = async (): Promise<CashClosure | null> => {
-  const { data } = await axiosClient.get<ApiResponse<CashClosure | null>>("cash-closures/current");
+  const data = await authFetch(`${FUNCTIONS_BASE}/cash-closures-list?status=OPEN&limit=1`);
+  return data.data?.[0] || null;
+};
+
+export const openShift = async (dto: { openingBalance: number }): Promise<CashClosure> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/cash-closures-open`, {
+    method: "POST",
+    body: JSON.stringify(dto),
+  });
+  return data.data;
+};
+
+export const closeShift = async (dto: { actualBalance: number }): Promise<CashClosure> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/cash-closures-close`, {
+    method: "POST",
+    body: JSON.stringify(dto),
+  });
   return data.data;
 };
 
@@ -28,20 +73,30 @@ export interface CashShiftSummary {
   totalExpenses: number;
   totalVouchers?: number;
   expectedBalance: number;
-  openingDate: string;
-  totalDelivery?: number;
-  deliveryCash?: number;
-  deliveryNequi?: number;
+  actualBalance?: number;
+  difference?: number;
 }
 
-export const getShiftSummary = async (id: string): Promise<CashShiftSummary> => {
-  const { data } = await axiosClient.get<ApiResponse<CashShiftSummary>>(`cash-closures/${id}/summary`);
-  return data.data;
+export const getShiftSummary = async (closureId: string): Promise<CashShiftSummary> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/cash-closures-get/${closureId}`);
+  const closure = data.data;
+  return {
+    openingBalance: closure.opening_balance || 0,
+    cashSales: closure.total_cash || 0,
+    nequiSales: closure.total_nequi || 0,
+    totalExpenses: closure.total_expenses || 0,
+    totalVouchers: closure.total_vouchers || 0,
+    expectedBalance: closure.expected_balance || 0,
+    actualBalance: closure.actual_balance,
+    difference: closure.difference,
+  };
 };
 
-export const getShiftHistory = async (page: number = 1, limit: number = 10): Promise<CashClosure[]> => {
-  const { data } = await axiosClient.get<ApiResponse<CashClosure[]>>(`cash-closures`, {
-    params: { page, limit }
-  });
-  return data.data;
+export const cashClosureApi = {
+  getCashClosures,
+  getCashClosureById,
+  getCurrentShift,
+  openShift,
+  closeShift,
+  getShiftSummary,
 };

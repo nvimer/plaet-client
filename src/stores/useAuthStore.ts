@@ -1,17 +1,15 @@
 import { create } from "zustand";
 import { useEffect, useRef } from "react";
 import type { User, LoginInput, RegisterInput } from "@/types";
-import { authApi, profileApi, usersApi } from "@/services";
+import * as authApi from "@/services/authApi";
 import { logger } from "@/utils";
 import {
   TOKEN_REFRESH_INTERVAL,
-  AUTH_CHECK_TIMEOUT,
   getUserFromStorage,
   saveUserToStorage,
   removeUserFromStorage,
   parseAuthError,
   getAuthErrorType,
-  createTimeoutPromise,
   type AuthState,
   type AuthError,
 } from "@/utils/authHelpers";
@@ -79,8 +77,13 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     clearTokenRefresh();
 
     refreshInterval = window.setInterval(async () => {
+      // Token refresh is handled server-side via httpOnly cookies
+      // This interval just checks if the session is still valid
       try {
-        await authApi.refreshToken();
+        const storedUser = getUserFromStorage();
+        if (!storedUser) {
+          throw new Error("No session");
+        }
       } catch {
         set({
           user: null,
@@ -98,63 +101,37 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
     }, TOKEN_REFRESH_INTERVAL);
   },
 
-  fetchUserWithRoles: async (): Promise<User | null> => {
-    try {
-      const profileResponse = await profileApi.getMyProfile();
-      const userData = profileResponse.data;
-
-      if (!userData.id) {
-        return userData;
-      }
-
-      try {
-        const rolesResponse = await usersApi.getUserWithRolesAndPermissions(
-          userData.id,
-        );
-
-        const userWithRoles = {
-          ...userData,
-          roles: rolesResponse.data.roles.map((r) => r.role),
-        };
-
-        saveUserToStorage(userWithRoles);
-        return userWithRoles;
-      } catch {
-        saveUserToStorage(userData);
-        return userData;
-      }
-    } catch (error) {
-      const axiosError = error as { response?: { status?: number } };
-      if (axiosError.response?.status === 401) {
-        throw error;
-      }
-      return null;
-    }
-  },
-
   login: async (credentials: LoginInput): Promise<boolean> => {
     set({ isLoading: true, error: null });
 
     try {
       const response = await authApi.login(credentials);
-      const mustChangePassword = response.data.user.mustChangePassword;
-      
-      const userWithRoles = await get().fetchUserWithRoles();
+      const userData = response.data.user;
+      const mustChangePassword = userData.mustChangePassword;
 
-      if (userWithRoles) {
-        set({
-          user: { ...userWithRoles, mustChangePassword },
-          isAuthenticated: true,
-          isLoading: false,
-          error: null,
-          lastActivity: new Date(),
-        });
-        // @ts-expect-error - access internal function
-        get().setupTokenRefresh();
-        return mustChangePassword ?? false;
-      } else {
-        throw new Error("Failed to fetch user profile after login");
-      }
+      // Build minimal User object from Edge Function response
+      const user: User = {
+        id: userData.id,
+        email: userData.email,
+        firstName: userData.firstName,
+        lastName: userData.lastName,
+        mustChangePassword,
+        restaurantId: userData.restaurantId,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        deleted: false,
+      };
+
+      set({
+        user,
+        isAuthenticated: true,
+        isLoading: false,
+        error: null,
+        lastActivity: new Date(),
+      });
+      // @ts-expect-error - access internal function
+      get().setupTokenRefresh();
+      return mustChangePassword ?? false;
     } catch (error: unknown) {
       const errorMessage = parseAuthError(error);
       set({ error: { message: errorMessage }, isLoading: false });
@@ -207,29 +184,23 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
 
   checkAuth: async (): Promise<boolean> => {
     try {
-      const userWithRoles = await get().fetchUserWithRoles();
+      // With Edge Functions, auth is cookie-based
+      // If cookies are valid, the server will accept requests
+      // For now, check if we have a stored user
+      const storedUser = getUserFromStorage();
 
-      if (userWithRoles) {
-        const currentUser = get().user;
-        
-        // Only update state if user data actually changed or we weren't authenticated
-        if (!get().isAuthenticated || JSON.stringify(currentUser) !== JSON.stringify(userWithRoles)) {
-          set({
-            user: userWithRoles,
-            isAuthenticated: true,
-            isLoading: false,
-            error: null,
-          });
-        } else {
-          set({ isLoading: false });
-        }
-        
+      if (storedUser) {
+        set({
+          user: storedUser,
+          isAuthenticated: true,
+          isLoading: false,
+          error: null,
+        });
         // @ts-expect-error - access internal function
         get().setupTokenRefresh();
         return true;
       }
 
-      // No user found (401 handled by fetchUserWithRoles throwing)
       set({
         user: null,
         isAuthenticated: false,

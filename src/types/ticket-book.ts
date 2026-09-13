@@ -5,6 +5,7 @@ export interface TicketBook {
   expiryDate: string;
   totalPortions: number;
   consumedPortions: number;
+  remainingPortions?: number;
   purchasePrice: number;
   status: "active" | "exhausted" | "expired";
   createdAt: string;

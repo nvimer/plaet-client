@@ -1,110 +1,103 @@
-/**
- * TABLES API SERVICE
- *
- * Services related with tables of restaurant
- * Base Endpoints: /tables/*
- */
+// TABLES API SERVICE - Supabase Edge Functions
 
-import { axiosClient } from "./axiosClient";
+import { FUNCTIONS_BASE } from "@/lib/supabase";
 import type {
   Table,
-  CreateTableInput,
-  UpdateTableInput,
-  UpdateTableStatusInput,
   ApiResponse,
   PaginatedResponse,
   PaginationParams,
 } from "@/types";
 
-/**
- * GET /tables
- *
- * Get a paginated listed of tables
- *
- * @param params - Params of pagination
- * @returns Paginated list of tables
- */
-export const getTables = async (params?: PaginationParams) => {
-  const { data } = await axiosClient.get<PaginatedResponse<Table>>("tables", {
-    params,
+const FUNCTION_HEADERS = {
+  "Content-Type": "application/json",
+  apikey: import.meta.env.VITE_DB_ANON_KEY,
+};
+
+async function authFetch(url: string, options: RequestInit = {}) {
+  const res = await fetch(url, {
+    ...options,
+    credentials: "include",
+    headers: { ...FUNCTION_HEADERS, ...options.headers },
   });
+  const data = await res.json();
+  if (!res.ok || !data.success) {
+    throw { response: { status: res.status, data } };
+  }
   return data;
+}
+
+export interface TablesFilterParams extends PaginationParams {
+  status?: string;
+}
+
+export const getTables = async (params?: TablesFilterParams): Promise<PaginatedResponse<Table>> => {
+  const queryParams = new URLSearchParams();
+  if (params?.status) queryParams.set("status", params.status);
+
+  const data = await authFetch(`${FUNCTIONS_BASE}/tables-list?${queryParams}`);
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+    meta: data.meta,
+  };
 };
 
-/**
- * GET /tables/:id
- *
- * Get a table by ID
- *
- * @param id -  Table ID
- * @returns Data of Table
- */
-export const getTableById = async (id: number) => {
-  const { data } = await axiosClient.get<ApiResponse<Table>>(`tables/${id}`);
-  return data;
+export const getTableById = async (id: number): Promise<ApiResponse<Table>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/tables-list`);
+  const table = data.data.find((t: Table) => t.id === id);
+  if (!table) throw { response: { status: 404, data: { message: "Table not found" } } };
+  return {
+    success: true,
+    message: "Table fetched successfully",
+    data: table,
+  };
 };
 
-/**
- * POST /tables
- *
- * Create a new table
- *
- * @param tableData - Data of new table
- * @returns Created Table
- */
-export const createTable = async (tableData: CreateTableInput) => {
-  const { data } = await axiosClient.post<ApiResponse<Table>>(
-    "tables",
-    tableData,
-  );
-  return data;
-};
-
-/**
- * PUT /tables/:id
- *
- * Updated a existing table
- *
- * @param id - Table ID
- * @param tableData - Data to update
- * @returns Updated Table
- */
-export const updateTable = async (id: number, tableData: UpdateTableInput) => {
-  const { data } = await axiosClient.patch<ApiResponse<Table>>(
-    `tables/${id}`,
-    tableData,
-  );
-  return data;
-};
-
-/**
- * DELETE /tables/:id
- *
- * Delete a table (soft delete)
- *
- * @param id - Table ID
- */
-export const deleteTable = async (id: number) => {
-  const { data } = await axiosClient.delete<ApiResponse<null>>(`tables/${id}`);
-  return data;
-};
-
-/**
- * PATCH /tables/:id/status
- *
- * Update only the state of table
- *
- * @param id - Table ID
- * @param statusData - New table status
- * @returns Updated Table
- */
 export const updateTableStatus = async (
   id: number,
-  statusData: UpdateTableStatusInput,
-) => {
-  const { data } = await axiosClient.patch<ApiResponse<Table>>(
-    `tables/${id}/status`,
-    statusData,
-  );
-  return data;
+  statusData: { status: string },
+): Promise<ApiResponse<Table>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/tables-update/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(statusData),
+  });
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+  };
+};
+
+export const updateTable = async (
+  id: number,
+  tableData: { location?: string; status?: string },
+): Promise<ApiResponse<Table>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/tables-update/${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(tableData),
+  });
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+  };
+};
+
+export const getAvailableTables = async (): Promise<PaginatedResponse<Table>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/tables-list?status=AVAILABLE`);
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+    meta: data.meta,
+  };
+};
+
+export const tablesApi = {
+  getTables,
+  getTableById,
+  updateTableStatus,
+  updateTable,
+  getAvailableTables,
 };

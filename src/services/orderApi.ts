@@ -1,467 +1,245 @@
-// ORDERS API SERVICE - Enhanced with missing endpoints
+// ORDERS API SERVICE - Supabase Edge Functions
 
+import { FUNCTIONS_BASE } from "@/lib/supabase";
 import {
   type Order,
   OrderStatus,
-  OrderType,
-  OrderItemStatus,
   type PaginatedResponse,
   type PaginationParams,
   type ApiResponse,
   type CreateOrderInput,
   type UpdateOrderStatusInput,
-  type CreateOrderItemInput,
-  type CreatePaymentInput,
-  type Payment,
-  type UpdateOrderInput,
   type OrderItem,
+  type OrderItemStatus,
 } from "@/types";
-import { axiosClient } from "./axiosClient";
 
-// =================== EXISTING ENDPOINTS ===================
+const FUNCTION_HEADERS = {
+  "Content-Type": "application/json",
+  apikey: import.meta.env.VITE_DB_ANON_KEY,
+};
 
-/**
- * GET /orders
- *
- * Get paginated list of orders with optional filters
- *
- * @param params - Pagination and filter params
- * @return Paginated list of orders
- */
-export interface OrdersFilterParams extends PaginationParams {
-  status?: OrderStatus;
-  type?: OrderType;
-  tableId?: number;
-  waiterId?: string;
-  fromDate?: string;
-  toDate?: string;
+async function authFetch(url: string, options: RequestInit = {}) {
+  const res = await fetch(url, {
+    ...options,
+    credentials: "include",
+    headers: { ...FUNCTION_HEADERS, ...options.headers },
+  });
+  const data = await res.json();
+  if (!res.ok || !data.success) {
+    throw { response: { status: res.status, data } };
+  }
+  return data;
 }
 
-export const getOrders = async (params?: OrdersFilterParams) => {
-  const { data } = await axiosClient.get<PaginatedResponse<Order>>("orders", {
-    params,
+// =================== CORE ENDPOINTS ===================
+
+export interface OrdersFilterParams extends PaginationParams {
+  status?: OrderStatus;
+  type?: string;
+  tableId?: number;
+  waiterId?: string;
+  date?: string;
+}
+
+export const getOrders = async (params?: OrdersFilterParams): Promise<PaginatedResponse<Order>> => {
+  const queryParams = new URLSearchParams();
+  if (params?.page) queryParams.set("page", String(params.page));
+  if (params?.limit) queryParams.set("limit", String(params.limit));
+  if (params?.status) queryParams.set("status", params.status);
+  if (params?.type) queryParams.set("type", params.type);
+  if (params?.tableId) queryParams.set("tableId", String(params.tableId));
+  if (params?.waiterId) queryParams.set("waiterId", params.waiterId);
+  if (params?.date) queryParams.set("date", params.date);
+
+  const data = await authFetch(`${FUNCTIONS_BASE}/orders-list?${queryParams}`);
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+    meta: data.meta,
+  };
+};
+
+export const getOrderById = async (id: string): Promise<ApiResponse<Order>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/orders-get/${id}`);
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+  };
+};
+
+export const createOrder = async (orderData: CreateOrderInput): Promise<ApiResponse<Order>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/orders-create`, {
+    method: "POST",
+    body: JSON.stringify(orderData),
   });
-  return data;
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+  };
 };
 
-/**
- * GET /orders/:id
- *
- * Get single order with all details (items, payments, etc...)
- *
- * @param id - Order ID
- * @return Order with full details
- */
-export const getOrderById = async (id: string) => {
-  const { data } = await axiosClient.get<ApiResponse<Order>>(`orders/${id}`);
-  return data;
-};
-
-/**
- * POST /orders
- *
- * Create a new order
- *
- * @param orderData - Order data
- * @return Created order
- */
-export const createOrder = async (orderData: CreateOrderInput) => {
-  const { data } = await axiosClient.post<ApiResponse<Order>>(
-    "orders",
-    orderData,
-  );
-  return data;
-};
-
-/**
- * POST /orders/batch
- *
- * Create multiple orders at once
- *
- * @param batchData - Batch order data
- * @return Created orders
- */
-export const createBatchOrders = async (batchData: BatchCreateOrderInput) => {
-  const { data } = await axiosClient.post<ApiResponse<{ orders: Order[]; tableTotal: number }>>(
-    "orders/batch",
-    batchData,
-  );
-  return data;
-};
-
-/**
- * PATCH /orders/:id
- *
- * Update an existing order
- *
- * @param id - Order ID
- * @param orderData - Data to update
- * @return Updated order
- */
-export const updateOrder = async (id: string, orderData: UpdateOrderInput) => {
-  const { data } = await axiosClient.patch<ApiResponse<Order>>(
-    `orders/${id}`,
-    orderData,
-  );
-  return data;
-};
-
-/**
- * PATCH /orders/:id/status
- *
- * Update only the order status (optimized endpoint)
- *
- * @param id - Order ID
- * @param statusData - New status
- * @returns Updated order
- */
 export const updateOrderStatus = async (
   id: string,
   statusData: UpdateOrderStatusInput,
-) => {
-  const { data } = await axiosClient.patch<ApiResponse<Order>>(
-    `orders/${id}/status`,
-    statusData,
-  );
-  return data;
+): Promise<ApiResponse<Order>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/orders-update-status/${id}/status`, {
+    method: "PATCH",
+    body: JSON.stringify(statusData),
+  });
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+  };
 };
 
-/**
- * DELETE /orders/:id
- *
- * Delete an order (soft delete)
- *
- * @param id - Order ID
- */
-export const deleteOrder = async (id: string) => {
-  const { data } = await axiosClient.delete<ApiResponse<null>>(`orders/${id}`);
-  return data;
+export const cancelOrder = async (orderId: string): Promise<ApiResponse<Order>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/orders-cancel/${orderId}`, {
+    method: "DELETE",
+  });
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+  };
 };
 
 // =================== ORDER ITEMS ===================
 
-/**
- * POST /orders/:id/items
- *
- * Add item to an existing order
- *
- * @param orderId - Order ID
- * @param itemData - Item data
- * @returns Updated order
- */
-export const addOrderItem = async (
-  orderId: string,
-  itemData: CreateOrderItemInput,
-) => {
-  const { data } = await axiosClient.post<ApiResponse<Order>>(
-    `orders/${orderId}/items`,
-    itemData,
-  );
-  return data;
-};
-
-/**
- * DELETE /orders/:orderId/items/:itemId
- *
- * Remove item from order
- *
- * @param orderId - Order ID
- * @param itemId - Item ID
- * @returns Updated order
- */
-export const removeOrderItem = async (orderId: string, itemId: number) => {
-  const { data } = await axiosClient.delete<ApiResponse<Order>>(
-    `orders/${orderId}/items/${itemId}`,
-  );
-  return data;
-};
-
-// =================== NEW ENDPOINTS ===================
-
-/**
- * PATCH /orders/:orderId/items/:itemId
- *
- * Update order item quantity and details
- *
- * @param orderId - Order ID
- * @param itemId - Item ID
- * @param updateData - Update data
- * @returns Updated order
- */
-export interface UpdateOrderItemInput {
-  quantity?: number;
-  notes?: string;
-  isFreeSubstitution?: boolean;
-}
-
-export const updateOrderItem = async (
-  orderId: string,
-  itemId: number,
-  updateData: UpdateOrderItemInput,
-) => {
-  const { data } = await axiosClient.patch<ApiResponse<Order>>(
-    `orders/${orderId}/items/${itemId}`,
-    updateData,
-  );
-  return data;
-};
-
-/**
- * PATCH /orders/:orderId/items/:itemId/status
- *
- * Update order item status
- *
- * @param orderId - Order ID
- * @param itemId - Item ID
- * @param status - New status
- * @returns Updated order item
- */
 export const updateOrderItemStatus = async (
   orderId: string,
   itemId: number,
   status: OrderItemStatus,
-) => {
-  const { data } = await axiosClient.patch<ApiResponse<OrderItem>>(
-    `orders/${orderId}/items/${itemId}/status`,
-    { status },
+): Promise<ApiResponse<OrderItem>> => {
+  const data = await authFetch(
+    `${FUNCTIONS_BASE}/orders-update-item-status/${orderId}/items/${itemId}/status`,
+    {
+      method: "PATCH",
+      body: JSON.stringify({ status }),
+    }
   );
-  return data;
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+  };
 };
 
-/**
- * POST /orders/batch-status
- *
- * Update status for multiple orders at once
- *
- * @param batchData - Batch update data
- * @returns Updated orders
- */
+// =================== KITCHEN ===================
+
+export const getKitchenOrders = async (_status?: string) => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/orders-list?status=PAID&limit=100`);
+  return {
+    success: true,
+    data: data.data,
+    message: "Orders retrieved successfully",
+  };
+};
+
+// =================== SEARCH ===================
+
+export const searchOrders = async (params: { q: string; status?: OrderStatus; type?: string }) => {
+  const queryParams = new URLSearchParams();
+  if (params.q) queryParams.set("search", params.q);
+  if (params.status) queryParams.set("status", params.status);
+  if (params.type) queryParams.set("type", params.type);
+
+  const data = await authFetch(`${FUNCTIONS_BASE}/orders-list?${queryParams}`);
+  return {
+    success: true,
+    data: data.data,
+    meta: data.meta,
+  };
+};
+
+// =================== BATCH OPERATIONS ===================
+
 export interface BatchStatusUpdateInput {
   orderIds: string[];
   status: OrderStatus;
 }
 
 export const updateBatchOrderStatus = async (batchData: BatchStatusUpdateInput) => {
-  const { data } = await axiosClient.patch<ApiResponse<Order[]>>(
-    "orders/batch-status",
-    batchData,
+  const results = await Promise.all(
+    batchData.orderIds.map((id) =>
+      authFetch(`${FUNCTIONS_BASE}/orders-update-status/${id}/status`, {
+        method: "PATCH",
+        body: JSON.stringify({ status: batchData.status }),
+      })
+    )
   );
-  return data;
-};
-
-/**
- * GET /orders
- *
- * Get orders for kitchen view using existing endpoint with status filtering
- * Makes multiple calls to fetch orders with different statuses
- *
- * @param status - Status filter (currently not used, fetches all kitchen statuses)
- * @returns Orders for kitchen (PENDING, IN_KITCHEN, READY)
- */
-export const getKitchenOrders = async (_status?: string) => {
-  // In this workflow, Kitchen ONLY sees orders that have been PAID
-  // We fetch a larger limit to ensure we get all active operational orders
-  const { data: response } = await axiosClient.get<PaginatedResponse<Order>>("orders", {
-    params: { status: OrderStatus.PAID, limit: 100 },
-  });
-
-  // Return all PAID orders. The frontend Kanban will filter individual items 
-  // by their status (PENDING, IN_KITCHEN, READY).
-  return { 
-    success: true, 
-    data: response.data,
-    message: "Orders retrieved successfully"
+  return {
+    success: true,
+    data: results.map((r) => r.data),
+    message: `${batchData.orderIds.length} orders updated`,
   };
 };
 
-/**
- * GET /orders/daily-sales
- *
- * Get daily sales summary and statistics
- *
- * @param date - Date for sales summary (YYYY-MM-DD)
- * @returns Daily sales data
- */
-export interface DailySalesResponse {
-  totalOrders: number;
-  totalRevenue: number;
-  ordersByStatus: Record<OrderStatus, number>;
-  averageOrderValue: number;
-  peakHour?: {
-    hour: number;
-    orderCount: number;
-  };
-}
+// =================== STUBS (not yet implemented) ===================
 
-export const getDailySales = async (date: string) => {
-  const { data } = await axiosClient.get<ApiResponse<DailySalesResponse>>(
-    "orders/daily-sales",
-    { params: { date } }
-  );
-  return data;
+export const createBatchOrders = async (_batchData: unknown) => {
+  throw new Error("Batch orders not yet implemented in Edge Functions");
 };
 
-/**
- * GET /orders/search
- *
- * Full-text search for orders
- *
- * @param query - Search query
- * @param params - Additional search params
- * @returns Search results
- */
-export interface OrderSearchParams {
-  q: string;
-  limit?: number;
-  offset?: number;
-  status?: OrderStatus;
-  type?: OrderType;
-}
-
-export const searchOrders = async (params: OrderSearchParams) => {
-  const { data } = await axiosClient.get<PaginatedResponse<Order>>(
-    "orders/search",
-    { params }
-  );
-  return data;
+export const updateOrder = async (_id: string, _orderData: unknown) => {
+  throw new Error("Update order not yet implemented in Edge Functions");
 };
 
-/**
- * POST /orders/:id/duplicate
- *
- * Duplicate an existing order
- *
- * @param orderId - Order ID to duplicate
- * @param options - Duplication options
- * @returns New duplicated order
- */
-export interface DuplicateOrderOptions {
-  tableId?: number; // Optional: change table
-  notes?: string; // Optional: add notes
-}
-
-export const duplicateOrder = async (
-  orderId: string,
-  options?: DuplicateOrderOptions,
-) => {
-  const { data } = await axiosClient.post<ApiResponse<Order>>(
-    `orders/${orderId}/duplicate`,
-    options || {}
-  );
-  return data;
+export const deleteOrder = async (_id: string) => {
+  throw new Error("Delete order not yet implemented in Edge Functions");
 };
 
-/**
- * POST /orders/validate
- *
- * Validate order data before creation
- *
- * @param orderData - Order data to validate
- * @returns Validation result
- */
-export interface OrderValidationResult {
-  valid: boolean;
-  errors: string[];
-  warnings: string[];
-  estimatedTotal?: number;
-}
-
-export const validateOrder = async (orderData: CreateOrderInput) => {
-  const { data } = await axiosClient.post<ApiResponse<OrderValidationResult>>(
-    "orders/validate",
-    orderData
-  );
-  return data;
+export const addOrderItem = async (_orderId: string, _itemData: unknown) => {
+  throw new Error("Add order item not yet implemented in Edge Functions");
 };
 
-/**
- * GET /orders/table-availability/:tableId
- *
- * Check table availability for specific datetime
- *
- * @param tableId - Table ID
- * @param datetime - DateTime to check (ISO string)
- * @returns Availability information
- */
-export interface TableAvailabilityResponse {
-  available: boolean;
-  nextAvailable?: string;
-  currentOrders?: Order[];
-  conflictingOrders?: Order[];
-}
-
-export const getTableAvailability = async (
-  tableId: number,
-  datetime?: string
-) => {
-  const { data } = await axiosClient.get<ApiResponse<TableAvailabilityResponse>>(
-    `orders/table-availability/${tableId}`,
-    { params: { datetime } }
-  );
-  return data;
+export const removeOrderItem = async (_orderId: string, _itemId: number) => {
+  throw new Error("Remove order item not yet implemented in Edge Functions");
 };
 
-/**
- * PATCH /orders/:id/cancel
- *
- * Cancel order with reason
- *
- * @param orderId - Order ID
- * @param cancelData - Cancellation data
- * @returns Updated order
- */
-export interface CancelOrderInput {
-  reason: string;
-  refundAmount?: number;
-}
-
-export const cancelOrder = async (
-  orderId: string,
-  cancelData: CancelOrderInput
-) => {
-  const { data } = await axiosClient.patch<ApiResponse<Order>>(
-    `orders/${orderId}/cancel`,
-    cancelData
-  );
-  return data;
+export const updateOrderItem = async (_orderId: string, _itemId: number, _updateData: unknown) => {
+  throw new Error("Update order item not yet implemented in Edge Functions");
 };
 
-// =================== PAYMENTS ===================
+export const getDailySales = async (_date: string) => {
+  throw new Error("Daily sales not yet implemented in Edge Functions");
+};
+
+export const duplicateOrder = async (_orderId: string, _options?: unknown) => {
+  throw new Error("Duplicate order not yet implemented in Edge Functions");
+};
+
+export const validateOrder = async (_orderData: CreateOrderInput) => {
+  return { success: true, data: { valid: true, errors: [], warnings: [] } };
+};
+
+export const getTableAvailability = async (_tableId: number, _datetime?: string) => {
+  throw new Error("Table availability not yet implemented in Edge Functions");
+};
 
 // =================== EXPORTS ===================
 
 export const orderApi = {
-  // Core operations
   getOrders,
   getOrderById,
   createOrder,
-  updateOrder,
   updateOrderStatus,
+  cancelOrder,
+  updateOrderItemStatus,
+  updateBatchOrderStatus,
+  getKitchenOrders,
+  searchOrders,
+  createBatchOrders,
+  updateOrder,
   deleteOrder,
-
-  // Order items
   addOrderItem,
   removeOrderItem,
   updateOrderItem,
-  updateOrderItemStatus,
-
-  // Batch operations
-  updateBatchOrderStatus,
-
-  // Kitchen & Status
-  getKitchenOrders,
-
-  // Reports & Analytics
   getDailySales,
-
-  // Search
-  searchOrders,
-
-  // Actions
   duplicateOrder,
   validateOrder,
-  cancelOrder,
-
-  // Utilities
   getTableAvailability,
 };

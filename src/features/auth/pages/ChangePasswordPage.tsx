@@ -32,7 +32,7 @@ interface FormErrors {
 
 export default function ChangePasswordPage() {
   const navigate = useNavigate();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const mustChangePassword = user?.mustChangePassword;
 
   const [currentPassword, setCurrentPassword] = useState("");
@@ -121,7 +121,8 @@ export default function ChangePasswordPage() {
     try {
       await authApi.changePassword(currentPassword, newPassword);
       toast.success("Contraseña actualizada correctamente");
-      navigate("/profile");
+      logout();
+      navigate("/login");
     } catch (error: unknown) {
       let message = "";
       if (axios.isAxiosError(error)) {
