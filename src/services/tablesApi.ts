@@ -1,6 +1,7 @@
 // TABLES API SERVICE - Supabase Edge Functions
 
 import { FUNCTIONS_BASE } from "@/lib/supabase";
+import { getAuthHeaders } from "./authApi";
 import type {
   Table,
   ApiResponse,
@@ -17,7 +18,7 @@ async function authFetch(url: string, options: RequestInit = {}) {
   const res = await fetch(url, {
     ...options,
 
-    headers: { ...FUNCTION_HEADERS, ...options.headers },
+    headers: { ...FUNCTION_HEADERS, ...getAuthHeaders(), ...options.headers },
   });
   const data = await res.json();
   if (!res.ok || !data.success) {

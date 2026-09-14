@@ -137,8 +137,7 @@ export const changePassword = async (
 ): Promise<ApiResponse<{ message: string }>> => {
   const res = await fetch(`${FUNCTIONS_BASE}/auth-change-password`, {
     method: "POST",
-    headers: FUNCTION_HEADERS,
-
+    headers: { ...FUNCTION_HEADERS, ...getAuthHeaders() },
     body: JSON.stringify({ currentPassword, newPassword }),
   });
 
@@ -147,6 +146,8 @@ export const changePassword = async (
   if (!res.ok || !data.success) {
     throw { response: { status: res.status, data } };
   }
+
+  clearTokens();
 
   return {
     success: true,
