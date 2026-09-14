@@ -19,6 +19,35 @@ const FUNCTION_HEADERS = {
   apikey: import.meta.env.VITE_DB_ANON_KEY,
 };
 
+const TOKEN_KEY = "accessToken";
+const REFRESH_TOKEN_KEY = "refreshToken";
+
+export function getStoredToken(): string | null {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function getStoredRefreshToken(): string | null {
+  return localStorage.getItem(REFRESH_TOKEN_KEY);
+}
+
+export function storeTokens(accessToken: string, refreshToken: string): void {
+  localStorage.setItem(TOKEN_KEY, accessToken);
+  localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+}
+
+export function clearTokens(): void {
+  localStorage.removeItem(TOKEN_KEY);
+  localStorage.removeItem(REFRESH_TOKEN_KEY);
+}
+
+export function getAuthHeaders(): Record<string, string> {
+  const token = getStoredToken();
+  if (token) {
+    return { Authorization: `Bearer ${token}` };
+  }
+  return {};
+}
+
 /**
  * POST /functions/v1/auth-login
  */
@@ -26,7 +55,6 @@ export const login = async (credentials: LoginInput): Promise<AuthResponse> => {
   const res = await fetch(`${FUNCTIONS_BASE}/auth-login`, {
     method: "POST",
     headers: FUNCTION_HEADERS,
-    credentials: "include",
     body: JSON.stringify(credentials),
   });
 
@@ -34,6 +62,10 @@ export const login = async (credentials: LoginInput): Promise<AuthResponse> => {
 
   if (!res.ok || !data.success) {
     throw { response: { status: res.status, data } };
+  }
+
+  if (data.data.accessToken) {
+    storeTokens(data.data.accessToken, data.data.refreshToken);
   }
 
   return {
@@ -52,7 +84,7 @@ export const register = async (userData: RegisterInput): Promise<ApiResponse<Use
   const res = await fetch(`${FUNCTIONS_BASE}/auth-register`, {
     method: "POST",
     headers: FUNCTION_HEADERS,
-    credentials: "include",
+
     body: JSON.stringify(userData),
   });
 
@@ -73,8 +105,7 @@ export const register = async (userData: RegisterInput): Promise<ApiResponse<Use
  * POST /functions/v1/auth-login (logout clears cookies server-side)
  */
 export const logout = async (): Promise<ApiResponse<null>> => {
-  // Cookies are httpOnly, cleared by the server on next request
-  // or we can call a logout function if needed
+  clearTokens();
   return { success: true, message: "Logged out", data: null };
 };
 
@@ -87,7 +118,7 @@ export const refreshToken = async (): Promise<AuthResponse> => {
   const res = await fetch(`${FUNCTIONS_BASE}/auth-login`, {
     method: "POST",
     headers: FUNCTION_HEADERS,
-    credentials: "include",
+
   });
 
   if (!res.ok) {
@@ -107,7 +138,7 @@ export const changePassword = async (
   const res = await fetch(`${FUNCTIONS_BASE}/auth-change-password`, {
     method: "POST",
     headers: FUNCTION_HEADERS,
-    credentials: "include",
+
     body: JSON.stringify({ currentPassword, newPassword }),
   });
 

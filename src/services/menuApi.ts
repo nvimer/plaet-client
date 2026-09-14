@@ -19,7 +19,7 @@ const FUNCTION_HEADERS = {
 async function authFetch(url: string, options: RequestInit = {}) {
   const res = await fetch(url, {
     ...options,
-    credentials: "include",
+
     headers: { ...FUNCTION_HEADERS, ...options.headers },
   });
   const data = await res.json();
