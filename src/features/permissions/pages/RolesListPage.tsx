@@ -4,6 +4,7 @@ import { useRoles, useDeleteRole } from "../hooks";
 import {
   Button,
   Card,
+  ConfirmDialog,
   EmptyState,
   Skeleton,
   Input,
@@ -38,6 +39,7 @@ export function RolesListPage() {
   const { data: rolesData, isLoading } = useRoles({ limit: 100 });
   const deleteMutation = useDeleteRole();
   const [searchQuery, setSearchQuery] = useState("");
+  const [deletingRole, setDeletingRole] = useState<RoleWithPermissions | null>(null);
 
   const isSuperAdmin = user?.roles?.some(r => {
     const roleName = typeof r === 'object' && 'role' in r ? r.role.name : (r as any).name;
@@ -60,7 +62,7 @@ export function RolesListPage() {
     );
   });
 
-  const handleDelete = async (role: RoleWithPermissions) => {
+  const handleDeleteRequest = (role: RoleWithPermissions) => {
     if (role.name === RoleName.SUPERADMIN) {
       toast.error("No puedes eliminar el rol de Superadministrador");
       return;
@@ -74,12 +76,14 @@ export function RolesListPage() {
       return;
     }
 
-    if (!confirm(`¿Estás seguro de eliminar el rol "${role.name}"?`)) {
-      return;
-    }
+    setDeletingRole(role);
+  };
 
+  const handleDeleteConfirm = async () => {
+    if (!deletingRole) return;
     try {
-      await deleteMutation.mutateAsync(role.id);
+      await deleteMutation.mutateAsync(deletingRole.id);
+      setDeletingRole(null);
     } catch {
       // Error is handled by the mutation
     }
@@ -151,12 +155,24 @@ export function RolesListPage() {
                 role={role}
                 displayName={getRoleDisplayName(role.name)}
                 onEdit={() => navigate(ROUTES.getRoleEditRoute(role.id))}
-                onDelete={() => handleDelete(role)}
+                onDelete={() => handleDeleteRequest(role)}
                 onPermissions={() => navigate(ROUTES.PERMISSIONS)}
               />
             ))}
           </div>
         )}
+
+        <ConfirmDialog
+          isOpen={!!deletingRole}
+          onClose={() => setDeletingRole(null)}
+          onConfirm={handleDeleteConfirm}
+          isLoading={deleteMutation.isPending}
+          variant="danger"
+          title="Eliminar rol"
+          message={deletingRole ? `¿Eliminar el rol "${getRoleDisplayName(deletingRole.name)}"? Esta acción no se puede deshacer.` : undefined}
+          confirmText="Eliminar"
+          cancelText="Cancelar"
+        />
       </div>
     </SidebarLayout>
   );

@@ -3,7 +3,7 @@ import { useState, useMemo } from "react";
 import { useMenuEngineering } from "../hooks/useAnalytics";
 import { AlertCircle, Star, TrendingDown, Target, HelpCircle } from "lucide-react";
 import { formatCurrency } from "@/utils/formatUtils";
-import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ZAxis } from "recharts";
+import { ScatterChart, Scatter, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, Cell, ZAxis } from "recharts";
 import type { MenuEngineeringItem } from "@/services/analyticsApi";
 
 export const MenuEngineeringView = () => {
@@ -57,16 +57,18 @@ export const MenuEngineeringView = () => {
         <div className="flex items-center gap-2">
           <input
             type="date"
+            aria-label="Fecha inicial"
             value={startDate}
             onChange={(e) => setStartDate(e.target.value)}
-            className="bg-sage-50 border-none rounded-xl text-carbon-900 font-medium focus:ring-0"
+            className="bg-sage-50 border-none rounded-xl text-carbon-900 font-medium focus:ring-2 focus:ring-sage-500"
           />
           <span className="text-carbon-500">a</span>
           <input
             type="date"
+            aria-label="Fecha final"
             value={endDate}
             onChange={(e) => setEndDate(e.target.value)}
-            className="bg-sage-50 border-none rounded-xl text-carbon-900 font-medium focus:ring-0"
+            className="bg-sage-50 border-none rounded-xl text-carbon-900 font-medium focus:ring-2 focus:ring-sage-500"
           />
         </div>
       </div>
@@ -80,17 +82,18 @@ export const MenuEngineeringView = () => {
               <YAxis type="number" dataKey="revenue" name="Ingreso" tickFormatter={(v) => `$${v/1000}k`} />
               <ZAxis type="category" dataKey="name" name="Plato" />
               <Tooltip cursor={{ strokeDasharray: '3 3' }} formatter={(val: number, name: string) => name === "Ingreso" ? formatCurrency(val) : val} />
-              
-              <Scatter name="Stars" data={stars} fill="#10b981">
+              <Legend verticalAlign="top" height={32} />
+
+              <Scatter name="Estrellas" data={stars} fill="#10b981" shape="star">
                 {stars.map((_e: MenuEngineeringItem, index: number) => <Cell key={`star-${index}`} fill="#10b981" />)}
               </Scatter>
-              <Scatter name="Plowhorses" data={plowhorses} fill="#3b82f6">
+              <Scatter name="Caballitos" data={plowhorses} fill="#3b82f6" shape="square">
                 {plowhorses.map((_e: MenuEngineeringItem, index: number) => <Cell key={`plow-${index}`} fill="#3b82f6" />)}
               </Scatter>
-              <Scatter name="Puzzles" data={puzzles} fill="#f59e0b">
+              <Scatter name="Rompecabezas" data={puzzles} fill="#f59e0b" shape="diamond">
                 {puzzles.map((_e: MenuEngineeringItem, index: number) => <Cell key={`puz-${index}`} fill="#f59e0b" />)}
               </Scatter>
-              <Scatter name="Dogs" data={dogs} fill="#ef4444">
+              <Scatter name="Perros" data={dogs} fill="#ef4444" shape="triangle">
                 {dogs.map((_e: MenuEngineeringItem, index: number) => <Cell key={`dog-${index}`} fill="#ef4444" />)}
               </Scatter>
             </ScatterChart>

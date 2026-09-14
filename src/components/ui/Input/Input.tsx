@@ -1,4 +1,4 @@
-import { forwardRef, type InputHTMLAttributes } from "react";
+import { forwardRef, useId, type InputHTMLAttributes } from "react";
 import { cn } from "@/utils/cn";
 import { AlertCircle } from "lucide-react";
 
@@ -38,13 +38,17 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     ref,
   ) => {
     const isModified = originalValue !== undefined && String(value) !== String(originalValue);
+    const generatedId = useId();
+    const inputId = id ?? generatedId;
+    const errorId = error ? `${inputId}-error` : undefined;
+    const helperId = !error && helperText ? `${inputId}-helper` : undefined;
 
     return (
       <div className={fullWidth ? "w-full" : ""}>
         {/* Label */}
         {label && (
           <label
-            htmlFor={id}
+            htmlFor={inputId}
             className="block text-sm font-semibold text-carbon-800 mb-2 ml-1"
           >
             {label}
@@ -62,9 +66,11 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
         {/* Input field - Normalized */}
         <input
           ref={ref}
-          id={id}
+          id={inputId}
           value={value}
           defaultValue={defaultValue}
+          aria-invalid={!!error}
+          aria-describedby={errorId ?? helperId}
           className={cn(
             // Base
             "w-full px-4 py-3 text-base font-medium",
@@ -91,7 +97,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
         {/* Error message */}
         {error && (
-          <p className="mt-2 text-sm text-error-600 flex items-center gap-1.5 font-bold animate-fade-in">
+          <p id={errorId} className="mt-2 text-sm text-error-600 flex items-center gap-1.5 font-bold animate-fade-in">
             <AlertCircle className="w-3.5 h-3.5" />
             {error}
           </p>
@@ -99,7 +105,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
 
         {/* Helper text */}
         {!error && helperText && (
-          <p className="mt-2 text-sm text-carbon-500">{helperText}</p>
+          <p id={helperId} className="mt-2 text-sm text-carbon-500">{helperText}</p>
         )}
       </div>
     );

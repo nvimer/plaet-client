@@ -90,6 +90,28 @@
   .shadow-sage-glow {
     box-shadow: 0 8px 24px rgba(168, 197, 180, 0.2);
   }
+
+  /* Smooth shadow aliases — same scale as .shadow-soft-*, kept for components
+     that reference the "smooth" name (Card, Sidebar, FilterBar, and page shells) */
+  .shadow-smooth {
+    box-shadow: 0 2px 4px rgba(45, 52, 54, 0.06);
+  }
+
+  .shadow-smooth-sm {
+    box-shadow: 0 2px 4px rgba(45, 52, 54, 0.06);
+  }
+
+  .shadow-smooth-md {
+    box-shadow: 0 4px 8px rgba(45, 52, 54, 0.08);
+  }
+
+  .shadow-smooth-lg {
+    box-shadow: 0 8px 16px rgba(45, 52, 54, 0.1);
+  }
+
+  .shadow-smooth-xl {
+    box-shadow: 0 16px 32px rgba(45, 52, 54, 0.12);
+  }
 }
 
 /* ====================================

@@ -61,8 +61,15 @@ const STATUS_MAP = {
  * Premium Table Card - Minimalist Edition
  * Focused on clarity, fast reading and tactile efficiency.
  */
+const NEXT_STATUS: Record<TableStatus, TableStatus> = {
+  [TableStatus.AVAILABLE]: TableStatus.OCCUPIED,
+  [TableStatus.OCCUPIED]: TableStatus.NEEDS_CLEANING,
+  [TableStatus.NEEDS_CLEANING]: TableStatus.AVAILABLE,
+};
+
 export function TableCard({ table, onEdit }: TableCardProps) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isStatusConfirmOpen, setIsStatusConfirmOpen] = useState(false);
   const [timeLabel, setTimeLabel] = useState(getWaitTime(table.updatedAt));
 
   useEffect(() => {
@@ -83,6 +90,8 @@ export function TableCard({ table, onEdit }: TableCardProps) {
 
   const theme = STATUS_MAP[table.status];
   const StatusIcon = theme.icon;
+  const nextStatus = NEXT_STATUS[table.status];
+  const nextStatusLabel = STATUS_MAP[nextStatus].label;
 
   const handleStatusChange = (newStatus: TableStatus) => {
     updateStatus(
@@ -175,17 +184,11 @@ export function TableCard({ table, onEdit }: TableCardProps) {
           </Button>
 
           <div className="flex gap-1">
-            <Tooltip content="Cambiar estado">
+            <Tooltip content={`Cambiar a: ${nextStatusLabel}`}>
               <button
-                onClick={() => {
-                  const next: Record<TableStatus, TableStatus> = {
-                    [TableStatus.AVAILABLE]: TableStatus.OCCUPIED,
-                    [TableStatus.OCCUPIED]: TableStatus.NEEDS_CLEANING,
-                    [TableStatus.NEEDS_CLEANING]: TableStatus.AVAILABLE,
-                  };
-                  handleStatusChange(next[table.status]);
-                }}
+                onClick={() => setIsStatusConfirmOpen(true)}
                 disabled={isUpdatingStatus}
+                aria-label={`Cambiar mesa ${table.number} a ${nextStatusLabel}`}
                 className={cn(
                   "w-11 h-11 flex items-center justify-center rounded-2xl border-2 transition-all",
                   "bg-white border-sage-100 text-carbon-600 hover:border-carbon-900 hover:text-carbon-900 shadow-soft-sm active:scale-95"
@@ -194,10 +197,11 @@ export function TableCard({ table, onEdit }: TableCardProps) {
                 <CircleDot className="w-4 h-4" />
               </button>
             </Tooltip>
-            
+
             <Tooltip content="Eliminar mesa">
               <button
                 onClick={() => setIsDeleteDialogOpen(true)}
+                aria-label={`Eliminar mesa ${table.number}`}
                 className="w-11 h-11 flex items-center justify-center rounded-2xl border-2 border-sage-100 text-carbon-300 hover:border-error-200 hover:text-error-600 hover:bg-error-50 transition-all active:scale-95 shadow-soft-sm"
               >
                 <Trash2 className="w-4 h-4" />
@@ -217,6 +221,25 @@ export function TableCard({ table, onEdit }: TableCardProps) {
         cancelText="Cancelar"
         variant="danger"
         isLoading={isDeleting}
+      />
+
+      <ConfirmDialog
+        isOpen={isStatusConfirmOpen}
+        onClose={() => setIsStatusConfirmOpen(false)}
+        onConfirm={() => {
+          handleStatusChange(nextStatus);
+          setIsStatusConfirmOpen(false);
+        }}
+        title={`¿Cambiar mesa ${table.number} a "${nextStatusLabel}"?`}
+        message={
+          table.status === TableStatus.OCCUPIED
+            ? "La mesa está ocupada. Esto la marcará como en limpieza, liberándola de la sesión actual."
+            : undefined
+        }
+        confirmText="Sí, cambiar"
+        cancelText="Cancelar"
+        variant="warning"
+        isLoading={isUpdatingStatus}
       />
     </>
   );
