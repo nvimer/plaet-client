@@ -1,11 +1,11 @@
 /**
  * ROLES API SERVICE
- * 
+ *
  * Services related to role management
- * Base Endpoints: /roles/*
+ * Uses Supabase Edge Functions
  */
 
-import { axiosClient } from "./axiosClient";
+import { FUNCTIONS_BASE, getStoredToken } from "@/lib/supabase";
 import type {
   Role,
   ApiResponse,
@@ -13,112 +13,84 @@ import type {
   PaginationParams,
 } from "@/types";
 
-/**
- * Role creation input
- */
 export interface CreateRoleInput {
   name: string;
   description?: string;
 }
 
-/**
- * Role update input
- */
 export interface UpdateRoleInput {
   name?: string;
   description?: string;
 }
 
-/**
- * Assign permissions to role input
- */
-export interface AssignPermissionsInput {
-  permissionIds: number[];
+function getAuthHeaders(): Record<string, string> {
+  const token = getStoredToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-/**
- * GET /roles
- * 
- * Get paginated list of roles
- */
+async function handleResponse<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: res.statusText }));
+    throw new Error(err.message || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
 export const getRoles = async (params?: PaginationParams) => {
-  // Always send pagination params to ensure backend receives valid values
-  const pageValue = params?.page ?? 1;
-  const limitValue = params?.limit ?? 100; // Get all roles by default
+  const page = params?.page ?? 1;
+  const limit = params?.limit ?? 100;
 
-  const page = isNaN(Number(pageValue)) ? 1 : Number(pageValue);
-  const limit = isNaN(Number(limitValue)) ? 100 : Number(limitValue);
-
-  const queryParams = {
-    page: String(page),
-    limit: String(limit),
-  };
-
-  const { data } = await axiosClient.get<PaginatedResponse<Role>>("roles", {
-    params: queryParams,
-  });
-
-  return data;
+  const res = await fetch(
+    `${FUNCTIONS_BASE}/roles-list?page=${page}&limit=${limit}`,
+    { headers: getAuthHeaders() }
+  );
+  return handleResponse<PaginatedResponse<Role>>(res);
 };
 
-/**
- * GET /roles/:id
- * 
- * Get single role by ID
- */
 export const getRoleById = async (id: number) => {
-  const { data } = await axiosClient.get<ApiResponse<Role>>(`roles/${id}`);
-  return data;
+  const res = await fetch(`${FUNCTIONS_BASE}/roles-get?id=${id}`, {
+    headers: getAuthHeaders(),
+  });
+  return handleResponse<ApiResponse<Role>>(res);
 };
 
-/**
- * POST /roles
- * 
- * Create a new role
- */
 export const createRole = async (roleData: CreateRoleInput) => {
-  const { data } = await axiosClient.post<ApiResponse<Role>>(
-    "roles",
-    roleData
-  );
-  return data;
+  const res = await fetch(`${FUNCTIONS_BASE}/roles-create`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify(roleData),
+  });
+  return handleResponse<ApiResponse<Role>>(res);
 };
 
-/**
- * PATCH /roles/:id
- * 
- * Update an existing role
- */
 export const updateRole = async (id: number, roleData: UpdateRoleInput) => {
-  const { data } = await axiosClient.patch<ApiResponse<Role>>(
-    `roles/${id}`,
-    roleData
-  );
-  return data;
+  const res = await fetch(`${FUNCTIONS_BASE}/roles-update?id=${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify(roleData),
+  });
+  return handleResponse<ApiResponse<Role>>(res);
 };
 
-/**
- * DELETE /roles/:id
- * 
- * Delete a role (soft delete)
- */
 export const deleteRole = async (id: number) => {
-  const { data } = await axiosClient.delete<ApiResponse<null>>(`roles/${id}`);
-  return data;
+  const res = await fetch(`${FUNCTIONS_BASE}/roles-delete?id=${id}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+  return handleResponse<ApiResponse<null>>(res);
 };
 
-/**
- * POST /roles/permissions/:id/assign
- * 
- * Assign permissions to a role
- */
 export const assignPermissionsToRole = async (
   roleId: number,
   permissionIds: number[]
 ) => {
-  const { data } = await axiosClient.post<ApiResponse<Role>>(
-    `roles/permissions/${roleId}/assign`,
-    { permissionIds }
+  const res = await fetch(
+    `${FUNCTIONS_BASE}/roles-assign-permissions?id=${roleId}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+      body: JSON.stringify({ permissionIds }),
+    }
   );
-  return data;
+  return handleResponse<ApiResponse<Role>>(res);
 };

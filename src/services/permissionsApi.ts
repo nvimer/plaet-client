@@ -1,11 +1,11 @@
 /**
  * PERMISSIONS API SERVICE
- * 
+ *
  * Services related to permission management
- * Base Endpoints: /permissions/*
+ * Uses Supabase Edge Functions
  */
 
-import { axiosClient } from "./axiosClient";
+import { FUNCTIONS_BASE, getStoredToken } from "@/lib/supabase";
 import type {
   Permission,
   ApiResponse,
@@ -13,84 +13,72 @@ import type {
   PaginationParams,
 } from "@/types";
 
-/**
- * Permission creation input
- */
 export interface CreatePermissionInput {
   name: string;
   description?: string;
 }
 
-/**
- * Permission update input
- */
 export interface UpdatePermissionInput {
   name?: string;
   description?: string;
 }
 
-/**
- * GET /permissions
- * 
- * Get paginated list of permissions
- */
+function getAuthHeaders(): Record<string, string> {
+  const token = getStoredToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function handleResponse<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: res.statusText }));
+    throw new Error(err.message || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
 export const getPermissions = async (params?: PaginationParams) => {
-  const { data } = await axiosClient.get<PaginatedResponse<Permission>>(
-    "permissions",
-    { params }
+  const page = params?.page ?? 1;
+  const limit = params?.limit ?? 100;
+
+  const res = await fetch(
+    `${FUNCTIONS_BASE}/permissions-list?page=${page}&limit=${limit}`,
+    { headers: getAuthHeaders() }
   );
-  return data;
+  return handleResponse<PaginatedResponse<Permission>>(res);
 };
 
-/**
- * GET /permissions/:id
- * 
- * Get single permission by ID
- */
 export const getPermissionById = async (id: number) => {
-  const { data } = await axiosClient.get<ApiResponse<Permission>>(
-    `permissions/${id}`
-  );
-  return data;
+  const res = await fetch(`${FUNCTIONS_BASE}/permissions-list?id=${id}`, {
+    headers: getAuthHeaders(),
+  });
+  return handleResponse<ApiResponse<Permission>>(res);
 };
 
-/**
- * POST /permissions
- * 
- * Create a new permission
- */
 export const createPermission = async (permissionData: CreatePermissionInput) => {
-  const { data } = await axiosClient.post<ApiResponse<Permission>>(
-    "permissions",
-    permissionData
-  );
-  return data;
+  const res = await fetch(`${FUNCTIONS_BASE}/permissions-list`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify(permissionData),
+  });
+  return handleResponse<ApiResponse<Permission>>(res);
 };
 
-/**
- * PATCH /permissions/:id
- * 
- * Update an existing permission
- */
 export const updatePermission = async (
   id: number,
   permissionData: UpdatePermissionInput
 ) => {
-  const { data } = await axiosClient.patch<ApiResponse<Permission>>(
-    `permissions/${id}`,
-    permissionData
-  );
-  return data;
+  const res = await fetch(`${FUNCTIONS_BASE}/permissions-list?id=${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify(permissionData),
+  });
+  return handleResponse<ApiResponse<Permission>>(res);
 };
 
-/**
- * DELETE /permissions/:id
- * 
- * Delete a permission (soft delete)
- */
 export const deletePermission = async (id: number) => {
-  const { data } = await axiosClient.delete<ApiResponse<null>>(
-    `permissions/${id}`
-  );
-  return data;
+  const res = await fetch(`${FUNCTIONS_BASE}/permissions-list?id=${id}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+  return handleResponse<ApiResponse<null>>(res);
 };

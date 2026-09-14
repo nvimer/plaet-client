@@ -15,3 +15,11 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
 });
 
 export const FUNCTIONS_BASE = `${supabaseUrl}/functions/v1`;
+
+export function getStoredToken(): string | null {
+  try {
+    return localStorage.getItem("token");
+  } catch {
+    return null;
+  }
+}
