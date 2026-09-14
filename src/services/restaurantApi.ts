@@ -2,10 +2,10 @@
  * RESTAURANTS API SERVICE
  *
  * Services related to restaurant management (SuperAdmin only)
- * Base Endpoints: /restaurants/*
+ * Uses Supabase Edge Functions
  */
 
-import { axiosClient } from "./axiosClient";
+import { FUNCTIONS_BASE, getStoredToken } from "@/lib/supabase";
 import type {
   Restaurant,
   CreateRestaurantInput,
@@ -16,93 +16,73 @@ import type {
   PaginationParams,
 } from "@/types";
 
-/**
- * GET /restaurants
- *
- * Get paginated list of all restaurants
- *
- * @param params - Pagination parameters
- * @returns Paginated list of restaurants
- */
+function getAuthHeaders(): Record<string, string> {
+  const token = getStoredToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
+async function handleResponse<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: res.statusText }));
+    throw new Error(err.message || `HTTP ${res.status}`);
+  }
+  return res.json();
+}
+
 export const getRestaurants = async (params?: PaginationParams) => {
-  const pageValue = params?.page ?? 1;
-  const limitValue = params?.limit ?? 20;
+  const page = params?.page ?? 1;
+  const limit = params?.limit ?? 20;
 
-  const queryParams = {
-    page: String(pageValue),
-    limit: String(limitValue),
-  };
-
-  const { data } = await axiosClient.get<PaginatedResponse<Restaurant>>("restaurants", {
-    params: queryParams,
-  });
-  return data;
+  const res = await fetch(
+    `${FUNCTIONS_BASE}/restaurants-list?page=${page}&limit=${limit}`,
+    { headers: getAuthHeaders() }
+  );
+  return handleResponse<PaginatedResponse<Restaurant>>(res);
 };
 
-/**
- * GET /restaurants/search
- *
- * Search restaurants with filters
- */
 export const searchRestaurants = async (params: PaginationParams & RestaurantSearchParams) => {
   const { page = 1, limit = 20, search, status } = params;
 
-  const queryParams: Record<string, string> = {
-    page: String(page),
-    limit: String(limit),
-  };
+  const searchParams = new URLSearchParams({ page: String(page), limit: String(limit) });
+  if (search) searchParams.set("search", search);
+  if (status) searchParams.set("status", status);
 
-  if (search) queryParams.search = search;
-  if (status) queryParams.status = status;
-
-  const { data } = await axiosClient.get<PaginatedResponse<Restaurant>>("restaurants/search", {
-    params: queryParams,
-  });
-  return data;
+  const res = await fetch(
+    `${FUNCTIONS_BASE}/restaurants-list?${searchParams.toString()}`,
+    { headers: getAuthHeaders() }
+  );
+  return handleResponse<PaginatedResponse<Restaurant>>(res);
 };
 
-/**
- * GET /restaurants/:id
- *
- * Get single restaurant by ID
- */
 export const getRestaurantById = async (id: string) => {
-  const { data } = await axiosClient.get<ApiResponse<Restaurant>>(`restaurants/${id}`);
-  return data;
+  const res = await fetch(`${FUNCTIONS_BASE}/restaurants-get?id=${id}`, {
+    headers: getAuthHeaders(),
+  });
+  return handleResponse<ApiResponse<Restaurant>>(res);
 };
 
-/**
- * POST /restaurants
- *
- * Create a new restaurant and its admin user
- */
 export const createRestaurant = async (restaurantData: CreateRestaurantInput) => {
-  const { data } = await axiosClient.post<ApiResponse<Restaurant>>(
-    "restaurants",
-    restaurantData,
-  );
-  return data;
+  const res = await fetch(`${FUNCTIONS_BASE}/restaurants-create`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify(restaurantData),
+  });
+  return handleResponse<ApiResponse<Restaurant>>(res);
 };
 
-/**
- * PATCH /restaurants/:id
- *
- * Update a restaurant
- */
 export const updateRestaurant = async (id: string, restaurantData: UpdateRestaurantInput) => {
-  const { data } = await axiosClient.patch<ApiResponse<Restaurant>>(
-    `restaurants/${id}`,
-    restaurantData,
-  );
-  return data;
+  const res = await fetch(`${FUNCTIONS_BASE}/restaurants-update?id=${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+    body: JSON.stringify(restaurantData),
+  });
+  return handleResponse<ApiResponse<Restaurant>>(res);
 };
 
-/**
- * DELETE /restaurants/:id
- *
- * Soft delete a restaurant
- */
 export const deleteRestaurant = async (id: string) => {
-  const { data } = await axiosClient.delete<ApiResponse<void>>(`restaurants/${id}`);
-  return data;
+  const res = await fetch(`${FUNCTIONS_BASE}/restaurants-delete?id=${id}`, {
+    method: "DELETE",
+    headers: getAuthHeaders(),
+  });
+  return handleResponse<ApiResponse<void>>(res);
 };
