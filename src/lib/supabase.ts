@@ -18,7 +18,7 @@ export const FUNCTIONS_BASE = `${supabaseUrl}/functions/v1`;
 
 export function getStoredToken(): string | null {
   try {
-    return localStorage.getItem("token");
+    return localStorage.getItem("accessToken");
   } catch {
     return null;
   }
