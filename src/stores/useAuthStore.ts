@@ -131,6 +131,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         error: null,
         lastActivity: new Date(),
       });
+      saveUserToStorage(user);
       // @ts-expect-error - access internal function
       get().setupTokenRefresh();
       return mustChangePassword ?? false;
