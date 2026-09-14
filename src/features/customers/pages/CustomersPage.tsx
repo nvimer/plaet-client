@@ -1,4 +1,4 @@
-import { Button, Card, EmptyState, Skeleton, Tooltip, FilterBar, FilterSearch, ActiveFilterChips } from "@/components";
+import { Button, Card, ConfirmDialog, EmptyState, Skeleton, Tooltip, FilterBar, FilterSearch, ActiveFilterChips } from "@/components";
 import { SidebarLayout } from "@/layouts/SidebarLayout";
 import { Search, User, Users, Phone, MapPin, Ticket, Plus, Edit2, History, Trash2, ShoppingBag, ChevronRight, Mail } from "lucide-react";
 import { useState, useMemo } from "react";
@@ -23,6 +23,7 @@ export function CustomersPage() {
   
   const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
   const [editingCustomer, setEditingCustomer] = useState<any>(null);
+  const [deletingCustomer, setDeletingCustomer] = useState<any>(null);
 
   // --- DATA HOOKS ---
   const { data: customersResponse, isLoading: loadingList } = useCustomers({ 
@@ -68,11 +69,16 @@ export function CustomersPage() {
     setIsFormModalOpen(false);
   };
 
-  const handleDelete = (e: React.MouseEvent, id: string) => {
+  const handleDeleteRequest = (e: React.MouseEvent, customer: any) => {
     e.stopPropagation();
-    if (window.confirm("¿Estás seguro de eliminar este cliente?")) {
-      deleteCustomer.mutate(id);
-    }
+    setDeletingCustomer(customer);
+  };
+
+  const handleDeleteConfirm = () => {
+    if (!deletingCustomer) return;
+    deleteCustomer.mutate(deletingCustomer.id, {
+      onSuccess: () => setDeletingCustomer(null),
+    });
   };
 
   const activeChips = [
@@ -227,8 +233,9 @@ export function CustomersPage() {
                             <Ticket className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
                           </button>
 
-                          <button 
-                            onClick={(e) => handleDelete(e, customer.id)}
+                          <button
+                            onClick={(e) => handleDeleteRequest(e, customer)}
+                            aria-label={`Eliminar cliente ${customer.firstName} ${customer.lastName || ""}`}
                             className="w-8 h-8 sm:w-9 sm:h-9 rounded-lg hover:bg-error-50 border border-transparent hover:border-error-100 flex items-center justify-center text-carbon-400 hover:text-error-600 transition-all active:scale-90"
                           >
                             <Trash2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
@@ -286,6 +293,22 @@ export function CustomersPage() {
           }}
           customer={detailedCustomerResponse?.data ? (detailedCustomerResponse.data as any) : null}
           isLoading={loadingDetail}
+        />
+
+        <ConfirmDialog
+          isOpen={!!deletingCustomer}
+          onClose={() => setDeletingCustomer(null)}
+          onConfirm={handleDeleteConfirm}
+          isLoading={deleteCustomer.isPending}
+          variant="danger"
+          title="Eliminar cliente"
+          message={
+            deletingCustomer
+              ? `¿Eliminar a ${deletingCustomer.firstName} ${deletingCustomer.lastName || ""}? Esta acción no se puede deshacer.`
+              : undefined
+          }
+          confirmText="Eliminar"
+          cancelText="Cancelar"
         />
 
       </div>

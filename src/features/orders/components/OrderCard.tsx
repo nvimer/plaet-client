@@ -283,6 +283,7 @@ export function OrderCard({
             <button
               onClick={handleStatusChange}
               disabled={isUpdatingStatus}
+              aria-label={`Marcar pedido ${shortId} como ${nextStatus.label}`}
               className={cn(
                 "p-2 rounded-lg transition-colors",
                 "bg-sage-100 text-sage-700 hover:bg-sage-200",
@@ -294,6 +295,7 @@ export function OrderCard({
           )}
           <button
             onClick={() => onViewDetail(order.id)}
+            aria-label={`Ver detalle del pedido ${shortId}`}
             className="p-2 rounded-lg bg-carbon-100 text-carbon-600 hover:bg-carbon-200 min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
             <Eye className="w-5 h-5" />

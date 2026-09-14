@@ -96,6 +96,13 @@ export function TouchableCard({
       whileTap={{ scale: disabled ? 1 : 0.95 }}
       whileHover={{ scale: disabled ? 1 : 1.02 }}
       onClick={handlePress}
+      onKeyDown={(e) => {
+        if (disabled) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handlePress();
+        }
+      }}
       role="button"
       tabIndex={disabled ? -1 : 0}
       aria-disabled={disabled}

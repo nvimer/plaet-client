@@ -15,16 +15,18 @@ import {
   TrendingUp,
   TrendingDown
 } from "lucide-react";
-import { 
-  BaseModal, 
-  Button, 
-  Input 
+import {
+  BaseModal,
+  Button,
+  ConfirmDialog,
+  Input
 } from "@/components";
 import { useAddStock, useRemoveStock, useStockHistory } from "../hooks";
 import { toast } from "sonner";
 import type { MenuItem } from "@/types";
 import { cn } from "@/utils/cn";
 import { logger } from "@/utils";
+import { StockHistoryModal } from "./StockHistoryModal";
 
 interface QuickStockModalProps {
   item: MenuItem;
@@ -36,6 +38,8 @@ export function QuickStockModal({ item, isOpen, onClose }: QuickStockModalProps)
   const [adjustment, setAdjustment] = useState<number>(0);
   const [reason, setReason] = useState<string>("");
   const [viewHistory, setViewHistory] = useState(false);
+  const [showFullHistory, setShowFullHistory] = useState(false);
+  const [showRemoveConfirm, setShowRemoveConfirm] = useState(false);
 
   const { mutateAsync: addStock, isPending: isAdding } = useAddStock();
   const { mutateAsync: removeStock, isPending: isRemoving } = useRemoveStock();
@@ -45,12 +49,25 @@ export function QuickStockModal({ item, isOpen, onClose }: QuickStockModalProps)
     setAdjustment(prev => prev + amount);
   };
 
-  const handleSave = async () => {
+  const handleSaveRequest = () => {
     if (adjustment === 0) {
       toast.error("Sin cambios", { description: "Ingresa una cantidad para ajustar" });
       return;
     }
 
+    if (adjustment < 0) {
+      if ((item.stockQuantity || 0) < Math.abs(adjustment)) {
+        toast.error("Stock insuficiente", { description: "No puedes remover más de lo que hay" });
+        return;
+      }
+      setShowRemoveConfirm(true);
+      return;
+    }
+
+    handleSave();
+  };
+
+  const handleSave = async () => {
     try {
       if (adjustment > 0) {
         await addStock({
@@ -69,11 +86,12 @@ export function QuickStockModal({ item, isOpen, onClose }: QuickStockModalProps)
         });
       }
       
-      toast.success("Stock actualizado", { 
-        description: `${adjustment > 0 ? 'Agregadas' : 'Removidas'} ${Math.abs(adjustment)} unidades` 
+      toast.success("Stock actualizado", {
+        description: `${adjustment > 0 ? 'Agregadas' : 'Removidas'} ${Math.abs(adjustment)} unidades`
       });
       setAdjustment(0);
       setReason("");
+      setShowRemoveConfirm(false);
       onClose();
     } catch (error) {
       logger.error("Failed to update stock", error instanceof Error ? error : new Error(String(error)));
@@ -191,26 +209,35 @@ export function QuickStockModal({ item, isOpen, onClose }: QuickStockModalProps)
           </button>
           
           {viewHistory && (
-            <div className="mt-3 space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
-              {history && history.length > 0 ? (
-                history.map((entry) => (
-                  <div key={entry.id} className="flex items-center justify-between p-2 rounded-lg bg-carbon-50 text-xs border border-carbon-100">
-                    <div className="flex items-center gap-2">
-                      {entry.type === 'ADD' ? 
-                        <TrendingUp className="w-3 h-3 text-success-500" /> : 
-                        <TrendingDown className="w-3 h-3 text-error-500" />
-                      }
-                      <span className="font-bold text-carbon-700">{entry.quantity} ud.</span>
-                      <span className="text-carbon-400 truncate max-w-[120px]">{entry.reason}</span>
+            <div className="mt-3 space-y-2">
+              <div className="max-h-40 overflow-y-auto pr-2 custom-scrollbar space-y-2">
+                {history && history.length > 0 ? (
+                  history.map((entry) => (
+                    <div key={entry.id} className="flex items-center justify-between p-2 rounded-lg bg-carbon-50 text-xs border border-carbon-100">
+                      <div className="flex items-center gap-2">
+                        {entry.type === 'ADD' ?
+                          <TrendingUp className="w-3 h-3 text-success-500" /> :
+                          <TrendingDown className="w-3 h-3 text-error-500" />
+                        }
+                        <span className="font-bold text-carbon-700">{entry.quantity} ud.</span>
+                        <span className="text-carbon-400 truncate max-w-[120px]">{entry.reason}</span>
+                      </div>
+                      <span className="text-carbon-400">
+                        {new Date(entry.createdAt).toLocaleDateString()}
+                      </span>
                     </div>
-                    <span className="text-carbon-400">
-                      {new Date(entry.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
-                ))
-              ) : (
-                <p className="text-xs text-carbon-400 text-center py-4 italic">Sin movimientos recientes</p>
-              )}
+                  ))
+                ) : (
+                  <p className="text-xs text-carbon-400 text-center py-4 italic">Sin movimientos recientes</p>
+                )}
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowFullHistory(true)}
+                className="text-xs font-bold text-sage-600 hover:text-sage-700 hover:underline transition-colors"
+              >
+                Ver historial completo
+              </button>
             </div>
           )}
         </div>
@@ -228,7 +255,7 @@ export function QuickStockModal({ item, isOpen, onClose }: QuickStockModalProps)
           <Button
             variant="primary"
             fullWidth
-            onClick={handleSave}
+            onClick={handleSaveRequest}
             isLoading={isPending}
             disabled={adjustment === 0}
           >
@@ -237,6 +264,25 @@ export function QuickStockModal({ item, isOpen, onClose }: QuickStockModalProps)
           </Button>
         </div>
       </div>
+
+      <ConfirmDialog
+        isOpen={showRemoveConfirm}
+        onClose={() => setShowRemoveConfirm(false)}
+        onConfirm={handleSave}
+        isLoading={isPending}
+        variant="warning"
+        title="Remover stock"
+        message={`¿Remover ${Math.abs(adjustment)} unidades de "${item.name}"? Quedarán ${resultStock} unidades.`}
+        confirmText="Sí, remover"
+        cancelText="Cancelar"
+      />
+
+      <StockHistoryModal
+        itemId={item.id}
+        itemName={item.name}
+        isOpen={showFullHistory}
+        onClose={() => setShowFullHistory(false)}
+      />
     </BaseModal>
   );
 }
