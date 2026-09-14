@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { useEffect, useRef } from "react";
-import type { User, LoginInput, RegisterInput } from "@/types";
+import type { User, LoginInput, RegisterInput, RoleName } from "@/types";
 import * as authApi from "@/services/authApi";
 import { logger } from "@/utils";
 import {
@@ -110,6 +110,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
       const mustChangePassword = userData.mustChangePassword;
 
       // Build minimal User object from Edge Function response
+      const role = (userData as Record<string, unknown>).role as string | undefined;
       const user: User = {
         id: userData.id,
         email: userData.email,
@@ -117,6 +118,7 @@ export const useAuthStore = create<AuthStore>((set, get) => ({
         lastName: userData.lastName,
         mustChangePassword,
         restaurantId: userData.restaurantId,
+        roles: role ? [{ id: 0, name: role as RoleName, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString(), deleted: false }] : [],
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
         deleted: false,
