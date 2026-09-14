@@ -81,6 +81,10 @@ export function RolePermissionMatrix({
                             type="button"
                             onClick={() => onToggle(role.id, permission.id, isAssigned)}
                             disabled={isUpdating || role.name === "SUPERADMIN"}
+                            aria-pressed={isAssigned || role.name === "SUPERADMIN"}
+                            aria-label={`Permiso "${permission.name}" para el rol ${role.name}: ${
+                              isAssigned || role.name === "SUPERADMIN" ? "concedido" : "no concedido"
+                            }`}
                             className={cn(
                               "w-7 h-7 rounded-lg border-2 transition-all mx-auto flex items-center justify-center",
                               role.name === "SUPERADMIN" 

@@ -130,7 +130,7 @@ export function HeroSection() {
               transition={{ duration: 0.8, delay: 0.6 }}
               className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
             >
-              <Link to="/login">
+              <Link to="/register">
                 <Button
                   variant="primary"
                   size="lg"

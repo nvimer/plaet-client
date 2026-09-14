@@ -1,4 +1,4 @@
-import { forwardRef, type SelectHTMLAttributes } from "react";
+import { forwardRef, useId, type SelectHTMLAttributes } from "react";
 import { cn } from "@/utils/cn";
 import { AlertCircle } from "lucide-react";
 
@@ -20,11 +20,15 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
  * Premium Select Component
  */
 export const Select = forwardRef<HTMLSelectElement, SelectProps>(
-  ({ label, error, options, fullWidth = true, required = false, optional = false, className, ...props }, ref) => {
+  ({ label, error, options, fullWidth = true, required = false, optional = false, className, id, ...props }, ref) => {
+    const generatedId = useId();
+    const selectId = id ?? generatedId;
+    const errorId = error ? `${selectId}-error` : undefined;
+
     return (
       <div className={cn("flex flex-col gap-1.5", fullWidth && "w-full")}>
         {label && (
-          <label className="text-sm font-semibold text-carbon-800 mb-0.5 ml-1">
+          <label htmlFor={selectId} className="text-sm font-semibold text-carbon-800 mb-0.5 ml-1">
             {label}
             {required && <span className="text-error-500 ml-1">*</span>}
             {optional && (
@@ -37,6 +41,9 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
         <div className="relative">
           <select
             ref={ref}
+            id={selectId}
+            aria-invalid={!!error}
+            aria-describedby={errorId}
             className={cn(
               "appearance-none",
               "w-full h-12 px-4 rounded-xl border-2 transition-all duration-200 outline-none",
@@ -71,7 +78,7 @@ export const Select = forwardRef<HTMLSelectElement, SelectProps>(
           </div>
         </div>
         {error && (
-          <span className="text-xs font-bold text-error-600 px-1 animate-fade-in flex items-center gap-1.5 mt-1.5">
+          <span id={errorId} className="text-xs font-bold text-error-600 px-1 animate-fade-in flex items-center gap-1.5 mt-1.5">
             <AlertCircle className="w-3 h-3" />
             {error}
           </span>

@@ -66,6 +66,8 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete, highlighted
             {/* Status Indicators */}
             <div className="absolute top-3 left-3 flex gap-2 items-center">
               <div
+                role="img"
+                aria-label={item.isAvailable ? "Disponible" : "No disponible"}
                 title={item.isAvailable ? "Disponible" : "No disponible"}
                 className={cn(
                   "w-3 h-3 rounded-full shadow-sm border-2 border-white",
@@ -89,6 +91,7 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete, highlighted
                   e.stopPropagation();
                   setIsStockModalOpen(true);
                 }}
+                aria-label={`Ajustar stock de ${item.name}, quedan ${item.stockQuantity} unidades`}
                 className={cn(
                   "absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-lg border shadow-soft-sm transition-all hover:scale-105 active:scale-95",
                   isOutOfStock ? "bg-error-50 border-error-200 text-error-700" :
@@ -139,6 +142,7 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete, highlighted
                 <Button
                   variant="primary"
                   onClick={() => setIsStockModalOpen(true)}
+                  aria-label={`Ajustar stock de ${item.name}`}
                   className="w-full rounded-xl bg-sage-600 h-10 sm:h-11 px-0 shadow-sm transition-all hover:bg-sage-700"
                 >
                   <Plus className="w-5 h-5" />
@@ -150,6 +154,7 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete, highlighted
               <Button
                 variant="ghost"
                 onClick={() => onEdit(item.id)}
+                aria-label={`Editar ${item.name}`}
                 className={cn(
                   "rounded-xl bg-carbon-50 h-10 sm:h-11 text-carbon-600 border border-carbon-100 transition-all hover:bg-white hover:border-sage-300 hover:text-sage-600 shrink-0",
                   item.inventoryType === "TRACKED" ? "w-10 sm:w-11" : "w-full"
@@ -163,6 +168,7 @@ export function MenuItemCard({ item, categoryName, onEdit, onDelete, highlighted
               <Button
                 variant="ghost"
                 onClick={() => setIsDeleteDialogOpen(true)}
+                aria-label={`Eliminar ${item.name}`}
                 className={cn(
                   "rounded-xl bg-error-50 h-10 sm:h-11 text-error-600 border border-error-100 transition-all hover:bg-error-600 hover:text-white shrink-0",
                   item.inventoryType === "TRACKED" ? "w-10 sm:w-11" : "w-full"

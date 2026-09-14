@@ -51,9 +51,10 @@ export const PredictionsView = () => {
           <Calendar className="w-5 h-5 text-carbon-500 ml-2" />
           <input
             type="date"
+            aria-label="Fecha objetivo de la proyección"
             value={targetDate}
             onChange={(e) => setTargetDate(e.target.value)}
-            className="bg-transparent border-none text-carbon-900 font-medium focus:ring-0 cursor-pointer"
+            className="bg-transparent border-none text-carbon-900 font-medium focus:ring-2 focus:ring-sage-500 rounded-lg cursor-pointer"
           />
         </div>
       </div>
