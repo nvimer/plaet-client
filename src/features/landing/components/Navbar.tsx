@@ -93,7 +93,7 @@ export function Navbar() {
               <Button>Iniciar Sesión</Button>
             </Link>
 
-            <Link to="/register">
+            <Link to="/login">
               <Button>Comenzar Gratis</Button>
             </Link>
           </div>
@@ -142,7 +142,7 @@ export function Navbar() {
                 </Button>
               </Link>
 
-              <Link to="/register" className="block">
+              <Link to="/login" className="block">
                 <Button
                   variant="primary"
                   fullWidth
