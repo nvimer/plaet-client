@@ -117,7 +117,7 @@ export function CTASection() {
             transition={{ duration: 0.6, delay: 0.5 }}
             className="flex flex-col sm:flex-row gap-4 justify-center"
           >
-            <Link to="/register">
+            <Link to="/login">
               <Button
                 variant="primary"
                 size="lg"
