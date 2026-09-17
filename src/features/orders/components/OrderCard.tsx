@@ -239,7 +239,6 @@ export function OrderCard({
           "group flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-200",
           "bg-white hover:shadow-md hover:border-sage-200",
           config.border,
-          waitTime.isUrgent && "border-l-4 border-l-error-500",
         )}
       >
         {/* Wait Time - Prominent */}

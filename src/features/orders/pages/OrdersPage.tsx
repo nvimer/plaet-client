@@ -232,7 +232,7 @@ export function OrdersPage() {
               {alert && (
                 <span className="absolute inset-0 bg-success-500/10 animate-pulse" />
               )}
-              <tab.icon className={cn("w-4 h-4 z-10", alert && "text-success-500 animate-bounce")} />
+              <tab.icon className={cn("w-4 h-4 z-10", alert && "text-success-500")} />
               <span className="z-10">{tab.label}</span>
               <span className={cn("px-2 py-0.5 rounded-lg text-[10px] z-10", 
                 activeTab === tab.id ? "bg-white/20" : 
