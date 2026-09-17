@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "border-accent-on-rounded",
+        "value": "*",
+        "files": [
+          "src/features/orders/components/OrderForm.tsx"
+        ],
+        "createdAt": "2026-09-17T01:07:34.491Z",
+        "reason": "false positive: standard Tailwind rounded-full spinner (animate-spin border-b-2), not a card with a clashing accent border"
+      }
+    ]
+  }
+}

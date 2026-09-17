@@ -1,4 +1,4 @@
-import { forwardRef, type TextareaHTMLAttributes } from "react";
+import { forwardRef, useId, type TextareaHTMLAttributes } from "react";
 import { cn } from "@/utils/cn";
 import { AlertCircle } from "lucide-react";
 
@@ -37,13 +37,17 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
     ref,
   ) => {
     const isModified = originalValue !== undefined && String(value) !== String(originalValue);
+    const generatedId = useId();
+    const textareaId = id ?? generatedId;
+    const errorId = error ? `${textareaId}-error` : undefined;
+    const helperId = !error && helperText ? `${textareaId}-helper` : undefined;
 
     return (
       <div className={fullWidth ? "w-full" : ""}>
         {/* Label */}
         {label && (
           <label
-            htmlFor={id}
+            htmlFor={textareaId}
             className="block text-sm font-semibold text-carbon-800 mb-2 ml-1"
           >
             {label}
@@ -61,10 +65,12 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
         {/* Textarea field - Normalized */}
         <textarea
           ref={ref}
-          id={id}
+          id={textareaId}
           value={value}
           defaultValue={defaultValue}
           rows={rows}
+          aria-invalid={!!error}
+          aria-describedby={errorId ?? helperId}
           className={cn(
             // Base
             "w-full px-4 py-3 text-base font-medium resize-none",
@@ -91,7 +97,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 
         {/* Error message */}
         {error && (
-          <p className="mt-2 text-sm text-error-600 flex items-center gap-1.5 font-bold animate-fade-in">
+          <p id={errorId} className="mt-2 text-sm text-error-600 flex items-center gap-1.5 font-bold animate-fade-in">
             <AlertCircle className="w-3.5 h-3.5" />
             {error}
           </p>
@@ -99,7 +105,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
 
         {/* Helper text */}
         {!error && helperText && (
-          <p className="mt-2 text-sm text-carbon-500">{helperText}</p>
+          <p id={helperId} className="mt-2 text-sm text-carbon-500">{helperText}</p>
         )}
       </div>
     );

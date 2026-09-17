@@ -239,7 +239,6 @@ export function OrderCard({
           "group flex items-center gap-4 p-4 rounded-xl border-2 transition-all duration-200",
           "bg-white hover:shadow-md hover:border-sage-200",
           config.border,
-          waitTime.isUrgent && "border-l-4 border-l-error-500",
         )}
       >
         {/* Wait Time - Prominent */}
@@ -283,6 +282,7 @@ export function OrderCard({
             <button
               onClick={handleStatusChange}
               disabled={isUpdatingStatus}
+              aria-label={`Marcar pedido ${shortId} como ${nextStatus.label}`}
               className={cn(
                 "p-2 rounded-lg transition-colors",
                 "bg-sage-100 text-sage-700 hover:bg-sage-200",
@@ -294,6 +294,7 @@ export function OrderCard({
           )}
           <button
             onClick={() => onViewDetail(order.id)}
+            aria-label={`Ver detalle del pedido ${shortId}`}
             className="p-2 rounded-lg bg-carbon-100 text-carbon-600 hover:bg-carbon-200 min-w-[44px] min-h-[44px] flex items-center justify-center"
           >
             <Eye className="w-5 h-5" />
