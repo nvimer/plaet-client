@@ -119,9 +119,10 @@ export function Footer() {
               const Icon = social.icon;
               return (
                 <a
+                  key={social.label}
                   href={social.href}
                   target="_blank"
-                  rel="noonpener noreferrer"
+                  rel="noopener noreferrer"
                   aria-label={social.label}
                   className="w-10 h-10 rounded-xl bg-sage-50 flex items-center justify-center hover:bg-primary-50 transition-colors group"
                 >

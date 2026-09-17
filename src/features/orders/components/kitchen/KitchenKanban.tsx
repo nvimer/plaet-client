@@ -269,7 +269,7 @@ export function KitchenKanban({
               </h1>
               <div className="hidden sm:flex items-center gap-2 text-[10px] font-bold text-carbon-400 bg-sage-50 px-2 py-1 rounded-lg tracking-wide border border-sage-100">
                 <RefreshCw className="w-3 h-3 animate-spin-slow" />
-                <span>Auto-refresh: 30s</span>
+                <span>Auto-refresh: 10s</span>
               </div>
             </div>
           </div>

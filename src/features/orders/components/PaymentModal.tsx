@@ -48,6 +48,7 @@ export function PaymentModal({
   const [method, setMethod] = useState<PaymentMethod>(PaymentMethod.CASH);
   const [payments, setPayments] = useState<PaymentEntry[]>([]);
   const [currentAmount, setCurrentAmount] = useState<number>(0);
+  const [amountTouched, setAmountTouched] = useState(false);
   const [receivedAmount, setReceivedAmount] = useState<number>(0);
   
   // Portion logic for TicketBook
@@ -166,6 +167,7 @@ export function PaymentModal({
       setPayments([]);
       setReceivedAmount(0);
       setPortionCount(0);
+      setAmountTouched(false);
       
       // Pre-fill phone if available in orders
       const firstWithPhone = orders.find(o => o.customer?.phone);
@@ -183,15 +185,29 @@ export function PaymentModal({
     }
   }, [isOpen, ordersIdsHash]);
 
-  // Update currentAmount when the payment method changes to the remaining balance
+  // Update currentAmount to the remaining balance when switching methods —
+  // but only while the cashier hasn't typed a custom amount, so switching
+  // Cash <-> Nequi mid-entry doesn't wipe what they already entered.
   useEffect(() => {
     if (isOpen && remainingToPay > 0) {
       if (method !== PaymentMethod.TICKET_BOOK) {
-        setCurrentAmount(remainingToPay);
+        if (!amountTouched) {
+          setCurrentAmount(remainingToPay);
+        }
         setPortionCount(0);
+      } else {
+        // Ticket Book takes over the amount via portion selection; any
+        // manually-typed cash/Nequi amount no longer applies once the
+        // cashier leaves this mode.
+        setAmountTouched(false);
       }
     }
-  }, [method, isOpen, remainingToPay]);
+  }, [method, isOpen, remainingToPay, amountTouched]);
+
+  const handleAmountChange = (val: number) => {
+    setCurrentAmount(val);
+    setAmountTouched(true);
+  };
 
   // Handle automatic amount calculation when portionCount changes
   useEffect(() => {
@@ -407,18 +423,18 @@ export function PaymentModal({
             <div className="min-h-[160px]">
               <AnimatePresence mode="wait">
                 {method === PaymentMethod.CASH && (
-                  <CashPaymentForm 
-                    amount={currentAmount} 
-                    onAmountChange={setCurrentAmount} 
+                  <CashPaymentForm
+                    amount={currentAmount}
+                    onAmountChange={handleAmountChange}
                     receivedAmount={receivedAmount}
                     onReceivedChange={setReceivedAmount}
                   />
                 )}
                 {method === PaymentMethod.NEQUI && (
-                  <NequiPaymentForm 
-                    amount={currentAmount} 
-                    reference={reference} 
-                    onAmountChange={setCurrentAmount}
+                  <NequiPaymentForm
+                    amount={currentAmount}
+                    reference={reference}
+                    onAmountChange={handleAmountChange}
                     onReferenceChange={setReference}
                   />
                 )}
