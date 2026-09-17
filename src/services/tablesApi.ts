@@ -59,9 +59,9 @@ export const updateTableStatus = async (
   id: number,
   statusData: { status: string },
 ): Promise<ApiResponse<Table>> => {
-  const data = await authFetch(`${FUNCTIONS_BASE}/tables-update/${id}`, {
+  const data = await authFetch(`${FUNCTIONS_BASE}/tables-update`, {
     method: "PATCH",
-    body: JSON.stringify(statusData),
+    body: JSON.stringify({ id, ...statusData }),
   });
   return {
     success: true,
@@ -72,10 +72,24 @@ export const updateTableStatus = async (
 
 export const updateTable = async (
   id: number,
-  tableData: { location?: string; status?: string },
+  tableData: { number?: string | number; location?: string; status?: string },
 ): Promise<ApiResponse<Table>> => {
-  const data = await authFetch(`${FUNCTIONS_BASE}/tables-update/${id}`, {
+  const data = await authFetch(`${FUNCTIONS_BASE}/tables-update`, {
     method: "PATCH",
+    body: JSON.stringify({ id, ...tableData }),
+  });
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+  };
+};
+
+export const createTable = async (
+  tableData: { number: string | number; location?: string; status?: string },
+): Promise<ApiResponse<Table>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/tables-create`, {
+    method: "POST",
     body: JSON.stringify(tableData),
   });
   return {
@@ -98,6 +112,7 @@ export const getAvailableTables = async (): Promise<PaginatedResponse<Table>> =>
 export const tablesApi = {
   getTables,
   getTableById,
+  createTable,
   updateTableStatus,
   updateTable,
   getAvailableTables,
