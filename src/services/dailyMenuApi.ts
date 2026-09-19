@@ -1,4 +1,4 @@
-import { axiosClient } from "./axiosClient";
+import { callFunction, query } from "./functionsClient";
 
 /**
  * Menu Item Option - Simplified for daily menu display
@@ -117,58 +117,50 @@ export interface PaginatedDailyMenuResponse {
   };
 }
 
-const DAILY_MENU_BASE_URL = "daily-menu";
-
 /**
  * Get history of daily menus
  */
 export async function getHistory(page = 1, limit = 20) {
-  const response = await axiosClient.get<PaginatedDailyMenuResponse>(`${DAILY_MENU_BASE_URL}/history`, {
-    params: { page, limit }
-  });
-  return response.data;
+  return await callFunction<DailyMenu[]>(`daily-menu-history${query({ page, limit })}`) as unknown as PaginatedDailyMenuResponse;
 }
 
 /**
  * Get today's daily menu with full item details
  */
 export async function getToday() {
-  const response = await axiosClient.get<DailyMenuResponse>(`${DAILY_MENU_BASE_URL}/current`);
-  return response.data;
+  return await callFunction<DailyMenu | null>("daily-menu-get?date=current") as unknown as DailyMenuResponse;
 }
 
 /**
  * Get daily menu for a specific date
  */
 export async function getByDate(date: string) {
-  const response = await axiosClient.get<DailyMenuResponse>(`${DAILY_MENU_BASE_URL}/${date}`);
-  return response.data;
+  return await callFunction<DailyMenu | null>(`daily-menu-get${query({ date })}`) as unknown as DailyMenuResponse;
 }
 
 /**
  * Update or create today's daily menu
  */
 export async function updateToday(data: UpdateDailyMenuData) {
-  const response = await axiosClient.post<DailyMenuResponse>(`${DAILY_MENU_BASE_URL}/today`, data);
-  return response.data;
+  return await callFunction<DailyMenu>("daily-menu-upsert?date=today", {
+    method: "POST",
+    body: JSON.stringify(data),
+  }) as unknown as DailyMenuResponse;
 }
 
 /**
  * Update daily menu for a specific date
  */
 export async function updateByDate(date: string, data: UpdateDailyMenuData) {
-  const response = await axiosClient.post<DailyMenuResponse>(`${DAILY_MENU_BASE_URL}/${date}`, data);
-  return response.data;
+  return await callFunction<DailyMenu>(`daily-menu-upsert${query({ date })}`, {
+    method: "POST",
+    body: JSON.stringify(data),
+  }) as unknown as DailyMenuResponse;
 }
 
 /**
  * Get menu items by category ID
  */
 export async function getItemsByCategory(categoryId: number) {
-  const response = await axiosClient.get<{
-    success: boolean;
-    message: string;
-    data: MenuItemOption[];
-  }>(`menu/items/by-category/${categoryId}`);
-  return response.data;
+  return await callFunction<MenuItemOption[]>(`menu-items-list${query({ categoryId })}`);
 }

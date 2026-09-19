@@ -1,5 +1,6 @@
 import { axiosClient } from "./axiosClient";
-import type { TopProduct, ApiResponse } from "../types";
+import { callFunction, query } from "./functionsClient";
+import type { TopProduct } from "../types";
 
 /**
  * ANALYTICS API - Client
@@ -39,17 +40,13 @@ export interface DailySummaryResponse {
 }
 
 export const getDailySummary = async (date: string): Promise<DailySummaryResponse> => {
-  const { data } = await axiosClient.get<ApiResponse<DailySummaryResponse>>("analytics/daily-summary", {
-    params: { date }
-  });
+  const data = await callFunction<DailySummaryResponse>(`analytics-daily-summary${query({ date })}`);
   return data.data;
 };
 
 
 export const getTopProducts = async (limit: number = 5, date?: string): Promise<TopProduct[]> => {
-  const { data } = await axiosClient.get<ApiResponse<TopProduct[]>>("analytics/top-products", {
-    params: { limit, date }
-  });
+  const data = await callFunction<TopProduct[]>(`analytics-top-products${query({ startDate: date, endDate: date, limit })}`);
   return data.data;
 };
 

@@ -1,5 +1,5 @@
-import { axiosClient } from "./axiosClient";
-import type { Expense, CreateExpenseDTO, ApiResponse } from "../types";
+import { callFunction, query } from "./functionsClient";
+import type { Expense, CreateExpenseDTO } from "../types";
 
 /**
  * EXPENSES API - Client
@@ -7,17 +7,18 @@ import type { Expense, CreateExpenseDTO, ApiResponse } from "../types";
  */
 
 export const createExpense = async (dto: CreateExpenseDTO): Promise<Expense> => {
-  const { data } = await axiosClient.post<ApiResponse<Expense>>("expenses", dto);
-  return data.data;
+  const { data } = await callFunction<Expense>("expenses-create", {
+    method: "POST",
+    body: JSON.stringify(dto),
+  });
+  return data;
 };
 
 export const getExpenses = async (startDate?: string, endDate?: string): Promise<Expense[]> => {
-  const { data } = await axiosClient.get<ApiResponse<Expense[]>>("expenses", {
-    params: { startDate, endDate },
-  });
-  return data.data || [];
+  const { data } = await callFunction<Expense[]>(`expenses-list${query({ startDate, endDate })}`);
+  return data || [];
 };
 
 export const deleteExpense = async (id: string): Promise<void> => {
-  await axiosClient.delete(`expenses/${id}`);
+  await callFunction<null>(`expenses-delete${query({ id })}`, { method: "DELETE" });
 };
