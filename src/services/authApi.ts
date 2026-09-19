@@ -83,7 +83,8 @@ export const login = async (credentials: LoginInput): Promise<AuthResponse> => {
 export const register = async (userData: RegisterInput): Promise<ApiResponse<User>> => {
   const res = await fetch(`${FUNCTIONS_BASE}/auth-register`, {
     method: "POST",
-    headers: FUNCTION_HEADERS,
+    // Only an authenticated ADMIN/SUPERADMIN can create users.
+    headers: { ...FUNCTION_HEADERS, ...getAuthHeaders() },
 
     body: JSON.stringify(userData),
   });

@@ -12,7 +12,7 @@ import type {
   PaginationParams,
 } from "@/types";
 import type { UpdateProfileInput } from "@/features/users/schemas/userSchemas";
-import { axiosClient } from "./axiosClient";
+import { callFunction, query } from "./functionsClient";
 
 /**
  * GET /profile/me
@@ -22,8 +22,7 @@ import { axiosClient } from "./axiosClient";
  * @returns Complete user with profile
  */
 export const getMyProfile = async () => {
-  const { data } = await axiosClient.get<ProfileMeResponse>("profile/me");
-  return data;
+  return await callFunction<unknown>("profiles-me") as unknown as ProfileMeResponse;
 };
 
 /**
@@ -32,10 +31,7 @@ export const getMyProfile = async () => {
  * Get paginated list of profiles
  */
 export const getProfiles = async (params?: PaginationParams) => {
-  const { data } = await axiosClient.get<PaginatedResponse<User>>("profile", {
-    params,
-  });
-  return data;
+  return await callFunction<User[]>(`users-list${query({ page: params?.page, limit: params?.limit })}`) as unknown as PaginatedResponse<User>;
 };
 
 /**
@@ -44,8 +40,7 @@ export const getProfiles = async (params?: PaginationParams) => {
  * Get profile by user ID
  */
 export const getProfileById = async (id: string) => {
-  const { data } = await axiosClient.get<ApiResponse<User>>(`profile/${id}`);
-  return data;
+  return await callFunction<User>(`users-get${query({ id })}`) as unknown as ApiResponse<User>;
 };
 
 /**
@@ -53,20 +48,13 @@ export const getProfileById = async (id: string) => {
  * 
  * Update profile photo
  */
-export const uploadPhoto = async (photo: File) => {
+export const uploadPhoto = async (photo: File): Promise<ApiResponse<User>> => {
   const formData = new FormData();
   formData.append("photo", photo);
 
-  const { data } = await axiosClient.patch<ApiResponse<User>>(
-    "profile/me/photo",
-    formData,
-    {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }
-  );
-  return data;
+  // Photo upload still needs Supabase Storage; no Edge Function serves it yet.
+  void formData;
+  throw new Error("La foto de perfil todavía no está disponible: falta migrar la subida a Supabase Storage.");
 };
 
 /**
@@ -78,9 +66,8 @@ export const updateProfile = async (
   id: string,
   profileData: UpdateProfileInput
 ) => {
-  const { data } = await axiosClient.patch<ApiResponse<User>>(
-    `profile/${id}`,
-    profileData
-  );
-  return data;
+  return await callFunction<User>(`profiles-update${query({ id })}`, {
+    method: "PATCH",
+    body: JSON.stringify(profileData),
+  }) as unknown as ApiResponse<User>;
 };

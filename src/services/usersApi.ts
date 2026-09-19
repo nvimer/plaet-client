@@ -5,7 +5,7 @@
  * Base Endpoints: /users/*
  */
 
-import { axiosClient } from "./axiosClient";
+import { callFunction, query } from "./functionsClient";
 import type {
   User,
   UserWithRolesAndPermissions,
@@ -41,10 +41,7 @@ export const getUsers = async (params?: PaginationParams) => {
     limit: String(limit),
   };
 
-  const { data } = await axiosClient.get<PaginatedResponse<User>>("users", {
-    params: queryParams,
-  });
-  return data;
+  return await callFunction<User[]>(`users-list${query(queryParams)}`) as unknown as PaginatedResponse<User>;
 };
 
 /**
@@ -56,8 +53,7 @@ export const getUsers = async (params?: PaginationParams) => {
  * @returns User data
  */
 export const getUserById = async (id: string) => {
-  const { data } = await axiosClient.get<ApiResponse<User>>(`users/${id}`);
-  return data;
+  return await callFunction<User>(`users-get${query({ id })}`) as unknown as ApiResponse<User>;
 };
 
 /**
@@ -69,10 +65,9 @@ export const getUserById = async (id: string) => {
  * @returns User with roles and permissions
  */
 export const getUserWithRolesAndPermissions = async (id: string) => {
-  const { data } = await axiosClient.get<
-    ApiResponse<UserWithRolesAndPermissions>
-  >(`users/${id}/roles-permissions`);
-  return data;
+  return await callFunction<UserWithRolesAndPermissions>(
+    `users-get${query({ id, withPermissions: true })}`,
+  ) as unknown as ApiResponse<UserWithRolesAndPermissions>;
 };
 
 /**
@@ -84,11 +79,10 @@ export const getUserWithRolesAndPermissions = async (id: string) => {
  * @returns Created user
  */
 export const registerUser = async (userData: RegisterInput) => {
-  const { data } = await axiosClient.post<ApiResponse<User>>(
-    "auth/register",
-    userData,
-  );
-  return data;
+  return await callFunction<User>("auth-register", {
+    method: "POST",
+    body: JSON.stringify(userData),
+  }) as unknown as ApiResponse<User>;
 };
 
 /**
@@ -101,9 +95,8 @@ export const registerUser = async (userData: RegisterInput) => {
  * @returns Updated user
  */
 export const updateUser = async (id: string, userData: UpdateUserInput) => {
-  const { data } = await axiosClient.patch<ApiResponse<User>>(
-    `users/${id}`,
-    userData,
-  );
-  return data;
+  return await callFunction<User>(`users-update${query({ id })}`, {
+    method: "PATCH",
+    body: JSON.stringify(userData),
+  }) as unknown as ApiResponse<User>;
 };

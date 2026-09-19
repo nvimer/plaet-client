@@ -4,6 +4,8 @@ import { FUNCTIONS_BASE } from "@/lib/supabase";
 import { getAuthHeaders } from "./authApi";
 import type {
   MenuCategory,
+  CreateMenuCategoryInput,
+  UpdateMenuCategoryInput,
   MenuItem,
   CreateMenuItemInput,
   UpdateMenuItemInput,
@@ -61,7 +63,7 @@ export const searchCategories = async (params: PaginationParams): Promise<Pagina
 };
 
 export const getCategoryById = async (id: number): Promise<ApiResponse<MenuCategory>> => {
-  const data = await authFetch(`${FUNCTIONS_BASE}/menu-categories-get/${id}`);
+  const data = await authFetch(`${FUNCTIONS_BASE}/menu-categories-get?id=${id}`);
   return {
     success: true,
     message: data.message,
@@ -70,6 +72,44 @@ export const getCategoryById = async (id: number): Promise<ApiResponse<MenuCateg
 };
 
 // ==================== MENU ITEMS ====================
+
+export const createCategory = async (categoryData: CreateMenuCategoryInput): Promise<ApiResponse<MenuCategory>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/menu-categories-create`, {
+    method: "POST",
+    body: JSON.stringify(categoryData),
+  });
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+  };
+};
+
+export const updateCategory = async (
+  id: number,
+  categoryData: UpdateMenuCategoryInput,
+): Promise<ApiResponse<MenuCategory>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/menu-categories-update?id=${id}`, {
+    method: "PATCH",
+    body: JSON.stringify(categoryData),
+  });
+  return {
+    success: true,
+    message: data.message,
+    data: data.data,
+  };
+};
+
+export const deleteCategory = async (id: number): Promise<ApiResponse<null>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/menu-categories-delete?id=${id}`, {
+    method: "DELETE",
+  });
+  return {
+    success: true,
+    message: data.message,
+    data: null,
+  };
+};
 
 export const getMenuItems = async (params?: PaginationParams): Promise<PaginatedResponse<MenuItem>> => {
   const queryParams = new URLSearchParams();
@@ -180,6 +220,9 @@ export const menuApi = {
   getCategories,
   searchCategories,
   getCategoryById,
+  createCategory,
+  updateCategory,
+  deleteCategory,
   getMenuItems,
   searchMenuItems,
   getMenuItemById,
