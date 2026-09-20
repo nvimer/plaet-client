@@ -6,7 +6,7 @@
  */
 
 import { FUNCTIONS_BASE } from "@/lib/supabase";
-import { getAuthHeaders } from "./authApi";
+import { getAuthHeaders, getStoredRefreshToken, refreshToken } from "./authApi";
 
 export interface FunctionResponse<T> {
   success: boolean;
@@ -15,19 +15,34 @@ export interface FunctionResponse<T> {
   meta?: Record<string, unknown>;
 }
 
-export async function callFunction<T>(
-  path: string,
+/**
+ * One request against an Edge Function, retrying once after refreshing.
+ *
+ * A 401 means the access token died (they last 30 minutes). We refresh once and
+ * replay the request; if the refresh fails, the session is over and the error
+ * surfaces so the guards can send the user to the login page.
+ */
+export async function fetchFunction<T>(
+  url: string,
   options: RequestInit = {},
 ): Promise<FunctionResponse<T>> {
-  const res = await fetch(`${FUNCTIONS_BASE}/${path}`, {
-    ...options,
-    headers: {
-      "Content-Type": "application/json",
-      apikey: import.meta.env.VITE_DB_ANON_KEY,
-      ...getAuthHeaders(),
-      ...options.headers,
-    },
-  });
+  const send = () =>
+    fetch(url, {
+      ...options,
+      headers: {
+        "Content-Type": "application/json",
+        apikey: import.meta.env.VITE_DB_ANON_KEY,
+        ...getAuthHeaders(),
+        ...options.headers,
+      },
+    });
+
+  let res = await send();
+
+  if (res.status === 401 && getStoredRefreshToken()) {
+    await refreshToken();      // single-flight: concurrent calls share one refresh
+    res = await send();
+  }
 
   const body = await res.json().catch(() => ({}));
 
@@ -36,6 +51,13 @@ export async function callFunction<T>(
   }
 
   return body as FunctionResponse<T>;
+}
+
+export async function callFunction<T>(
+  path: string,
+  options: RequestInit = {},
+): Promise<FunctionResponse<T>> {
+  return await fetchFunction<T>(`${FUNCTIONS_BASE}/${path}`, options);
 }
 
 /** Builds a query string, skipping empty values. */

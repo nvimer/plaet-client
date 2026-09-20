@@ -215,7 +215,7 @@ export function QuickStockModal({ item, isOpen, onClose }: QuickStockModalProps)
                   history.map((entry) => (
                     <div key={entry.id} className="flex items-center justify-between p-2 rounded-lg bg-carbon-50 text-xs border border-carbon-100">
                       <div className="flex items-center gap-2">
-                        {entry.type === 'ADD' ?
+                        {entry.newStock >= entry.previousStock ?
                           <TrendingUp className="w-3 h-3 text-success-500" /> :
                           <TrendingDown className="w-3 h-3 text-error-500" />
                         }

@@ -103,30 +103,77 @@ export const register = async (userData: RegisterInput): Promise<ApiResponse<Use
 };
 
 /**
- * POST /functions/v1/auth-login (logout clears cookies server-side)
+ * POST /functions/v1/auth-logout
+ *
+ * Burns the tokens server-side so a stolen refresh token dies with the session,
+ * then clears local storage. Failing to reach the server still logs out locally.
  */
-export const logout = async (): Promise<ApiResponse<null>> => {
+export const logout = async (allDevices = false): Promise<ApiResponse<null>> => {
+  const refresh = getStoredRefreshToken();
+
+  try {
+    await fetch(`${FUNCTIONS_BASE}/auth-logout`, {
+      method: "POST",
+      headers: { ...FUNCTION_HEADERS, ...getAuthHeaders() },
+      body: JSON.stringify({ refreshToken: refresh, allDevices }),
+    });
+  } catch {
+    // The session ends locally either way.
+  }
+
   clearTokens();
   return { success: true, message: "Logged out", data: null };
 };
 
 /**
  * POST /functions/v1/auth-refresh-token
- * TODO: Implement refresh token Edge Function
+ *
+ * Trades the refresh token for a new pair. Rotation is enforced server-side:
+ * the old token is burned, and presenting it twice ends every session.
+ *
+ * Single-flight: concurrent 401s share one refresh instead of racing, which
+ * would burn the token more than once and close the session.
  */
+let refreshInFlight: Promise<AuthResponse> | null = null;
+
 export const refreshToken = async (): Promise<AuthResponse> => {
-  // For now, refresh is handled by the server via cookie
-  const res = await fetch(`${FUNCTIONS_BASE}/auth-login`, {
-    method: "POST",
-    headers: FUNCTION_HEADERS,
+  if (refreshInFlight) return refreshInFlight;
 
-  });
+  refreshInFlight = (async () => {
+    const refresh = getStoredRefreshToken();
+    if (!refresh) {
+      clearTokens();
+      throw { response: { status: 401, data: { message: "No refresh token" } } };
+    }
 
-  if (!res.ok) {
-    throw { response: { status: res.status } };
+    const res = await fetch(`${FUNCTIONS_BASE}/auth-refresh-token`, {
+      method: "POST",
+      headers: FUNCTION_HEADERS,
+      body: JSON.stringify({ refreshToken: refresh }),
+    });
+
+    const data = await res.json().catch(() => ({}));
+
+    if (!res.ok || !data.success) {
+      // The refresh token is gone or was reused: the session is over.
+      clearTokens();
+      throw { response: { status: res.status, data } };
+    }
+
+    storeTokens(data.data.accessToken, data.data.refreshToken);
+
+    return {
+      success: true,
+      message: data.message,
+      data: { user: data.data.user as User },
+    };
+  })();
+
+  try {
+    return await refreshInFlight;
+  } finally {
+    refreshInFlight = null;
   }
-
-  return { success: true, message: "Refreshed", data: { user: {} as User } };
 };
 
 /**

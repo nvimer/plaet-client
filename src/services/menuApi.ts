@@ -1,12 +1,13 @@
 // MENU API SERVICE - Supabase Edge Functions
 
 import { FUNCTIONS_BASE } from "@/lib/supabase";
-import { getAuthHeaders } from "./authApi";
+import { fetchFunction } from "./functionsClient";
 import type {
   MenuCategory,
   CreateMenuCategoryInput,
   UpdateMenuCategoryInput,
   MenuItem,
+  StockHistoryEntry,
   CreateMenuItemInput,
   UpdateMenuItemInput,
   ApiResponse,
@@ -14,22 +15,14 @@ import type {
   PaginationParams,
 } from "@/types";
 
-const FUNCTION_HEADERS = {
-  "Content-Type": "application/json",
-  apikey: import.meta.env.VITE_DB_ANON_KEY,
-};
-
-async function authFetch(url: string, options: RequestInit = {}) {
-  const res = await fetch(url, {
-    ...options,
-
-    headers: { ...FUNCTION_HEADERS, ...getAuthHeaders(), ...options.headers },
-  });
-  const data = await res.json();
-  if (!res.ok || !data.success) {
-    throw { response: { status: res.status, data } };
-  }
-  return data;
+/**
+ * Same path as the other services: adds the token and refreshes once on a 401.
+ * Each caller knows the shape of its own endpoint, as it did when this was a
+ * bare res.json().
+ */
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function authFetch(url: string, options: RequestInit = {}): Promise<any> {
+  return await fetchFunction(url, options);
 }
 
 // ==================== CATEGORIES ====================
@@ -203,15 +196,109 @@ export const getSetLunchItems = async (params?: PaginationParams): Promise<Pagin
   return getMenuItems(params);
 };
 
-export const getLowStock = async () => {
-  const data = await authFetch(`${FUNCTIONS_BASE}/menu-items-list?isAvailable=false`);
-  return { success: true, data: data.data };
+// ==================== INVENTORY ====================
+
+/** Stock at or under the alert threshold, still sellable. */
+export const getLowStockItems = async (): Promise<ApiResponse<MenuItem[]>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/menu-items-list?stockStatus=low&limit=100`);
+  return { success: true, message: data.message, data: data.data };
 };
 
-export const getOutOfStock = async () => {
-  const data = await authFetch(`${FUNCTIONS_BASE}/menu-items-list`);
-  const outOfStock = data.data.filter((item: MenuItem & { stock_quantity?: number }) => item.stock_quantity === 0);
-  return { success: true, data: outOfStock };
+/** Tracked items with nothing left. */
+export const getOutOfStockItems = async (): Promise<ApiResponse<MenuItem[]>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/menu-items-list?stockStatus=out&limit=100`);
+  return { success: true, message: data.message, data: data.data };
+};
+
+export const getLowStock = getLowStockItems;
+export const getOutOfStock = getOutOfStockItems;
+
+export const addStock = async (
+  id: number,
+  stockData: { quantity: number; reason?: string },
+): Promise<ApiResponse<MenuItem>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/menu-items-stock-adjust?id=${id}&action=add`, {
+    method: "POST",
+    body: JSON.stringify(stockData),
+  });
+  return { success: true, message: data.message, data: data.data };
+};
+
+export const removeStock = async (
+  id: number,
+  stockData: { quantity: number; reason?: string },
+): Promise<ApiResponse<MenuItem>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/menu-items-stock-adjust?id=${id}&action=remove`, {
+    method: "POST",
+    body: JSON.stringify(stockData),
+  });
+  return { success: true, message: data.message, data: data.data };
+};
+
+/** Movements of one item. */
+export const getStockHistory = async (
+  itemId: number,
+  params?: PaginationParams,
+): Promise<PaginatedResponse<StockHistoryEntry>> => {
+  const query = new URLSearchParams({ itemId: String(itemId) });
+  if (params?.page) query.set("page", String(params.page));
+  if (params?.limit) query.set("limit", String(params.limit));
+
+  const data = await authFetch(`${FUNCTIONS_BASE}/menu-items-stock-history?${query}`);
+  return { success: true, message: data.message, data: data.data, meta: data.meta };
+};
+
+/** Movements across the whole restaurant. */
+export const getAllStockHistory = async (
+  params?: PaginationParams,
+): Promise<PaginatedResponse<StockHistoryEntry>> => {
+  const query = new URLSearchParams();
+  if (params?.page) query.set("page", String(params.page));
+  if (params?.limit) query.set("limit", String(params.limit));
+
+  const data = await authFetch(`${FUNCTIONS_BASE}/menu-items-stock-history?${query}`);
+  return { success: true, message: data.message, data: data.data, meta: data.meta };
+};
+
+/** The morning load: sets each item to the portions cooked for the day. */
+export const dailyStockReset = async (variables: {
+  items: Array<{ itemId: number; quantity: number }>;
+}): Promise<ApiResponse<{ updated: number }>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/menu-items-stock-reset`, {
+    method: "POST",
+    body: JSON.stringify(variables),
+  });
+  return { success: true, message: data.message, data: data.data };
+};
+
+export const dailyStockResetByCategory = async (variables: {
+  categoryId: number;
+  items: Array<{ itemId: number; quantity: number }>;
+}): Promise<ApiResponse<{ updated: number }>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/menu-items-stock-reset`, {
+    method: "POST",
+    body: JSON.stringify(variables),
+  });
+  return { success: true, message: data.message, data: data.data };
+};
+
+export const setInventoryType = async (
+  id: number,
+  inventoryType: string,
+  lowStockAlert?: number,
+  stockQuantity?: number,
+): Promise<ApiResponse<MenuItem>> => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/menu-items-inventory-type?id=${id}`, {
+    method: "PATCH",
+    body: JSON.stringify({ inventoryType, lowStockAlert, stockQuantity }),
+  });
+  return { success: true, message: data.message, data: data.data };
+};
+
+/** Daily movement totals for the dashboard chart. */
+export const getStockMovements = async (days: number = 7) => {
+  const data = await authFetch(`${FUNCTIONS_BASE}/menu-items-stock-movements?days=${days}`);
+  return { success: true, message: data.message, data: data.data };
 };
 
 // ==================== EXPORTS ===================
@@ -233,4 +320,14 @@ export const menuApi = {
   getSetLunchItems,
   getLowStock,
   getOutOfStock,
+  getLowStockItems,
+  getOutOfStockItems,
+  addStock,
+  removeStock,
+  getStockHistory,
+  getAllStockHistory,
+  dailyStockReset,
+  dailyStockResetByCategory,
+  setInventoryType,
+  getStockMovements,
 };
