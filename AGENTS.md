@@ -1,6 +1,8 @@
 # Agentic Coding Guidelines (Plaet App)
 
-Welcome! You are an AI agent operating in the Plaet monorepo, a SaaS application for restaurant management. This project is split into two primary environments: /client (React 19 + Vite) and /server (Node.js + Express + Prisma).
+Welcome! You are an AI agent operating in Plaet, a SaaS application for restaurant management. This repository is the client: React 19 + Vite + Tailwind, deployed on Vercel.
+
+**The backend is Supabase Edge Functions** (repo `plaet-server`, `supabase/functions/`). The Express + Prisma server described in older notes is the previous backend and is no longer deployed.
 
 Please read and adhere strictly to these guidelines when analyzing, modifying, or creating code in this repository.
 
@@ -19,27 +21,30 @@ Always run commands from their respective directories (/client or /server), NOT 
 *   Test: npm run test (Vitest)
 *   Standardize UI: npm run fix:ui (Must be run after creating/modifying UI components)
 
-### Server Commands (/server directory)
-*   Install: npm install
-*   Dev Server: npm run dev
-*   Build: npm run build
-*   Lint: npm run eslint-check-only (or npm run eslint-fix)
-*   Format: npm run prettier
-*   Prisma: npm run prisma:generate, npm run prisma:migrate
+### Backend
+The backend lives in the `plaet-server` repo. Its commands are `supabase db push` and `supabase functions deploy`; see its AGENTS.md. Deploy order is always migrations, then functions, then this client.
 
 ### Running Tests
-*   Server (Jest): Always ensure tests pass before declaring a task complete.
-    *   npm run test, npm run test:integration, npm run test:e2e.
-*   Client (Vitest): Use Vitest for business logic and hook testing.
-    *   npm run test.
+*   Vitest for business logic and hooks: npm run test.
+*   npm run type-check currently reports ~300 pre-existing errors. Judge a change by whether it ADDS errors, not by the total: capture the list before and after and diff it.
 
 ---
 
 ## 2. Architectural Conventions
 
 ### Multi-Tenant Architecture (Crucial)
-*   Server: Prisma Client extensions automatically filter queries by restaurantId. NEVER manually filter by restaurantId in repositories unless building a global analytics module for SUPERADMIN. The restaurantId is extracted from the JWT.
-*   Client: Trust the backend for data isolation. Do not filter data by restaurantId on the frontend manually.
+*   The Edge Functions scope every query by the restaurantId carried in the JWT. Trust the backend for isolation; never filter by restaurantId in the UI.
+
+### Talking to the backend
+*   `src/services/functionsClient.ts` is the single helper: it carries the anon key and the user's access token and returns `{ success, message, data, meta? }`. Use `callFunction(path, options)` and `query({...})` for query strings.
+*   One function per endpoint, named `<domain>-<action>`: `orders-create`, `menu-items-list`, `daily-menu-upsert`. Ids travel as `?id=`, not as path segments.
+*   `src/services/axiosClient.ts` still points at the old Express API. Anything still using it is NOT migrated: menu engineering, predictions and heatmap in `analyticsApi`.
+*   Some hooks call service functions that do not exist yet (`useStockManagement`, `customerApi.deleteCustomer`, `tablesApi.deleteTable`, auth refresh and password reset). Those endpoints are missing on both sides; check before assuming a bug is in the UI.
+
+### Lunch pricing (Crucial)
+*   A lunch is sent as ONE item, the protein, priced base margin + protein (`pricingLogic.ts`). Soup, principio, rice and drink are included and are not sent.
+*   Substitutions are free and never apply to the protein. The backend now stores them as data (`isSubstitution`, `replacesCategoryType`, `isExtra`); `noteLogic.ts` still encodes them inside `notes` as a string with emojis and should move over to the fields.
+*   The daily menu resolves its categories by name (`findCategoryIdByName`). The backend now exposes `type` on each category (SOUP, PROTEIN, DRINK…); use it and drop the name matching.
 
 ### Directory Structure
 *   Client: Uses a Feature-Based structure (src/features/{name}/).
