@@ -25,7 +25,8 @@ Always run commands from their respective directories (/client or /server), NOT 
 The backend lives in the `plaet-server` repo. Its commands are `supabase db push` and `supabase functions deploy`; see its AGENTS.md. Deploy order is always migrations, then functions, then this client.
 
 ### Running Tests
-*   Vitest for business logic and hooks: npm run test.
+*   Vitest for business logic and hooks: npm run test. `src/tests/functionsClient.test.ts` covers the session refresh against a fake server that rotates tokens like the real one.
+*   In tests, stub `localStorage` (`vi.stubGlobal("localStorage", ...)`): recent Node versions ship an experimental global that shadows jsdom's and is undefined without a flag.
 *   npm run type-check currently reports ~300 pre-existing errors. Judge a change by whether it ADDS errors, not by the total: capture the list before and after and diff it.
 
 ---
@@ -37,6 +38,8 @@ The backend lives in the `plaet-server` repo. Its commands are `supabase db push
 
 ### Talking to the backend
 *   `src/services/functionsClient.ts` is the single helper: it carries the anon key and the user's access token and returns `{ success, message, data, meta? }`. Use `callFunction(path, options)` and `query({...})` for query strings.
+*   **Every service must go through it**: `fetchFunction` for the parsed body, `fetchWithRefresh` for the raw `Response`. A service with its own `fetch` and `Authorization` header silently loses the session refresh, and the session dies after 30 minutes on that screen only. `src/tests/functionsClient.test.ts` runs one read per service and fails if one stops refreshing. The exception is `authApi` (login, register, logout, refresh, change password): it cannot import `functionsClient` without a circular import.
+*   Refresh tokens rotate: each one works once, and presenting it a second time closes every session of the user. That is why concurrent 401s share a single refresh, and why nothing should call `authApi.refreshToken()` from a second place with its own retry logic. There is no grace window yet: a refresh whose response is lost on the network, retried with the same token, counts as reuse.
 *   One function per endpoint, named `<domain>-<action>`: `orders-create`, `menu-items-list`, `daily-menu-upsert`. Ids travel as `?id=`, not as path segments.
 *   `src/services/axiosClient.ts` still points at the old Express API. Anything still using it is NOT migrated: menu engineering, predictions and heatmap in `analyticsApi`.
 *   Some hooks call service functions that do not exist yet (`useStockManagement`, `customerApi.deleteCustomer`, `tablesApi.deleteTable`, auth refresh and password reset). Those endpoints are missing on both sides; check before assuming a bug is in the UI.

@@ -6,6 +6,7 @@
  */
 
 import { FUNCTIONS_BASE, getStoredToken } from "@/lib/supabase";
+import { fetchWithRefresh } from "./functionsClient";
 import type {
   Restaurant,
   CreateRestaurantInput,
@@ -33,7 +34,7 @@ export const getRestaurants = async (params?: PaginationParams) => {
   const page = params?.page ?? 1;
   const limit = params?.limit ?? 20;
 
-  const res = await fetch(
+  const res = await fetchWithRefresh(
     `${FUNCTIONS_BASE}/restaurants-list?page=${page}&limit=${limit}`,
     { headers: getAuthHeaders() }
   );
@@ -47,7 +48,7 @@ export const searchRestaurants = async (params: PaginationParams & RestaurantSea
   if (search) searchParams.set("search", search);
   if (status) searchParams.set("status", status);
 
-  const res = await fetch(
+  const res = await fetchWithRefresh(
     `${FUNCTIONS_BASE}/restaurants-list?${searchParams.toString()}`,
     { headers: getAuthHeaders() }
   );
@@ -55,14 +56,14 @@ export const searchRestaurants = async (params: PaginationParams & RestaurantSea
 };
 
 export const getRestaurantById = async (id: string) => {
-  const res = await fetch(`${FUNCTIONS_BASE}/restaurants-get?id=${id}`, {
+  const res = await fetchWithRefresh(`${FUNCTIONS_BASE}/restaurants-get?id=${id}`, {
     headers: getAuthHeaders(),
   });
   return handleResponse<ApiResponse<Restaurant>>(res);
 };
 
 export const createRestaurant = async (restaurantData: CreateRestaurantInput) => {
-  const res = await fetch(`${FUNCTIONS_BASE}/restaurants-create`, {
+  const res = await fetchWithRefresh(`${FUNCTIONS_BASE}/restaurants-create`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(restaurantData),
@@ -71,7 +72,7 @@ export const createRestaurant = async (restaurantData: CreateRestaurantInput) =>
 };
 
 export const updateRestaurant = async (id: string, restaurantData: UpdateRestaurantInput) => {
-  const res = await fetch(`${FUNCTIONS_BASE}/restaurants-update?id=${id}`, {
+  const res = await fetchWithRefresh(`${FUNCTIONS_BASE}/restaurants-update?id=${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(restaurantData),
@@ -80,7 +81,7 @@ export const updateRestaurant = async (id: string, restaurantData: UpdateRestaur
 };
 
 export const deleteRestaurant = async (id: string) => {
-  const res = await fetch(`${FUNCTIONS_BASE}/restaurants-delete?id=${id}`, {
+  const res = await fetchWithRefresh(`${FUNCTIONS_BASE}/restaurants-delete?id=${id}`, {
     method: "DELETE",
     headers: getAuthHeaders(),
   });

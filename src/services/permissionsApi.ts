@@ -6,6 +6,7 @@
  */
 
 import { FUNCTIONS_BASE, getStoredToken } from "@/lib/supabase";
+import { fetchWithRefresh } from "./functionsClient";
 import type {
   Permission,
   ApiResponse,
@@ -40,7 +41,7 @@ export const getPermissions = async (params?: PaginationParams) => {
   const page = params?.page ?? 1;
   const limit = params?.limit ?? 100;
 
-  const res = await fetch(
+  const res = await fetchWithRefresh(
     `${FUNCTIONS_BASE}/permissions-list?page=${page}&limit=${limit}`,
     { headers: getAuthHeaders() }
   );
@@ -48,14 +49,14 @@ export const getPermissions = async (params?: PaginationParams) => {
 };
 
 export const getPermissionById = async (id: number) => {
-  const res = await fetch(`${FUNCTIONS_BASE}/permissions-list?id=${id}`, {
+  const res = await fetchWithRefresh(`${FUNCTIONS_BASE}/permissions-list?id=${id}`, {
     headers: getAuthHeaders(),
   });
   return handleResponse<ApiResponse<Permission>>(res);
 };
 
 export const createPermission = async (permissionData: CreatePermissionInput) => {
-  const res = await fetch(`${FUNCTIONS_BASE}/permissions-list`, {
+  const res = await fetchWithRefresh(`${FUNCTIONS_BASE}/permissions-list`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(permissionData),
@@ -67,7 +68,7 @@ export const updatePermission = async (
   id: number,
   permissionData: UpdatePermissionInput
 ) => {
-  const res = await fetch(`${FUNCTIONS_BASE}/permissions-list?id=${id}`, {
+  const res = await fetchWithRefresh(`${FUNCTIONS_BASE}/permissions-list?id=${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(permissionData),
@@ -76,7 +77,7 @@ export const updatePermission = async (
 };
 
 export const deletePermission = async (id: number) => {
-  const res = await fetch(`${FUNCTIONS_BASE}/permissions-list?id=${id}`, {
+  const res = await fetchWithRefresh(`${FUNCTIONS_BASE}/permissions-list?id=${id}`, {
     method: "DELETE",
     headers: getAuthHeaders(),
   });

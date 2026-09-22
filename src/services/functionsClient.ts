@@ -16,34 +16,52 @@ export interface FunctionResponse<T> {
 }
 
 /**
- * One request against an Edge Function, retrying once after refreshing.
+ * fetch against an Edge Function with the session token, retrying once after a refresh.
+ * Returns the raw Response; use fetchFunction for the parsed { success, data } body.
  *
- * A 401 means the access token died (they last 30 minutes). We refresh once and
- * replay the request; if the refresh fails, the session is over and the error
- * surfaces so the guards can send the user to the login page.
+ * A 401 means the access token died (they last 30 minutes). We refresh once and replay
+ * the request. If the refresh itself fails the session is over: the original 401 comes
+ * back so each caller keeps its own error handling and the guards can send the user to
+ * the login page.
+ *
+ * Every service must go through here. A service with its own fetch silently loses the
+ * refresh, and the session dies at 30 minutes on that screen.
  */
-export async function fetchFunction<T>(
+export async function fetchWithRefresh(
   url: string,
   options: RequestInit = {},
-): Promise<FunctionResponse<T>> {
+): Promise<Response> {
   const send = () =>
     fetch(url, {
       ...options,
       headers: {
         "Content-Type": "application/json",
         apikey: import.meta.env.VITE_DB_ANON_KEY,
-        ...getAuthHeaders(),
         ...options.headers,
+        // Last on purpose: after a refresh the replay must carry the NEW token, not one
+        // the caller read before it. Some services still pass their own Authorization.
+        ...getAuthHeaders(),
       },
     });
 
-  let res = await send();
+  const res = await send();
 
-  if (res.status === 401 && getStoredRefreshToken()) {
+  if (res.status !== 401 || !getStoredRefreshToken()) return res;
+
+  try {
     await refreshToken();      // single-flight: concurrent calls share one refresh
-    res = await send();
+  } catch {
+    return res;                // refresh failed and cleared the tokens: report the 401
   }
+  return await send();
+}
 
+/** One request against an Edge Function, parsed as { success, message, data, meta? }. */
+export async function fetchFunction<T>(
+  url: string,
+  options: RequestInit = {},
+): Promise<FunctionResponse<T>> {
+  const res = await fetchWithRefresh(url, options);
   const body = await res.json().catch(() => ({}));
 
   if (!res.ok || !body.success) {
