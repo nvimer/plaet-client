@@ -1,25 +1,13 @@
 // CASH CLOSURE API SERVICE - Supabase Edge Functions
 
 import { FUNCTIONS_BASE } from "@/lib/supabase";
-import { getAuthHeaders } from "./authApi";
+import { fetchFunction } from "./functionsClient";
 import type { CashClosure, ApiResponse, PaginatedResponse, PaginationParams } from "../types";
 
-const FUNCTION_HEADERS = {
-  "Content-Type": "application/json",
-  apikey: import.meta.env.VITE_DB_ANON_KEY,
-};
-
-async function authFetch(url: string, options: RequestInit = {}) {
-  const res = await fetch(url, {
-    ...options,
-
-    headers: { ...FUNCTION_HEADERS, ...getAuthHeaders(), ...options.headers },
-  });
-  const data = await res.json();
-  if (!res.ok || !data.success) {
-    throw { response: { status: res.status, data } };
-  }
-  return data;
+// Goes through the shared layer so an expired token is refreshed once and replayed.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+async function authFetch(url: string, options: RequestInit = {}): Promise<any> {
+  return await fetchFunction(url, options);
 }
 
 export const getCashClosures = async (params?: PaginationParams & { status?: string }): Promise<PaginatedResponse<CashClosure>> => {

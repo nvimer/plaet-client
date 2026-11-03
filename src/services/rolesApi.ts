@@ -6,6 +6,7 @@
  */
 
 import { FUNCTIONS_BASE, getStoredToken } from "@/lib/supabase";
+import { fetchWithRefresh } from "./functionsClient";
 import type {
   Role,
   ApiResponse,
@@ -40,7 +41,7 @@ export const getRoles = async (params?: PaginationParams) => {
   const page = params?.page ?? 1;
   const limit = params?.limit ?? 100;
 
-  const res = await fetch(
+  const res = await fetchWithRefresh(
     `${FUNCTIONS_BASE}/roles-list?page=${page}&limit=${limit}`,
     { headers: getAuthHeaders() }
   );
@@ -48,14 +49,14 @@ export const getRoles = async (params?: PaginationParams) => {
 };
 
 export const getRoleById = async (id: number) => {
-  const res = await fetch(`${FUNCTIONS_BASE}/roles-get?id=${id}`, {
+  const res = await fetchWithRefresh(`${FUNCTIONS_BASE}/roles-get?id=${id}`, {
     headers: getAuthHeaders(),
   });
   return handleResponse<ApiResponse<Role>>(res);
 };
 
 export const createRole = async (roleData: CreateRoleInput) => {
-  const res = await fetch(`${FUNCTIONS_BASE}/roles-create`, {
+  const res = await fetchWithRefresh(`${FUNCTIONS_BASE}/roles-create`, {
     method: "POST",
     headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(roleData),
@@ -64,7 +65,7 @@ export const createRole = async (roleData: CreateRoleInput) => {
 };
 
 export const updateRole = async (id: number, roleData: UpdateRoleInput) => {
-  const res = await fetch(`${FUNCTIONS_BASE}/roles-update?id=${id}`, {
+  const res = await fetchWithRefresh(`${FUNCTIONS_BASE}/roles-update?id=${id}`, {
     method: "PATCH",
     headers: { "Content-Type": "application/json", ...getAuthHeaders() },
     body: JSON.stringify(roleData),
@@ -73,7 +74,7 @@ export const updateRole = async (id: number, roleData: UpdateRoleInput) => {
 };
 
 export const deleteRole = async (id: number) => {
-  const res = await fetch(`${FUNCTIONS_BASE}/roles-delete?id=${id}`, {
+  const res = await fetchWithRefresh(`${FUNCTIONS_BASE}/roles-delete?id=${id}`, {
     method: "DELETE",
     headers: getAuthHeaders(),
   });
@@ -84,7 +85,7 @@ export const assignPermissionsToRole = async (
   roleId: number,
   permissionIds: number[]
 ) => {
-  const res = await fetch(
+  const res = await fetchWithRefresh(
     `${FUNCTIONS_BASE}/roles-assign-permissions?id=${roleId}`,
     {
       method: "POST",
