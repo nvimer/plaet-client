@@ -314,6 +314,7 @@ export default function RegisterForm() {
                 <button
                   type="button"
                   onClick={togglePasswordVisibility}
+                  aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-carbon-500 hover:text-carbon-700"
                 >
                   {showPassword ? (
@@ -351,6 +352,7 @@ export default function RegisterForm() {
                 <button
                   type="button"
                   onClick={toggleConfirmPasswordVisibility}
+                  aria-label={showConfirmPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
                   className="absolute right-4 top-1/2 -translate-y-1/2 text-carbon-500 hover:text-carbon-700"
                 >
                   {showConfirmPassword ? (
